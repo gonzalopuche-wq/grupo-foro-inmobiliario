@@ -34,8 +34,8 @@ const OP_LABEL: Record<string, string> = {
   permuta: "Permuta", comercial: "Comercial", fondo_comercio: "Fondo de Comercio", campo: "Campo",
 };
 const OP_COLOR: Record<string, string> = {
-  venta: "#22c55e", alquiler: "#60a5fa", temporario: "#eab308",
-  permuta: "#c084fc", comercial: "#f97316", fondo_comercio: "#fb7185", campo: "#84cc16",
+  venta: "#3abab6", alquiler: "#4ab8d8", temporario: "#d4960c",
+  permuta: "#c084fc", comercial: "#d4960c", fondo_comercio: "#fb7185", campo: "#84cc16",
 };
 const fmt = (n: number | null) => n ? n.toLocaleString("es-AR") : "—";
 
@@ -78,13 +78,13 @@ export default function FichaPage() {
         .ficha-page { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
         .ficha-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
         .ficha-logo { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0.04em; }
-        .ficha-logo span { color: #cc0000; }
+        .ficha-logo span { color: #990000; }
         .ficha-badge-red { font-size: 9px; font-family: 'Montserrat', sans-serif; font-weight: 700; background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.25); color: rgba(255,100,100,0.8); padding: 3px 8px; border-radius: 4px; letter-spacing: 0.08em; }
         .ficha-actions { display: flex; gap: 8px; }
         .ficha-btn { padding: 8px 16px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; border: none; transition: opacity 0.15s; }
         .ficha-btn:hover { opacity: 0.85; }
         .ficha-btn-share { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12) !important; color: rgba(255,255,255,0.7); }
-        .ficha-btn-pdf { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3) !important; color: #ef4444; }
+        .ficha-btn-pdf { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3) !important; color: #b80000; }
 
         /* Foto carousel */
         .ficha-gallery { border-radius: 12px; overflow: hidden; margin-bottom: 24px; position: relative; }
@@ -92,7 +92,7 @@ export default function FichaPage() {
         .ficha-gallery-empty { height: 220px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 24px; }
         .ficha-gallery-thumbs { display: flex; gap: 6px; margin-top: 6px; overflow-x: auto; padding-bottom: 4px; }
         .ficha-gallery-thumb { width: 72px; height: 52px; object-fit: cover; border-radius: 6px; cursor: pointer; opacity: 0.5; transition: opacity 0.15s; flex-shrink: 0; }
-        .ficha-gallery-thumb.active { opacity: 1; outline: 2px solid #cc0000; }
+        .ficha-gallery-thumb.active { opacity: 1; outline: 2px solid #990000; }
         .ficha-gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 18px; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .ficha-gallery-nav.prev { left: 10px; }
         .ficha-gallery-nav.next { right: 10px; }
@@ -151,7 +151,7 @@ export default function FichaPage() {
           .ficha-anonimo-txt strong { color: #333 !important; }
           .ficha-footer { border-top-color: #ddd !important; }
           .ficha-footer-logo { color: #999 !important; }
-          .ficha-footer-logo span { color: #cc0000 !important; }
+          .ficha-footer-logo span { color: #990000 !important; }
           .ficha-footer-date { color: #bbb !important; }
           .ficha-badge-red { display: none !important; }
         }
@@ -160,7 +160,7 @@ export default function FichaPage() {
       <div className="ficha-page">
         {loading ? (
           <div style={{ textAlign: "center", padding: "80px 0", color: "rgba(255,255,255,0.2)" }}>
-            <div style={{ width: 32, height: 32, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 12px" }} />
+            <div style={{ width: 32, height: 32, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 12px" }} />
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             Cargando ficha...
           </div>

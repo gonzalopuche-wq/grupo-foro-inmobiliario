@@ -27,9 +27,9 @@ interface Referido {
 const ESTADOS: { val: Referido["estado"]; label: string; color: string }[] = [
   { val: "nuevo",      label: "Nuevo",      color: "#6b7280" },
   { val: "contactado", label: "Contactado", color: "#3b82f6" },
-  { val: "activo",     label: "Activo",     color: "#f97316" },
-  { val: "cerrado",    label: "Cerrado",    color: "#22c55e" },
-  { val: "perdido",    label: "Perdido",    color: "#cc0000" },
+  { val: "activo",     label: "Activo",     color: "#d4960c" },
+  { val: "cerrado",    label: "Cerrado",    color: "#3abab6" },
+  { val: "perdido",    label: "Perdido",    color: "#990000" },
 ];
 
 let nid = 1;
@@ -149,7 +149,7 @@ export default function ReferidosPage() {
           <div style={{ display: "flex", gap: 10 }}>
             <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
             <button onClick={abrirNuevo}
-              style={{ background: "#cc000033", color: "#cc0000", border: "1px solid #cc000066", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>
+              style={{ background: "#99000033", color: "#990000", border: "1px solid #99000066", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>
               + Nuevo Referido
             </button>
           </div>
@@ -159,10 +159,10 @@ export default function ReferidosPage() {
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
           {[
             { label: "Total referidos", val: refs.length, color: "#3b82f6" },
-            { label: "Cerrados", val: stats.cerrados, color: "#22c55e" },
+            { label: "Cerrados", val: stats.cerrados, color: "#3abab6" },
             { label: "Honorarios generados", val: `USD ${fmt(stats.totalHon)}`, color: "#a855f7" },
-            { label: "Recompensas pendientes", val: `USD ${fmt(stats.totalRecompPend)}`, color: "#f97316" },
-            { label: "Recompensas pagadas", val: `USD ${fmt(stats.totalRecompPag)}`, color: "#22c55e" },
+            { label: "Recompensas pendientes", val: `USD ${fmt(stats.totalRecompPend)}`, color: "#d4960c" },
+            { label: "Recompensas pagadas", val: `USD ${fmt(stats.totalRecompPag)}`, color: "#3abab6" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "10px 16px", display: "flex", gap: 8, alignItems: "center" }}>
               <span style={{ fontSize: 20, fontWeight: 800, color: k.color }}>{k.val}</span>
@@ -183,10 +183,10 @@ export default function ReferidosPage() {
                   <div key={nombre} style={{ display: "flex", alignItems: "center", gap: 12, background: "#0f0f0f", borderRadius: 6, padding: "8px 12px" }}>
                     <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#e5e5e5" }}>{nombre}</div>
                     <div style={{ fontSize: 12, color: "#3b82f6" }}>{d.total} ref.</div>
-                    <div style={{ fontSize: 12, color: "#22c55e", fontWeight: 700 }}>{d.cerrados} cierres</div>
+                    <div style={{ fontSize: 12, color: "#3abab6", fontWeight: 700 }}>{d.cerrados} cierres</div>
                     {d.hon > 0 && <div style={{ fontSize: 12, color: "#a855f7" }}>USD {fmt(d.hon)} hon.</div>}
                     <div style={{ background: "#1a1a1a", borderRadius: 4, height: 8, width: 80, overflow: "hidden" }}>
-                      <div style={{ width: `${Math.min(100, (d.cerrados / d.total) * 100)}%`, height: "100%", background: "#22c55e" }} />
+                      <div style={{ width: `${Math.min(100, (d.cerrados / d.total) * 100)}%`, height: "100%", background: "#3abab6" }} />
                     </div>
                   </div>
                 ))}
@@ -241,7 +241,7 @@ export default function ReferidosPage() {
                     <div style={{ fontWeight: 700, color: "#a855f7" }}>USD {fmt(r.honorarios)}</div>
                     {r.recompensaAcordada > 0 && (
                       <div style={{ fontSize: 11 }}>
-                        <span style={{ color: r.recompensaPagada ? "#22c55e" : "#f97316" }}>
+                        <span style={{ color: r.recompensaPagada ? "#3abab6" : "#d4960c" }}>
                           Recomp: USD {fmt(r.recompensaAcordada)} {r.recompensaPagada ? "✅" : "⏳"}
                         </span>
                       </div>
@@ -251,11 +251,11 @@ export default function ReferidosPage() {
                 <div style={{ display: "flex", gap: 6 }}>
                   {r.telefono && (
                     <a href={`https://wa.me/${r.telefono.replace(/\D/g,"")}`} target="_blank" rel="noreferrer"
-                      style={{ background: "#15803d22", color: "#22c55e", border: "1px solid #22c55e44", borderRadius: 6, padding: "5px 8px", fontSize: 12, textDecoration: "none" }}>💬</a>
+                      style={{ background: "#15803d22", color: "#3abab6", border: "1px solid #3abab644", borderRadius: 6, padding: "5px 8px", fontSize: 12, textDecoration: "none" }}>💬</a>
                   )}
                   {r.estado === "cerrado" && r.recompensaAcordada > 0 && (
                     <button onClick={() => togglePago(r.id)}
-                      style={{ background: r.recompensaPagada ? "#22c55e22" : "#f9731622", color: r.recompensaPagada ? "#22c55e" : "#f97316", border: `1px solid ${r.recompensaPagada ? "#22c55e44" : "#f9731644"}`, borderRadius: 6, padding: "5px 8px", fontSize: 11, cursor: "pointer" }}>
+                      style={{ background: r.recompensaPagada ? "#3abab622" : "#d4960c22", color: r.recompensaPagada ? "#3abab6" : "#d4960c", border: `1px solid ${r.recompensaPagada ? "#3abab644" : "#d4960c44"}`, borderRadius: 6, padding: "5px 8px", fontSize: 11, cursor: "pointer" }}>
                       {r.recompensaPagada ? "Pagado" : "Pagar"}
                     </button>
                   )}
@@ -313,7 +313,7 @@ export default function ReferidosPage() {
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
                 <button onClick={() => setFormOpen(false)} style={{ background: "#1a1a1a", color: "#9ca3af", border: "1px solid #333", borderRadius: 8, padding: "8px 18px", fontSize: 13, cursor: "pointer" }}>Cancelar</button>
-                <button onClick={guardarDraft} style={{ background: "#cc000033", color: "#cc0000", border: "1px solid #cc000066", borderRadius: 8, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>Guardar</button>
+                <button onClick={guardarDraft} style={{ background: "#99000033", color: "#990000", border: "1px solid #99000066", borderRadius: 8, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>Guardar</button>
               </div>
             </div>
           </div>

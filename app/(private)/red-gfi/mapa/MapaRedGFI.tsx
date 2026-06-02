@@ -29,9 +29,9 @@ interface PropMapa {
 const ROSARIO: [number, number] = [-32.9442, -60.6505]
 
 const OP_COLOR: Record<string, string> = {
-  venta: '#cc0000',
+  venta: '#990000',
   alquiler: '#3b82f6',
-  temporario: '#f97316',
+  temporario: '#d4960c',
 }
 
 const OP_LABEL: Record<string, string> = {
@@ -189,7 +189,7 @@ export default function MapaRedGFI() {
     filtros: { display: 'flex', gap: 8, flexWrap: 'wrap' as const, marginBottom: 12, alignItems: 'center' },
     sel: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, color: '#fff', padding: '6px 10px', fontSize: 12, outline: 'none', cursor: 'pointer' },
     mapWrap: { position: 'relative' as const, width: '100%', height: '58vh', minHeight: 360 },
-    buscarBtn: { position: 'absolute' as const, bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 999, background: '#cc0000', border: 'none', color: '#fff', padding: '10px 22px', borderRadius: 24, fontSize: 13, fontWeight: 800, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' as const },
+    buscarBtn: { position: 'absolute' as const, bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 999, background: '#990000', border: 'none', color: '#fff', padding: '10px 22px', borderRadius: 24, fontSize: 13, fontWeight: 800, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' as const },
     buscarBtnInactive: { background: 'rgba(40,40,40,0.9)', border: '1px solid rgba(255,255,255,0.15)' },
     panelBtn: { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' },
     cuadrantePanel: { margin: '0 20px 0', maxWidth: 1200, marginLeft: 'auto', marginRight: 'auto', background: 'rgba(30,30,30,0.97)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0 0 10px 10px', padding: '16px 20px' },
@@ -228,7 +228,7 @@ export default function MapaRedGFI() {
             <option value="4">4+</option>
           </select>
           <button
-            style={{ ...s.panelBtn, background: modoPanel === 'cuadrante' ? 'rgba(204,0,0,0.15)' : undefined, borderColor: modoPanel === 'cuadrante' ? 'rgba(204,0,0,0.4)' : undefined }}
+            style={{ ...s.panelBtn, background: modoPanel === 'cuadrante' ? 'rgba(153,0,0,0.15)' : undefined, borderColor: modoPanel === 'cuadrante' ? 'rgba(153,0,0,0.4)' : undefined }}
             onClick={() => setModoPanel(modoPanel === 'cuadrante' ? 'ninguno' : 'cuadrante')}
           >
             📍 Buscar por cuadrante de calles
@@ -271,7 +271,7 @@ export default function MapaRedGFI() {
             <button
               onClick={buscarPorCuadrante}
               disabled={geocodificando}
-              style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}
+              style={{ background: '#990000', border: 'none', color: '#fff', padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}
             >
               {geocodificando ? 'Buscando…' : '🔍 Ir al cuadrante'}
             </button>
@@ -324,10 +324,10 @@ export default function MapaRedGFI() {
                     {[p.zona, p.ciudad].filter(Boolean).join(', ')}
                   </span>
                   {p.dormitorios && <><br />{p.dormitorios} dorm. {p.banos ? `· ${p.banos} baños` : ''}</>}
-                  {p.honorario_compartir && <><br /><span style={{ color: '#22c55e', fontSize: 11 }}>Hon: {p.honorario_compartir}</span></>}
+                  {p.honorario_compartir && <><br /><span style={{ color: '#3abab6', fontSize: 11 }}>Hon: {p.honorario_compartir}</span></>}
                   <br />
                   <a href={`/red-gfi/ficha/${p.id}`} target="_blank" rel="noopener noreferrer"
-                    style={{ color: '#cc0000', fontSize: 11, fontWeight: 700 }}>
+                    style={{ color: '#990000', fontSize: 11, fontWeight: 700 }}>
                     Ver ficha anónima →
                   </a>
                 </div>
@@ -411,7 +411,7 @@ function TarjetaMapa({ p, dimmed }: { p: PropMapa; dimmed?: boolean }) {
         </div>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{ fontFamily: 'Montserrat,sans-serif', fontWeight: 800, color: '#22c55e', fontSize: 13 }}>
+        <div style={{ fontFamily: 'Montserrat,sans-serif', fontWeight: 800, color: '#3abab6', fontSize: 13 }}>
           {fmtPrecio(p.precio, p.moneda)}
         </div>
         <a href={`/red-gfi/ficha/${p.id}`} target="_blank" rel="noopener noreferrer"

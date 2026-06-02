@@ -65,8 +65,8 @@ interface EventoTimeline {
 }
 
 const COLOR_TIPO: Record<string, string> = {
-  llamada: "#22c55e", whatsapp: "#15803d", email: "#3b82f6",
-  reunion: "#a855f7", visita: "#f97316", nota: "#6b7280",
+  llamada: "#3abab6", whatsapp: "#15803d", email: "#3b82f6",
+  reunion: "#a855f7", visita: "#d4960c", nota: "#6b7280",
   otro: "#4b5563",
 };
 
@@ -77,7 +77,7 @@ const ICON_TIPO: Record<string, string> = {
 
 const ETAPA_COLOR: Record<string, string> = {
   prospecto: "#6b7280", calificado: "#3b82f6", propuesta: "#a855f7",
-  negociacion: "#f97316", reservado: "#eab308", en_escritura: "#22c55e", cerrado: "#cc0000",
+  negociacion: "#d4960c", reservado: "#d4960c", en_escritura: "#3abab6", cerrado: "#990000",
 };
 
 function fmt(n: number) {
@@ -154,7 +154,7 @@ export default function HistorialPage() {
         fecha: contacto.created_at,
         titulo: "Contacto creado",
         subtitulo: `${contacto.nombre} ${contacto.apellido} agregado al CRM`,
-        color: "#22c55e",
+        color: "#3abab6",
         icon: "✅",
       });
     }
@@ -203,7 +203,7 @@ export default function HistorialPage() {
         fecha: t.created_at,
         titulo: `✅ Tarea: ${t.titulo}`,
         subtitulo: `${t.estado} · ${t.prioridad}${t.fecha_vencimiento ? ` · Vence ${t.fecha_vencimiento}` : ""}`,
-        color: t.estado === "completada" ? "#22c55e" : t.prioridad === "alta" ? "#cc0000" : "#f97316",
+        color: t.estado === "completada" ? "#3abab6" : t.prioridad === "alta" ? "#990000" : "#d4960c",
         icon: t.estado === "completada" ? "✅" : "⏳",
         raw: t,
       });
@@ -216,7 +216,7 @@ export default function HistorialPage() {
         fecha: r.created_at,
         titulo: `🔔 Recordatorio`,
         subtitulo: `${r.descripcion} · ${r.completado ? "Completado" : `Para el ${r.fecha_recordatorio}`}`,
-        color: r.completado ? "#22c55e" : "#3b82f6",
+        color: r.completado ? "#3abab6" : "#3b82f6",
         icon: "🔔",
         raw: r,
       });
@@ -276,8 +276,8 @@ export default function HistorialPage() {
         <div style={{ flex: 1, overflowY: "auto" }}>
           {contactosFiltrados.map(c => (
             <div key={c.id} onClick={() => setSelectedId(c.id)}
-              style={{ padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #111", background: selectedId === c.id ? "#cc000022" : "transparent", borderLeft: selectedId === c.id ? "3px solid #cc0000" : "3px solid transparent", transition: "background 0.1s" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: selectedId === c.id ? "#cc0000" : "#e5e5e5" }}>{c.nombre} {c.apellido}</div>
+              style={{ padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #111", background: selectedId === c.id ? "#99000022" : "transparent", borderLeft: selectedId === c.id ? "3px solid #990000" : "3px solid transparent", transition: "background 0.1s" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: selectedId === c.id ? "#990000" : "#e5e5e5" }}>{c.nombre} {c.apellido}</div>
               <div style={{ fontSize: 11, color: "#6b7280" }}>{c.tipo ?? "Sin tipo"} {c.email ? `· ${c.email}` : ""}</div>
             </div>
           ))}
@@ -309,7 +309,7 @@ export default function HistorialPage() {
                 <div style={{ display: "flex", gap: 10, marginTop: 6, flexWrap: "wrap" }}>
                   {contacto?.telefono && (
                     <a href={`https://wa.me/${contacto.telefono.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
-                      style={{ fontSize: 12, color: "#22c55e", textDecoration: "none" }}>
+                      style={{ fontSize: 12, color: "#3abab6", textDecoration: "none" }}>
                       💬 {contacto.telefono}
                     </a>
                   )}
@@ -328,9 +328,9 @@ export default function HistorialPage() {
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
                 {[
                   { label: "Interacciones", value: statsContacto.totalInteracciones, color: "#3b82f6" },
-                  { label: "Negocios activos", value: statsContacto.negociosActivos, color: "#f97316" },
-                  { label: "Cierres", value: statsContacto.negociosCerrados, color: "#22c55e" },
-                  { label: "Tareas pendientes", value: statsContacto.tareasPend, color: "#cc0000" },
+                  { label: "Negocios activos", value: statsContacto.negociosActivos, color: "#d4960c" },
+                  { label: "Cierres", value: statsContacto.negociosCerrados, color: "#3abab6" },
+                  { label: "Tareas pendientes", value: statsContacto.tareasPend, color: "#990000" },
                 ].map(s => (
                   <div key={s.label} style={{ background: "#111", border: `1px solid ${s.color}33`, borderRadius: 8, padding: "8px 14px", display: "flex", gap: 8, alignItems: "center" }}>
                     <span style={{ fontSize: 18, fontWeight: 800, color: s.color }}>{s.value}</span>
@@ -355,7 +355,7 @@ export default function HistorialPage() {
                 { val: "recordatorio", label: "Recordatorios" },
               ].map(f => (
                 <button key={f.val} onClick={() => setFiltroTipo(f.val)}
-                  style={{ background: filtroTipo === f.val ? "#cc000033" : "#111", border: `1px solid ${filtroTipo === f.val ? "#cc0000" : "#333"}`, borderRadius: 20, color: filtroTipo === f.val ? "#cc0000" : "#6b7280", padding: "5px 12px", fontSize: 12, cursor: "pointer" }}>
+                  style={{ background: filtroTipo === f.val ? "#99000033" : "#111", border: `1px solid ${filtroTipo === f.val ? "#990000" : "#333"}`, borderRadius: 20, color: filtroTipo === f.val ? "#990000" : "#6b7280", padding: "5px 12px", fontSize: 12, cursor: "pointer" }}>
                   {f.label}
                 </button>
               ))}

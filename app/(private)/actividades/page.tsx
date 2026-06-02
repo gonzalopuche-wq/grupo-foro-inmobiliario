@@ -155,14 +155,14 @@ export default function ActividadesPage() {
         .act-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
         .act-header { margin-bottom: 28px; }
         .act-title { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 6px; }
-        .act-title span { color: #cc0000; }
+        .act-title span { color: #990000; }
         .act-subtitle { font-size: 13px; color: rgba(255,255,255,0.35); }
         .act-layout { display: flex; gap: 24px; align-items: flex-start; }
         .act-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; position: sticky; top: 24px; }
         .act-sidebar-title { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 8px; padding: 0 2px; }
         .act-filter-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(14,14,14,0.8); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(255,255,255,0.5); transition: all 0.15s; text-align: left; }
         .act-filter-btn:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
-        .act-filter-btn.active { border-color: #cc0000; background: rgba(200,0,0,0.08); color: #fff; }
+        .act-filter-btn.active { border-color: #990000; background: rgba(200,0,0,0.08); color: #fff; }
         .act-filter-count { margin-left: auto; font-size: 11px; font-weight: 700; font-family: 'Montserrat', sans-serif; background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 10px; }
         .act-filter-btn.active .act-filter-count { background: rgba(200,0,0,0.25); }
         .act-feed { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
@@ -177,8 +177,8 @@ export default function ActividadesPage() {
         .act-item-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
         .act-badge { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; }
         .act-badge-interaccion { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; }
-        .act-badge-tarea { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.3); color: #eab308; }
-        .act-badge-contacto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
+        .act-badge-tarea { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; }
+        .act-badge-contacto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #3abab6; }
         .act-badge-negocio { background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); color: #ff6666; }
         .act-item-title { font-size: 14px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
         .act-item-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 3px; line-height: 1.4; }
@@ -186,13 +186,13 @@ export default function ActividadesPage() {
         .act-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
         .act-date { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
         .act-link { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(200,0,0,0.7); text-decoration: none; padding: 4px 10px; border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; transition: all 0.15s; }
-        .act-link:hover { color: #cc0000; border-color: rgba(200,0,0,0.5); background: rgba(200,0,0,0.06); }
+        .act-link:hover { color: #990000; border-color: rgba(200,0,0,0.5); background: rgba(200,0,0,0.06); }
         .act-empty { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.25); font-size: 14px; font-style: italic; }
         .act-loading { display: flex; align-items: center; justify-content: center; padding: 60px; }
-        .act-spinner { width: 32px; height: 32px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .act-spinner { width: 32px; height: 32px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .act-venc-ok { color: #22c55e; font-size: 11px; font-weight: 600; }
-        .act-venc-warn { color: #eab308; font-size: 11px; font-weight: 600; }
+        .act-venc-ok { color: #3abab6; font-size: 11px; font-weight: 600; }
+        .act-venc-warn { color: #d4960c; font-size: 11px; font-weight: 600; }
         .act-venc-late { color: #ff4444; font-size: 11px; font-weight: 600; }
         @media (max-width: 768px) {
           .act-layout { flex-direction: column; }

@@ -73,10 +73,10 @@ export async function GET(req: NextRequest) {
         <tr>
           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:13px;color:#222;font-weight:600;">${esc(l.nombre)}</td>
           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#555;">
-            ${l.telefono ? `<a href="tel:${esc(l.telefono)}" style="color:#cc0000;text-decoration:none;">${esc(l.telefono)}</a>` : "—"}
+            ${l.telefono ? `<a href="tel:${esc(l.telefono)}" style="color:#990000;text-decoration:none;">${esc(l.telefono)}</a>` : "—"}
           </td>
           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:12px;color:#555;">
-            ${l.email ? `<a href="mailto:${esc(l.email)}" style="color:#cc0000;text-decoration:none;">${esc(l.email)}</a>` : "—"}
+            ${l.email ? `<a href="mailto:${esc(l.email)}" style="color:#990000;text-decoration:none;">${esc(l.email)}</a>` : "—"}
           </td>
           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:11px;color:#888;">${esc(prop)}</td>
           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:11px;color:#aaa;">${fmt(l.created_at)}</td>
@@ -86,14 +86,14 @@ export async function GET(req: NextRequest) {
 
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#222;">
-        <div style="background:#cc0000;padding:22px 28px;">
+        <div style="background:#990000;padding:22px 28px;">
           <div style="color:#fff;font-size:18px;font-weight:bold;">GFI® · ${esc(inmob)}${esc(corredor)}</div>
           <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">Resumen semanal de consultas</div>
         </div>
         <div style="padding:24px 28px;border:1px solid #e5e7eb;border-top:none;background:#fff;">
           <p style="font-size:15px;margin-top:0;">Hola ${esc(perfil.nombre ?? corredor)},</p>
           <p style="font-size:14px;color:#555;">
-            Esta semana recibiste <strong style="color:#cc0000;">${noLeidos} consulta${noLeidos !== 1 ? "s" : ""}</strong> desde el sitio web.
+            Esta semana recibiste <strong style="color:#990000;">${noLeidos} consulta${noLeidos !== 1 ? "s" : ""}</strong> desde el sitio web.
           </p>
           <div style="overflow-x:auto;margin-top:20px;">
             <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;">
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
             </table>
           </div>
           <div style="margin-top:24px;text-align:center;">
-            <a href="${BASE}/mi-web/leads" style="background:#cc0000;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:13px;font-weight:700;display:inline-block;">Ver todas las consultas →</a>
+            <a href="${BASE}/mi-web/leads" style="background:#990000;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:13px;font-weight:700;display:inline-block;">Ver todas las consultas →</a>
           </div>
           <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:11px;color:#bbb;text-align:center;">
             Resumen semanal GFI® · ${new Date().toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })}

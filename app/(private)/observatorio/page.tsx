@@ -257,7 +257,7 @@ export default function ObservatorioPage() {
                 style={{
                   padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
                   border: "1px solid",
-                  borderColor: periodo === p ? "#cc0000" : "rgba(255,255,255,0.1)",
+                  borderColor: periodo === p ? "#990000" : "rgba(255,255,255,0.1)",
                   background: periodo === p ? "rgba(200,0,0,0.15)" : "transparent",
                   color: periodo === p ? "#fff" : "rgba(255,255,255,0.45)",
                   fontFamily: "Montserrat,sans-serif",
@@ -278,15 +278,15 @@ export default function ObservatorioPage() {
           <>
             {/* KPIs comunidad */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))", gap: 12, marginBottom: 28 }}>
-              <StatCard icon="👥" label="Corredores GFI®" value={fmtNum(comunidad.total_corredores)} sub="Miembros de la red" color="#60a5fa" />
+              <StatCard icon="👥" label="Corredores GFI®" value={fmtNum(comunidad.total_corredores)} sub="Miembros de la red" color="#4ab8d8" />
               <StatCard icon="📊" label="Comparables" value={fmtNum(comunidad.total_comparables)} sub="Operaciones registradas" color="#a78bfa" />
-              <StatCard icon="🔄" label="Publicaciones MIR" value={fmtNum(comunidad.total_mir)} sub="Ofrecidos + Búsquedas activos" color="#f97316" />
+              <StatCard icon="🔄" label="Publicaciones MIR" value={fmtNum(comunidad.total_mir)} sub="Ofrecidos + Búsquedas activos" color="#d4960c" />
               <StatCard
                 icon="💲"
                 label="Precio m² promedio"
                 value={precioM2Global > 0 ? fmtUSD(precioM2Global) : "—"}
                 sub="USD/m² · Todas las zonas"
-                color="#22c55e"
+                color="#3abab6"
               />
             </div>
 
@@ -403,7 +403,7 @@ export default function ObservatorioPage() {
                           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.55)", marginBottom: 4, fontFamily: "Inter,sans-serif" }}>
                             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>{m.tipo}</span>
                             <span style={{ display: "flex", gap: 10, flexShrink: 0 }}>
-                              <span style={{ color: "#f97316" }}>{m.ofrecidos} of.</span>
+                              <span style={{ color: "#d4960c" }}>{m.ofrecidos} of.</span>
                               <span style={{ color: "#a78bfa" }}>{m.busquedas} bús.</span>
                             </span>
                           </div>
@@ -459,7 +459,7 @@ export default function ObservatorioPage() {
                           <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.8)" }}>
                             {b.precio_venta_avg > 0 ? fmtUSD(b.precio_venta_avg) : "—"}
                           </td>
-                          <td style={{ padding: "9px 12px", color: "#22c55e", fontWeight: 600 }}>
+                          <td style={{ padding: "9px 12px", color: "#3abab6", fontWeight: 600 }}>
                             {b.precio_m2_avg > 0 ? fmtUSD(b.precio_m2_avg) + "/m²" : "—"}
                           </td>
                         </tr>

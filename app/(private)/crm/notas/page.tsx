@@ -158,7 +158,7 @@ export default function CrmNotasPage() {
         .nt-wrap { max-width: 860px; display: flex; flex-direction: column; gap: 16px; }
         .nt-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px; transition: border-color 0.15s; cursor: pointer; }
         .nt-card:hover { border-color: rgba(255,255,255,0.14); }
-        .nt-card.fijada { border-left: 3px solid #f59e0b; }
+        .nt-card.fijada { border-left: 3px solid #d4960c; }
         .nt-input { width: 100%; padding: 9px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; box-sizing: border-box; }
         .nt-input:focus { border-color: rgba(200,0,0,0.5); }
         .nt-select { width: 100%; padding: 9px 11px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
@@ -174,13 +174,13 @@ export default function CrmNotasPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
-              Notas <span style={{ color: "#cc0000" }}>CRM</span>
+              Notas <span style={{ color: "#990000" }}>CRM</span>
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
               {notas.length} nota{notas.length !== 1 ? "s" : ""} · {notas.filter(n => n.fijada).length} fijada{notas.filter(n => n.fijada).length !== 1 ? "s" : ""}
             </div>
           </div>
-          <button className="nt-btn" style={{ background: "#cc0000", color: "#fff" }} onClick={abrirNueva}>
+          <button className="nt-btn" style={{ background: "#990000", color: "#fff" }} onClick={abrirNueva}>
             + Nueva nota
           </button>
         </div>
@@ -194,7 +194,7 @@ export default function CrmNotasPage() {
           </select>
           <button
             className="nt-btn"
-            style={{ background: soloFijadas ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.06)", color: soloFijadas ? "#f59e0b" : "rgba(255,255,255,0.5)", border: soloFijadas ? "1px solid rgba(245,158,11,0.4)" : "1px solid rgba(255,255,255,0.1)" }}
+            style={{ background: soloFijadas ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.06)", color: soloFijadas ? "#d4960c" : "rgba(255,255,255,0.5)", border: soloFijadas ? "1px solid rgba(245,158,11,0.4)" : "1px solid rgba(255,255,255,0.1)" }}
             onClick={() => setSoloFijadas(v => !v)}
           >
             📌 Fijadas
@@ -236,13 +236,13 @@ export default function CrmNotasPage() {
                     {/* Acciones */}
                     <div style={{ display: "flex", gap: 5, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                       <button className="nt-btn"
-                        style={{ background: n.fijada ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.05)", color: n.fijada ? "#f59e0b" : "rgba(255,255,255,0.4)", border: n.fijada ? "1px solid rgba(245,158,11,0.3)" : "1px solid rgba(255,255,255,0.08)", padding: "4px 8px", fontSize: 12 }}
+                        style={{ background: n.fijada ? "rgba(245,158,11,0.2)" : "rgba(255,255,255,0.05)", color: n.fijada ? "#d4960c" : "rgba(255,255,255,0.4)", border: n.fijada ? "1px solid rgba(245,158,11,0.3)" : "1px solid rgba(255,255,255,0.08)", padding: "4px 8px", fontSize: 12 }}
                         onClick={() => toggleFijada(n)} title={n.fijada ? "Desfijar" : "Fijar"}>
                         📌
                       </button>
                       <button className="nt-btn" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px 8px", fontSize: 10 }}
                         onClick={() => abrirEditar(n)}>Editar</button>
-                      <button className="nt-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 8px", fontSize: 10 }}
+                      <button className="nt-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#b80000", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 8px", fontSize: 10 }}
                         onClick={() => eliminar(n.id)}>×</button>
                     </div>
                   </div>
@@ -306,7 +306,7 @@ export default function CrmNotasPage() {
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
               <button className="nt-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
-              <button className="nt-btn" style={{ background: "#cc0000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
+              <button className="nt-btn" style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
                 {guardando ? "Guardando..." : editId ? "Actualizar" : "Crear nota"}
               </button>
             </div>

@@ -178,13 +178,13 @@ export default function BlogPage() {
         .blog-wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
         .blog-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
         .blog-titulos {}
-        .blog-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #cc0000; font-family: 'Montserrat',sans-serif; margin-bottom: 6px; }
+        .blog-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #990000; font-family: 'Montserrat',sans-serif; margin-bottom: 6px; }
         .blog-titulo { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #fff; }
-        .blog-btn-nuevo { padding: 10px 18px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .blog-btn-nuevo { padding: 10px 18px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
         .blog-btn-nuevo:hover { background: #e60000; }
         .blog-filtros { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .blog-filtro { padding: 6px 14px; border-radius: 99px; font-size: 11px; font-weight: 700; font-family: 'Montserrat',sans-serif; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.5); background: transparent; transition: all 0.15s; }
-        .blog-filtro.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.1); }
+        .blog-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.1); }
         .blog-filtro:hover:not(.activo) { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); }
         .blog-lista { display: flex; flex-direction: column; gap: 12px; }
         .blog-post { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 18px 20px; transition: border-color 0.15s; }
@@ -192,7 +192,7 @@ export default function BlogPage() {
         .blog-post-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
         .blog-post-titulo { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 700; color: #fff; }
         .blog-badge { padding: 3px 9px; border-radius: 99px; font-size: 10px; font-weight: 700; font-family: 'Montserrat',sans-serif; white-space: nowrap; }
-        .blog-badge.pub { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+        .blog-badge.pub { background: rgba(34,197,94,0.12); color: #3abab6; border: 1px solid rgba(34,197,94,0.25); }
         .blog-badge.bor { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); }
         .blog-post-resumen { font-size: 13px; color: rgba(255,255,255,0.45); font-family: 'Inter',sans-serif; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .blog-post-meta { font-size: 11px; color: rgba(255,255,255,0.25); font-family: 'Inter',sans-serif; margin-bottom: 14px; }
@@ -200,12 +200,12 @@ export default function BlogPage() {
         .blog-action-btn { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'Montserrat',sans-serif; cursor: pointer; border: 1px solid; transition: all 0.15s; }
         .blog-action-btn.edit { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); background: transparent; }
         .blog-action-btn.edit:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
-        .blog-action-btn.toggle-pub { border-color: rgba(34,197,94,0.3); color: #22c55e; background: transparent; }
+        .blog-action-btn.toggle-pub { border-color: rgba(34,197,94,0.3); color: #3abab6; background: transparent; }
         .blog-action-btn.toggle-pub:hover { background: rgba(34,197,94,0.08); }
         .blog-action-btn.toggle-bor { border-color: rgba(255,165,0,0.3); color: rgba(255,165,0,0.8); background: transparent; }
         .blog-action-btn.toggle-bor:hover { background: rgba(255,165,0,0.06); }
         .blog-action-btn.del { border-color: rgba(200,0,0,0.25); color: rgba(200,0,0,0.7); background: transparent; }
-        .blog-action-btn.del:hover { border-color: rgba(200,0,0,0.5); color: #cc0000; background: rgba(200,0,0,0.06); }
+        .blog-action-btn.del:hover { border-color: rgba(200,0,0,0.5); color: #990000; background: rgba(200,0,0,0.06); }
         .blog-vacio { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.25); font-family: 'Inter',sans-serif; }
         .blog-vacio-icono { font-size: 40px; margin-bottom: 12px; }
         .blog-vacio-txt { font-size: 14px; margin-bottom: 6px; }
@@ -232,7 +232,7 @@ export default function BlogPage() {
         .blog-toggle-knob { position: absolute; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left 0.2s; }
         .blog-modal-footer { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; justify-content: flex-end; gap: 10px; }
         .blog-btn-cancel { padding: 10px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; }
-        .blog-btn-save { padding: 10px 20px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+        .blog-btn-save { padding: 10px 20px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
         .blog-btn-save:hover:not(:disabled) { background: #e60000; }
         .blog-btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
         @media (max-width: 600px) { .blog-post-top { flex-direction: column; gap: 8px; } }
@@ -378,7 +378,7 @@ export default function BlogPage() {
                 <div className="blog-toggle-label">Publicar inmediatamente</div>
                 <div
                   className="blog-toggle-switch"
-                  style={{ background: form.publicado ? "#cc0000" : "rgba(255,255,255,0.1)" }}
+                  style={{ background: form.publicado ? "#990000" : "rgba(255,255,255,0.1)" }}
                   onClick={() => setForm(f => ({ ...f, publicado: !f.publicado }))}
                 >
                   <div

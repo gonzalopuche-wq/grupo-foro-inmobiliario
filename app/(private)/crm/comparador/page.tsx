@@ -38,7 +38,7 @@ function precioM2(p: Propiedad): number | null {
 
 function badge(val: string | number | null | boolean, good?: boolean): React.CSSProperties {
   if (val === null || val === undefined || val === "") return { color: "#555" };
-  if (typeof good === "boolean") return { color: good ? "#22c55e" : "#ef4444" };
+  if (typeof good === "boolean") return { color: good ? "#3abab6" : "#b80000" };
   return { color: "#fff" };
 }
 
@@ -164,8 +164,8 @@ export default function ComparadorPropiedades() {
                   style={{
                     padding: "12px 16px", borderBottom: "1px solid #1a1a1a",
                     cursor: lleno ? "not-allowed" : "pointer",
-                    background: sel ? "#cc000015" : "transparent",
-                    borderLeft: sel ? "3px solid #cc0000" : "3px solid transparent",
+                    background: sel ? "#99000015" : "transparent",
+                    borderLeft: sel ? "3px solid #990000" : "3px solid transparent",
                     opacity: lleno ? 0.4 : 1,
                     transition: "background 0.15s",
                   }}
@@ -247,9 +247,9 @@ export default function ComparadorPropiedades() {
                         return (
                           <td key={p.id} style={{
                             padding: "10px 16px", textAlign: "center", fontSize: 13,
-                            color: isBest ? "#22c55e" : "#ccc",
+                            color: isBest ? "#3abab6" : "#ccc",
                             fontWeight: isBest ? 700 : 400,
-                            background: isBest ? "#22c55e08" : "transparent",
+                            background: isBest ? "#3abab608" : "transparent",
                           }}>
                             {fila.format(p)}
                             {isBest && <span style={{ marginLeft: 4, fontSize: 10 }}>★</span>}
@@ -274,7 +274,7 @@ export default function ComparadorPropiedades() {
               if (!win) return;
               win.document.write(`
                 <html><head><title>Comparativa</title>
-                <style>body{font-family:Arial,sans-serif;font-size:12px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}tr:nth-child(even){background:#fafafa}.mejor{color:#16a34a;font-weight:bold}</style>
+                <style>body{font-family:Arial,sans-serif;font-size:12px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}tr:nth-child(even){background:#fafafa}.mejor{color:#22807c;font-weight:bold}</style>
                 </head><body>
                 <h2>Comparativa de Propiedades</h2>
                 <p>Generado: ${new Date().toLocaleDateString("es-AR")}</p>
@@ -287,9 +287,9 @@ export default function ComparadorPropiedades() {
               setTimeout(() => win.print(), 400);
             }}
             style={{
-              background: "#cc0000", color: "#fff", border: "none", borderRadius: 8,
+              background: "#990000", color: "#fff", border: "none", borderRadius: 8,
               padding: "12px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-              fontFamily: "Montserrat, sans-serif", boxShadow: "0 4px 16px #cc000040",
+              fontFamily: "Montserrat, sans-serif", boxShadow: "0 4px 16px #99000040",
             }}
           >
             📄 Exportar PDF

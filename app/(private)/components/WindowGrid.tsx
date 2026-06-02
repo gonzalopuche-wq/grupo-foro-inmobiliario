@@ -87,7 +87,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
                 background: "rgba(245,158,11,0.15)",
                 border: "1px solid rgba(245,158,11,0.3)",
                 borderRadius: 3, padding: "1px 5px",
-                fontSize: 8, color: "#f59e0b",
+                fontSize: 8, color: "#d4960c",
                 fontFamily: "'Montserrat',sans-serif", fontWeight: 700,
                 letterSpacing: "0.08em",
               }}>

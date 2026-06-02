@@ -25,10 +25,10 @@ interface Articulo {
 
 const CAT_COLORS: Record<Categoria, string> = {
   legal: "#3b82f6",
-  fiscal: "#f59e0b",
-  ventas: "#22c55e",
+  fiscal: "#d4960c",
+  ventas: "#3abab6",
   marketing: "#8b5cf6",
-  procesos: "#f97316",
+  procesos: "#d4960c",
   plantillas: "#ec4899",
   otro: "#6b7280",
 };
@@ -471,7 +471,7 @@ export default function BaseConocimientoPage() {
                     textAlign: "left",
                     background: activo ? "#1a1a1a" : "transparent",
                     borderLeft: activo
-                      ? "3px solid #cc0000"
+                      ? "3px solid #990000"
                       : "3px solid transparent",
                     borderTop: "none",
                     borderRight: "none",
@@ -582,7 +582,7 @@ export default function BaseConocimientoPage() {
               onClick={handleNuevo}
               style={{
                 width: "100%",
-                background: "#cc0000",
+                background: "#990000",
                 border: "none",
                 borderRadius: 6,
                 padding: "9px 0",
@@ -624,10 +624,10 @@ export default function BaseConocimientoPage() {
                 style={{
                   marginTop: 8,
                   background: "transparent",
-                  border: "1px solid #cc0000",
+                  border: "1px solid #990000",
                   borderRadius: 6,
                   padding: "8px 20px",
-                  color: "#cc0000",
+                  color: "#990000",
                   fontFamily: "Montserrat, sans-serif",
                   fontWeight: 700,
                   fontSize: 13,
@@ -725,7 +725,7 @@ export default function BaseConocimientoPage() {
                     type="checkbox"
                     checked={form.favorito}
                     onChange={(e) => setFormField("favorito", e.target.checked)}
-                    style={{ accentColor: "#cc0000", width: 14, height: 14 }}
+                    style={{ accentColor: "#990000", width: 14, height: 14 }}
                   />
                   Marcar como favorito ⭐
                 </label>
@@ -755,7 +755,7 @@ export default function BaseConocimientoPage() {
                 <button
                   onClick={handleGuardar}
                   style={{
-                    background: "#cc0000",
+                    background: "#990000",
                     border: "none",
                     borderRadius: 6,
                     padding: "10px 24px",
@@ -865,7 +865,7 @@ export default function BaseConocimientoPage() {
                     style={{
                       ...accionBtnStyle,
                       color: articuloSeleccionado.favorito
-                        ? "#f59e0b"
+                        ? "#d4960c"
                         : "rgba(255,255,255,0.5)",
                     }}
                   >
@@ -875,8 +875,8 @@ export default function BaseConocimientoPage() {
                     onClick={handleEliminar}
                     style={{
                       ...accionBtnStyle,
-                      color: "#cc0000",
-                      borderColor: "#cc000033",
+                      color: "#990000",
+                      borderColor: "#99000033",
                     }}
                   >
                     🗑️

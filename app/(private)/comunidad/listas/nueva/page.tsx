@@ -71,7 +71,7 @@ export default function NuevaListaPage() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -138,7 +138,7 @@ export default function NuevaListaPage() {
               onMouseOver={e => { if (!sel) e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
               onMouseOut={e => { if (!sel) e.currentTarget.style.background = "transparent"; }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: "50%", background: sel ? "rgba(200,0,0,0.2)" : "rgba(255,255,255,0.06)", border: sel ? "1px solid rgba(200,0,0,0.4)" : "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: sel ? "#cc0000" : "rgba(255,255,255,0.4)", flexShrink: 0, overflow: "hidden" }}>
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: sel ? "rgba(200,0,0,0.2)" : "rgba(255,255,255,0.06)", border: sel ? "1px solid rgba(200,0,0,0.4)" : "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: sel ? "#990000" : "rgba(255,255,255,0.4)", flexShrink: 0, overflow: "hidden" }}>
                 {c.foto_url ? <img src={c.foto_url} alt={c.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials(c)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -147,7 +147,7 @@ export default function NuevaListaPage() {
                 </div>
                 {c.matricula && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Mat. {c.matricula}</div>}
               </div>
-              <div style={{ width: 20, height: 20, borderRadius: "50%", border: sel ? "none" : "2px solid rgba(255,255,255,0.15)", background: sel ? "#cc0000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff", flexShrink: 0 }}>
+              <div style={{ width: 20, height: 20, borderRadius: "50%", border: sel ? "none" : "2px solid rgba(255,255,255,0.15)", background: sel ? "#990000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff", flexShrink: 0 }}>
                 {sel && "✓"}
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function NuevaListaPage() {
       <button
         onClick={guardar}
         disabled={guardando}
-        style={{ width: "100%", padding: "13px", background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}
+        style={{ width: "100%", padding: "13px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}
       >
         {guardando ? "Creando..." : `Crear lista${seleccionados.size > 0 ? ` (${seleccionados.size} destinatarios)` : ""}`}
       </button>

@@ -83,14 +83,14 @@ export function QRLinkButton({ propiedadId, titulo }: Props) {
               <button
                 onClick={generarLink}
                 disabled={loading}
-                style={{ padding: "8px 16px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "Montserrat,sans-serif", opacity: loading ? 0.7 : 1 }}>
+                style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", fontFamily: "Montserrat,sans-serif", opacity: loading ? 0.7 : 1 }}>
                 {loading ? "Generando..." : "🔗 Generar link rastreable"}
               </button>
             ) : (
               <>
                 <button
                   onClick={() => copiar(linkRastreable)}
-                  style={{ padding: "8px 16px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat,sans-serif" }}>
+                  style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat,sans-serif" }}>
                   {copiado ? "✓ ¡Copiado!" : "🔗 Copiar link rastreable"}
                 </button>
                 <div style={{ fontSize: 11, color: "#888", padding: "4px 0" }}>

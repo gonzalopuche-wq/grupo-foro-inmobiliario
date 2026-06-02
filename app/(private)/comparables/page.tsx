@@ -252,7 +252,7 @@ export default function ComparablesPage() {
         .cmp-btn-sm { padding: 5px 10px; border-radius: var(--gfi-radius-sm); font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); border: 1px solid; }
         .cmp-btn-editar { background: transparent; border-color: var(--gfi-border); color: var(--gfi-text-muted); }
         .cmp-btn-editar:hover { border-color: rgba(255,255,255,0.3); color: var(--gfi-text-primary); }
-        .cmp-btn-eliminar { background: transparent; border-color: var(--gfi-red-border); color: rgba(204,0,0,0.5); }
+        .cmp-btn-eliminar { background: transparent; border-color: var(--gfi-red-border); color: rgba(153,0,0,0.5); }
         .cmp-btn-eliminar:hover { background: var(--gfi-red-soft); border-color: var(--gfi-red); color: var(--gfi-red); }
         .cmp-mio { font-size: 8px; color: var(--gfi-red); font-family: var(--font-display); font-weight: 700; }
         .cmp-empty { padding: 64px; text-align: center; color: var(--gfi-text-muted); font-size: 13px; font-style: italic; }
@@ -288,7 +288,7 @@ export default function ComparablesPage() {
         .btn-save:hover:not(:disabled) { background: var(--gfi-red-hover); }
         .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-slide-up 0.3s ease; box-shadow: var(--gfi-shadow-md); }
-        .toast.ok { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.3); color: var(--gfi-green-text); }
+        .toast.ok { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.3); color: var(--gfi-green-text); }
         .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @media print { body * { display: none !important; } }
       `}</style>
@@ -339,13 +339,13 @@ export default function ComparablesPage() {
             </select>
             <button
               className="cmp-select"
-              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#cc0000":"rgba(255,255,255,0.6)",borderColor:mostrarFiltrosAvanzados?"rgba(200,0,0,0.4)":"rgba(255,255,255,0.1)"}}
+              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#990000":"rgba(255,255,255,0.6)",borderColor:mostrarFiltrosAvanzados?"rgba(200,0,0,0.4)":"rgba(255,255,255,0.1)"}}
               onClick={()=>setMostrarFiltrosAvanzados(v=>!v)}
             >
               {mostrarFiltrosAvanzados?"▲ Menos filtros":"▼ Más filtros"}
             </button>
             <div className="cmp-toggle" onClick={()=>setSoloMios(v=>!v)}>
-              <div className="cmp-toggle-switch" style={{background:soloMios?"#cc0000":"rgba(255,255,255,0.1)"}}>
+              <div className="cmp-toggle-switch" style={{background:soloMios?"#990000":"rgba(255,255,255,0.1)"}}>
                 <div className="cmp-toggle-knob" style={{left:soloMios?18:2}}/>
               </div>
               <span className="cmp-toggle-label">Solo míos</span>

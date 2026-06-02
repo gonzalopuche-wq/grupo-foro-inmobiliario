@@ -243,7 +243,7 @@ export default function RegistroPage() {
           content: '';
           position: absolute;
           top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, #cc0000, #e60000, #cc0000, transparent);
+          background: linear-gradient(90deg, transparent, #990000, #e60000, #990000, transparent);
           border-radius: 4px 4px 0 0;
         }
         .reg-logo { display: flex; justify-content: center; margin-bottom: 28px; }
@@ -264,7 +264,7 @@ export default function RegistroPage() {
           display: flex; flex-direction: column; gap: 6px; align-items: center;
         }
         .reg-tipo-btn:hover { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.05); }
-        .reg-tipo-btn.activo { border-color: #cc0000; background: rgba(200,0,0,0.1); }
+        .reg-tipo-btn.activo { border-color: #990000; background: rgba(200,0,0,0.1); }
         .reg-tipo-icon { font-size: 24px; }
         .reg-tipo-label {
           font-family: 'Montserrat', sans-serif;
@@ -281,7 +281,7 @@ export default function RegistroPage() {
           color: rgba(255,255,255,0.4); margin-bottom: 7px;
           font-family: 'Montserrat', sans-serif;
         }
-        .reg-label span { color: #cc0000; margin-left: 2px; }
+        .reg-label span { color: #990000; margin-left: 2px; }
         .reg-input {
           width: 100%; padding: 12px 15px;
           background: rgba(255,255,255,0.04);
@@ -329,13 +329,13 @@ export default function RegistroPage() {
         .mat-verificar:hover:not(:disabled) { background: rgba(200,0,0,0.3); border-color: rgba(200,0,0,0.6); }
         .mat-verificar:disabled { opacity: 0.5; cursor: not-allowed; }
         .mat-verificar.ok { background: rgba(0,200,100,0.12); border-color: rgba(0,200,100,0.4); color: #4ade80; }
-        .mat-verificar.bypass { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.4); color: #eab308; }
+        .mat-verificar.bypass { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.4); color: #d4960c; }
         .mat-msg {
           margin-top: 7px; font-size: 11px; line-height: 1.5;
           padding: 8px 12px; border-radius: 3px;
         }
         .mat-msg.ok { color: #4ade80; background: rgba(0,200,100,0.07); border: 1px solid rgba(0,200,100,0.2); }
-        .mat-msg.bypass { color: #eab308; background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.2); }
+        .mat-msg.bypass { color: #d4960c; background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.2); }
         .mat-msg.err { color: #ff6b6b; background: rgba(200,0,0,0.07); border: 1px solid rgba(200,0,0,0.2); }
         .mat-msg.loading { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
 
@@ -354,7 +354,7 @@ export default function RegistroPage() {
           transition: all 0.2s; display: flex; align-items: center; gap: 10px;
         }
         .reg-esp-btn:hover { border-color: rgba(200,0,0,0.35); background: rgba(200,0,0,0.05); }
-        .reg-esp-btn.activo { border-color: #cc0000; background: rgba(200,0,0,0.12); }
+        .reg-esp-btn.activo { border-color: #990000; background: rgba(200,0,0,0.12); }
         .reg-esp-icon { font-size: 18px; }
         .reg-esp-label {
           font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
@@ -367,7 +367,7 @@ export default function RegistroPage() {
           display: flex; align-items: center; justify-content: center;
           font-size: 10px; flex-shrink: 0;
         }
-        .reg-esp-btn.activo .reg-esp-check { background: #cc0000; border-color: #cc0000; color: #fff; }
+        .reg-esp-btn.activo .reg-esp-check { background: #990000; border-color: #990000; color: #fff; }
 
         .reg-error {
           font-size: 12px; color: #ff4444;
@@ -377,7 +377,7 @@ export default function RegistroPage() {
         }
         .reg-btn {
           width: 100%; padding: 14px; margin-top: 8px;
-          background: #cc0000; border: none; border-radius: 3px;
+          background: #990000; border: none; border-radius: 3px;
           color: #fff; font-family: 'Montserrat', sans-serif;
           font-size: 12px; font-weight: 700; letter-spacing: 0.2em;
           text-transform: uppercase; cursor: pointer;
@@ -395,7 +395,7 @@ export default function RegistroPage() {
 
         .reg-footer { margin-top: 20px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); }
         .reg-footer a { color: rgba(200,0,0,0.7); text-decoration: none; font-weight: 500; }
-        .reg-footer a:hover { color: #cc0000; }
+        .reg-footer a:hover { color: #990000; }
         .reg-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 16px; }
         .reg-brand {
           text-align: center; font-family: 'Montserrat', sans-serif;
@@ -415,10 +415,10 @@ export default function RegistroPage() {
         }
         .reg-enviado-icon { font-size: 48px; }
         .reg-enviado h2 { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .reg-enviado h2 span { color: #cc0000; }
+        .reg-enviado h2 span { color: #990000; }
         .reg-enviado p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 320px; }
         .reg-enviado-volver { margin-top: 8px; font-size: 12px; color: rgba(200,0,0,0.7); text-decoration: none; font-weight: 500; }
-        .reg-enviado-volver:hover { color: #cc0000; }
+        .reg-enviado-volver:hover { color: #990000; }
 
         .reg-terminos {
           background: rgba(255,255,255,0.02);
@@ -435,7 +435,7 @@ export default function RegistroPage() {
         }
         .reg-terminos-check input[type="checkbox"] {
           width: 16px; height: 16px;
-          accent-color: #cc0000;
+          accent-color: #990000;
           margin-top: 2px;
           flex-shrink: 0;
           cursor: pointer;
@@ -586,7 +586,7 @@ export default function RegistroPage() {
                               flex: 1, padding: "10px 12px", borderRadius: 3, cursor: "pointer",
                               fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700,
                               letterSpacing: "0.12em", textTransform: "uppercase",
-                              border: celularMostrar === op ? "1px solid #cc0000" : "1px solid rgba(255,255,255,0.12)",
+                              border: celularMostrar === op ? "1px solid #990000" : "1px solid rgba(255,255,255,0.12)",
                               background: celularMostrar === op ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.03)",
                               color: celularMostrar === op ? "#fff" : "rgba(255,255,255,0.4)",
                             }}>

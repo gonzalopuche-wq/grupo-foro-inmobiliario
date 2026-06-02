@@ -35,9 +35,9 @@ const FORM_VACIO = {
 };
 
 const ESTADO_COLOR: Record<string, string> = {
-  pendiente: "#eab308",
-  realizada: "#22c55e",
-  cancelada: "#ef4444",
+  pendiente: "#d4960c",
+  realizada: "#3abab6",
+  cancelada: "#b80000",
 };
 
 function formatFecha(iso: string | null) {
@@ -221,10 +221,10 @@ export default function VisitasPage() {
         .vis-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-decoration: none; text-transform: uppercase; }
         .vis-back:hover { color: #fff; }
         .vis-titulo { font-family: Montserrat,sans-serif; font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
-        .vis-badge { background: #cc0000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
+        .vis-badge { background: #990000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
         .vis-spacer { flex: 1; }
         .vis-btn { padding: 8px 16px; border-radius: 6px; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: none; }
-        .vis-btn-primary { background: #cc0000; color: #fff; }
+        .vis-btn-primary { background: #990000; color: #fff; }
         .vis-btn-primary:hover { background: #aa0000; }
         .vis-toolbar { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
         .vis-search { flex: 1; min-width: 200px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
@@ -248,7 +248,7 @@ export default function VisitasPage() {
         .vis-field { margin-bottom: 14px; }
         .vis-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; display: block; }
         .vis-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
-        .vis-input:focus { border-color: rgba(204,0,0,0.5); }
+        .vis-input:focus { border-color: rgba(153,0,0,0.5); }
         .vis-row { display: flex; gap: 10px; }
         .vis-row .vis-field { flex: 1; }
         .vis-modal-actions { display: flex; gap: 10px; margin-top: 20px; }
@@ -305,7 +305,7 @@ export default function VisitasPage() {
                   {v.observaciones && <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>{v.observaciones}</div>}
                   {v.feedback_at && (
                     <div style={{ marginTop: 8, padding: "6px 10px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.18)", borderRadius: 6, fontSize: 11 }}>
-                      <span style={{ color: "#22c55e", fontWeight: 700 }}>Feedback recibido</span>
+                      <span style={{ color: "#3abab6", fontWeight: 700 }}>Feedback recibido</span>
                       {v.feedback_puntaje != null && <span style={{ marginLeft: 8 }}>{"⭐".repeat(v.feedback_puntaje)}</span>}
                       {v.feedback_interes && <span style={{ marginLeft: 8, color: "rgba(255,255,255,0.4)" }}>{v.feedback_interes === "si" ? "✅ Interesado" : v.feedback_interes === "tal_vez" ? "🤔 Tal vez" : "❌ No interesado"}</span>}
                       {v.feedback_comentario && <div style={{ color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>"{v.feedback_comentario}"</div>}
@@ -314,11 +314,11 @@ export default function VisitasPage() {
                   <div className="vis-actions" style={{ marginTop: 10 }}>
                     <button className="vis-action-btn" onClick={() => abrirEditar(v)}>✏️ Editar</button>
                     {v.estado === "pendiente" && <>
-                      <button className="vis-action-btn" style={{ color: "#22c55e", borderColor: "rgba(34,197,94,0.3)" }} onClick={() => cambiarEstado(v.id, "realizada")}>✓ Realizada</button>
-                      <button className="vis-action-btn" style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)" }} onClick={() => cambiarEstado(v.id, "cancelada")}>✗ Cancelar</button>
+                      <button className="vis-action-btn" style={{ color: "#3abab6", borderColor: "rgba(34,197,94,0.3)" }} onClick={() => cambiarEstado(v.id, "realizada")}>✓ Realizada</button>
+                      <button className="vis-action-btn" style={{ color: "#b80000", borderColor: "rgba(239,68,68,0.3)" }} onClick={() => cambiarEstado(v.id, "cancelada")}>✗ Cancelar</button>
                     </>}
                     {v.cliente_telefono && <button className="vis-action-btn" style={{ color: "#25d366", borderColor: "rgba(37,211,102,0.3)" }} onClick={() => enviarWhatsApp(v)}>📲 WhatsApp</button>}
-                    <button className="vis-action-btn" style={{ color: "#60a5fa", borderColor: "rgba(96,165,250,0.25)" }} onClick={() => compartirFeedback(v)} title="Enviar link de feedback al cliente">⭐ Feedback</button>
+                    <button className="vis-action-btn" style={{ color: "#4ab8d8", borderColor: "rgba(74,184,216,0.25)" }} onClick={() => compartirFeedback(v)} title="Enviar link de feedback al cliente">⭐ Feedback</button>
                     <button className="vis-action-btn" style={{ color: "#34d399", borderColor: "rgba(52,211,153,0.25)" }} onClick={() => enviarACalendar(v)} disabled={enviandoCalendar === v.id} title="Añadir a Google Calendar">{enviandoCalendar === v.id ? "..." : "📅 Cal"}</button>
                     <button className="vis-action-btn" style={{ color: "rgba(255,255,255,0.25)" }} onClick={() => eliminar(v.id)}>🗑</button>
                   </div>

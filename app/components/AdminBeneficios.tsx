@@ -181,9 +181,9 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
         /* Header */
         .ben-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
         .ben-titulo { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
-        .ben-titulo span { color: #cc0000; }
+        .ben-titulo span { color: #990000; }
         .ben-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; font-family: 'Inter',sans-serif; }
-        .ben-btn-nuevo { padding: 7px 16px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .ben-btn-nuevo { padding: 7px 16px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .ben-btn-nuevo:hover { background: #e60000; }
 
         /* Resumen perfiles */
@@ -196,13 +196,13 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
         .ben-perfiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-bottom: 20px; }
         .ben-perfil-card { background: #0f0f0f; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 12px 14px; cursor: pointer; transition: border-color 0.12s; }
         .ben-perfil-card:hover { border-color: rgba(255,255,255,0.15); }
-        .ben-perfil-card.seleccionado { border-color: #cc0000; background: rgba(200,0,0,0.04); }
+        .ben-perfil-card.seleccionado { border-color: #990000; background: rgba(200,0,0,0.04); }
         .ben-perfil-nombre { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: #fff; }
         .ben-perfil-mat { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 1px; }
         .ben-perfil-precio { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
         .ben-precio-original { font-size: 11px; color: rgba(255,255,255,0.25); text-decoration: line-through; }
         .ben-precio-final { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 800; }
-        .ben-cortesia-badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .ben-cortesia-badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #3abab6; font-family: 'Montserrat',sans-serif; font-weight: 700; }
         .ben-pct-badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.2); color: rgba(200,0,0,0.8); font-family: 'Montserrat',sans-serif; font-weight: 700; }
         .ben-items-chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
         .ben-item-chip { font-size: 8px; padding: 1px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; font-weight: 700; }
@@ -210,14 +210,14 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
         /* Tabla beneficios */
         .ben-filtros { display: flex; gap: 6px; margin-bottom: 10px; align-items: center; }
         .ben-filtro-btn { padding: 5px 12px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; cursor: pointer; }
-        .ben-filtro-btn.activo { border-color: #cc0000; background: rgba(200,0,0,0.1); color: #fff; }
+        .ben-filtro-btn.activo { border-color: #990000; background: rgba(200,0,0,0.1); color: #fff; }
         .ben-table { width: 100%; border-collapse: collapse; }
         .ben-table th { padding: 8px 12px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.07); }
         .ben-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; color: rgba(255,255,255,0.6); vertical-align: middle; }
         .ben-table tr:hover td { background: rgba(255,255,255,0.02); }
         .ben-tipo-badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-weight: 700; white-space: nowrap; }
         .ben-activo-badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .ben-activo-badge.on { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+        .ben-activo-badge.on { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #3abab6; }
         .ben-activo-badge.off { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.25); }
         .ben-acc-btn { padding: 3px 9px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; cursor: pointer; margin-right: 4px; }
         .ben-acc-toggle { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
@@ -228,9 +228,9 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
         /* Modal */
         .ben-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: flex-start; justify-content: center; z-index: 400; padding: 20px; overflow-y: auto; }
         .ben-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.22); border-radius: 8px; padding: 26px 30px; width: 100%; max-width: 520px; margin: auto; position: relative; }
-        .ben-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 8px 8px 0 0; }
+        .ben-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 8px 8px 0 0; }
         .ben-modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 18px; }
-        .ben-modal-titulo span { color: #cc0000; }
+        .ben-modal-titulo span { color: #990000; }
         .ben-field { margin-bottom: 12px; }
         .ben-label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
         .ben-input { width: 100%; padding: 8px 11px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; }
@@ -243,7 +243,7 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
         .ben-tipo-item:hover { background: rgba(255,255,255,0.04); }
         .ben-tipo-item.on { border-color: rgba(200,0,0,0.3); background: rgba(200,0,0,0.07); }
         .ben-tipo-radio { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; margin-top: 2px; transition: all 0.12s; }
-        .ben-tipo-radio.on { background: #cc0000; border-color: #cc0000; }
+        .ben-tipo-radio.on { background: #990000; border-color: #990000; }
         .ben-tipo-info { flex: 1; }
         .ben-tipo-label { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); }
         .ben-tipo-item.on .ben-tipo-label { color: #fff; }
@@ -251,16 +251,16 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
         .ben-preview { background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.15); border-radius: 5px; padding: 10px 14px; margin-top: 12px; }
         .ben-preview-label { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 4px; }
         .ben-preview-val { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; }
-        .ben-preview-val span { color: #22c55e; }
+        .ben-preview-val span { color: #3abab6; }
         .ben-modal-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 18px; }
         .ben-btn-cancel { padding: 8px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.13); border-radius: 3px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .ben-btn-save { padding: 8px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .ben-btn-save { padding: 8px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .ben-btn-save:disabled { opacity: 0.45; cursor: not-allowed; }
         .ben-spinner { display: inline-block; width: 9px; height: 9px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .ben-check-row { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .ben-check-box { width: 15px; height: 15px; border-radius: 3px; border: 2px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .ben-check-box.on { background: #cc0000; border-color: #cc0000; }
+        .ben-check-box.on { background: #990000; border-color: #990000; }
         .ben-check-label { font-size: 12px; color: rgba(255,255,255,0.55); font-family: 'Inter',sans-serif; }
         .ben-empty { padding: 32px; text-align: center; color: rgba(255,255,255,0.18); font-family: 'Inter',sans-serif; font-size: 12px; }
       `}</style>
@@ -292,7 +292,7 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
                         : descuentoEfectivo[perfilDetalle].total > 0
                         ? <>
                             <span style={{fontSize:11,color:"rgba(255,255,255,0.25)",textDecoration:"line-through"}}>USD {precioBase}</span>
-                            <span style={{fontFamily:"Montserrat,sans-serif",fontSize:15,fontWeight:800,color:"#22c55e"}}>USD {(precioBase * (1 - descuentoEfectivo[perfilDetalle].total / 100)).toFixed(2)}</span>
+                            <span style={{fontFamily:"Montserrat,sans-serif",fontSize:15,fontWeight:800,color:"#3abab6"}}>USD {(precioBase * (1 - descuentoEfectivo[perfilDetalle].total / 100)).toFixed(2)}</span>
                             <span className="ben-pct-badge">-{descuentoEfectivo[perfilDetalle].total}%</span>
                           </>
                         : <span style={{fontFamily:"Montserrat,sans-serif",fontSize:13,color:"rgba(255,255,255,0.4)"}}>Sin descuento activo</span>
@@ -342,7 +342,7 @@ export default function AdminBeneficios({ adminId }: { adminId: string }) {
                             ) : (
                               <>
                                 <span className="ben-precio-original">USD {precioBase}</span>
-                                <span className="ben-precio-final" style={{color:"#22c55e"}}>USD {precioFinal.toFixed(2)}</span>
+                                <span className="ben-precio-final" style={{color:"#3abab6"}}>USD {precioFinal.toFixed(2)}</span>
                                 <span className="ben-pct-badge">-{d.total}%</span>
                               </>
                             )}
@@ -516,7 +516,7 @@ function TablaBeneficios({
               <td><span className="ben-tipo-badge">{TIPO_LABELS[b.tipo] ?? b.tipo}</span></td>
               <td>
                 {b.es_cortesia
-                  ? <span style={{color:"#22c55e",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:11}}>🎁 Gratis</span>
+                  ? <span style={{color:"#3abab6",fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:11}}>🎁 Gratis</span>
                   : <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:12}}>{b.descuento_pct > 0 ? `-${b.descuento_pct}%` : ""}{b.monto_fijo_usd > 0 ? ` -USD ${b.monto_fijo_usd}` : ""}</span>
                 }
               </td>
@@ -524,7 +524,7 @@ function TablaBeneficios({
                 {new Date(b.fecha_desde).toLocaleDateString("es-AR", {day:"2-digit",month:"2-digit",year:"2-digit"})}
                 {" → "}
                 {b.fecha_hasta
-                  ? <span style={{color: vencido ? "#ef4444" : "inherit"}}>{new Date(b.fecha_hasta).toLocaleDateString("es-AR", {day:"2-digit",month:"2-digit",year:"2-digit"})}{vencido ? " ⚠️" : ""}</span>
+                  ? <span style={{color: vencido ? "#b80000" : "inherit"}}>{new Date(b.fecha_hasta).toLocaleDateString("es-AR", {day:"2-digit",month:"2-digit",year:"2-digit"})}{vencido ? " ⚠️" : ""}</span>
                   : <span style={{color:"rgba(255,255,255,0.3)"}}>indefinido</span>
                 }
               </td>

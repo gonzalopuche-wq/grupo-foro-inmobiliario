@@ -31,18 +31,18 @@ const ETAPAS = [
   { value: "contactado",        label: "Contactado",       color: "#3b82f6", icon: "📞" },
   { value: "visita_coordinada", label: "Visita coord.",    color: "#8b5cf6", icon: "📋" },
   { value: "visita_realizada",  label: "Visita realizada", color: "#a78bfa", icon: "👁️" },
-  { value: "oferta_enviada",    label: "Oferta enviada",   color: "#f59e0b", icon: "📤" },
-  { value: "negociacion",       label: "Negociación",      color: "#f97316", icon: "🤝" },
+  { value: "oferta_enviada",    label: "Oferta enviada",   color: "#d4960c", icon: "📤" },
+  { value: "negociacion",       label: "Negociación",      color: "#d4960c", icon: "🤝" },
   { value: "reserva",           label: "Reserva",          color: "#06b6d4", icon: "📝" },
-  { value: "escritura",         label: "Escritura",        color: "#10b981", icon: "⚖️" },
-  { value: "cerrado",           label: "Cerrado",          color: "#22c55e", icon: "✅" },
+  { value: "escritura",         label: "Escritura",        color: "#3abab6", icon: "⚖️" },
+  { value: "cerrado",           label: "Cerrado",          color: "#3abab6", icon: "✅" },
 ];
 
 const TIPOS_COLORS: Record<string, string> = {
-  venta: "#cc0000",
+  venta: "#990000",
   alquiler: "#3b82f6",
   alquiler_temporal: "#8b5cf6",
-  loteo: "#f97316",
+  loteo: "#d4960c",
   otro: "#6b7280",
 };
 
@@ -65,10 +65,10 @@ function diasEnEtapa(updatedAt: string): number {
 }
 
 function urgenciaColor(dias: number): string {
-  if (dias > 30) return "#ef4444";
-  if (dias > 14) return "#f97316";
-  if (dias > 7) return "#f59e0b";
-  return "#22c55e";
+  if (dias > 30) return "#b80000";
+  if (dias > 14) return "#d4960c";
+  if (dias > 7) return "#d4960c";
+  return "#3abab6";
 }
 
 export default function PipelineVisualPage() {
@@ -227,7 +227,7 @@ export default function PipelineVisualPage() {
               { label: "En cierre", value: resumen.enCierre.toString(), highlight: true },
             ].map((k) => (
               <div key={k.label} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.highlight ? "#22c55e" : "#fff" }}>
+                <div style={{ fontSize: 18, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: k.highlight ? "#3abab6" : "#fff" }}>
                   {k.value}
                 </div>
                 <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
@@ -246,9 +246,9 @@ export default function PipelineVisualPage() {
                 style={{
                   padding: "6px 14px",
                   borderRadius: 20,
-                  border: filtroTipo === f.v ? "1px solid #cc0000" : "1px solid #333",
-                  background: filtroTipo === f.v ? "rgba(204,0,0,0.15)" : "#111",
-                  color: filtroTipo === f.v ? "#cc0000" : "#888",
+                  border: filtroTipo === f.v ? "1px solid #990000" : "1px solid #333",
+                  background: filtroTipo === f.v ? "rgba(153,0,0,0.15)" : "#111",
+                  color: filtroTipo === f.v ? "#990000" : "#888",
                   fontSize: 12,
                   fontFamily: "Montserrat, sans-serif",
                   fontWeight: 700,
@@ -265,7 +265,7 @@ export default function PipelineVisualPage() {
       </div>
 
       {saving && (
-        <div style={{ background: "rgba(204,0,0,0.1)", borderBottom: "1px solid rgba(204,0,0,0.3)", padding: "6px 24px", fontSize: 12, color: "#cc0000", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+        <div style={{ background: "rgba(153,0,0,0.1)", borderBottom: "1px solid rgba(153,0,0,0.3)", padding: "6px 24px", fontSize: 12, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
           Guardando...
         </div>
       )}
@@ -308,7 +308,7 @@ export default function PipelineVisualPage() {
                     <div style={{ fontSize: 11, color: "#666" }}>
                       <span style={{ color: "#999" }}>USD {(col.totalUSD / 1000).toFixed(0)}k</span>
                       {col.honUSD > 0 && (
-                        <span style={{ color: "#22c55e", marginLeft: 6 }}>→ {(col.honUSD / 1000).toFixed(0)}k</span>
+                        <span style={{ color: "#3abab6", marginLeft: 6 }}>→ {(col.honUSD / 1000).toFixed(0)}k</span>
                       )}
                     </div>
                   )}
@@ -362,7 +362,7 @@ export default function PipelineVisualPage() {
                           <div style={{ fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: "#fff" }}>
                             {fmtValor(n.valor_operacion, n.moneda)}
                             {n.honorarios_pct && (
-                              <span style={{ color: "#22c55e", marginLeft: 6, fontSize: 10 }}>
+                              <span style={{ color: "#3abab6", marginLeft: 6, fontSize: 10 }}>
                                 +{fmtHon(n.valor_operacion, n.honorarios_pct, n.moneda)}
                               </span>
                             )}

@@ -29,9 +29,9 @@ const TIPOS = [
 ];
 
 const ESTADOS: Record<string, { label: string; color: string }> = {
-  pendiente:  { label: "Pendiente",  color: "#f59e0b" },
-  aceptada:   { label: "Aceptada",   color: "#22c55e" },
-  rechazada:  { label: "Rechazada",  color: "#ef4444" },
+  pendiente:  { label: "Pendiente",  color: "#d4960c" },
+  aceptada:   { label: "Aceptada",   color: "#3abab6" },
+  rechazada:  { label: "Rechazada",  color: "#b80000" },
   cancelada:  { label: "Cancelada",  color: "#64748b" },
   completada: { label: "Completada", color: "#6366f1" },
 };
@@ -128,7 +128,7 @@ export default function AlianzasPage() {
 
   return (
     <div style={{ padding: "24px 20px", maxWidth: 900, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
-      {toast && <div style={{ position: "fixed", bottom: 24, right: 24, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>}
+      {toast && <div style={{ position: "fixed", bottom: 24, right: 24, background: "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
@@ -193,14 +193,14 @@ export default function AlianzasPage() {
                   {esReceptor && a.estado === "pendiente" && (
                     <>
                       <button onClick={() => responder(a.id, "aceptada")} disabled={respondiendo === a.id}
-                        style={{ background: "#052e16", color: "#22c55e", border: "1px solid #166534", borderRadius: 8, padding: "7px 16px", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                        style={{ background: "#052e16", color: "#3abab6", border: "1px solid #166534", borderRadius: 8, padding: "7px 16px", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
                         ✓ Aceptar
                       </button>
                       <button onClick={() => {
                         const msg = prompt("Mensaje (opcional):");
                         responder(a.id, "rechazada", msg ?? undefined);
                       }} disabled={respondiendo === a.id}
-                        style={{ background: "#2d1b1b", color: "#ef4444", border: "1px solid #7f1d1d", borderRadius: 8, padding: "7px 16px", cursor: "pointer", fontSize: 13 }}>
+                        style={{ background: "#2d1b1b", color: "#b80000", border: "1px solid #7f1d1d", borderRadius: 8, padding: "7px 16px", cursor: "pointer", fontSize: 13 }}>
                         ✗ Rechazar
                       </button>
                     </>
@@ -222,7 +222,7 @@ export default function AlianzasPage() {
                   {/* WhatsApp al colega */}
                   {contraparte && (
                     <a href={`https://wa.me/${(contraparte.telefono ?? "").replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
-                      style={{ background: "#052e16", color: "#22c55e", border: "1px solid #166534", borderRadius: 8, padding: "7px 14px", fontSize: 13, textDecoration: "none" }}>
+                      style={{ background: "#052e16", color: "#3abab6", border: "1px solid #166534", borderRadius: 8, padding: "7px 14px", fontSize: 13, textDecoration: "none" }}>
                       💬 WhatsApp
                     </a>
                   )}

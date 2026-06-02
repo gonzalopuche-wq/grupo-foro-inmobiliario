@@ -24,14 +24,14 @@ interface Negocio {
 
 const ETAPAS_ORDEN = [
   { key: "prospecto",         label: "Prospecto",       color: "#6b7280", group: "top" },
-  { key: "contactado",        label: "Contactado",      color: "#60a5fa", group: "top" },
+  { key: "contactado",        label: "Contactado",      color: "#4ab8d8", group: "top" },
   { key: "visita_coordinada", label: "Visita coord.",   color: "#8b5cf6", group: "mid" },
   { key: "visita_realizada",  label: "Visita realiz.",  color: "#a78bfa", group: "mid" },
-  { key: "oferta_enviada",    label: "Oferta enviada",  color: "#f59e0b", group: "mid" },
-  { key: "negociacion",       label: "Negociación",     color: "#f97316", group: "mid" },
+  { key: "oferta_enviada",    label: "Oferta enviada",  color: "#d4960c", group: "mid" },
+  { key: "negociacion",       label: "Negociación",     color: "#d4960c", group: "mid" },
   { key: "reserva",           label: "Reserva",         color: "#06b6d4", group: "bot" },
-  { key: "escritura",         label: "Escritura",       color: "#10b981", group: "bot" },
-  { key: "cerrado",           label: "Cerrado",         color: "#22c55e", group: "bot" },
+  { key: "escritura",         label: "Escritura",       color: "#3abab6", group: "bot" },
+  { key: "cerrado",           label: "Cerrado",         color: "#3abab6", group: "bot" },
 ];
 
 const MESES_LABEL = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
@@ -212,7 +212,7 @@ export default function ConversionPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap');
         .per-btn { background: none; border: 1px solid rgba(255,255,255,0.12); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); transition: all 0.15s; }
-        .per-btn.on { background: rgba(204,0,0,0.15); border-color: rgba(204,0,0,0.4); color: #cc0000; }
+        .per-btn.on { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.4); color: #990000; }
         .per-btn:hover:not(.on) { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
         .funnel-row:hover { opacity: 0.9 !important; }
         @media (max-width: 700px) { .two-col { grid-template-columns: 1fr !important; } }
@@ -225,7 +225,7 @@ export default function ConversionPage() {
             ← CRM
           </Link>
           <div style={{ marginTop: 6, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, fontSize: 18 }}>
-            Análisis de <span style={{ color: "#cc0000" }}>Conversión</span>
+            Análisis de <span style={{ color: "#990000" }}>Conversión</span>
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
             Tasas de conversión del pipeline · Tiempo de cierre · Predicción
@@ -246,8 +246,8 @@ export default function ConversionPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }} className="two-col">
           {[
             { label: "Deals activos", val: String(totalActivos), color: "#fff" },
-            { label: "Cerrados", val: String(totalCerrados), color: "#22c55e" },
-            { label: "Tasa de cierre", val: tasaConversionGlobal > 0 ? `${tasaConversionGlobal.toFixed(1)}%` : "—", color: "#cc0000" },
+            { label: "Cerrados", val: String(totalCerrados), color: "#3abab6" },
+            { label: "Tasa de cierre", val: tasaConversionGlobal > 0 ? `${tasaConversionGlobal.toFixed(1)}%` : "—", color: "#990000" },
             { label: "Tiempo prom. cierre", val: tiempoPromedio ? fmtDias(tiempoPromedio.promedio) : "—", color: "#a78bfa" },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...cardSt, marginBottom: 0, textAlign: "center" }}>
@@ -300,9 +300,9 @@ export default function ConversionPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4, paddingTop: 8, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                     <div style={{ width: 90, fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "rgba(239,68,68,0.6)", textTransform: "uppercase", textAlign: "right", flexShrink: 0 }}>Perdidos</div>
                     <div style={{ flex: 1, height: 10, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${Math.max((perdidos / funnelMax) * 100, 4)}%`, background: "#ef4444", borderRadius: 4, opacity: 0.4 }} />
+                      <div style={{ height: "100%", width: `${Math.max((perdidos / funnelMax) * 100, 4)}%`, background: "#b80000", borderRadius: 4, opacity: 0.4 }} />
                     </div>
-                    <div style={{ width: 30, fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#ef4444", opacity: 0.6, textAlign: "right" }}>{perdidos}</div>
+                    <div style={{ width: 30, fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#b80000", opacity: 0.6, textAlign: "right" }}>{perdidos}</div>
                   </div>
                 )}
               </div>
@@ -328,13 +328,13 @@ export default function ConversionPage() {
                           <span style={{ margin: "0 5px", color: "rgba(255,255,255,0.2)" }}>→</span>
                           <span style={{ color: hasta.color }}>{hasta.label}</span>
                         </div>
-                        <div style={{ fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: tasa === null ? "rgba(255,255,255,0.2)" : tasa >= 50 ? "#22c55e" : tasa >= 25 ? "#f59e0b" : "#ef4444" }}>
+                        <div style={{ fontSize: 13, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: tasa === null ? "rgba(255,255,255,0.2)" : tasa >= 50 ? "#3abab6" : tasa >= 25 ? "#d4960c" : "#b80000" }}>
                           {tasa === null ? "—" : `${tasa.toFixed(0)}%`}
                         </div>
                       </div>
                       {tasa !== null && (
                         <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: `${tasa}%`, background: tasa >= 50 ? "#22c55e" : tasa >= 25 ? "#f59e0b" : "#ef4444", borderRadius: 2, transition: "width 0.5s", opacity: 0.7 }} />
+                          <div style={{ height: "100%", width: `${tasa}%`, background: tasa >= 50 ? "#3abab6" : tasa >= 25 ? "#d4960c" : "#b80000", borderRadius: 2, transition: "width 0.5s", opacity: 0.7 }} />
                         </div>
                       )}
                     </div>
@@ -353,20 +353,20 @@ export default function ConversionPage() {
                 const h = Math.max((m.count / maxCierres) * 64, m.count > 0 ? 4 : 0);
                 return (
                   <div key={m.mes} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
-                    <div title={`${m.count} cierres${m.valor > 0 ? ` · USD ${m.valor.toLocaleString("es-AR")}` : ""}`} style={{ width: "100%", height: h, background: "#22c55e", borderRadius: "3px 3px 0 0", opacity: 0.75, transition: "height 0.5s" }} />
+                    <div title={`${m.count} cierres${m.valor > 0 ? ` · USD ${m.valor.toLocaleString("es-AR")}` : ""}`} style={{ width: "100%", height: h, background: "#3abab6", borderRadius: "3px 3px 0 0", opacity: 0.75, transition: "height 0.5s" }} />
                     <div style={{ fontSize: 8, color: "rgba(255,255,255,0.25)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, marginTop: 5 }}>{m.label}</div>
-                    <div style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: m.count > 0 ? "#22c55e" : "rgba(255,255,255,0.15)" }}>{m.count}</div>
+                    <div style={{ fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: m.count > 0 ? "#3abab6" : "rgba(255,255,255,0.15)" }}>{m.count}</div>
                   </div>
                 );
               })}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.06)" }}>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
-                Total: <strong style={{ color: "#22c55e" }}>{cierresPorMes.reduce((s, m) => s + m.count, 0)} cierres</strong>
+                Total: <strong style={{ color: "#3abab6" }}>{cierresPorMes.reduce((s, m) => s + m.count, 0)} cierres</strong>
               </div>
               {cierresPorMes.some(m => m.valor > 0) && (
                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
-                  Valor: <strong style={{ color: "#60a5fa" }}>USD {cierresPorMes.reduce((s, m) => s + m.valor, 0).toLocaleString("es-AR", { maximumFractionDigits: 0 })}</strong>
+                  Valor: <strong style={{ color: "#4ab8d8" }}>USD {cierresPorMes.reduce((s, m) => s + m.valor, 0).toLocaleString("es-AR", { maximumFractionDigits: 0 })}</strong>
                 </div>
               )}
             </div>
@@ -387,8 +387,8 @@ export default function ConversionPage() {
                 <div style={{ display: "flex", gap: 20 }}>
                   {[
                     { label: "Promedio", val: fmtDias(tiempoPromedio.promedio), color: "#a78bfa" },
-                    { label: "Mínimo", val: fmtDias(tiempoPromedio.min), color: "#22c55e" },
-                    { label: "Máximo", val: fmtDias(tiempoPromedio.max), color: "#ef4444" },
+                    { label: "Mínimo", val: fmtDias(tiempoPromedio.min), color: "#3abab6" },
+                    { label: "Máximo", val: fmtDias(tiempoPromedio.max), color: "#b80000" },
                   ].map(({ label, val, color }) => (
                     <div key={label}>
                       <div style={{ fontSize: 8, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginBottom: 4 }}>{label}</div>
@@ -410,12 +410,12 @@ export default function ConversionPage() {
               </div>
               <div style={{ display: "flex", gap: 20, alignItems: "baseline" }}>
                 <div>
-                  <div style={{ fontSize: 32, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, color: "#f97316" }}>{prediccion.count}</div>
+                  <div style={{ fontSize: 32, fontFamily: "'Montserrat',sans-serif", fontWeight: 900, color: "#d4960c" }}>{prediccion.count}</div>
                   <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>deals</div>
                 </div>
                 {prediccion.valor > 0 && (
                   <div>
-                    <div style={{ fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#60a5fa" }}>
+                    <div style={{ fontSize: 18, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#4ab8d8" }}>
                       USD {prediccion.valor.toLocaleString("es-AR", { maximumFractionDigits: 0 })}
                     </div>
                     <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>en pipeline</div>
@@ -425,10 +425,10 @@ export default function ConversionPage() {
               {valorTotalPipeline > 0 && (
                 <div style={{ marginTop: 10, fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.5 }}>
                   El valor total del pipeline activo (excl. cerrados) es{" "}
-                  <strong style={{ color: "#60a5fa" }}>{fmtMon(valorTotalPipeline, "USD")}</strong>.
+                  <strong style={{ color: "#4ab8d8" }}>{fmtMon(valorTotalPipeline, "USD")}</strong>.
                   {totalCerrados > 0 && tasaConversionGlobal > 0 && (
-                    <> Con una tasa de cierre del <strong style={{ color: "#cc0000" }}>{tasaConversionGlobal.toFixed(1)}%</strong>, se esperan{" "}
-                    <strong style={{ color: "#22c55e" }}>{Math.round(prediccion.count * tasaConversionGlobal / 100)} cierres</strong> adicionales.</>
+                    <> Con una tasa de cierre del <strong style={{ color: "#990000" }}>{tasaConversionGlobal.toFixed(1)}%</strong>, se esperan{" "}
+                    <strong style={{ color: "#3abab6" }}>{Math.round(prediccion.count * tasaConversionGlobal / 100)} cierres</strong> adicionales.</>
                   )}
                 </div>
               )}

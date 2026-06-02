@@ -41,7 +41,7 @@ function diasDesde(fecha: string | null): number {
 }
 
 function riesgoColor(r: ContactoAnalizado["riesgo"]) {
-  return r === "caliente" ? "#22c55e" : r === "tibio" ? "#f97316" : r === "frio" ? "#cc0000" : "rgba(255,255,255,0.2)";
+  return r === "caliente" ? "#3abab6" : r === "tibio" ? "#d4960c" : r === "frio" ? "#990000" : "rgba(255,255,255,0.2)";
 }
 
 function riesgoLabel(r: ContactoAnalizado["riesgo"]) {
@@ -156,9 +156,9 @@ export default function Retencion() {
         {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
           {[
-            { label: "Al día", count: stats.caliente, color: "#22c55e", desc: "≤14 días", riesgo: "caliente" as const },
-            { label: "Tibios", count: stats.tibio, color: "#f97316", desc: "15–45 días", riesgo: "tibio" as const },
-            { label: "En riesgo", count: stats.frio, color: "#cc0000", desc: "46–120 días", riesgo: "frio" as const },
+            { label: "Al día", count: stats.caliente, color: "#3abab6", desc: "≤14 días", riesgo: "caliente" as const },
+            { label: "Tibios", count: stats.tibio, color: "#d4960c", desc: "15–45 días", riesgo: "tibio" as const },
+            { label: "En riesgo", count: stats.frio, color: "#990000", desc: "46–120 días", riesgo: "frio" as const },
             { label: "Inactivos", count: stats.inactivo, color: "rgba(255,255,255,0.2)", desc: "+120 días", riesgo: "inactivo" as const },
           ].map(kpi => (
             <div key={kpi.label} onClick={() => setFiltroRiesgo(filtroRiesgo === kpi.riesgo ? "todos" : kpi.riesgo)} style={{ background: filtroRiesgo === kpi.riesgo ? `${kpi.color}11` : "rgba(255,255,255,0.02)", border: `1px solid ${filtroRiesgo === kpi.riesgo ? kpi.color + "44" : "rgba(255,255,255,0.06)"}`, borderRadius: 12, padding: "16px 20px", cursor: "pointer", transition: "all 0.15s" }}>
@@ -173,15 +173,15 @@ export default function Retencion() {
         <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px", marginBottom: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
             <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Salud del pipeline de clientes</span>
-            <span style={{ fontSize: 11, color: stats.caliente / Math.max(stats.total, 1) > 0.5 ? "#22c55e" : "#cc0000", fontWeight: 700 }}>
+            <span style={{ fontSize: 11, color: stats.caliente / Math.max(stats.total, 1) > 0.5 ? "#3abab6" : "#990000", fontWeight: 700 }}>
               {((stats.caliente + stats.tibio) / Math.max(stats.total, 1) * 100).toFixed(0)}% activos
             </span>
           </div>
           <div style={{ display: "flex", height: 12, borderRadius: 6, overflow: "hidden", gap: 1 }}>
             {stats.total > 0 && [
-              { v: stats.caliente, c: "#22c55e" },
-              { v: stats.tibio, c: "#f97316" },
-              { v: stats.frio, c: "#cc0000" },
+              { v: stats.caliente, c: "#3abab6" },
+              { v: stats.tibio, c: "#d4960c" },
+              { v: stats.frio, c: "#990000" },
               { v: stats.inactivo, c: "rgba(255,255,255,0.1)" },
             ].map((seg, i) => seg.v > 0 && (
               <div key={i} style={{ flex: seg.v, background: seg.c, transition: "flex 0.5s" }} />
@@ -204,7 +204,7 @@ export default function Retencion() {
           </select>
           <div style={{ display: "flex", gap: 6 }}>
             {(["riesgo","dias","interacciones"] as const).map(o => (
-              <button key={o} onClick={() => setOrdenar(o)} style={{ padding: "6px 12px", borderRadius: 20, border: `1px solid ${ordenar === o ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: ordenar === o ? "rgba(204,0,0,0.12)" : "transparent", color: ordenar === o ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <button key={o} onClick={() => setOrdenar(o)} style={{ padding: "6px 12px", borderRadius: 20, border: `1px solid ${ordenar === o ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: ordenar === o ? "rgba(153,0,0,0.12)" : "transparent", color: ordenar === o ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 {o === "riesgo" ? "Por riesgo" : o === "dias" ? "Por días" : "Interacciones"}
               </button>
             ))}
@@ -262,7 +262,7 @@ export default function Retencion() {
                        c.riesgo === "frio" ? "URGENTE" : "Reactivar"}
                     </span>
                     {c.telefono && (
-                      <a href={`https://wa.me/${c.telefono.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 9, color: "#22c55e", textDecoration: "none", marginTop: 2 }}>💬 WhatsApp</a>
+                      <a href={`https://wa.me/${c.telefono.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 9, color: "#3abab6", textDecoration: "none", marginTop: 2 }}>💬 WhatsApp</a>
                     )}
                   </td>
                 </tr>
@@ -273,9 +273,9 @@ export default function Retencion() {
 
         {/* Tip re-engagement */}
         {stats.frio + stats.inactivo > 0 && (
-          <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: "rgba(204,0,0,0.06)", border: "1px solid rgba(204,0,0,0.15)" }}>
+          <div style={{ marginTop: 20, padding: 16, borderRadius: 10, background: "rgba(153,0,0,0.06)", border: "1px solid rgba(153,0,0,0.15)" }}>
             <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>
-              <strong style={{ color: "#cc0000" }}>⚡ {stats.frio + stats.inactivo} contactos requieren atención.</strong>{" "}
+              <strong style={{ color: "#990000" }}>⚡ {stats.frio + stats.inactivo} contactos requieren atención.</strong>{" "}
               Considera enviar un mensaje de re-engagement: actualizaciones de mercado, nuevas propiedades en su zona de interés, o simplemente un check-in. El contacto proactivo aumenta la tasa de conversión en un 40%.
             </p>
           </div>

@@ -34,9 +34,9 @@ const ESTADO_BORDER: Record<string, string> = {
   cerrado: "rgba(255,255,255,0.15)",
 };
 const ESTADO_TEXT: Record<string, string> = {
-  abierto: "#eab308",
+  abierto: "#d4960c",
   en_proceso: "#3b82f6",
-  resuelto: "#22c55e",
+  resuelto: "#3abab6",
   cerrado: "rgba(255,255,255,0.4)",
 };
 
@@ -119,16 +119,16 @@ export default function SoportePage() {
         .sp-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px 20px; cursor:pointer; transition:border-color 0.15s; }
         .sp-card:hover { border-color:rgba(255,255,255,0.14); }
         .sp-form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
-        .sp-form-input:focus { border-color:rgba(204,0,0,0.5); }
+        .sp-form-input:focus { border-color:rgba(153,0,0,0.5); }
         .sp-form-textarea { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:'Inter',sans-serif; outline:none; resize:vertical; min-height:120px; box-sizing:border-box; }
-        .sp-form-textarea:focus { border-color:rgba(204,0,0,0.5); }
+        .sp-form-textarea:focus { border-color:rgba(153,0,0,0.5); }
         .sp-form-select { width:100%; background:rgba(20,20,20,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:10px 14px; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
-        .sp-form-select:focus { border-color:rgba(204,0,0,0.5); }
+        .sp-form-select:focus { border-color:rgba(153,0,0,0.5); }
         .sp-label { font-size:11px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; display:block; }
         .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; display:flex; align-items:center; justify-content:center; padding:16px; }
         .modal-box { background:#0f0f0f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:24px; width:100%; max-width:600px; max-height:85vh; overflow-y:auto; }
         .sp-respuesta-box { background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:14px 18px; margin-top:16px; }
-        .sp-respuesta-label { font-size:10px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#22c55e; margin-bottom:8px; }
+        .sp-respuesta-label { font-size:10px; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#3abab6; margin-bottom:8px; }
         .sp-respuesta-texto { font-size:13px; color:rgba(255,255,255,0.8); line-height:1.7; white-space:pre-wrap; }
       `}</style>
 
@@ -147,7 +147,7 @@ export default function SoportePage() {
         </div>
         <button
           onClick={() => setMostrarForm(true)}
-          style={{ padding: "10px 20px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+          style={{ padding: "10px 20px", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
         >
           + Nuevo ticket
         </button>
@@ -182,7 +182,7 @@ export default function SoportePage() {
                   <span className="sp-badge" style={{ background: ESTADO_COLOR[t.estado], border: `1px solid ${ESTADO_BORDER[t.estado]}`, color: ESTADO_TEXT[t.estado] }}>
                     {ESTADO_LABEL[t.estado]}
                   </span>
-                  {t.respuesta && <span style={{ fontSize: 11, color: "#22c55e" }}>✓ Respondido</span>}
+                  {t.respuesta && <span style={{ fontSize: 11, color: "#3abab6" }}>✓ Respondido</span>}
                 </div>
               </div>
               <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.25)" }}>
@@ -198,7 +198,7 @@ export default function SoportePage() {
         <div className="modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarForm(false); }}>
           <div className="modal-box">
             <h2 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 17, fontWeight: 800, color: "#fff", margin: "0 0 20px" }}>
-              Nuevo ticket de <span style={{ color: "#cc0000" }}>soporte</span>
+              Nuevo ticket de <span style={{ color: "#990000" }}>soporte</span>
             </h2>
             <div style={{ marginBottom: 14 }}>
               <label className="sp-label">Asunto *</label>
@@ -220,7 +220,7 @@ export default function SoportePage() {
               <button onClick={() => { setMostrarForm(false); setForm(FORM_VACIO); }} style={{ padding: "10px 18px", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                 Cancelar
               </button>
-              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 22px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
+              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 22px", background: "#990000", color: "#fff", border: "none", borderRadius: 7, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? "Enviando..." : "Enviar ticket"}
               </button>
             </div>

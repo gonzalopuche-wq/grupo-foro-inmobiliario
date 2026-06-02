@@ -278,8 +278,8 @@ const styles = {
     gap: 12,
     marginTop: 20,
     padding: "14px 14px",
-    background: "rgba(204,0,0,0.06)",
-    border: "1px solid rgba(204,0,0,0.2)",
+    background: "rgba(153,0,0,0.06)",
+    border: "1px solid rgba(153,0,0,0.2)",
     borderRadius: 10,
   },
   logo: {
@@ -313,7 +313,7 @@ const styles = {
     margin: 0,
   },
   btnRojo: {
-    background: "#cc0000",
+    background: "#990000",
     color: "#fff",
     border: "none",
     borderRadius: 6,
@@ -329,7 +329,7 @@ const styles = {
   btnTexto: {
     background: "none",
     border: "none",
-    color: "#cc0000",
+    color: "#990000",
     fontSize: 11,
     fontWeight: 700,
     fontFamily: "Inter, sans-serif",

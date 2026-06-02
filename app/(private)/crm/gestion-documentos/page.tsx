@@ -202,9 +202,9 @@ function porcentaje(items: DocItem[]): number {
 }
 
 function statusInfo(pct: number): { label: string; color: string } {
-  if (pct === 100) return { label: "Completo", color: "#22c55e" };
-  if (pct >= 75) return { label: "Casi listo", color: "#f59e0b" };
-  return { label: "Pendiente", color: "#cc0000" };
+  if (pct === 100) return { label: "Completo", color: "#3abab6" };
+  if (pct >= 75) return { label: "Casi listo", color: "#d4960c" };
+  return { label: "Pendiente", color: "#990000" };
 }
 
 function statusEmoji(pct: number): string {
@@ -222,8 +222,8 @@ const TIPO_LABELS: Record<TipoExpediente, string> = {
 
 const TIPO_COLORS: Record<TipoExpediente, string> = {
   venta: "#3b82f6",
-  alquiler: "#22c55e",
-  alquiler_temporal: "#f59e0b",
+  alquiler: "#3abab6",
+  alquiler_temporal: "#d4960c",
   hipoteca: "#8b5cf6",
 };
 
@@ -386,8 +386,8 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
 
         <div
           style={{
-            background: "rgba(204,0,0,0.08)",
-            border: "1px solid rgba(204,0,0,0.2)",
+            background: "rgba(153,0,0,0.08)",
+            border: "1px solid rgba(153,0,0,0.2)",
             borderRadius: 6,
             padding: "8px 12px",
             fontSize: 11,
@@ -427,7 +427,7 @@ function ModalNuevoExpediente({ onClose, onSave }: ModalNuevoExpedienteProps) {
           <button
             onClick={handleGuardar}
             style={{
-              background: "#cc0000",
+              background: "#990000",
               border: "none",
               borderRadius: 8,
               color: "#fff",
@@ -556,8 +556,8 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
               width: 20,
               height: 20,
               borderRadius: 5,
-              border: `2px solid ${requerido ? "#cc0000" : "#444"}`,
-              background: requerido ? "#cc0000" : "transparent",
+              border: `2px solid ${requerido ? "#990000" : "#444"}`,
+              background: requerido ? "#990000" : "transparent",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -608,7 +608,7 @@ function ModalAgregarDoc({ onClose, onSave }: ModalAgregarDocProps) {
           <button
             onClick={handleGuardar}
             style={{
-              background: "#cc0000",
+              background: "#990000",
               border: "none",
               borderRadius: 8,
               color: "#fff",
@@ -815,17 +815,17 @@ export default function GestionDocumentosPage() {
     fontSize: 12,
     fontFamily: "Montserrat, sans-serif",
     fontWeight: 700,
-    border: activa ? "1px solid #cc0000" : "1px solid #222222",
+    border: activa ? "1px solid #990000" : "1px solid #222222",
     borderRadius: 8,
-    background: activa ? "rgba(204,0,0,0.12)" : "#111111",
-    color: activa ? "#cc0000" : "#666",
+    background: activa ? "rgba(153,0,0,0.12)" : "#111111",
+    color: activa ? "#990000" : "#666",
     cursor: "pointer",
   });
 
   if (!inited) {
     return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 28, height: 28, border: "2px solid rgba(204,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
@@ -866,7 +866,7 @@ export default function GestionDocumentosPage() {
         <button
           onClick={() => setMostrarModalNuevo(true)}
           style={{
-            background: "#cc0000",
+            background: "#990000",
             border: "none",
             borderRadius: 8,
             color: "#fff",
@@ -901,7 +901,7 @@ export default function GestionDocumentosPage() {
             <span
               style={{
                 marginLeft: 6,
-                background: "#cc0000",
+                background: "#990000",
                 color: "#fff",
                 fontSize: 9,
                 padding: "1px 6px",
@@ -1003,7 +1003,7 @@ export default function GestionDocumentosPage() {
                       onClick={() => seleccionarExpediente(exp.id)}
                       style={{
                         background: "#111111",
-                        border: `1px solid ${sel ? "#cc0000" : "#222222"}`,
+                        border: `1px solid ${sel ? "#990000" : "#222222"}`,
                         borderRadius: 10,
                         padding: "16px",
                         cursor: "pointer",
@@ -1185,7 +1185,7 @@ export default function GestionDocumentosPage() {
                             background: "rgba(59,130,246,0.12)",
                             border: "1px solid rgba(59,130,246,0.3)",
                             borderRadius: 7,
-                            color: "#60a5fa",
+                            color: "#4ab8d8",
                             padding: "8px 14px",
                             fontSize: 11,
                             fontFamily: "Montserrat, sans-serif",
@@ -1259,7 +1259,7 @@ export default function GestionDocumentosPage() {
                             fontSize: 10,
                             fontFamily: "Montserrat, sans-serif",
                             fontWeight: 800,
-                            color: "#cc0000",
+                            color: "#990000",
                             textTransform: "uppercase",
                             letterSpacing: "0.1em",
                             marginBottom: 8,
@@ -1276,8 +1276,8 @@ export default function GestionDocumentosPage() {
                             const vencido = dias !== null && dias < 0;
                             const proximoVencer = dias !== null && dias >= 0 && dias <= 7;
                             let borderColor = "#222222";
-                            if (!item.obtenido && vencido) borderColor = "#cc0000";
-                            else if (!item.obtenido && proximoVencer) borderColor = "#f97316";
+                            if (!item.obtenido && vencido) borderColor = "#990000";
+                            else if (!item.obtenido && proximoVencer) borderColor = "#d4960c";
 
                             return (
                               <div
@@ -1299,8 +1299,8 @@ export default function GestionDocumentosPage() {
                                       borderRadius: 5,
                                       flexShrink: 0,
                                       marginTop: 1,
-                                      border: `2px solid ${item.obtenido ? "#22c55e" : item.requerido ? "#cc0000" : "#444"}`,
-                                      background: item.obtenido ? "#22c55e" : "transparent",
+                                      border: `2px solid ${item.obtenido ? "#3abab6" : item.requerido ? "#990000" : "#444"}`,
+                                      background: item.obtenido ? "#3abab6" : "transparent",
                                       cursor: "pointer",
                                       display: "flex",
                                       alignItems: "center",
@@ -1330,9 +1330,9 @@ export default function GestionDocumentosPage() {
                                             fontSize: 9,
                                             fontFamily: "Montserrat, sans-serif",
                                             fontWeight: 700,
-                                            color: "#cc0000",
-                                            background: "rgba(204,0,0,0.12)",
-                                            border: "1px solid rgba(204,0,0,0.25)",
+                                            color: "#990000",
+                                            background: "rgba(153,0,0,0.12)",
+                                            border: "1px solid rgba(153,0,0,0.25)",
                                             borderRadius: 3,
                                             padding: "1px 5px",
                                           }}
@@ -1360,7 +1360,7 @@ export default function GestionDocumentosPage() {
                                         <span
                                           style={{
                                             fontSize: 10,
-                                            color: vencido ? "#cc0000" : proximoVencer ? "#f97316" : "#666",
+                                            color: vencido ? "#990000" : proximoVencer ? "#d4960c" : "#666",
                                             fontFamily: "Montserrat, sans-serif",
                                             fontWeight: 600,
                                           }}
@@ -1465,13 +1465,13 @@ export default function GestionDocumentosPage() {
                 {
                   label: "Completitud promedio",
                   value: `${stats.promedioCompletitud}%`,
-                  color: stats.promedioCompletitud >= 75 ? "#22c55e" : stats.promedioCompletitud >= 50 ? "#f59e0b" : "#cc0000",
+                  color: stats.promedioCompletitud >= 75 ? "#3abab6" : stats.promedioCompletitud >= 50 ? "#d4960c" : "#990000",
                   icon: "📊",
                 },
                 {
                   label: "Con documentos vencidos",
                   value: stats.conVencidos,
-                  color: stats.conVencidos === 0 ? "#22c55e" : "#cc0000",
+                  color: stats.conVencidos === 0 ? "#3abab6" : "#990000",
                   icon: "⚠️",
                 },
               ].map((card) => (
@@ -1528,7 +1528,7 @@ export default function GestionDocumentosPage() {
 
               {(["venta", "alquiler", "alquiler_temporal", "hipoteca"] as TipoExpediente[]).map((tipo) => {
                 const val = stats.promPorTipo[tipo];
-                const barColor = val >= 75 ? "#22c55e" : val >= 50 ? "#f59e0b" : val > 0 ? "#cc0000" : "#2a2a2a";
+                const barColor = val >= 75 ? "#3abab6" : val >= 50 ? "#d4960c" : val > 0 ? "#990000" : "#2a2a2a";
                 return (
                   <div key={tipo} style={{ marginBottom: 14 }}>
                     <div
@@ -1636,9 +1636,9 @@ export default function GestionDocumentosPage() {
                           fontSize: 11,
                           fontFamily: "Montserrat, sans-serif",
                           fontWeight: 700,
-                          color: "#cc0000",
-                          background: "rgba(204,0,0,0.1)",
-                          border: "1px solid rgba(204,0,0,0.2)",
+                          color: "#990000",
+                          background: "rgba(153,0,0,0.1)",
+                          border: "1px solid rgba(153,0,0,0.2)",
                           borderRadius: 4,
                           padding: "2px 8px",
                         }}

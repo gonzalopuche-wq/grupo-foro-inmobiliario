@@ -32,7 +32,7 @@ export default function SponsorSaldoPage() {
   }, []);
 
   const TIPO_LABEL: Record<string, string> = { recarga: "Recarga", debito_adhesion: "Débito adhesión", ajuste: "Ajuste" };
-  const TIPO_COLOR: Record<string, string> = { recarga: "#22c55e", debito_adhesion: "#ef4444", ajuste: "#f59e0b" };
+  const TIPO_COLOR: Record<string, string> = { recarga: "#3abab6", debito_adhesion: "#b80000", ajuste: "#d4960c" };
 
   if (loading) return <div style={{ color: "rgba(255,255,255,.3)" }}>Cargando...</div>;
 
@@ -53,14 +53,14 @@ export default function SponsorSaldoPage() {
       <div className="sl-hdr">Saldo y Movimientos</div>
 
       <div className="sl-card">
-        <div className="sl-val" style={{ color: saldo < 50 ? "#ef4444" : saldo < 200 ? "#f59e0b" : "#22c55e" }}>
+        <div className="sl-val" style={{ color: saldo < 50 ? "#b80000" : saldo < 200 ? "#d4960c" : "#3abab6" }}>
           ${saldo.toFixed(2)}
         </div>
         <div className="sl-label">Saldo disponible (USD)</div>
       </div>
 
       {saldo < 50 && (
-        <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 20, fontSize: 13, color: "#ef4444", maxWidth: 500 }}>
+        <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 20, fontSize: 13, color: "#b80000", maxWidth: 500 }}>
           ⚠️ Saldo bajo. Contactá al equipo de GFI® para recargar tu crédito.
           Las adhesiones de nuevos corredores quedan bloqueadas sin saldo disponible.
         </div>
@@ -89,7 +89,7 @@ export default function SponsorSaldoPage() {
                         {TIPO_LABEL[m.tipo] ?? m.tipo}
                       </span>
                     </td>
-                    <td style={{ fontWeight: 600, color: m.monto_usd >= 0 ? "#22c55e" : "#ef4444" }}>
+                    <td style={{ fontWeight: 600, color: m.monto_usd >= 0 ? "#3abab6" : "#b80000" }}>
                       {m.monto_usd >= 0 ? "+" : ""}{m.monto_usd.toFixed(2)} USD
                     </td>
                     <td style={{ maxWidth: 300, fontSize: 11, color: "rgba(255,255,255,.4)" }}>{m.descripcion ?? "—"}</td>

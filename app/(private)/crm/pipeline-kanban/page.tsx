@@ -20,11 +20,11 @@ const ETAPAS: { id: Etapa; label: string; color: string }[] = [
   { id: "prospecto",   label: "Prospecto",   color: "#6b7280" },
   { id: "contactado",  label: "Contactado",  color: "#3b82f6" },
   { id: "visita",      label: "Visita",       color: "#8b5cf6" },
-  { id: "oferta",      label: "Oferta",       color: "#f59e0b" },
-  { id: "negociacion", label: "Negociación",  color: "#f97316" },
-  { id: "escritura",   label: "Escritura",    color: "#10b981" },
-  { id: "cerrado",     label: "Cerrado",      color: "#22c55e" },
-  { id: "perdido",     label: "Perdido",      color: "#cc0000" },
+  { id: "oferta",      label: "Oferta",       color: "#d4960c" },
+  { id: "negociacion", label: "Negociación",  color: "#d4960c" },
+  { id: "escritura",   label: "Escritura",    color: "#3abab6" },
+  { id: "cerrado",     label: "Cerrado",      color: "#3abab6" },
+  { id: "perdido",     label: "Perdido",      color: "#990000" },
 ];
 
 interface CrmContactoRow {
@@ -68,9 +68,9 @@ function calcDias(updatedAt: string): number {
 }
 
 function diasColor(dias: number): string {
-  if (dias > 21) return "#cc0000";
-  if (dias >= 7) return "#f59e0b";
-  return "#22c55e";
+  if (dias > 21) return "#990000";
+  if (dias >= 7) return "#d4960c";
+  return "#3abab6";
 }
 
 function fmtPrecio(valor: number | null, moneda: string | null): string {
@@ -305,9 +305,9 @@ export default function PipelineKanbanPage() {
             style={{
               padding: "8px 16px",
               borderRadius: 20,
-              border: incluirCerrados ? "1px solid #22c55e" : "1px solid #333",
+              border: incluirCerrados ? "1px solid #3abab6" : "1px solid #333",
               background: incluirCerrados ? "rgba(34,197,94,0.1)" : "#111",
-              color: incluirCerrados ? "#22c55e" : "#888",
+              color: incluirCerrados ? "#3abab6" : "#888",
               fontSize: 12,
               fontFamily: "Montserrat, sans-serif",
               fontWeight: 700,
@@ -337,7 +337,7 @@ export default function PipelineKanbanPage() {
                 padding: "12px 20px",
                 background: "transparent",
                 border: "none",
-                borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
+                borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
                 color: tab === t.id ? "#fff" : "#666",
                 fontSize: 14,
                 fontFamily: "Montserrat, sans-serif",
@@ -443,7 +443,7 @@ function KanbanColumna({ etapa, items, totalHon, onMover, moviendo, etapasVisibl
         {totalHon > 0 && (
           <div style={{ fontSize: 11, color: "#888", marginTop: 4, fontFamily: "Inter, sans-serif" }}>
             Hon. est.:{" "}
-            <span style={{ color: "#22c55e", fontWeight: 600 }}>
+            <span style={{ color: "#3abab6", fontWeight: 600 }}>
               {new Intl.NumberFormat("es-AR", {
                 style: "currency",
                 currency: "USD",
@@ -507,10 +507,10 @@ interface CardProps {
 }
 
 const TIPO_COLORS: Record<string, string> = {
-  venta: "#cc0000",
+  venta: "#990000",
   alquiler: "#3b82f6",
   alquiler_temporal: "#8b5cf6",
-  loteo: "#f97316",
+  loteo: "#d4960c",
   otro: "#6b7280",
 };
 
@@ -576,7 +576,7 @@ function NegocioCard({ negocio, prevEtapa, nextEtapa, onMover, moviendo }: CardP
         <div style={{ fontSize: 12, color: "#ccc", marginBottom: 2, fontFamily: "Inter, sans-serif" }}>
           {fmtPrecio(negocio.precio_cierre, negocio.moneda)}
           {negocio.honorarios_pct && (
-            <span style={{ color: "#22c55e", marginLeft: 6 }}>
+            <span style={{ color: "#3abab6", marginLeft: 6 }}>
               → {fmtHonorarios(negocio.precio_cierre, negocio.honorarios_pct, negocio.moneda)}
             </span>
           )}
@@ -828,7 +828,7 @@ function ResumenTab({ resumen, maxHon }: ResumenTabProps) {
             </span>
 
             {/* Honorarios */}
-            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: r.totalHon > 0 ? "#22c55e" : "#444" }}>
+            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: r.totalHon > 0 ? "#3abab6" : "#444" }}>
               {r.totalHon > 0
                 ? new Intl.NumberFormat("es-AR", {
                     style: "currency",

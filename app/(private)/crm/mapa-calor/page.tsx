@@ -46,7 +46,7 @@ const COLORES: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: "#1a1a1a",
   1: "#4d0000",
   2: "#800000",
-  3: "#cc0000",
+  3: "#990000",
   4: "#ff4444",
 };
 
@@ -492,7 +492,7 @@ export default function MapaActividadCorredor() {
                 padding: "8px 18px",
                 background: "transparent",
                 border: "none",
-                borderBottom: `2px solid ${tab === t.id ? "#cc0000" : "transparent"}`,
+                borderBottom: `2px solid ${tab === t.id ? "#990000" : "transparent"}`,
                 color: tab === t.id ? "#fff" : "rgba(255,255,255,0.4)",
                 fontFamily: "Montserrat, sans-serif",
                 fontWeight: 700,
@@ -647,7 +647,7 @@ export default function MapaActividadCorredor() {
                   key={stat.label}
                   style={{
                     background: "rgba(255,255,255,0.02)",
-                    border: `1px solid ${stat.highlight ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.06)"}`,
+                    border: `1px solid ${stat.highlight ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.06)"}`,
                     borderRadius: 10,
                     padding: "14px 16px",
                   }}
@@ -655,7 +655,7 @@ export default function MapaActividadCorredor() {
                   <p style={{ margin: "0 0 4px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     {stat.label}
                   </p>
-                  <p style={{ margin: "0 0 2px 0", fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: stat.highlight ? "#cc0000" : "#fff" }}>
+                  <p style={{ margin: "0 0 2px 0", fontSize: 22, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: stat.highlight ? "#990000" : "#fff" }}>
                     {stat.valor}
                   </p>
                   <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
@@ -737,7 +737,7 @@ export default function MapaActividadCorredor() {
                           <div style={{
                             height: 8,
                             width: Math.max(4, (semana.total / maxTotalSemana) * 80),
-                            background: semana.total > 0 ? "#cc0000" : "rgba(255,255,255,0.05)",
+                            background: semana.total > 0 ? "#990000" : "rgba(255,255,255,0.05)",
                             borderRadius: 4,
                           }} />
                           <span style={{ fontSize: 12, fontWeight: 700, color: semana.total > 0 ? "#fff" : "rgba(255,255,255,0.2)", minWidth: 20 }}>
@@ -773,9 +773,9 @@ export default function MapaActividadCorredor() {
                   style={{
                     padding: "6px 14px",
                     borderRadius: 20,
-                    border: `1px solid ${filtroDetalle === f.id ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.1)"}`,
-                    background: filtroDetalle === f.id ? "rgba(204,0,0,0.15)" : "transparent",
-                    color: filtroDetalle === f.id ? "#cc0000" : "rgba(255,255,255,0.5)",
+                    border: `1px solid ${filtroDetalle === f.id ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`,
+                    background: filtroDetalle === f.id ? "rgba(153,0,0,0.15)" : "transparent",
+                    color: filtroDetalle === f.id ? "#990000" : "rgba(255,255,255,0.5)",
                     fontSize: 11,
                     fontFamily: "Montserrat, sans-serif",
                     fontWeight: 700,
@@ -814,7 +814,7 @@ export default function MapaActividadCorredor() {
                         gap: 14,
                         padding: "12px 16px",
                         background: "rgba(255,255,255,0.02)",
-                        border: `1px solid ${esHoy ? "rgba(204,0,0,0.2)" : "rgba(255,255,255,0.06)"}`,
+                        border: `1px solid ${esHoy ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.06)"}`,
                         borderLeft: `3px solid ${COLORES[dia.nivel]}`,
                         borderRadius: 10,
                       }}
@@ -839,7 +839,7 @@ export default function MapaActividadCorredor() {
 
                       {/* Fecha */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: 600, color: esHoy ? "#cc0000" : "#fff" }}>
+                        <p style={{ margin: "0 0 2px 0", fontSize: 13, fontWeight: 600, color: esHoy ? "#990000" : "#fff" }}>
                           {esHoy ? "Hoy — " : ""}{fechaLabel}
                         </p>
                         {dia.nivel > 0 ? (
@@ -889,8 +889,8 @@ export default function MapaActividadCorredor() {
                           <span style={{
                             padding: "3px 10px",
                             borderRadius: 12,
-                            background: "rgba(204,0,0,0.15)",
-                            border: "1px solid rgba(204,0,0,0.3)",
+                            background: "rgba(153,0,0,0.15)",
+                            border: "1px solid rgba(153,0,0,0.3)",
                             fontSize: 10,
                             color: "#ff9999",
                             fontFamily: "Montserrat, sans-serif",

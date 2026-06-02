@@ -141,27 +141,27 @@ export default function WebhooksPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .wh-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 20px; }
         .wh-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 9px 12px; font-family: 'Inter',sans-serif; font-size: 13px; width: 100%; outline: none; }
-        .wh-input:focus { border-color: rgba(204,0,0,0.5); }
+        .wh-input:focus { border-color: rgba(153,0,0,0.5); }
         .wh-btn { padding: 8px 18px; border-radius: 7px; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; border: none; transition: all 0.15s; }
         .wh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .wh-btn-red { background: #cc0000; color: #fff; }
+        .wh-btn-red { background: #990000; color: #fff; }
         .wh-btn-red:hover:not(:disabled) { background: #aa0000; }
         .wh-btn-outline { background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.15); }
         .wh-btn-outline:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
         .wh-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 9px; font-weight: 700; font-family: 'Montserrat',sans-serif; letter-spacing: 0.08em; }
         .wh-ev-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; user-select: none; transition: all 0.15s; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); }
-        .wh-ev-chip.sel { border-color: rgba(204,0,0,0.5); background: rgba(204,0,0,0.12); color: #ff6666; }
+        .wh-ev-chip.sel { border-color: rgba(153,0,0,0.5); background: rgba(153,0,0,0.12); color: #ff6666; }
         .wh-table { width: 100%; border-collapse: collapse; }
         .wh-table th { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
         .wh-table td { color: rgba(255,255,255,0.65); padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'Inter',sans-serif; font-size: 12px; vertical-align: middle; }
-        .wh-secret-box { background: rgba(204,0,0,0.08); border: 1px solid rgba(204,0,0,0.3); border-radius: 8px; padding: 16px; }
-        .wh-mono { font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 5px; word-break: break-all; color: #fbbf24; }
+        .wh-secret-box { background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.3); border-radius: 8px; padding: 16px; }
+        .wh-mono { font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 5px; word-break: break-all; color: #d4960c; }
       `}</style>
 
       <div style={{ maxWidth: 900, display: "flex", flexDirection: "column", gap: 20 }}>
         <div>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
-            Webhooks <span style={{ color: "#cc0000" }}>GFI®</span>
+            Webhooks <span style={{ color: "#990000" }}>GFI®</span>
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
             Registrá endpoints externos para recibir eventos en tiempo real desde GFI®
@@ -173,7 +173,7 @@ export default function WebhooksPage() {
           <div className="wh-secret-box">
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <span style={{ fontSize: 18 }}>⚠️</span>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "#fbbf24" }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, color: "#d4960c" }}>
                 Copiá tu secret ahora — se muestra una sola vez
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function WebhooksPage() {
 
         {/* Formulario nuevo webhook */}
         {showForm && (
-          <div className="wh-card" style={{ borderColor: "rgba(204,0,0,0.2)" }}>
+          <div className="wh-card" style={{ borderColor: "rgba(153,0,0,0.2)" }}>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em", marginBottom: 16 }}>
               NUEVO WEBHOOK
             </div>
@@ -224,7 +224,7 @@ export default function WebhooksPage() {
                 </div>
               </div>
               {msg && (
-                <div style={{ padding: "10px 14px", borderRadius: 7, background: msg.tipo === "ok" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", border: `1px solid ${msg.tipo === "ok" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`, color: msg.tipo === "ok" ? "#22c55e" : "#ef4444", fontFamily: "Inter,sans-serif", fontSize: 12 }}>
+                <div style={{ padding: "10px 14px", borderRadius: 7, background: msg.tipo === "ok" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", border: `1px solid ${msg.tipo === "ok" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`, color: msg.tipo === "ok" ? "#3abab6" : "#b80000", fontFamily: "Inter,sans-serif", fontSize: 12 }}>
                   {msg.texto}
                 </div>
               )}
@@ -269,7 +269,7 @@ export default function WebhooksPage() {
                     <td>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                         {hook.eventos.map(ev => (
-                          <span key={ev} className="wh-badge" style={{ background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.2)", color: "rgba(255,100,100,0.8)" }}>
+                          <span key={ev} className="wh-badge" style={{ background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", color: "rgba(255,100,100,0.8)" }}>
                             {ev}
                           </span>
                         ))}
@@ -278,7 +278,7 @@ export default function WebhooksPage() {
                     <td>
                       <span
                         className="wh-badge"
-                        style={{ background: hook.activo ? "rgba(34,197,94,0.1)" : "rgba(255,255,255,0.04)", color: hook.activo ? "#22c55e" : "rgba(255,255,255,0.3)", border: `1px solid ${hook.activo ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.1)"}`, cursor: "pointer" }}
+                        style={{ background: hook.activo ? "rgba(34,197,94,0.1)" : "rgba(255,255,255,0.04)", color: hook.activo ? "#3abab6" : "rgba(255,255,255,0.3)", border: `1px solid ${hook.activo ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.1)"}`, cursor: "pointer" }}
                         onClick={() => toggleActivo(hook)}
                         title="Click para activar/desactivar"
                       >
@@ -335,11 +335,11 @@ export default function WebhooksPage() {
                   <tr key={log.id}>
                     <td style={{ fontFamily: "monospace", fontSize: 11 }}>{log.evento}</td>
                     <td>
-                      <span className="wh-badge" style={{ background: log.ok ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", color: log.ok ? "#22c55e" : "#ef4444", border: `1px solid ${log.ok ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}` }}>
+                      <span className="wh-badge" style={{ background: log.ok ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", color: log.ok ? "#3abab6" : "#b80000", border: `1px solid ${log.ok ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}` }}>
                         {log.ok ? "OK" : "ERROR"}
                       </span>
                     </td>
-                    <td style={{ color: log.status_code && log.status_code < 300 ? "#22c55e" : "#ef4444", fontFamily: "monospace" }}>
+                    <td style={{ color: log.status_code && log.status_code < 300 ? "#3abab6" : "#b80000", fontFamily: "monospace" }}>
                       {log.status_code ?? "—"}
                     </td>
                     <td style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{log.duracion_ms}ms</td>

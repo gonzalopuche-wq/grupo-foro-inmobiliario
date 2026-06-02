@@ -21,8 +21,8 @@ interface Autorizacion {
 }
 
 const ESTADO_COLORS: Record<string, { bg: string; color: string; label: string }> = {
-  vigente:   { bg: "rgba(34,197,94,0.12)",  color: "#22c55e",  label: "Vigente" },
-  vencida:   { bg: "rgba(239,68,68,0.12)",  color: "#ef4444",  label: "Vencida" },
+  vigente:   { bg: "rgba(34,197,94,0.12)",  color: "#3abab6",  label: "Vigente" },
+  vencida:   { bg: "rgba(239,68,68,0.12)",  color: "#b80000",  label: "Vencida" },
   renovada:  { bg: "rgba(99,102,241,0.12)", color: "#818cf8",  label: "Renovada" },
   cancelada: { bg: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)", label: "Cancelada" },
 };
@@ -37,10 +37,10 @@ function diasRestantes(fecha: string): number {
 
 function alertColor(dias: number, estado: string): string | null {
   if (estado !== "vigente") return null;
-  if (dias <= 0) return "#ef4444";
-  if (dias <= 7) return "#f97316";
-  if (dias <= 15) return "#eab308";
-  if (dias <= 30) return "#facc15";
+  if (dias <= 0) return "#b80000";
+  if (dias <= 7) return "#d4960c";
+  if (dias <= 15) return "#d4960c";
+  if (dias <= 30) return "#d4960c";
   return null;
 }
 
@@ -178,7 +178,7 @@ export default function AutorizacionesPage() {
         .aut-table th { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.07); }
         .aut-table th.sortable { cursor: pointer; user-select: none; }
         .aut-table th.sortable:hover { color: rgba(255,255,255,0.6); }
-        .aut-table th.sort-activo { color: #cc0000 !important; }
+        .aut-table th.sort-activo { color: #990000 !important; }
         .aut-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: rgba(255,255,255,0.75); vertical-align: middle; }
         .aut-table tr:hover td { background: rgba(255,255,255,0.02); cursor: pointer; }
         .aut-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; font-family: Montserrat,sans-serif; letter-spacing: 0.08em; }
@@ -189,7 +189,7 @@ export default function AutorizacionesPage() {
         .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
         .field-label { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 5px; }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; z-index: 999; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
+        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
       `}</style>
 
@@ -204,7 +204,7 @@ export default function AutorizacionesPage() {
           </div>
         </div>
         <button onClick={() => { setForm({ ...EMPTY }); setModal("nuevo"); }} style={{
-          padding: "10px 20px", background: "#cc0000", border: "none", borderRadius: 5,
+          padding: "10px 20px", background: "#990000", border: "none", borderRadius: 5,
           color: "#fff", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontSize: 10,
           fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
         }}>
@@ -216,7 +216,7 @@ export default function AutorizacionesPage() {
       {vencenProximas > 0 && (
         <div style={{ background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: 18 }}>⚠️</span>
-          <div style={{ fontSize: 13, color: "#eab308" }}>
+          <div style={{ fontSize: 13, color: "#d4960c" }}>
             <strong>{vencenProximas}</strong> autorización{vencenProximas > 1 ? "es" : ""} vence{vencenProximas > 1 ? "n" : ""} en los próximos 30 días
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function AutorizacionesPage() {
         {(["todas", "vigente", "vencida"] as const).map(f => (
           <button key={f} onClick={() => setFiltro(f)} style={{
             padding: "6px 16px", borderRadius: 20, border: "1px solid",
-            borderColor: filtro === f ? "#cc0000" : "rgba(255,255,255,0.12)",
+            borderColor: filtro === f ? "#990000" : "rgba(255,255,255,0.12)",
             background: filtro === f ? "rgba(200,0,0,0.1)" : "transparent",
             color: filtro === f ? "#fff" : "rgba(255,255,255,0.4)",
             cursor: "pointer", fontSize: 11, fontWeight: 600,
@@ -242,7 +242,7 @@ export default function AutorizacionesPage() {
         <div style={{ textAlign: "center", padding: "60px 20px", color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
           No hay autorizaciones registradas.
           <br /><br />
-          <button onClick={() => { setForm({ ...EMPTY }); setModal("nuevo"); }} style={{ background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", color: "#cc0000", borderRadius: 5, padding: "10px 20px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+          <button onClick={() => { setForm({ ...EMPTY }); setModal("nuevo"); }} style={{ background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", color: "#990000", borderRadius: 5, padding: "10px 20px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
             Registrar primera autorización
           </button>
         </div>
@@ -359,7 +359,7 @@ export default function AutorizacionesPage() {
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
               <button onClick={() => setModal(null)} style={{ padding: "10px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 4, color: "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Cancelar</button>
-              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 24px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", cursor: guardando ? "not-allowed" : "pointer", opacity: guardando ? 0.6 : 1, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <button onClick={guardar} disabled={guardando} style={{ padding: "10px 24px", background: "#990000", border: "none", borderRadius: 4, color: "#fff", cursor: guardando ? "not-allowed" : "pointer", opacity: guardando ? 0.6 : 1, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 {guardando ? "Guardando..." : "Guardar"}
               </button>
             </div>
@@ -405,7 +405,7 @@ export default function AutorizacionesPage() {
               {verItem.observaciones && row("Observaciones", verItem.observaciones)}
 
               {verItem.propietario_telefono && (
-                <a href={`https://wa.me/${verItem.propietario_telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, padding: "8px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 5, color: "#22c55e", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
+                <a href={`https://wa.me/${verItem.propietario_telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, padding: "8px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 5, color: "#3abab6", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
                   💬 WhatsApp al propietario
                 </a>
               )}
@@ -418,7 +418,7 @@ export default function AutorizacionesPage() {
               )}
 
               <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "flex-end" }}>
-                <button onClick={() => eliminar(verItem.id)} style={{ padding: "6px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 4, color: "#ef4444", cursor: "pointer", fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif", letterSpacing: "0.08em" }}>Eliminar</button>
+                <button onClick={() => eliminar(verItem.id)} style={{ padding: "6px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 4, color: "#b80000", cursor: "pointer", fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif", letterSpacing: "0.08em" }}>Eliminar</button>
               </div>
             </div>
           </div>

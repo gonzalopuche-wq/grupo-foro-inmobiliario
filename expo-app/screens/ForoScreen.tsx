@@ -16,7 +16,7 @@ interface Post {
 const CAT_COLORS: Record<string, string> = {
   general: C.blue,
   consulta: C.yellow,
-  venta: '#22c55e',
+  venta: '#3abab6',
   alquiler: '#8b5cf6',
   noticia: C.red,
 };

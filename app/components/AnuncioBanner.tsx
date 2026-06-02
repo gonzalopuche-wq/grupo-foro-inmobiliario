@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 
 export default function AnuncioBanner() {
   const [texto, setTexto] = useState<string | null>(null);
-  const [color, setColor] = useState("#cc0000");
+  const [color, setColor] = useState("#990000");
 
   useEffect(() => {
     (async () => {

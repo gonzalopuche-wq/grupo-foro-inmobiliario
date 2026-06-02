@@ -94,7 +94,7 @@ const fmtPeriodo = (p: string | null): string => {
 const colorAcum = (n: number | null): string => {
   if (n === null) return "rgba(255,255,255,0.4)";
   if (n > 0) return "#f87171";  // rojo — sube
-  return "#22c55e";              // verde — baja
+  return "#3abab6";              // verde — baja
 };
 
 // ── Componente ────────────────────────────────────────────────────────────────

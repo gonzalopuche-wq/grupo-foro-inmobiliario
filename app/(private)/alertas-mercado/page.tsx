@@ -136,23 +136,23 @@ export default function AlertasMercadoPage() {
         .am-root { min-height: 100vh; background: #0a0a0a; padding: 0 0 60px; }
         .am-header { background: rgba(6,6,6,0.98); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12; }
         .am-logo { font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 800; }
-        .am-logo span { color: #cc0000; }
+        .am-logo span { color: #990000; }
         .am-body { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
         .am-title { font-family: Montserrat,sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-        .am-title span { color: #cc0000; }
+        .am-title span { color: #990000; }
         .am-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 22px; }
         .am-tabs { display: flex; gap: 6px; margin-bottom: 24px; }
         .am-tab { padding: 8px 18px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .am-tab.activo { background: #cc0000; border-color: #cc0000; color: #fff; }
+        .am-tab.activo { background: #990000; border-color: #990000; color: #fff; }
         .am-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 16px 18px; margin-bottom: 10px; }
         .am-card:hover { border-color: rgba(255,255,255,0.12); }
         .am-empty { padding: 48px 20px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; }
         .am-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; text-transform: uppercase; }
         .am-input { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; outline: none; }
-        .am-input:focus { border-color: rgba(204,0,0,0.5); }
-        .am-btn { padding: 8px 16px; background: #cc0000; border: none; border-radius: 5px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .am-input:focus { border-color: rgba(153,0,0,0.5); }
+        .am-btn { padding: 8px 16px; background: #990000; border: none; border-radius: 5px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .am-btn-sm { padding: 5px 12px; background: transparent; border: 1px solid rgba(239,68,68,0.3); border-radius: 5px; color: rgba(239,68,68,0.8); font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; cursor: pointer; }
-        .am-zona-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: rgba(204,0,0,0.1); border: 1px solid rgba(204,0,0,0.2); border-radius: 20px; font-size: 12px; color: #cc0000; font-family: Montserrat,sans-serif; font-weight: 700; }
+        .am-zona-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.2); border-radius: 20px; font-size: 12px; color: #990000; font-family: Montserrat,sans-serif; font-weight: 700; }
         .am-zona-x { background: none; border: none; color: rgba(239,68,68,0.6); cursor: pointer; font-size: 13px; padding: 0; line-height: 1; }
       `}</style>
 
@@ -181,7 +181,7 @@ export default function AlertasMercadoPage() {
                   <div style={{ fontSize: 32, marginBottom: 12 }}>🔄</div>
                   <div>No tenés matches MIR aún.</div>
                   <div style={{ fontSize: 12, marginTop: 6, color: "rgba(255,255,255,0.15)" }}>
-                    Publicá una oferta o búsqueda en el <Link href="/mir" style={{ color: "#cc0000" }}>MIR</Link> para generar matches.
+                    Publicá una oferta o búsqueda en el <Link href="/mir" style={{ color: "#990000" }}>MIR</Link> para generar matches.
                   </div>
                 </div>
               ) : (
@@ -198,7 +198,7 @@ export default function AlertasMercadoPage() {
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                              <span className="am-badge" style={{ background: esOfrecido ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)", color: esOfrecido ? "#60a5fa" : "#22c55e" }}>
+                              <span className="am-badge" style={{ background: esOfrecido ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)", color: esOfrecido ? "#4ab8d8" : "#3abab6" }}>
                                 {esOfrecido ? "Tu oferta" : "Tu búsqueda"}
                               </span>
                               {prop && <span className="am-badge" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" }}>{prop.tipo_propiedad}</span>}
@@ -212,7 +212,7 @@ export default function AlertasMercadoPage() {
                                   {prop.sup_cubierta && ` · ${prop.sup_cubierta}m²`}
                                 </div>
                                 {prop.precio && (
-                                  <div style={{ fontSize: 13, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                                  <div style={{ fontSize: 13, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                     {fmtUSD(prop.precio)}
                                   </div>
                                 )}
@@ -240,14 +240,14 @@ export default function AlertasMercadoPage() {
                           <div style={{ textAlign: "right", flexShrink: 0 }}>
                             <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginBottom: 8 }}>{fmtFecha(m.created_at)}</div>
                             {m.costo_desbloqueo && m.costo_desbloqueo > 0 && (
-                              <span style={{ fontSize: 10, padding: "3px 8px", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 10, color: "#f59e0b", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, padding: "3px 8px", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 10, color: "#d4960c", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                 Desbloqueo: ${m.costo_desbloqueo}
                               </span>
                             )}
                           </div>
                         </div>
                         <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
-                          <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "6px 14px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 5, color: "#cc0000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "6px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5, color: "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                             Ver en MIR →
                           </Link>
                         </div>
@@ -269,22 +269,22 @@ export default function AlertasMercadoPage() {
                   {barrioAlerts.map((b, i) => {
                     const esAlertado = alertaZonas.some(z => b.barrio.toLowerCase().includes(z.toLowerCase()));
                     return (
-                      <div key={b.barrio} className="am-card" style={{ borderColor: esAlertado ? "rgba(204,0,0,0.25)" : undefined }}>
+                      <div key={b.barrio} className="am-card" style={{ borderColor: esAlertado ? "rgba(153,0,0,0.25)" : undefined }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                          <div style={{ width: 28, fontSize: 14, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: i < 3 ? "#f59e0b" : "rgba(255,255,255,0.25)" }}>#{i + 1}</div>
+                          <div style={{ width: 28, fontSize: 14, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: i < 3 ? "#d4960c" : "rgba(255,255,255,0.25)" }}>#{i + 1}</div>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{b.barrio}</span>
-                              {esAlertado && <span className="am-badge" style={{ background: "rgba(204,0,0,0.15)", color: "#cc0000" }}>🔔 Seguido</span>}
+                              {esAlertado && <span className="am-badge" style={{ background: "rgba(153,0,0,0.15)", color: "#990000" }}>🔔 Seguido</span>}
                             </div>
                             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                               <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{b.count} comparables</span>
-                              {b.precio_m2_avg > 0 && <span style={{ fontSize: 12, color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{fmtUSD(b.precio_m2_avg)}/m²</span>}
+                              {b.precio_m2_avg > 0 && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{fmtUSD(b.precio_m2_avg)}/m²</span>}
                             </div>
                           </div>
                           <div style={{ width: 120 }}>
                             <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
-                              <div style={{ height: "100%", width: `${Math.round((b.count / barrioAlerts[0].count) * 100)}%`, background: "#cc0000", borderRadius: 2 }} />
+                              <div style={{ height: "100%", width: `${Math.round((b.count / barrioAlerts[0].count) * 100)}%`, background: "#990000", borderRadius: 2 }} />
                             </div>
                           </div>
                         </div>
@@ -339,14 +339,14 @@ export default function AlertasMercadoPage() {
                   Los nuevos matches aparecen en la pestaña <strong style={{ color: "#fff" }}>Mis matches MIR</strong>.
                 </div>
                 <div style={{ marginTop: 14 }}>
-                  <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 6, color: "#cc0000", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <Link href="/mir" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, color: "#990000", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     Ir al MIR →
                   </Link>
                 </div>
               </div>
 
               <div style={{ marginTop: 20, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
-                {confOk && <span style={{ fontSize: 12, color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>✓ Guardado</span>}
+                {confOk && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>✓ Guardado</span>}
                 <button className="am-btn" onClick={guardarConfiguracion} disabled={guardandoConf}>
                   {guardandoConf ? "Guardando..." : "Guardar configuración"}
                 </button>

@@ -61,9 +61,9 @@ const CATEGORIA_LABEL: Record<Categoria, string> = {
 };
 
 const PRIORIDAD_COLOR: Record<Prioridad, string> = {
-  urgente: "#cc0000",
-  alta: "#f97316",
-  media: "#eab308",
+  urgente: "#990000",
+  alta: "#d4960c",
+  media: "#d4960c",
   baja: "#6b7280",
 };
 
@@ -518,13 +518,13 @@ function ModalTarea({ tarea, onClose, onSave, onDelete, initialData }: ModalProp
             type="checkbox"
             checked={form.recordatorio}
             onChange={(e) => set("recordatorio", e.target.checked)}
-            style={{ accentColor: "#cc0000" }}
+            style={{ accentColor: "#990000" }}
           />
           Activar recordatorio
         </label>
 
         {error && (
-          <p style={{ color: "#cc0000", fontSize: "13px", marginBottom: "12px", fontFamily: "Inter, sans-serif" }}>
+          <p style={{ color: "#990000", fontSize: "13px", marginBottom: "12px", fontFamily: "Inter, sans-serif" }}>
             {error}
           </p>
         )}
@@ -581,7 +581,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 const btnPrimary: React.CSSProperties = {
-  background: "#cc0000",
+  background: "#990000",
   color: "#fff",
   border: "none",
   borderRadius: "6px",
@@ -605,8 +605,8 @@ const btnSecondary: React.CSSProperties = {
 
 const btnDanger: React.CSSProperties = {
   background: "transparent",
-  color: "#cc0000",
-  border: "1px solid #cc0000",
+  color: "#990000",
+  border: "1px solid #990000",
   borderRadius: "6px",
   padding: "9px 20px",
   fontFamily: "Inter, sans-serif",
@@ -628,9 +628,9 @@ function TareaCard({ tarea, onToggle, onEdit, mostrarCheckbox = true }: TareaCar
   const completada = tarea.estado === "completada";
 
   const borderLeft = vencida
-    ? "3px solid #cc0000"
+    ? "3px solid #990000"
     : tarea.prioridad === "urgente"
-    ? "3px solid #f97316"
+    ? "3px solid #d4960c"
     : "3px solid #333333";
 
   return (
@@ -662,9 +662,9 @@ function TareaCard({ tarea, onToggle, onEdit, mostrarCheckbox = true }: TareaCar
             style={{
               width: "18px",
               height: "18px",
-              border: completada ? "2px solid #cc0000" : "2px solid #444444",
+              border: completada ? "2px solid #990000" : "2px solid #444444",
               borderRadius: "4px",
-              background: completada ? "#cc0000" : "transparent",
+              background: completada ? "#990000" : "transparent",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -740,7 +740,7 @@ function TareaCard({ tarea, onToggle, onEdit, mostrarCheckbox = true }: TareaCar
               style={{
                 fontSize: "12px",
                 fontFamily: "Inter, sans-serif",
-                color: vencida ? "#cc0000" : "#aaaaaa",
+                color: vencida ? "#990000" : "#aaaaaa",
                 fontWeight: vencida ? 700 : 400,
               }}
             >
@@ -827,9 +827,9 @@ function TabHoy({ tareas, onToggle, onEdit, onNueva }: TabHoyProps) {
         {vencidas.length > 0 && (
           <span
             style={{
-              background: "#cc000033",
-              color: "#cc0000",
-              border: "1px solid #cc000055",
+              background: "#99000033",
+              color: "#990000",
+              border: "1px solid #99000055",
               borderRadius: "20px",
               padding: "5px 14px",
               fontSize: "13px",
@@ -843,9 +843,9 @@ function TabHoy({ tareas, onToggle, onEdit, onNueva }: TabHoyProps) {
         {hoy.length > 0 && (
           <span
             style={{
-              background: "#f9731633",
-              color: "#f97316",
-              border: "1px solid #f9731655",
+              background: "#d4960c33",
+              color: "#d4960c",
+              border: "1px solid #d4960c55",
               borderRadius: "20px",
               padding: "5px 14px",
               fontSize: "13px",
@@ -859,9 +859,9 @@ function TabHoy({ tareas, onToggle, onEdit, onNueva }: TabHoyProps) {
         {urgentesEstaSemana.length > 0 && (
           <span
             style={{
-              background: "#eab30833",
-              color: "#eab308",
-              border: "1px solid #eab30855",
+              background: "#d4960c33",
+              color: "#d4960c",
+              border: "1px solid #d4960c55",
               borderRadius: "20px",
               padding: "5px 14px",
               fontSize: "13px",
@@ -1046,7 +1046,7 @@ function TabKanban({ tareas, onMover, onEdit, onNueva }: TabKanbanProps) {
   const columnas: { estado: Estado; label: string; color: string }[] = [
     { estado: "pendiente", label: "Pendiente", color: "#555555" },
     { estado: "en_proceso", label: "En proceso", color: "#3b82f6" },
-    { estado: "completada", label: "Completada", color: "#22c55e" },
+    { estado: "completada", label: "Completada", color: "#3abab6" },
     { estado: "cancelada", label: "Cancelada", color: "#6b7280" },
   ];
 
@@ -1192,9 +1192,9 @@ function KanbanCard({ tarea, idxEstado, totalEstados, onMover, onEdit }: KanbanC
     tarea.estado !== "cancelada";
   const borderLeft =
     vencida
-      ? "3px solid #cc0000"
+      ? "3px solid #990000"
       : tarea.prioridad === "urgente"
-      ? "3px solid #f97316"
+      ? "3px solid #d4960c"
       : "3px solid #222222";
 
   return (
@@ -1240,7 +1240,7 @@ function KanbanCard({ tarea, idxEstado, totalEstados, onMover, onEdit }: KanbanC
           <span
             style={{
               fontSize: "11px",
-              color: vencida ? "#cc0000" : "#666666",
+              color: vencida ? "#990000" : "#666666",
               fontFamily: "Inter, sans-serif",
             }}
           >
@@ -1312,9 +1312,9 @@ function PillFiltro({
     <button
       onClick={onClick}
       style={{
-        background: activo ? "#cc0000" : "#1a1a1a",
+        background: activo ? "#990000" : "#1a1a1a",
         color: activo ? "#fff" : "#aaaaaa",
-        border: activo ? "1px solid #cc0000" : "1px solid #333333",
+        border: activo ? "1px solid #990000" : "1px solid #333333",
         borderRadius: "20px",
         padding: "5px 14px",
         fontSize: "12px",
@@ -1522,7 +1522,7 @@ function TabHistorial({ tareas }: TabHistorialProps) {
                   y={y}
                   width={barW}
                   height={barH}
-                  fill="#cc0000"
+                  fill="#990000"
                   rx={3}
                   opacity={0.85}
                 />
@@ -1914,7 +1914,7 @@ export default function GestionTareasPage() {
               background: "transparent",
               border: "none",
               borderBottom:
-                tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
+                tab === t.id ? "2px solid #990000" : "2px solid transparent",
               color: tab === t.id ? "#e0e0e0" : "#555555",
               fontFamily: "Inter, sans-serif",
               fontSize: "14px",

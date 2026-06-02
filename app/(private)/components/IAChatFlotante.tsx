@@ -124,16 +124,16 @@ export default function IAChatFlotante() {
         .gfi-chat-btn {
           position: fixed; bottom: 24px; right: 24px;
           width: 54px; height: 54px; border-radius: 50%;
-          background: linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
+          background: linear-gradient(135deg, #990000 0%, #b80000 100%);
           border: none; cursor: pointer; z-index: 9000;
           display: flex; align-items: center; justify-content: center;
           font-size: 22px;
-          box-shadow: 0 4px 20px rgba(204,0,0,0.45), 0 0 0 0 rgba(204,0,0,0.3);
+          box-shadow: 0 4px 20px rgba(153,0,0,0.45), 0 0 0 0 rgba(153,0,0,0.3);
           transition: transform 0.2s, box-shadow 0.2s;
         }
         .gfi-chat-btn:hover {
           transform: scale(1.08) translateY(-2px);
-          box-shadow: 0 8px 32px rgba(204,0,0,0.60), 0 0 0 8px rgba(204,0,0,0.08);
+          box-shadow: 0 8px 32px rgba(153,0,0,0.60), 0 0 0 8px rgba(153,0,0,0.08);
         }
 
         /* Window */
@@ -142,7 +142,7 @@ export default function IAChatFlotante() {
           width: 348px; max-height: 540px;
           background: #0f1219;
           border: 1px solid #252a35;
-          border-top: 1px solid rgba(204,0,0,0.25);
+          border-top: 1px solid rgba(153,0,0,0.25);
           border-radius: 14px;
           z-index: 9000; display: flex; flex-direction: column;
           box-shadow: 0 16px 56px rgba(0,0,0,0.70), 0 0 0 1px rgba(255,255,255,0.03) inset;
@@ -159,7 +159,7 @@ export default function IAChatFlotante() {
           padding: 14px 16px;
           border-bottom: 1px solid #1c2030;
           display: flex; align-items: center; justify-content: space-between;
-          background: linear-gradient(90deg, rgba(204,0,0,0.07) 0%, transparent 60%);
+          background: linear-gradient(90deg, rgba(153,0,0,0.07) 0%, transparent 60%);
           flex-shrink: 0;
         }
 
@@ -168,10 +168,10 @@ export default function IAChatFlotante() {
           flex: 1; overflow-y: auto; padding: 14px 12px 8px;
           display: flex; flex-direction: column; gap: 8px;
           min-height: 200px; max-height: 360px;
-          scrollbar-width: thin; scrollbar-color: rgba(204,0,0,0.3) transparent;
+          scrollbar-width: thin; scrollbar-color: rgba(153,0,0,0.3) transparent;
         }
         .gfi-chat-body::-webkit-scrollbar { width: 3px; }
-        .gfi-chat-body::-webkit-scrollbar-thumb { background: rgba(204,0,0,0.3); border-radius: 2px; }
+        .gfi-chat-body::-webkit-scrollbar-thumb { background: rgba(153,0,0,0.3); border-radius: 2px; }
 
         /* Messages */
         .gfi-msg {
@@ -180,8 +180,8 @@ export default function IAChatFlotante() {
           font-family: 'Inter', sans-serif;
         }
         .gfi-msg-user {
-          background: rgba(204,0,0,0.14);
-          border: 1px solid rgba(204,0,0,0.25);
+          background: rgba(153,0,0,0.14);
+          border: 1px solid rgba(153,0,0,0.25);
           color: #f0f4f8;
           align-self: flex-end;
           border-bottom-right-radius: 3px;
@@ -211,20 +211,20 @@ export default function IAChatFlotante() {
           outline: none; transition: border-color 0.15s;
         }
         .gfi-chat-input:focus {
-          border-color: rgba(204,0,0,0.5);
-          box-shadow: 0 0 0 3px rgba(204,0,0,0.10);
+          border-color: rgba(153,0,0,0.5);
+          box-shadow: 0 0 0 3px rgba(153,0,0,0.10);
         }
         .gfi-chat-input::placeholder { color: #4a5568; }
         .gfi-chat-send {
           width: 36px; height: 36px; border-radius: 8px;
-          background: linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
+          background: linear-gradient(135deg, #990000 0%, #b80000 100%);
           border: none; cursor: pointer;
           display: flex; align-items: center; justify-content: center;
           font-size: 14px; flex-shrink: 0;
           transition: all 0.15s;
-          box-shadow: 0 2px 8px rgba(204,0,0,0.35);
+          box-shadow: 0 2px 8px rgba(153,0,0,0.35);
         }
-        .gfi-chat-send:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 14px rgba(204,0,0,0.50); }
+        .gfi-chat-send:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 14px rgba(153,0,0,0.50); }
         .gfi-chat-send:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
 
         /* Typing */
@@ -253,15 +253,15 @@ export default function IAChatFlotante() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 34, height: 34, borderRadius: 8,
-                background: 'linear-gradient(135deg, rgba(204,0,0,0.20) 0%, rgba(204,0,0,0.08) 100%)',
-                border: '1px solid rgba(204,0,0,0.35)',
+                background: 'linear-gradient(135deg, rgba(153,0,0,0.20) 0%, rgba(153,0,0,0.08) 100%)',
+                border: '1px solid rgba(153,0,0,0.35)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, boxShadow: '0 0 12px rgba(204,0,0,0.20)',
+                fontSize: 18, boxShadow: '0 0 12px rgba(153,0,0,0.20)',
               }}>◈</div>
               <div>
                 <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 13, fontWeight: 800, color: '#f0f4f8', letterSpacing: '0.04em' }}>Asistente GFI®</div>
-                <div style={{ fontSize: 9, color: '#10b981', fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: '0.10em', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 5px #10b981', display: 'inline-block' }} />
+                <div style={{ fontSize: 9, color: '#3abab6', fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: '0.10em', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#3abab6', boxShadow: '0 0 5px #3abab6', display: 'inline-block' }} />
                   EN LÍNEA
                 </div>
               </div>

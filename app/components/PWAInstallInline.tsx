@@ -109,7 +109,7 @@ export default function PWAInstallInline() {
     <div style={{
       display: "flex", alignItems: "center", gap: 12, marginTop: 20,
       padding: "12px 14px",
-      background: "rgba(204,0,0,0.06)", border: "1px solid rgba(204,0,0,0.2)",
+      background: "rgba(153,0,0,0.06)", border: "1px solid rgba(153,0,0,0.2)",
       borderRadius: 8,
     }}>
       <img src="/logo_gfi.png" alt="GFI" style={{ width: 36, height: 36, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
@@ -125,7 +125,7 @@ export default function PWAInstallInline() {
         onClick={instalar}
         disabled={instalando}
         style={{
-          background: "#cc0000", color: "#fff", border: "none",
+          background: "#990000", color: "#fff", border: "none",
           borderRadius: 6, padding: "8px 14px",
           fontSize: 12, fontWeight: 700, fontFamily: "Montserrat, sans-serif",
           cursor: instalando ? "wait" : "pointer", flexShrink: 0,

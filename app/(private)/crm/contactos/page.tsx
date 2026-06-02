@@ -204,7 +204,7 @@ function ContactosContent() {
           font-family: var(--font-body);
           transition: var(--gfi-transition);
         }
-        .con-search:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.1); }
+        .con-search:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(153,0,0,0.1); }
         .con-search::placeholder { color: var(--gfi-text-muted); }
 
         /* List */
@@ -269,8 +269,8 @@ function ContactosContent() {
         .con-btn-edit:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-secondary); background: var(--gfi-bg-hover); }
         .con-btn-del {
           background: transparent;
-          border-color: rgba(204,0,0,0.2);
-          color: rgba(204,0,0,0.5);
+          border-color: rgba(153,0,0,0.2);
+          color: rgba(153,0,0,0.5);
         }
         .con-btn-del:hover { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red); }
         .con-wa {
@@ -328,7 +328,7 @@ function ContactosContent() {
           font-family: var(--font-body); box-sizing: border-box;
           transition: var(--gfi-transition);
         }
-        .con-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.10); }
+        .con-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(153,0,0,0.10); }
         .con-input::placeholder { color: var(--gfi-text-muted); }
         .con-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .con-modal-footer {

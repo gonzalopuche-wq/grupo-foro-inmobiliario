@@ -29,7 +29,7 @@ export default function OfflinePage() {
       <button
         onClick={() => window.location.reload()}
         style={{
-          background: "#cc0000", color: "#fff", border: "none",
+          background: "#990000", color: "#fff", border: "none",
           borderRadius: 6, padding: "12px 28px",
           fontSize: 13, fontWeight: 700,
           fontFamily: "Montserrat, sans-serif", cursor: "pointer",

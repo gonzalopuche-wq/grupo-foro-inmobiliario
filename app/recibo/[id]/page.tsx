@@ -189,7 +189,7 @@ export default function ReciboPage() {
           align-items: center;
           justify-content: space-between;
           padding: 28px 36px 24px;
-          border-bottom: 2px solid #cc0000;
+          border-bottom: 2px solid #990000;
         }
 
         .recibo-logo-area {
@@ -212,7 +212,7 @@ export default function ReciboPage() {
           color: #111;
           line-height: 1;
         }
-        .recibo-brand-name span { color: #cc0000; }
+        .recibo-brand-name span { color: #990000; }
         .recibo-brand-sub {
           font-family: 'Montserrat', sans-serif;
           font-size: 10px;
@@ -232,7 +232,7 @@ export default function ReciboPage() {
           font-weight: 700;
           letter-spacing: 0.2em;
           text-transform: uppercase;
-          color: #cc0000;
+          color: #990000;
           margin-bottom: 6px;
         }
         .recibo-doc-nro {
@@ -383,7 +383,7 @@ export default function ReciboPage() {
           margin-top: 12px;
           background: rgba(22,163,74,0.08);
           border: 1px solid rgba(22,163,74,0.25);
-          color: #16a34a;
+          color: #22807c;
         }
 
         /* Footer */

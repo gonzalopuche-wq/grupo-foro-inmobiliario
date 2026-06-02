@@ -241,11 +241,11 @@ export default function CotizacionesPage() {
         .cot-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
         .cot-tab { padding: 9px 22px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
         .cot-tab:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
-        .cot-tab.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
+        .cot-tab.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
         .dolar-ref-widget { background: rgba(14,14,14,0.95); border: 1px solid rgba(200,0,0,0.35); border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden; }
-        .dolar-ref-widget::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, #cc0000 60%, transparent); }
+        .dolar-ref-widget::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, #990000 60%, transparent); }
         .dolar-ref-left { display: flex; flex-direction: column; gap: 3px; }
-        .dolar-ref-label { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #cc0000; }
+        .dolar-ref-label { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #990000; }
         .dolar-ref-valor { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
         .dolar-ref-fuente { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
         .dolar-ref-right { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -268,9 +268,9 @@ export default function CotizacionesPage() {
         .cot-tabla td { padding: 13px 16px; font-size: 13px; }
         .cot-tabla td:not(:first-child) { text-align: right; font-family: 'Montserrat', sans-serif; font-weight: 700; }
         .cot-nombre { font-weight: 600; color: #fff; }
-        .td-c { color: #60a5fa; }
+        .td-c { color: #4ab8d8; }
         .td-v { color: #f87171; }
-        .td-p { color: #22c55e; }
+        .td-p { color: #3abab6; }
         .cot-grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
         .cot-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 16px 20px; }
         .cot-card-label { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
@@ -281,7 +281,7 @@ export default function CotizacionesPage() {
         .prov-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; transition: border-color 0.2s; }
         .prov-card:hover { border-color: rgba(200,0,0,0.2); }
         .prov-card.referencia { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.04); }
-        .prov-ref-badge { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; background: #cc0000; color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+        .prov-ref-badge { font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; background: #990000; color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
         .prov-info { display: flex; flex-direction: column; gap: 8px; flex: 1; }
         .prov-nombre { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
         .prov-monedas { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -290,44 +290,44 @@ export default function CotizacionesPage() {
         .prov-cot { display: flex; gap: 16px; flex-wrap: wrap; }
         .prov-cot-item { font-size: 12px; color: rgba(255,255,255,0.4); }
         .prov-cot-item strong { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; }
-        .prov-cot-item.compra strong { color: #60a5fa; }
+        .prov-cot-item.compra strong { color: #4ab8d8; }
         .prov-cot-item.venta strong { color: #f87171; }
-        .prov-cot-item.promedio strong { color: #22c55e; }
+        .prov-cot-item.promedio strong { color: #3abab6; }
         .prov-hora { font-size: 10px; color: rgba(255,255,255,0.25); }
         .prov-acciones { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
         .prov-btn-wa { padding: 8px 18px; background: rgba(37,211,102,0.12); border: 1px solid rgba(37,211,102,0.3); border-radius: 3px; color: #25d366; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
         .prov-btn-wa:hover { background: rgba(37,211,102,0.2); }
-        .prov-btn-actualizar { padding: 8px 18px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .prov-btn-actualizar { padding: 8px 18px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #990000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .prov-btn-actualizar:hover { background: rgba(200,0,0,0.2); color: #fff; }
         .prov-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
         .match-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .match-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
         .match-filtro { padding: 6px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
         .match-filtro:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
-        .match-filtro.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
-        .match-btn-pub { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
+        .match-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
+        .match-btn-pub { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
         .match-btn-pub:hover { background: #e60000; }
         .match-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .match-col-titulo { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px 4px 0 0; }
-        .match-col-titulo.venta { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); border-bottom: none; }
-        .match-col-titulo.compra { background: rgba(200,0,0,0.08); color: #cc0000; border: 1px solid rgba(200,0,0,0.2); border-bottom: none; }
+        .match-col-titulo.venta { background: rgba(34,197,94,0.1); color: #3abab6; border: 1px solid rgba(34,197,94,0.2); border-bottom: none; }
+        .match-col-titulo.compra { background: rgba(200,0,0,0.08); color: #990000; border: 1px solid rgba(200,0,0,0.2); border-bottom: none; }
         .match-pub { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 14px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
         .match-pub.propia { border-color: rgba(200,0,0,0.25); background: rgba(200,0,0,0.04); }
         .match-pub-info { flex: 1; }
         .match-pub-monto { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #fff; }
-        .match-pub-monto span { color: #cc0000; }
+        .match-pub-monto span { color: #990000; }
         .match-pub-meta { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.5; }
         .match-pub-corredor { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; font-weight: 500; }
-        .match-pub-precio { font-size: 11px; color: #eab308; margin-top: 2px; }
+        .match-pub-precio { font-size: 11px; color: #d4960c; margin-top: 2px; }
         .match-btn-eliminar { padding: 6px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; }
         .match-btn-eliminar:hover { border-color: rgba(200,0,0,0.4); color: #ff4444; }
         .match-nota { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; padding: 8px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
         .match-empty { padding: 24px 16px; text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; margin-top: 8px; }
         .fn-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
         .fn-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 36px; width: 100%; max-width: 460px; position: relative; }
-        .fn-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
+        .fn-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .fn-modal h2 { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 20px; }
-        .fn-modal h2 span { color: #cc0000; }
+        .fn-modal h2 span { color: #990000; }
         .fn-field { margin-bottom: 14px; }
         .fn-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; font-family: 'Montserrat', sans-serif; }
         .fn-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif; }
@@ -337,7 +337,7 @@ export default function CotizacionesPage() {
         .fn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .fn-modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
         .fn-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .fn-btn-guardar { padding: 10px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .fn-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .fn-btn-guardar:hover { background: #e60000; }
         .fn-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: skpulse 1.5s ease-in-out infinite; display: inline-block; }
@@ -513,7 +513,7 @@ export default function CotizacionesPage() {
               <button className="match-btn-pub" onClick={() => setMostrarForm(true)}>+ Publicar</button>
             </div>
             <div className="match-nota">
-              💡 Referencia GFI: <strong style={{color:"#22c55e"}}>{dolarReferencia.valor ? formatARS(dolarReferencia.valor) : "cargando..."}</strong>
+              💡 Referencia GFI: <strong style={{color:"#3abab6"}}>{dolarReferencia.valor ? formatARS(dolarReferencia.valor) : "cargando..."}</strong>
               {dolarReferencia.proveedor && <span style={{color:"rgba(255,255,255,0.3)"}}> · {dolarReferencia.proveedor}</span>}
               {" · "}Publicaciones vencen en 24hs.
             </div>
@@ -575,7 +575,7 @@ export default function CotizacionesPage() {
           <div className="fn-modal">
             <h2>Publicar <span>divisa</span></h2>
             {dolarReferencia.valor && (
-              <div style={{fontSize:11,color:"#22c55e",background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:4,padding:"8px 12px",marginBottom:16}}>
+              <div style={{fontSize:11,color:"#3abab6",background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:4,padding:"8px 12px",marginBottom:16}}>
                 💵 Referencia GFI®: <strong>{formatARS(dolarReferencia.valor)}</strong> · {dolarReferencia.proveedor}
               </div>
             )}

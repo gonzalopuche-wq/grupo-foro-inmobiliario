@@ -50,7 +50,7 @@ const INDICADORES_CONFIG = [
 
 const CONFIGURACION_SITIO_DEF = [
   { clave: "anuncio_banner",                  label: "Texto del banner global",          categoria: "anuncios",   tipo: "textarea", descripcion: "Visible para todos al entrar. Vacío = sin banner.", placeholder: "Ej: Reunión GFI el viernes 14/06 a las 10hs en sede COCIR" },
-  { clave: "anuncio_color",                   label: "Color del banner",                  categoria: "anuncios",   tipo: "color",    descripcion: "Color de fondo del banner.", placeholder: "#cc0000" },
+  { clave: "anuncio_color",                   label: "Color del banner",                  categoria: "anuncios",   tipo: "color",    descripcion: "Color de fondo del banner.", placeholder: "#990000" },
   { clave: "jus_url_cocir",                   label: "URL del JUS",                       categoria: "jus",        tipo: "url",      descripcion: "Dirección de la página donde figura el valor del JUS. Se usa para la sincronización automática.", placeholder: "https://..." },
   { clave: "honorarios_venta_propietario_pct",label: "Honorarios venta — propietario (%)",categoria: "honorarios", tipo: "number",   descripcion: "Porcentaje sugerido al propietario.", placeholder: "3" },
   { clave: "honorarios_venta_comprador_pct",  label: "Honorarios venta — comprador (%)",  categoria: "honorarios", tipo: "number",   descripcion: "Porcentaje sugerido al comprador.", placeholder: "3" },
@@ -77,11 +77,11 @@ const CBU_CONFIG = [
 const ESTADO_BADGE: Record<string, string> = { pendiente: "badge-pendiente", aprobado: "badge-aprobado", rechazado: "badge-rechazado" };
 const CATEGORIAS = [
   { value: "standard", label: "Standard", color: "rgba(148,163,184,0.8)" },
-  { value: "vip", label: "VIP", color: "#eab308" },
+  { value: "vip", label: "VIP", color: "#d4960c" },
   { value: "ci_cocir", label: "CI COCIR", color: "#3b82f6" },
   { value: "colaborador_ci", label: "Colaborador CI", color: "#06b6d4" },
-  { value: "admin_ayudante", label: "Admin Ayudante", color: "#f97316" },
-  { value: "master", label: "Máster", color: "#cc0000" },
+  { value: "admin_ayudante", label: "Admin Ayudante", color: "#d4960c" },
+  { value: "master", label: "Máster", color: "#990000" },
 ];
 const ESTADO_LABEL: Record<string, string> = { pendiente: "Pendiente", aprobado: "Aprobado", rechazado: "Rechazado" };
 const MONEDAS_OPCIONES = ["USD", "EUR", "GBP", "BRL", "USDT", "USDC"];
@@ -118,7 +118,7 @@ function CobrosMatchesAdmin() {
       {loading ? <div style={{ color: "rgba(255,255,255,0.3)", padding: 16 }}>Cargando...</div> : (
         <>
           <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
-            <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 8, padding: "12px 20px" }}>
+            <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", borderRadius: 8, padding: "12px 20px" }}>
               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase" }}>Total acumulado</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: "var(--gfi-green-text)", fontFamily: "var(--font-mono)", fontVariantNumeric: "tabular-nums" }}>{fmt(total)}</div>
             </div>
@@ -472,7 +472,7 @@ export default function AdminPage() {
     });
     // Enviar email al colaborador
     try {
-      await enviarEmail(c.email, "✅ Tu acceso a GFI® fue aprobado", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`);
+      await enviarEmail(c.email, "✅ Tu acceso a GFI® fue aprobado", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">✅ Acceso aprobado</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${c.nombre}</strong>, tu acceso a GFI® como colaborador de <strong>${c.corredor?.nombre} ${c.corredor?.apellido}</strong> fue aprobado.</p><p style="font-size:13px;color:rgba(255,255,255,0.5);">Rol: ${ROL_LABELS[c.rol] ?? c.rol}</p><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:20px;">Ingresar a GFI®</a></div>`);
     } catch {}
     setProcesandoColab(null);
     cargarColaboradores(filtroColab);
@@ -870,7 +870,7 @@ export default function AdminPage() {
     if (pago.perfiles?.email) {
       try {
         const reciboUrl = `https://foroinmobiliario.com.ar/recibo/${pago.id}`;
-        await enviarEmail(pago.perfiles.email, "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><div style="font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">GFI<span style="color:#cc0000">®</span></div><div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;">Grupo Foro Inmobiliario</div><h2 style="color:#22c55e;margin-bottom:16px;font-family:sans-serif;">✅ Pago confirmado</h2><p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin-bottom:20px;">Hola <strong style="color:#fff;">${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Tu acceso a GFI® está activo hasta el <strong style="color:#fff;">${vencimiento.toLocaleDateString("es-AR")}</strong>.</p><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;">Tu comprobante de pago</div><a href="${reciboUrl}" style="display:inline-block;background:#cc0000;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;padding:11px 24px;border-radius:4px;">↓ Ver y descargar comprobante</a><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:10px;">Podés guardarlo como PDF desde el navegador.</div></div><p style="font-size:11px;color:rgba(255,255,255,0.3);line-height:1.6;margin:0;">GFI® · 2da Circ. COCIR · Rosario · foroinmobiliariomatriculados@gmail.com</p></div>`);
+        await enviarEmail(pago.perfiles.email, "✅ Pago confirmado — GFI® Grupo Foro Inmobiliario", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><div style="font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">GFI<span style="color:#990000">®</span></div><div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;">Grupo Foro Inmobiliario</div><h2 style="color:#3abab6;margin-bottom:16px;font-family:sans-serif;">✅ Pago confirmado</h2><p style="color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin-bottom:20px;">Hola <strong style="color:#fff;">${pago.perfiles.nombre}</strong>, tu pago fue confirmado. Tu acceso a GFI® está activo hasta el <strong style="color:#fff;">${vencimiento.toLocaleDateString("es-AR")}</strong>.</p><div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;">Tu comprobante de pago</div><a href="${reciboUrl}" style="display:inline-block;background:#990000;color:#fff;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;padding:11px 24px;border-radius:4px;">↓ Ver y descargar comprobante</a><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:10px;">Podés guardarlo como PDF desde el navegador.</div></div><p style="font-size:11px;color:rgba(255,255,255,0.3);line-height:1.6;margin:0;">GFI® · 2da Circ. COCIR · Rosario · foroinmobiliariomatriculados@gmail.com</p></div>`);
       } catch {}
     }
     setProcesandoPago(null); cargarPagos();
@@ -984,7 +984,7 @@ export default function AdminPage() {
       // Email de bienvenida al corredor aprobado
       const perfilAprobado = perfiles.find(p => p.id === id);
       if (perfilAprobado?.email) {
-        enviarEmail(perfilAprobado.email, "✅ ¡Tu cuenta en GFI® fue aprobada!", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.6);"><strong style="color:#eab308;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>A partir de esa fecha el costo mensual será de USD 15.</div><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a></div>`).catch(() => {});
+        enviarEmail(perfilAprobado.email, "✅ ¡Tu cuenta en GFI® fue aprobada!", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">🎉 ¡Bienvenido a GFI®!</h2><p style="font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:16px;">Hola <strong>${perfilAprobado.nombre}</strong>, tu cuenta en <strong>GFI® Grupo Foro Inmobiliario</strong> fue aprobada y ya podés acceder a la plataforma.</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.6);"><strong style="color:#d4960c;">Período gratuito:</strong> Tu primer mes es gratuito hasta el ${fechaStr}.<br/>A partir de esa fecha el costo mensual será de USD 15.</div><a href="https://www.foroinmobiliario.com.ar/login" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ingresar a GFI®</a></div>`).catch(() => {});
       }
       // Push de bienvenida (via admin endpoint — no expone CRON_SECRET al browser)
       const { data: { session: sessionPush } } = await supabase.auth.getSession();
@@ -1149,7 +1149,7 @@ export default function AdminPage() {
       updated_at: new Date().toISOString(),
     }).eq("id", ticketVer.id);
     if (ticketVer.perfiles?.email) {
-      enviarEmail(ticketVer.perfiles.email, "✅ Respuesta a tu ticket de soporte — GFI®", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#22c55e;margin-bottom:16px;">✅ Tu ticket fue respondido</h2><p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div><a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#22c55e;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a></div>`).catch(() => {});
+      enviarEmail(ticketVer.perfiles.email, "✅ Respuesta a tu ticket de soporte — GFI®", `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(34,197,94,0.2);"><h2 style="color:#3abab6;margin-bottom:16px;">✅ Tu ticket fue respondido</h2><p style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:8px;"><strong>Asunto:</strong> ${ticketVer.asunto}</p><div style="background:rgba(255,255,255,0.05);border-radius:6px;padding:16px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.75);line-height:1.7;white-space:pre-wrap;">${respuestaForm.trim()}</div><a href="https://www.foroinmobiliario.com.ar/soporte" style="display:inline-block;background:#3abab6;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;margin-top:8px;">Ver mi ticket</a></div>`).catch(() => {});
     }
     await supabase.from("notificaciones").insert({
       user_id: ticketVer.user_id,
@@ -1507,17 +1507,17 @@ export default function AdminPage() {
         .adm-sub { font-size: 11px; color: var(--gfi-text-muted); margin-top: 2px; }
         .badge { font-family: var(--font-display), sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; }
         .badge-pendiente { background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); color: var(--gfi-orange); }
-        .badge-aprobado { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.25); color: var(--gfi-green-text); }
+        .badge-aprobado { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.25); color: var(--gfi-green-text); }
         .badge-rechazado { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
-        .badge-activo { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.25); color: var(--gfi-green-text); }
+        .badge-activo { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.25); color: var(--gfi-green-text); }
         .badge-suspendido { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
         .badge-corredor { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
         .badge-colaborador { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
         .adm-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
-        .adm-btn-aprobar { padding: 6px 14px; background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--gfi-radius-md); color: var(--gfi-green-text); font-family: var(--font-display), sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
-        .adm-btn-aprobar:hover { background: rgba(16,185,129,0.2); }
+        .adm-btn-aprobar { padding: 6px 14px; background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.25); border-radius: var(--gfi-radius-md); color: var(--gfi-green-text); font-family: var(--font-display), sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
+        .adm-btn-aprobar:hover { background: rgba(58,186,182,0.2); }
         .adm-btn-rechazar { padding: 6px 14px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); color: var(--gfi-red); font-family: var(--font-display), sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
-        .adm-btn-rechazar:hover { background: rgba(204,0,0,0.18); }
+        .adm-btn-rechazar:hover { background: rgba(153,0,0,0.18); }
         .adm-btn-destacar { padding: 6px 14px; background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); border-radius: var(--gfi-radius-md); color: var(--gfi-orange); font-family: var(--font-display), sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
         .adm-btn-destacar.on { background: rgba(249,115,22,0.2); border-color: var(--gfi-orange); }
         .adm-btn-eliminar { padding: 6px 14px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-muted); font-family: var(--font-display), sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
@@ -1622,7 +1622,7 @@ export default function AdminPage() {
         .adm-section-title span { color: var(--gfi-red); }
         .adm-section-sub { font-size: 13px; color: var(--gfi-text-muted); margin-bottom: 20px; }
         .adm-toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display),sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; }
-        .adm-toast.ok { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.25); color: var(--gfi-green-text); }
+        .adm-toast.ok { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.25); color: var(--gfi-green-text); }
         .adm-toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
         .fin-resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
         .fin-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 14px 18px; }
@@ -1644,19 +1644,19 @@ export default function AdminPage() {
         .fin-select { width: 100%; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-primary); padding: 8px 11px; font-size: 13px; font-family: var(--font-body),sans-serif; outline: none; transition: var(--gfi-transition); }
         .fin-tipo-btns { display: flex; gap: 8px; }
         .fin-tipo-btn { flex: 1; padding: 8px; background: var(--gfi-bg-input); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); font-family: var(--font-display),sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; transition: var(--gfi-transition); }
-        .fin-tipo-btn.ingreso.activo { border-color: rgba(16,185,129,0.25); color: var(--gfi-green-text); background: var(--gfi-green-soft); }
+        .fin-tipo-btn.ingreso.activo { border-color: rgba(58,186,182,0.25); color: var(--gfi-green-text); background: var(--gfi-green-soft); }
         .fin-tipo-btn.gasto.activo { border-color: var(--gfi-red-border); color: var(--gfi-red); background: var(--gfi-red-soft); }
         .fin-form-actions { display: flex; gap: 10px; justify-content: flex-end; }
         .fin-btn-cancel { padding: 8px 18px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); color: var(--gfi-text-secondary); font-family: var(--font-display),sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
         .fin-btn-cancel:hover { border-color: var(--gfi-text-secondary); color: var(--gfi-text-primary); }
         .fin-btn-save { padding: 8px 20px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display),sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--gfi-shadow-red); }
         .fin-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .fin-badge-ingreso { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.25); color: var(--gfi-green-text); font-family: var(--font-display),sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
+        .fin-badge-ingreso { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.25); color: var(--gfi-green-text); font-family: var(--font-display),sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
         .fin-badge-gasto { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); font-family: var(--font-display),sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; }
         .fin-btn-del { padding: 4px 10px; background: transparent; border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); color: var(--gfi-red); font-size: 11px; cursor: pointer; transition: var(--gfi-transition); }
         .fin-btn-del:hover { background: var(--gfi-red-soft); }
         /* Liquidación mensual */
-        .liq-panel { background: linear-gradient(135deg, rgba(16,185,129,0.04) 0%, var(--gfi-bg-card) 100%); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--gfi-radius-lg); padding: 20px 22px; margin-bottom: 20px; }
+        .liq-panel { background: linear-gradient(135deg, rgba(58,186,182,0.04) 0%, var(--gfi-bg-card) 100%); border: 1px solid rgba(58,186,182,0.25); border-radius: var(--gfi-radius-lg); padding: 20px 22px; margin-bottom: 20px; }
         .liq-title { font-family:var(--font-display),sans-serif; font-size:11px; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; color:var(--gfi-green-text); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
         .liq-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
         .liq-card { background:var(--gfi-bg-secondary); border-radius:var(--gfi-radius-md); padding:14px 16px; text-align:center; border: 1px solid var(--gfi-border); }
@@ -1743,7 +1743,7 @@ export default function AdminPage() {
               <div style={{
                 padding: "12px 16px", borderRadius: 4, marginBottom: 12,
                 background: importPadronRes.ok ? "var(--gfi-green-soft)" : "var(--gfi-red-soft)",
-                border: `1px solid ${importPadronRes.ok ? "rgba(16,185,129,0.25)" : "var(--gfi-red-border)"}`,
+                border: `1px solid ${importPadronRes.ok ? "rgba(58,186,182,0.25)" : "var(--gfi-red-border)"}`,
                 fontSize: 12, fontFamily: "Inter,sans-serif",
                 color: importPadronRes.ok ? "var(--gfi-green-text)" : "var(--gfi-red)",
               }}>
@@ -1821,7 +1821,7 @@ export default function AdminPage() {
                       <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:6}}>
                         <span style={{fontFamily:"'Montserrat',sans-serif",fontSize:13,fontWeight:800,color:"#fff"}}>{ev.titulo}</span>
                         <span className="badge badge-pendiente">{TIPOS_EV[ev.tipo] ?? ev.tipo}</span>
-                        <span className="badge" style={{background:"var(--gfi-green-soft)",border:"1px solid rgba(16,185,129,0.25)",color:"var(--gfi-green-text)"}}>{ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}</span>
+                        <span className="badge" style={{background:"var(--gfi-green-soft)",border:"1px solid rgba(58,186,182,0.25)",color:"var(--gfi-green-text)"}}>{ev.gratuito ? "Gratuito" : `$${ev.precio_entrada?.toLocaleString("es-AR")}`}</span>
                       </div>
                       {ev.descripcion && <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:6,lineHeight:1.5}}>{ev.descripcion.substring(0,200)}{ev.descripcion.length > 200 ? "..." : ""}</div>}
                       <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",display:"flex",gap:16,flexWrap:"wrap"}}>
@@ -2170,7 +2170,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* Totales finales + registro */}
-                  <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 8, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                  <div style={{ background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", borderRadius: 8, padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
                         Total a facturar — {resumenFact.periodo}
@@ -2328,7 +2328,7 @@ export default function AdminPage() {
                       <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"var(--gfi-green-text)",marginBottom:10}}>✓ MATCHES DETECTADOS — PENDIENTES DE CONFIRMAR</div>
                       <div style={{display:"flex",flexDirection:"column",gap:8}}>
                         {clearingResult.matches.map((m: any, i: number) => (
-                          <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"var(--gfi-green-soft)",border:"1px solid rgba(16,185,129,0.25)",borderRadius:8}}>
+                          <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"var(--gfi-green-soft)",border:"1px solid rgba(58,186,182,0.25)",borderRadius:8}}>
                             <div style={{flex:1,minWidth:0}}>
                               <div style={{fontSize:12,color:"#fff",fontWeight:600,marginBottom:2}}>{m.pago.perfiles?.nombre} {m.pago.perfiles?.apellido}{m.pago.perfiles?.matricula?` · Mat. ${m.pago.perfiles.matricula}`:""}</div>
                               <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontFamily:"Inter,sans-serif"}}>
@@ -2362,7 +2362,7 @@ export default function AdminPage() {
                   {/* Pagos declarados sin match en banco */}
                   {clearingResult.pagos_no_encontrados?.length > 0 && (
                     <div>
-                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"#f97316",marginBottom:8}}>⚠ PAGOS DECLARADOS SIN MATCH EN BANCO</div>
+                      <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.12em",color:"#d4960c",marginBottom:8}}>⚠ PAGOS DECLARADOS SIN MATCH EN BANCO</div>
                       <div style={{display:"flex",flexDirection:"column",gap:4}}>
                         {clearingResult.pagos_no_encontrados.map((p: any, i: number) => (
                           <div key={i} style={{fontSize:11,color:"rgba(255,255,255,0.5)",fontFamily:"Inter,sans-serif",padding:"6px 12px",background:"rgba(249,115,22,0.04)",borderRadius:4,border:"1px solid rgba(249,115,22,0.1)"}}>
@@ -2456,7 +2456,7 @@ export default function AdminPage() {
                       <td><div className="adm-nombre">{p.apellido}, {p.nombre}</div>{p.inmobiliaria && <div className="adm-sub">{p.inmobiliaria}</div>}{p.especialidades && p.especialidades.length > 0 && <div className="adm-esp">📌 {p.especialidades.join(", ")}</div>}</td>
                       <td>
                         <select value={p.tipo} onChange={e => setTipoUser(p.id, e.target.value)}
-                          style={{ background: "#0f172a", color: p.tipo === "master" ? "#cc0000" : p.tipo === "admin" ? "#a855f7" : p.tipo === "constructora" ? "#f97316" : p.tipo === "proveedor" ? "#eab308" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%", marginBottom: ["corredor","colaborador"].includes(p.tipo) ? 4 : 0 }}>
+                          style={{ background: "#0f172a", color: p.tipo === "master" ? "#990000" : p.tipo === "admin" ? "#a855f7" : p.tipo === "constructora" ? "#d4960c" : p.tipo === "proveedor" ? "#d4960c" : p.tipo === "colaborador" ? "#06b6d4" : "rgba(255,255,255,0.8)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer", width: "100%", marginBottom: ["corredor","colaborador"].includes(p.tipo) ? 4 : 0 }}>
                           <option value="corredor">Corredor</option>
                           <option value="colaborador">Colaborador</option>
                           <option value="constructora">Constructora</option>
@@ -2487,7 +2487,7 @@ export default function AdminPage() {
                             type="number" min={0} max={100}
                             defaultValue={bonif}
                             onBlur={e => setBonificacionUser(p.id, Number(e.target.value))}
-                            style={{ width: 50, background: "var(--gfi-bg-input)", color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-secondary)", border: `1px solid ${bonif === 100 ? "rgba(16,185,129,0.4)" : "var(--gfi-border)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", textAlign: "center" }}
+                            style={{ width: 50, background: "var(--gfi-bg-input)", color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-secondary)", border: `1px solid ${bonif === 100 ? "rgba(58,186,182,0.4)" : "var(--gfi-border)"}`, borderRadius: 4, padding: "3px 6px", fontSize: 11, fontFamily: "Montserrat,sans-serif", textAlign: "center" }}
                           />
                           <span style={{ fontSize: 10, color: bonif === 100 ? "var(--gfi-green-text)" : "var(--gfi-text-muted)" }}>% bonif{bonif === 100 ? " ✓ gratis" : ""}</span>
                         </div>
@@ -2596,7 +2596,7 @@ export default function AdminPage() {
                     : <span style={{ color: "rgba(255,255,255,0.3)" }}>Con costo según tarifa</span>}
                 </div>
                 <button onClick={toggleMirGratuito} disabled={guardandoMirGratuito}
-                  style={{ background: mirGratuito ? "var(--gfi-red-soft)" : "var(--gfi-green-soft)", border: `1px solid ${mirGratuito ? "var(--gfi-red-border)" : "rgba(16,185,129,0.25)"}`, color: mirGratuito ? "var(--gfi-red)" : "var(--gfi-green-text)", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  style={{ background: mirGratuito ? "var(--gfi-red-soft)" : "var(--gfi-green-soft)", border: `1px solid ${mirGratuito ? "var(--gfi-red-border)" : "rgba(58,186,182,0.25)"}`, color: mirGratuito ? "var(--gfi-red)" : "var(--gfi-green-text)", fontSize: 11, cursor: "pointer", padding: "6px 14px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   {guardandoMirGratuito ? "..." : mirGratuito ? "Activar cobro" : "Activar gratuito"}
                 </button>
               </div>
@@ -2987,7 +2987,7 @@ export default function AdminPage() {
                         )}
                         {item.tipo === "color" && configuracion[item.clave] && (
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                            <div style={{ width: 28, height: 28, borderRadius: 4, background: configuracion[item.clave] || "#cc0000", border: "1px solid rgba(255,255,255,0.15)" }} />
+                            <div style={{ width: 28, height: 28, borderRadius: 4, background: configuracion[item.clave] || "#990000", border: "1px solid rgba(255,255,255,0.15)" }} />
                             <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{configuracion[item.clave]}</span>
                           </div>
                         )}
@@ -3435,7 +3435,7 @@ export default function AdminPage() {
                     // Usar fecha local para evitar desfase UTC en zonas horarias negativas (P2 fix)
                     const mesActual = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}`;
                     return (
-                      <div key={rp.id} style={{ background: "var(--gfi-bg-card)", border: `1px solid ${suscVigente ? "rgba(16,185,129,0.25)" : "var(--gfi-border)"}`, borderRadius: 8, padding: "16px 20px" }}>
+                      <div key={rp.id} style={{ background: "var(--gfi-bg-card)", border: `1px solid ${suscVigente ? "rgba(58,186,182,0.25)" : "var(--gfi-border)"}`, borderRadius: 8, padding: "16px 20px" }}>
                         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
                           <div>
                             <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{rp.nombre}</div>
@@ -3443,7 +3443,7 @@ export default function AdminPage() {
                           </div>
                           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                             {suscVigente
-                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-green-soft)", border: "1px solid rgba(16,185,129,0.25)", color: "var(--gfi-green-text)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              ? <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-green-soft)", border: "1px solid rgba(58,186,182,0.25)", color: "var(--gfi-green-text)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                   ✓ Suscripción activa hasta {vence!.toLocaleDateString("es-AR",{month:"short",year:"numeric"})}
                                 </span>
                               : <span style={{ padding: "3px 10px", borderRadius: 10, background: "var(--gfi-red-soft)", border: "1px solid var(--gfi-red-border)", color: "var(--gfi-red)", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
@@ -3480,7 +3480,7 @@ export default function AdminPage() {
 
                           <div>
                             <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>
-                              Mensualidad — plan actual: <strong style={{ color: "#f59e0b" }}>${rp.plan_mensual_usd}/mes</strong>
+                              Mensualidad — plan actual: <strong style={{ color: "#d4960c" }}>${rp.plan_mensual_usd}/mes</strong>
                             </div>
                             <div style={{ display: "flex", gap: 8 }}>
                               <input
@@ -3491,7 +3491,7 @@ export default function AdminPage() {
                               />
                               <button
                                 onClick={() => guardarPlanSponsor(rp.id)}
-                                style={{ padding: "8px 12px", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 4, color: "#f59e0b", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}
+                                style={{ padding: "8px 12px", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 4, color: "#d4960c", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer" }}
                               >Guardar plan</button>
                               <button
                                 onClick={() => cobrarSuscripcionSponsor(rp.id)}
@@ -3544,7 +3544,7 @@ export default function AdminPage() {
                   {[
                     { label: "Grupos configurados", val: waGrupos.length, color: "var(--gfi-text-secondary)" },
                     { label: "Mensajes recibidos (30d)", val: waGrupos.reduce((s, g) => s + g.mensajes_30d, 0), color: "var(--gfi-green-text)" },
-                    { label: "Entradas MIR creadas (30d)", val: waGrupos.reduce((s, g) => s + g.procesados_30d, 0), color: "#f59e0b" },
+                    { label: "Entradas MIR creadas (30d)", val: waGrupos.reduce((s, g) => s + g.procesados_30d, 0), color: "#d4960c" },
                     { label: "Mensajes sin parsear", val: waMensajes.filter(m => !m.procesado).length, color: "var(--gfi-red)" },
                   ].map((s, i) => (
                     <div key={i} className="adm-ind-card">
@@ -3569,7 +3569,7 @@ export default function AdminPage() {
                             <td><code style={{ fontSize: 10, background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4 }}>{g.grupo_gfi}</code></td>
                             <td>{g.miembros.toLocaleString("es-AR")}</td>
                             <td style={{ color: g.mensajes_30d > 0 ? "var(--gfi-green-text)" : "var(--gfi-text-muted)" }}>{g.mensajes_30d}</td>
-                            <td style={{ color: g.procesados_30d > 0 ? "#f59e0b" : "rgba(255,255,255,0.3)" }}>{g.procesados_30d}</td>
+                            <td style={{ color: g.procesados_30d > 0 ? "#d4960c" : "rgba(255,255,255,0.3)" }}>{g.procesados_30d}</td>
                             <td><span className={`badge badge-${g.activo ? "aprobado" : "rechazado"}`}>{g.activo ? "Activo" : "Inactivo"}</span></td>
                             <td>{g.wa_link ? <a href={g.wa_link} target="_blank" rel="noreferrer" style={{ color: "var(--gfi-green-text)", fontSize: 11 }}>Abrir</a> : <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>—</span>}</td>
                             <td>
@@ -3674,7 +3674,7 @@ export default function AdminPage() {
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
                   {[
                     { label: "Activas", val: activos.length, color: "var(--gfi-green-text)", bg: "var(--gfi-green-soft)" },
-                    { label: "Vencen en <15d", val: porVencer.length, color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+                    { label: "Vencen en <15d", val: porVencer.length, color: "#d4960c", bg: "rgba(245,158,11,0.08)" },
                     { label: "Pendientes de confirmación", val: pendientes.length, color: "var(--gfi-orange)", bg: "var(--gfi-orange-soft)" },
                     { label: "Sin suscripción", val: sinSub.length, color: "var(--gfi-red)", bg: "var(--gfi-red-soft)" },
                     { label: "Total corredores", val: rankingPago.length, color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
@@ -3760,7 +3760,7 @@ export default function AdminPage() {
                             <td>
                               <span style={{ padding: "3px 10px", borderRadius: 10, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: estadoBg, color: estadoColor }}>{estadoLabel}</span>
                               {diasRestantes !== null && estaActiva && diasRestantes <= 15 && (
-                                <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 2 }}>⚠ {diasRestantes}d restantes</div>
+                                <div style={{ fontSize: 10, color: "#d4960c", marginTop: 2 }}>⚠ {diasRestantes}d restantes</div>
                               )}
                             </td>
                             <td style={{ fontSize: 12, color: venc && venc < hoy ? "var(--gfi-red)" : "var(--gfi-text-secondary)" }}>
@@ -3793,10 +3793,10 @@ export default function AdminPage() {
                 { label: "Corredores activos", val: s.totalCorredores, icon: "👥", color: "var(--gfi-text-secondary)", bg: "var(--gfi-bg-secondary)" },
                 { label: "Suscripciones activas", val: s.suscripcionesActivas, icon: "✅", color: "var(--gfi-green-text)", bg: "var(--gfi-green-soft)" },
                 { label: "Nuevos este mes", val: s.nuevosMes, icon: "🆕", color: "#a78bfa", bg: "rgba(167,139,250,0.08)" },
-                { label: "Ingresos confirmados este mes", val: `USD ${s.ingresosMesUSD.toFixed(0)}`, icon: "💰", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+                { label: "Ingresos confirmados este mes", val: `USD ${s.ingresosMesUSD.toFixed(0)}`, icon: "💰", color: "#d4960c", bg: "rgba(245,158,11,0.08)" },
                 { label: "Propiedades en CRM", val: s.totalPropiedades, icon: "🏠", color: "#06b6d4", bg: "rgba(6,182,212,0.08)" },
                 { label: "Entradas MIR", val: s.totalMIR, icon: "⚡", color: "var(--gfi-orange)", bg: "var(--gfi-orange-soft)" },
-                { label: "Negocios totales", val: s.totalNegocios, icon: "🤝", color: "#cc0000", bg: "rgba(204,0,0,0.08)" },
+                { label: "Negocios totales", val: s.totalNegocios, icon: "🤝", color: "#990000", bg: "rgba(153,0,0,0.08)" },
                 { label: "Logins este mes", val: s.activosMes, icon: "🔐", color: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.04)" },
               ];
               return (
@@ -3825,7 +3825,7 @@ export default function AdminPage() {
                                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{z.count}</span>
                                 </div>
                                 <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
-                                  <div style={{ height: "100%", width: `${pct}%`, background: "#cc0000", borderRadius: 2 }} />
+                                  <div style={{ height: "100%", width: `${pct}%`, background: "#990000", borderRadius: 2 }} />
                                 </div>
                               </div>
                             </div>
@@ -3879,7 +3879,7 @@ export default function AdminPage() {
                 </div>
               );
               const MODULO_COLOR: Record<string, string> = {
-                autenticacion: "#3b82f6", pagos: "#22c55e", crm: "#f59e0b", admin: "#cc0000",
+                autenticacion: "#3b82f6", pagos: "#3abab6", crm: "#d4960c", admin: "#990000",
               };
               return (
                 <div className="adm-tabla-wrap">

@@ -134,8 +134,8 @@ export default function GestionDocumentos() {
     ), [negocios, busqueda]);
 
   const ESTADO_COLORS: Record<DocEstado, string> = {
-    pendiente: "#f59e0b",
-    recibido: "#22c55e",
+    pendiente: "#d4960c",
+    recibido: "#3abab6",
     no_aplica: "#6b7280",
   };
   const ESTADO_LABELS: Record<DocEstado, string> = {
@@ -155,7 +155,7 @@ export default function GestionDocumentos() {
     if (!win) return;
     win.document.write(`
       <html><head><title>Documentación — ${negocioActual.titulo}</title>
-      <style>body{font-family:Arial,sans-serif;font-size:12px;max-width:700px;margin:40px auto}h1{color:#cc0000}h2{font-size:14px;margin:20px 0 8px;border-bottom:1px solid #eee;padding-bottom:4px}table{width:100%;border-collapse:collapse;margin:8px 0}th,td{border:1px solid #ddd;padding:6px 10px;text-align:left}th{background:#f5f5f5}.recibido{color:#16a34a}.pendiente{color:#d97706}.no_aplica{color:#6b7280}.obligatorio{color:#dc2626}</style>
+      <style>body{font-family:Arial,sans-serif;font-size:12px;max-width:700px;margin:40px auto}h1{color:#990000}h2{font-size:14px;margin:20px 0 8px;border-bottom:1px solid #eee;padding-bottom:4px}table{width:100%;border-collapse:collapse;margin:8px 0}th,td{border:1px solid #ddd;padding:6px 10px;text-align:left}th{background:#f5f5f5}.recibido{color:#22807c}.pendiente{color:#d97706}.no_aplica{color:#6b7280}.obligatorio{color:#dc2626}</style>
       </head><body>
       <h1>📋 Checklist de Documentación</h1>
       <p><b>Negocio:</b> ${negocioActual.titulo} | <b>Etapa:</b> ${negocioActual.etapa} | <b>Tipo:</b> ${negocioActual.tipo_operacion ?? "—"}</p>
@@ -187,7 +187,7 @@ export default function GestionDocumentos() {
         </div>
         {negocioActual && (
           <button onClick={exportPDF} style={{
-            background: "#cc0000", color: "#fff", border: "none", borderRadius: 8,
+            background: "#990000", color: "#fff", border: "none", borderRadius: 8,
             padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "Montserrat, sans-serif",
           }}>📄 PDF</button>
         )}
@@ -218,14 +218,14 @@ export default function GestionDocumentos() {
                   onClick={() => setNegocioSeleccionado(n.id)}
                   style={{
                     padding: "12px 16px", borderBottom: "1px solid #1a1a1a", cursor: "pointer",
-                    background: sel ? "#cc000015" : "transparent",
-                    borderLeft: sel ? "3px solid #cc0000" : "3px solid transparent",
+                    background: sel ? "#99000015" : "transparent",
+                    borderLeft: sel ? "3px solid #990000" : "3px solid transparent",
                   }}
                 >
                   <div style={{ fontSize: 13, fontWeight: 600, color: sel ? "#fff" : "#ccc" }}>{n.titulo}</div>
                   <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>{n.etapa} · {n.tipo_operacion ?? "—"}</div>
                   <div style={{ marginTop: 4, height: 3, background: "#1a1a1a", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${(recibidos / total) * 100}%`, background: recibidos === total ? "#22c55e" : "#cc0000", borderRadius: 2 }} />
+                    <div style={{ height: "100%", width: `${(recibidos / total) * 100}%`, background: recibidos === total ? "#3abab6" : "#990000", borderRadius: 2 }} />
                   </div>
                   <div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>{recibidos}/{total} docs</div>
                 </div>
@@ -254,11 +254,11 @@ export default function GestionDocumentos() {
                 <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: "16px 20px", marginBottom: 20, display: "flex", gap: 24 }}>
                   <div>
                     <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>Obligatorios</div>
-                    <div style={{ fontSize: 24, fontWeight: 700, color: "#22c55e" }}>{progreso.recibidos}/{progreso.obligatorios}</div>
+                    <div style={{ fontSize: 24, fontWeight: 700, color: "#3abab6" }}>{progreso.recibidos}/{progreso.obligatorios}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>Pendientes *</div>
-                    <div style={{ fontSize: 24, fontWeight: 700, color: progreso.pendientes > 0 ? "#f59e0b" : "#22c55e" }}>{progreso.pendientes}</div>
+                    <div style={{ fontSize: 24, fontWeight: 700, color: progreso.pendientes > 0 ? "#d4960c" : "#3abab6" }}>{progreso.pendientes}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>Total recibidos</div>
@@ -269,7 +269,7 @@ export default function GestionDocumentos() {
                       <div style={{
                         height: "100%",
                         width: `${(progreso.recibidos / progreso.obligatorios) * 100}%`,
-                        background: progreso.pendientes === 0 ? "#22c55e" : "#cc0000",
+                        background: progreso.pendientes === 0 ? "#3abab6" : "#990000",
                         borderRadius: 4, transition: "width 0.3s",
                       }} />
                     </div>
@@ -280,7 +280,7 @@ export default function GestionDocumentos() {
               {/* Grupos de documentos */}
               {Object.entries(grupos).map(([grupo, docs]) => (
                 <div key={grupo} style={{ marginBottom: 20 }}>
-                  <h3 style={{ margin: "0 0 10px", fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <h3 style={{ margin: "0 0 10px", fontSize: 12, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {grupo}
                   </h3>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -289,13 +289,13 @@ export default function GestionDocumentos() {
                       return (
                         <div key={doc.id} style={{
                           display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                          background: "#111", border: `1px solid ${estado === "recibido" ? "#22c55e20" : estado === "no_aplica" ? "#6b728020" : "#1a1a1a"}`,
+                          background: "#111", border: `1px solid ${estado === "recibido" ? "#3abab620" : estado === "no_aplica" ? "#6b728020" : "#1a1a1a"}`,
                           borderRadius: 8,
                         }}>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 13, color: estado === "no_aplica" ? "#555" : "#ccc", display: "flex", alignItems: "center", gap: 6 }}>
                               {doc.nombre}
-                              {doc.obligatorio && <span style={{ fontSize: 10, color: "#cc0000", fontWeight: 700 }}>OBLIGATORIO</span>}
+                              {doc.obligatorio && <span style={{ fontSize: 10, color: "#990000", fontWeight: 700 }}>OBLIGATORIO</span>}
                             </div>
                             <div style={{ fontSize: 11, color: "#555", marginTop: 1 }}>{doc.descripcion}</div>
                           </div>

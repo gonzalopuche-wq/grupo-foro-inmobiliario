@@ -33,11 +33,11 @@ function fmt(n: number, dec = 0) {
 }
 
 const DEFAULTS: Objetivo[] = [
-  { id: "cierres", label: "Cierres del mes", tipo: "cantidad", meta: 3, icono: "🏆", color: "#22c55e" },
+  { id: "cierres", label: "Cierres del mes", tipo: "cantidad", meta: 3, icono: "🏆", color: "#3abab6" },
   { id: "honorarios", label: "Honorarios mes (USD)", tipo: "monto", meta: 15000, icono: "💰", color: "#a855f7" },
   { id: "nuevos_negocios", label: "Negocios captados", tipo: "cantidad", meta: 8, icono: "🎯", color: "#3b82f6" },
-  { id: "interacciones", label: "Interacciones mes", tipo: "cantidad", meta: 50, icono: "📞", color: "#f97316" },
-  { id: "visitas", label: "Visitas / reuniones", tipo: "cantidad", meta: 15, icono: "🏠", color: "#eab308" },
+  { id: "interacciones", label: "Interacciones mes", tipo: "cantidad", meta: 50, icono: "📞", color: "#d4960c" },
+  { id: "visitas", label: "Visitas / reuniones", tipo: "cantidad", meta: 15, icono: "🏠", color: "#d4960c" },
   { id: "propiedades_captadas", label: "Propiedades captadas", tipo: "cantidad", meta: 5, icono: "🔑", color: "#06b6d4" },
 ];
 
@@ -276,7 +276,7 @@ export default function ObjetivosPage() {
           <div style={{ display: "flex", gap: 10 }}>
             <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
             <button onClick={() => setEditMode(!editMode)}
-              style={{ background: editMode ? "#cc000033" : "#1f2937", color: editMode ? "#cc0000" : "#e5e5e5", border: `1px solid ${editMode ? "#cc000066" : "#374151"}`, borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>
+              style={{ background: editMode ? "#99000033" : "#1f2937", color: editMode ? "#990000" : "#e5e5e5", border: `1px solid ${editMode ? "#99000066" : "#374151"}`, borderRadius: 6, padding: "6px 14px", fontSize: 12, cursor: "pointer" }}>
               {editMode ? "✓ Listo" : "✏️ Editar metas"}
             </button>
           </div>
@@ -306,7 +306,7 @@ export default function ObjetivosPage() {
           </div>
           <div style={{ marginLeft: "auto", textAlign: "right" }}>
             <div style={{ fontSize: 11, color: "#6b7280" }}>Cumplimiento global</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: cumplimiento >= 80 ? "#22c55e" : cumplimiento >= 50 ? "#f97316" : "#cc0000" }}>
+            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 22, color: cumplimiento >= 80 ? "#3abab6" : cumplimiento >= 50 ? "#d4960c" : "#990000" }}>
               {cumplimiento.toFixed(0)}%
             </div>
           </div>
@@ -315,11 +315,11 @@ export default function ObjetivosPage() {
         {/* Barra cumplimiento global */}
         <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 18px", marginBottom: 24 }}>
           <div style={{ background: "#1a1a1a", borderRadius: 8, height: 14, overflow: "hidden", marginBottom: 6 }}>
-            <div style={{ width: `${Math.min(100, cumplimiento)}%`, height: "100%", background: cumplimiento >= 80 ? "#22c55e" : cumplimiento >= 50 ? "#f97316" : "#cc0000", transition: "width 0.5s" }} />
+            <div style={{ width: `${Math.min(100, cumplimiento)}%`, height: "100%", background: cumplimiento >= 80 ? "#3abab6" : cumplimiento >= 50 ? "#d4960c" : "#990000", transition: "width 0.5s" }} />
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b7280" }}>
             <span>0%</span>
-            <span style={{ color: cumplimiento >= 80 ? "#22c55e" : cumplimiento >= 50 ? "#f97316" : "#cc0000", fontWeight: 700 }}>
+            <span style={{ color: cumplimiento >= 80 ? "#3abab6" : cumplimiento >= 50 ? "#d4960c" : "#990000", fontWeight: 700 }}>
               {cumplimiento.toFixed(0)}% de cumplimiento — {mesLabel}
             </span>
             <span>100%</span>
@@ -360,10 +360,10 @@ export default function ObjetivosPage() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, height: 12, overflow: "hidden", marginBottom: 8 }}>
-                  <div style={{ width: `${pct}%`, height: "100%", background: pct >= 100 ? "#22c55e" : pct >= 60 ? obj.color : `${obj.color}88`, transition: "width 0.4s" }} />
+                  <div style={{ width: `${pct}%`, height: "100%", background: pct >= 100 ? "#3abab6" : pct >= 60 ? obj.color : `${obj.color}88`, transition: "width 0.4s" }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                  <span style={{ color: pct >= 100 ? "#22c55e" : "#6b7280" }}>
+                  <span style={{ color: pct >= 100 ? "#3abab6" : "#6b7280" }}>
                     {pct >= 100 ? "✅ Meta cumplida" : `${pct.toFixed(0)}% — Faltan ${obj.tipo === "monto" ? `USD ${fmt(restante)}` : restante}`}
                   </span>
                   {editMode && !isAuto && (

@@ -21,9 +21,9 @@ interface NetPost {
 }
 
 const TIPOS: Record<string, { label: string; color: string; bg: string; border: string; icon: string }> = {
-  oportunidad: { label: "Oportunidad",  color: "#22c55e",  bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)",   icon: "💎" },
-  urgencia:    { label: "Urgencia",     color: "#ef4444",  bg: "rgba(239,68,68,0.1)",   border: "rgba(239,68,68,0.3)",   icon: "🔥" },
-  necesidad:   { label: "Busco",        color: "#f59e0b",  bg: "rgba(245,158,11,0.1)",  border: "rgba(245,158,11,0.3)",  icon: "🔍" },
+  oportunidad: { label: "Oportunidad",  color: "#3abab6",  bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.3)",   icon: "💎" },
+  urgencia:    { label: "Urgencia",     color: "#b80000",  bg: "rgba(239,68,68,0.1)",   border: "rgba(239,68,68,0.3)",   icon: "🔥" },
+  necesidad:   { label: "Busco",        color: "#d4960c",  bg: "rgba(245,158,11,0.1)",  border: "rgba(245,158,11,0.3)",  icon: "🔍" },
   otro:        { label: "Info",         color: "#94a3b8",  bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.2)", icon: "💬" },
 };
 
@@ -225,7 +225,7 @@ export default function NetworkingPage() {
         .net-det-mat { font-size: 11px; background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border); border-radius: 20px; padding: 2px 9px; color: var(--gfi-text-muted); }
         .net-det-desc { font-size: 14px; color: var(--gfi-text-primary); line-height: 1.7; white-space: pre-wrap; margin-bottom: 16px; }
         .net-det-caract { font-size: 13px; color: var(--gfi-text-secondary); background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 12px 14px; line-height: 1.6; white-space: pre-wrap; margin-bottom: 14px; }
-        .net-det-contact { background: var(--gfi-green-soft); border: 1px solid rgba(16,185,129,0.2); border-radius: var(--gfi-radius-md); padding: 14px 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .net-det-contact { background: var(--gfi-green-soft); border: 1px solid rgba(58,186,182,0.2); border-radius: var(--gfi-radius-md); padding: 14px 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
         .net-det-contact-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-green-text); margin-bottom: 4px; }
         .net-det-wa { padding: 8px 16px; background: var(--gfi-green-text); border: none; border-radius: var(--gfi-radius-md); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; display: inline-block; transition: var(--gfi-transition); }
         .net-det-wa:hover { filter: brightness(1.1); }
@@ -234,13 +234,13 @@ export default function NetworkingPage() {
         .net-btn-sm:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
         .net-btn-sm.danger { border-color: var(--gfi-red-border); color: var(--gfi-red); }
         .net-btn-sm.danger:hover { border-color: var(--gfi-red); background: var(--gfi-red-soft); }
-        .net-btn-sm.success { border-color: rgba(16,185,129,0.25); color: var(--gfi-green-text); }
+        .net-btn-sm.success { border-color: rgba(58,186,182,0.25); color: var(--gfi-green-text); }
         .net-btn-sm.success:hover { border-color: var(--gfi-green-text); background: var(--gfi-green-soft); }
         .net-mis-btn { padding: 7px 14px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); cursor: pointer; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-secondary); transition: var(--gfi-transition); }
         .net-mis-btn.activo { border-color: var(--gfi-red); color: var(--gfi-red); background: var(--gfi-red-soft); }
         .net-estado-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; border: 1px solid; }
         .net-toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; }
-        .net-toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(16,185,129,0.35); color: var(--gfi-green-text); }
+        .net-toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(58,186,182,0.35); color: var(--gfi-green-text); }
         .net-toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @media (max-width: 600px) { .net-row2 { grid-template-columns: 1fr; } }
       `}</style>
@@ -490,7 +490,7 @@ export default function NetworkingPage() {
                     <div key={i} style={{ position: "relative" }}>
                       <img src={f} alt="" style={{ width: 60, height: 60, borderRadius: 4, objectFit: "cover", border: "1px solid rgba(255,255,255,0.1)" }} />
                       <button type="button" onClick={() => setFotos(p => p.filter((_, j) => j !== i))}
-                        style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, background: "#cc0000", border: "none", borderRadius: "50%", color: "#fff", fontSize: 9, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
+                        style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, background: "#990000", border: "none", borderRadius: "50%", color: "#fff", fontSize: 9, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
                         ✕
                       </button>
                     </div>

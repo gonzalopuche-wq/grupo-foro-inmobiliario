@@ -13,9 +13,9 @@ interface IndicesData {
 }
 
 const INDICES_INFO = [
-  { id: "ICL", nombre: "ICL", descripcion: "Índice para Contratos de Locación", detalle: "Promedio UVA + IPC · Ley 27.551 · Fuente: BCRA", color: "#cc0000", badge: "Alquileres" },
+  { id: "ICL", nombre: "ICL", descripcion: "Índice para Contratos de Locación", detalle: "Promedio UVA + IPC · Ley 27.551 · Fuente: BCRA", color: "#990000", badge: "Alquileres" },
   { id: "IPC", nombre: "IPC", descripcion: "Índice de Precios al Consumidor", detalle: "Inflación general · Fuente: BCRA/INDEC", color: "#3b82f6", badge: "General" },
-  { id: "CAC", nombre: "CAC", descripcion: "Cámara Arg. de la Construcción", detalle: "Costo de construcción · Obras", color: "#f97316", badge: "Obras" },
+  { id: "CAC", nombre: "CAC", descripcion: "Cámara Arg. de la Construcción", detalle: "Costo de construcción · Obras", color: "#d4960c", badge: "Obras" },
   { id: "CER", nombre: "CER", descripcion: "Coeficiente de Estabilización", detalle: "Créditos y deudas indexados · Fuente: BCRA", color: "#a78bfa", badge: "Créditos" },
 ];
 
@@ -259,11 +259,11 @@ export default function CalculadorasPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .c-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
         .c-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .c-titulo span { color: #cc0000; }
+        .c-titulo span { color: #990000; }
         .c-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
         .c-fuente { font-size: 10px; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-        .c-fuente-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
-        .c-fuente-dot.err { background: #f97316; }
+        .c-fuente-dot { width: 6px; height: 6px; border-radius: 50%; background: #3abab6; }
+        .c-fuente-dot.err { background: #d4960c; }
         /* Índices */
         .c-indices { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
         .c-ind { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: all 0.15s; }
@@ -276,7 +276,7 @@ export default function CalculadorasPage() {
         /* Tabs */
         .c-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .c-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
-        .c-tab.on { color: #fff; border-bottom-color: #cc0000; }
+        .c-tab.on { color: #fff; border-bottom-color: #990000; }
         /* Grid */
         .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .c-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 22px; }
@@ -330,10 +330,10 @@ export default function CalculadorasPage() {
         .c-ajuste-periodo { font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; margin-top: 2px; }
         .c-ajuste-derecha { text-align: right; }
         .c-ajuste-monto { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; }
-        .c-ajuste-pct { font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #22c55e; margin-top: 2px; }
+        .c-ajuste-pct { font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #3abab6; margin-top: 2px; }
         /* Loading */
         .c-loading { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; }
-        .c-spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .c-spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 700px) {
           .c-grid { grid-template-columns: 1fr; }
@@ -352,7 +352,7 @@ export default function CalculadorasPage() {
             { href: "/calculadoras/honorarios-inmobiliarios", label: "Honorarios Inmobiliarios", icon: "🤝", active: false },
             { href: "/calculadoras/bcra-live", label: "BCRA Live", icon: "📡", active: false },
           ].map(({ href, label, icon, active }) => (
-            <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
+            <Link key={href} href={href} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, background: active ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${active ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, color: active ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s" }}>
               <span style={{ fontSize: 13 }}>{icon}</span> {label}
             </Link>
           ))}
@@ -466,7 +466,7 @@ export default function CalculadorasPage() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif" }}>
                     <span>Último: <strong style={{ color: indiceInfo.color }}>+{ultimoValor?.toFixed(2)}% {tendencia}</strong></span>
-                    <span>Acum. 12m: <strong style={{ color: "#22c55e" }}>+{(acum12 * 100).toFixed(1)}%</strong></span>
+                    <span>Acum. 12m: <strong style={{ color: "#3abab6" }}>+{(acum12 * 100).toFixed(1)}%</strong></span>
                   </div>
                 </>
               )}
@@ -481,7 +481,7 @@ export default function CalculadorasPage() {
               {montoNum > 0 && (
                 <button
                   onClick={() => document.getElementById("resultado-alquiler")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  style={{ width: "100%", marginTop: 14, padding: "13px", background: "#cc0000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+                  style={{ width: "100%", marginTop: 14, padding: "13px", background: "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
                 >
                   Ver resultado ↓
                 </button>
@@ -501,15 +501,15 @@ export default function CalculadorasPage() {
               ) : (
                 <div className="c-resultado" style={{ background: `${indiceInfo.color}08`, border: `1px solid ${indiceInfo.color}25` }}>
                   <div className="c-res-label">{indiceInfo.nombre} · {periodoAjuste} meses · desde {nombreMes(fechaUltimoAjuste)}</div>
-                  <div className="c-res-monto" style={{ color: "#22c55e" }}>{formatARS(calculo.nuevoAlquiler)}</div>
+                  <div className="c-res-monto" style={{ color: "#3abab6" }}>{formatARS(calculo.nuevoAlquiler)}</div>
                   <div className="c-res-original">Alquiler actual: {formatARS(montoNum)}</div>
                   <div className="c-res-grid">
                     <div className="c-res-stat">
-                      <div className="c-res-stat-val" style={{ color: "#22c55e" }}>{formatPct(calculo.variacionTotal)}</div>
+                      <div className="c-res-stat-val" style={{ color: "#3abab6" }}>{formatPct(calculo.variacionTotal)}</div>
                       <div className="c-res-stat-label">Aumento total</div>
                     </div>
                     <div className="c-res-stat">
-                      <div className="c-res-stat-val" style={{ color: "#eab308", fontSize: 15 }}>{formatARS(calculo.diferencia)}</div>
+                      <div className="c-res-stat-val" style={{ color: "#d4960c", fontSize: 15 }}>{formatARS(calculo.diferencia)}</div>
                       <div className="c-res-stat-label">Diferencia/mes</div>
                     </div>
                   </div>
@@ -535,7 +535,7 @@ export default function CalculadorasPage() {
                           {calculo.desglose.map((d, i) => (
                             <tr key={i}>
                               <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 600, color: "#fff" }}>{nombreMes(d.mes)}</td>
-                              <td style={{ color: "#22c55e" }}>+{d.variacion.toFixed(2)}%</td>
+                              <td style={{ color: "#3abab6" }}>+{d.variacion.toFixed(2)}%</td>
                               <td style={{ color: "rgba(255,255,255,0.5)" }}>+{d.acumulado.toFixed(2)}%</td>
                             </tr>
                           ))}
@@ -607,7 +607,7 @@ export default function CalculadorasPage() {
                       </div>
                       <div className="c-comp-monto">
                         <div className="c-comp-monto-val">{formatARS(c.montoNuevo)}</div>
-                        <div className="c-comp-monto-pct" style={{ color: "#22c55e" }}>{formatPct(c.variacion)}</div>
+                        <div className="c-comp-monto-pct" style={{ color: "#3abab6" }}>{formatPct(c.variacion)}</div>
                       </div>
                     </div>
                   );
@@ -781,7 +781,7 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
       `}</style>
 
       <div>
-        <div className="c-titulo">Calculadora de <span style={{ color: "#cc0000" }}>Actualización</span> de Alquiler</div>
+        <div className="c-titulo">Calculadora de <span style={{ color: "#990000" }}>Actualización</span> de Alquiler</div>
         <div className="c-sub">Calculá el monto actualizado de tu contrato según fecha de inicio, índice y periodicidad.</div>
       </div>
 
@@ -822,8 +822,8 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
               {PERIODOS_ACT.map(p => (
                 <button key={p.value} onClick={() => setPeriodicidad(p.value)}
-                  style={{ padding: "8px 10px", background: periodicidad === p.value ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.03)", border: `1.5px solid ${periodicidad === p.value ? "#cc0000" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, cursor: "pointer", textAlign: "center", transition: "all 0.15s" }}>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: periodicidad === p.value ? "#cc0000" : "rgba(255,255,255,0.6)" }}>{p.label}</div>
+                  style={{ padding: "8px 10px", background: periodicidad === p.value ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.03)", border: `1.5px solid ${periodicidad === p.value ? "#990000" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, cursor: "pointer", textAlign: "center", transition: "all 0.15s" }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: periodicidad === p.value ? "#990000" : "rgba(255,255,255,0.6)" }}>{p.label}</div>
                   <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>c/ {p.meses} meses</div>
                 </button>
               ))}
@@ -856,10 +856,10 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
                 <div className="act-card" style={{ background: "rgba(14,14,14,0.9)", border: `1.5px solid ${indiceInfo.color}40` }}>
                   <div className="act-card-badge" style={{ background: indiceInfo.color, color: "#fff" }}>DESDE</div>
                   <div className="act-card-mes">{ajustes.length > 0 ? mesActualLabel : nombreMes(fechaContratoMes)}</div>
-                  <div className="act-card-monto" style={{ color: "#22c55e" }}>
+                  <div className="act-card-monto" style={{ color: "#3abab6" }}>
                     {formatARS(montoActualFinal)}
                     {ajustes.length > 0 && ajustes[ajustes.length-1].estimado && (
-                      <span style={{ fontSize: 11, color: "#eab308", marginLeft: 6 }}>~</span>
+                      <span style={{ fontSize: 11, color: "#d4960c", marginLeft: 6 }}>~</span>
                     )}
                   </div>
                 </div>
@@ -878,15 +878,15 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
                   <div className="c-res-stat">
-                    <div className="c-res-stat-val" style={{ color: "#22c55e", fontSize: 16 }}>{pctAcumulado > 0 ? `+${pctAcumulado.toFixed(1)}%` : "0%"}</div>
+                    <div className="c-res-stat-val" style={{ color: "#3abab6", fontSize: 16 }}>{pctAcumulado > 0 ? `+${pctAcumulado.toFixed(1)}%` : "0%"}</div>
                     <div className="c-res-stat-label">Aumento total</div>
                   </div>
                   <div className="c-res-stat">
-                    <div className="c-res-stat-val" style={{ color: "#eab308", fontSize: 16 }}>{ajustes.length}</div>
+                    <div className="c-res-stat-val" style={{ color: "#d4960c", fontSize: 16 }}>{ajustes.length}</div>
                     <div className="c-res-stat-label">Ajuste{ajustes.length !== 1 ? "s" : ""} aplicados</div>
                   </div>
                   <div className="c-res-stat">
-                    <div className="c-res-stat-val" style={{ color: "#f97316", fontSize: 16 }}>{ajustes.length > 0 ? `+${formatARS(montoActualFinal - montoNum).replace("$", "")}` : "—"}</div>
+                    <div className="c-res-stat-val" style={{ color: "#d4960c", fontSize: 16 }}>{ajustes.length > 0 ? `+${formatARS(montoActualFinal - montoNum).replace("$", "")}` : "—"}</div>
                     <div className="c-res-stat-label">Diferencia total</div>
                   </div>
                 </div>
@@ -956,16 +956,16 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
                   <>
                     <tr key={`aj-${i}`} style={{ background: i === ajustes.length - 1 ? "rgba(34,197,94,0.05)" : undefined }}>
                       <td>
-                        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: i === ajustes.length - 1 ? "#22c55e" : "rgba(255,255,255,0.5)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: i === ajustes.length - 1 ? "#3abab6" : "rgba(255,255,255,0.5)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                           {PERIODOS_ACT.find(p => p.value === periodicidad)?.label} {aj.numero}
-                          {aj.estimado && <span style={{ marginLeft: 4, color: "#eab308" }}>~</span>}
+                          {aj.estimado && <span style={{ marginLeft: 4, color: "#d4960c" }}>~</span>}
                         </span>
                       </td>
                       <td style={{ color: i === ajustes.length - 1 ? "#fff" : "rgba(255,255,255,0.6)" }}>
                         {nombreMes(aj.fechaHasta)}
                       </td>
-                      <td style={{ color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>+{aj.variacion.toFixed(2)}%</td>
-                      <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: i === ajustes.length - 1 ? 800 : 500, color: i === ajustes.length - 1 ? "#22c55e" : "rgba(255,255,255,0.8)", fontSize: i === ajustes.length - 1 ? 15 : 13 }}>
+                      <td style={{ color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>+{aj.variacion.toFixed(2)}%</td>
+                      <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: i === ajustes.length - 1 ? 800 : 500, color: i === ajustes.length - 1 ? "#3abab6" : "rgba(255,255,255,0.8)", fontSize: i === ajustes.length - 1 ? 15 : 13 }}>
                         {formatARS(aj.monto)}
                       </td>
                       <td style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>+{aj.acumuladoPct.toFixed(1)}%</td>
@@ -989,11 +989,11 @@ function ActualizacionAlquilerSection({ indicesData, loadingIndices }: { indices
                             <tbody>
                               {aj.detalles.map((det, j) => (
                                 <tr key={j} style={{ background: det.estimado ? "rgba(234,179,8,0.05)" : undefined }}>
-                                  <td style={{ color: det.estimado ? "#eab308" : "rgba(255,255,255,0.6)" }}>
+                                  <td style={{ color: det.estimado ? "#d4960c" : "rgba(255,255,255,0.6)" }}>
                                     {nombreMes(det.mes)}
-                                    {det.estimado && <span style={{ fontSize: 9, marginLeft: 4, color: "#eab308" }}>est.</span>}
+                                    {det.estimado && <span style={{ fontSize: 9, marginLeft: 4, color: "#d4960c" }}>est.</span>}
                                   </td>
-                                  <td style={{ color: "#22c55e" }}>+{det.variacion.toFixed(2)}%</td>
+                                  <td style={{ color: "#3abab6" }}>+{det.variacion.toFixed(2)}%</td>
                                   <td style={{ color: "rgba(255,255,255,0.4)" }}>+{det.acumulado.toFixed(2)}%</td>
                                 </tr>
                               ))}

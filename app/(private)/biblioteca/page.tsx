@@ -194,8 +194,8 @@ export default function BibliotecaPage() {
   };
 
   const nivelColor = (nivel: string) => {
-    if (nivel === "Inicial") return { bg: "rgba(10,61,46,0.4)", border: "rgba(16,185,129,0.25)", color: "var(--gfi-green-text)" };
-    if (nivel === "Intermedio") return { bg: "var(--gfi-orange-soft)", border: "var(--gfi-orange-border)", color: "#f97316" };
+    if (nivel === "Inicial") return { bg: "rgba(10,61,46,0.4)", border: "rgba(58,186,182,0.25)", color: "var(--gfi-green-text)" };
+    if (nivel === "Intermedio") return { bg: "var(--gfi-orange-soft)", border: "var(--gfi-orange-border)", color: "#d4960c" };
     return { bg: "var(--gfi-red-soft)", border: "var(--gfi-red-border)", color: "var(--gfi-red)" };
   };
 
@@ -245,7 +245,7 @@ export default function BibliotecaPage() {
         .bib-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .bib-card-meta { font-size: 10px; color: var(--gfi-text-muted); display: flex; gap: 10px; flex-wrap: wrap; font-family: var(--font-mono); }
         .bib-btn-dl { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-md); color: var(--gfi-red); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--gfi-transition); }
-        .bib-btn-dl:hover { background: rgba(204,0,0,0.18); border-color: var(--gfi-red); color: #fff; }
+        .bib-btn-dl:hover { background: rgba(153,0,0,0.18); border-color: var(--gfi-red); color: #fff; }
 
         .bib-empty { padding: 64px; text-align: center; color: var(--gfi-text-muted); font-size: 13px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); }
         .bib-spinner { display: flex; align-items: center; justify-content: center; padding: 64px; }
@@ -267,7 +267,7 @@ export default function BibliotecaPage() {
         .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .file-drop { border: 2px dashed var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 24px; text-align: center; cursor: pointer; transition: var(--gfi-transition); }
         .file-drop:hover { border-color: var(--gfi-red-border); }
-        .file-drop.tiene { border-color: rgba(16,185,129,0.35); background: var(--gfi-green-soft); }
+        .file-drop.tiene { border-color: rgba(58,186,182,0.35); background: var(--gfi-green-soft); }
         .file-drop-txt { font-size: 13px; color: var(--gfi-text-secondary); margin-top: 6px; }
         .file-drop-nombre { font-size: 12px; color: var(--gfi-green-text); font-weight: 600; margin-top: 6px; }
         .file-tipos { font-size: 10px; color: var(--gfi-text-muted); margin-top: 4px; }
@@ -283,7 +283,7 @@ export default function BibliotecaPage() {
         .btn-save:hover:not(:disabled) { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
         .btn-save:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; max-width: 360px; line-height: 1.4; }
-        .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(16,185,129,0.35); color: var(--gfi-green-text); }
+        .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(58,186,182,0.35); color: var(--gfi-green-text); }
         .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @media(max-width:600px) { .bib-grid { grid-template-columns: 1fr; } .field-grid { grid-template-columns: 1fr; } }
       `}</style>

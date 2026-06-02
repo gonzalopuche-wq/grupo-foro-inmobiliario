@@ -51,7 +51,7 @@ interface EventoCalendario {
 const DIAS_SEMANA = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
-const PRIO_COLOR: Record<string, string> = { alta: "#ef4444", media: "#f59e0b", baja: "#6b7280" };
+const PRIO_COLOR: Record<string, string> = { alta: "#b80000", media: "#d4960c", baja: "#6b7280" };
 
 function toLocalDateStr(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -156,8 +156,8 @@ export default function AgendaSemanal() {
           fecha: h.fecha,
           completado: h.completado,
           link: h.negocio_id ? `/crm/negocios/${h.negocio_id}` : undefined,
-          color: "#22c55e",
-          bgColor: "#22c55e18",
+          color: "#3abab6",
+          bgColor: "#3abab618",
           icono: "🏁",
         });
       }
@@ -211,7 +211,7 @@ export default function AgendaSemanal() {
         <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Agenda Semanal</h1>
       </div>
       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>
-        {vencidosSemana > 0 && <span style={{ color: "#ef4444" }}>⚠ {vencidosSemana} vencido{vencidosSemana > 1 ? "s" : ""} · </span>}
+        {vencidosSemana > 0 && <span style={{ color: "#b80000" }}>⚠ {vencidosSemana} vencido{vencidosSemana > 1 ? "s" : ""} · </span>}
         {totalSemana} evento{totalSemana !== 1 ? "s" : ""} esta semana
       </div>
 
@@ -219,9 +219,9 @@ export default function AgendaSemanal() {
       <div style={{ display: "flex", gap: 10, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
         {/* Filtros de tipo */}
         {[
-          { id: "tarea", label: "Tareas", color: "#f59e0b", icono: "✓" },
+          { id: "tarea", label: "Tareas", color: "#d4960c", icono: "✓" },
           { id: "recordatorio", label: "Recordatorios", color: "#3b82f6", icono: "🔔" },
-          { id: "hito", label: "Hitos", color: "#22c55e", icono: "🏁" },
+          { id: "hito", label: "Hitos", color: "#3abab6", icono: "🏁" },
         ].map(t => (
           <button key={t.id} onClick={() => toggleTipo(t.id)}
             style={{ background: filtroTipos.has(t.id) ? t.color + "22" : "rgba(255,255,255,0.04)", border: `1px solid ${filtroTipos.has(t.id) ? t.color + "44" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: filtroTipos.has(t.id) ? t.color : "rgba(255,255,255,0.3)", fontSize: 11, padding: "5px 12px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
@@ -234,7 +234,7 @@ export default function AgendaSemanal() {
           <button onClick={() => setSemanaOffset(v => v - 1)}
             style={{ background: "#111", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "rgba(255,255,255,0.6)", fontSize: 14, padding: "5px 12px", cursor: "pointer" }}>←</button>
           <button onClick={() => setSemanaOffset(0)}
-            style={{ background: semanaOffset === 0 ? "rgba(204,0,0,0.15)" : "#111", border: `1px solid ${semanaOffset === 0 ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.1)"}`, borderRadius: 6, color: semanaOffset === 0 ? "#cc0000" : "rgba(255,255,255,0.5)", fontSize: 11, padding: "5px 12px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+            style={{ background: semanaOffset === 0 ? "rgba(153,0,0,0.15)" : "#111", border: `1px solid ${semanaOffset === 0 ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.1)"}`, borderRadius: 6, color: semanaOffset === 0 ? "#990000" : "rgba(255,255,255,0.5)", fontSize: 11, padding: "5px 12px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
             Hoy
           </button>
           <button onClick={() => setSemanaOffset(v => v + 1)}
@@ -243,7 +243,7 @@ export default function AgendaSemanal() {
           {/* Vista */}
           {(["semana", "lista"] as const).map(v => (
             <button key={v} onClick={() => setVistaMode(v)}
-              style={{ background: vistaMode === v ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${vistaMode === v ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: vistaMode === v ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+              style={{ background: vistaMode === v ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${vistaMode === v ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: vistaMode === v ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
               {v === "semana" ? "📅 Semana" : "📋 Lista"}
             </button>
           ))}
@@ -266,18 +266,18 @@ export default function AgendaSemanal() {
             const tieneVencidos = eventosDelDia.some(e => !e.completado);
 
             return (
-              <div key={diaStr} style={{ background: esHoy ? "rgba(204,0,0,0.06)" : "#0d0d0d", border: `1px solid ${esHoy ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.07)"}`, borderRadius: 10, padding: "12px 10px", minHeight: 160 }}>
+              <div key={diaStr} style={{ background: esHoy ? "rgba(153,0,0,0.06)" : "#0d0d0d", border: `1px solid ${esHoy ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.07)"}`, borderRadius: 10, padding: "12px 10px", minHeight: 160 }}>
                 {/* Cabecera del día */}
                 <div style={{ marginBottom: 10, textAlign: "center" }}>
-                  <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: esHoy ? "#cc0000" : "rgba(255,255,255,0.35)" }}>
+                  <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: esHoy ? "#990000" : "rgba(255,255,255,0.35)" }}>
                     {DIAS_SEMANA[dia.getDay()]}
                   </div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: esHoy ? "#cc0000" : esPassado ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.85)", lineHeight: 1.2 }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: esHoy ? "#990000" : esPassado ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.85)", lineHeight: 1.2 }}>
                     {dia.getDate()}
                   </div>
                   {eventosDelDia.length > 0 && (
                     <div style={{ marginTop: 3, display: "flex", justifyContent: "center" }}>
-                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: esPassado && tieneVencidos ? "#ef4444" : "#22c55e" }} />
+                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: esPassado && tieneVencidos ? "#b80000" : "#3abab6" }} />
                     </div>
                   )}
                 </div>
@@ -285,8 +285,8 @@ export default function AgendaSemanal() {
                 {/* Eventos del día */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                   {eventosDelDia.map(ev => (
-                    <div key={ev.id} style={{ background: esPassado && !ev.completado ? "rgba(239,68,68,0.08)" : ev.bgColor, borderLeft: `2px solid ${esPassado && !ev.completado ? "#ef4444" : ev.color}`, borderRadius: "0 4px 4px 0", padding: "4px 6px" }}>
-                      <div style={{ fontSize: 9, color: esPassado && !ev.completado ? "#ef4444" : ev.color, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{ev.icono}</div>
+                    <div key={ev.id} style={{ background: esPassado && !ev.completado ? "rgba(239,68,68,0.08)" : ev.bgColor, borderLeft: `2px solid ${esPassado && !ev.completado ? "#b80000" : ev.color}`, borderRadius: "0 4px 4px 0", padding: "4px 6px" }}>
+                      <div style={{ fontSize: 9, color: esPassado && !ev.completado ? "#b80000" : ev.color, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{ev.icono}</div>
                       <div style={{ fontSize: 9, color: "rgba(255,255,255,0.7)", lineHeight: 1.3, marginTop: 1, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                         {ev.titulo}
                       </div>
@@ -309,13 +309,13 @@ export default function AgendaSemanal() {
           {/* Vencidos */}
           {eventos.filter(e => e.fecha < hoy).length > 0 && (
             <div style={{ ...cardStyle, borderColor: "rgba(239,68,68,0.25)" }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#ef4444", marginBottom: 10 }}>⚠ Vencidos</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#b80000", marginBottom: 10 }}>⚠ Vencidos</div>
               {eventos.filter(e => e.fecha < hoy).map(ev => (
                 <div key={ev.id} style={{ display: "flex", gap: 10, alignItems: "center", padding: "7px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                   <span style={{ fontSize: 12 }}>{ev.icono}</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>{ev.titulo}</div>
-                    <div style={{ fontSize: 10, color: "#ef4444" }}>Venció {ev.fecha}</div>
+                    <div style={{ fontSize: 10, color: "#b80000" }}>Venció {ev.fecha}</div>
                   </div>
                   {ev.link && <Link href={ev.link} style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textDecoration: "none" }}>↗</Link>}
                 </div>
@@ -334,14 +334,14 @@ export default function AgendaSemanal() {
               const dObj = new Date(fecha + "T12:00:00");
               const esHoyDate = fecha === hoy;
               return (
-                <div key={fecha} style={{ ...cardStyle, borderColor: esHoyDate ? "rgba(204,0,0,0.3)" : undefined }}>
+                <div key={fecha} style={{ ...cardStyle, borderColor: esHoyDate ? "rgba(153,0,0,0.3)" : undefined }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: esHoyDate ? "#cc0000" : "rgba(255,255,255,0.7)", lineHeight: 1 }}>{dObj.getDate()}</div>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: esHoyDate ? "#990000" : "rgba(255,255,255,0.7)", lineHeight: 1 }}>{dObj.getDate()}</div>
                     <div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: esHoyDate ? "#cc0000" : "rgba(255,255,255,0.4)" }}>{DIAS_SEMANA[dObj.getDay()]}</div>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: esHoyDate ? "#990000" : "rgba(255,255,255,0.4)" }}>{DIAS_SEMANA[dObj.getDay()]}</div>
                       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{MESES[dObj.getMonth()]} {dObj.getFullYear()}</div>
                     </div>
-                    {esHoyDate && <span style={{ background: "#cc0000", color: "#fff", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 4 }}>HOY</span>}
+                    {esHoyDate && <span style={{ background: "#990000", color: "#fff", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 4 }}>HOY</span>}
                     <span style={{ marginLeft: "auto", background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.4)", fontSize: 10, padding: "2px 8px", borderRadius: 4 }}>{evs.length}</span>
                   </div>
                   {evs.map(ev => (

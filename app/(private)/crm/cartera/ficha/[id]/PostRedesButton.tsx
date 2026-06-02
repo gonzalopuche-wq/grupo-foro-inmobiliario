@@ -74,7 +74,7 @@ export function PostRedesButton({ propiedadId }: Props) {
                 {(["ambos", "instagram", "whatsapp"] as const).map(r => (
                   <button key={r} onClick={() => { setRed(r); setResultado(null); }} style={{
                     padding: "8px 16px", borderRadius: 20, border: "1px solid",
-                    borderColor: red === r ? "#cc0000" : "rgba(255,255,255,0.12)",
+                    borderColor: red === r ? "#990000" : "rgba(255,255,255,0.12)",
                     background: red === r ? "rgba(200,0,0,0.12)" : "transparent",
                     color: red === r ? "#fff" : "rgba(255,255,255,0.4)",
                     cursor: "pointer", fontSize: 12, fontWeight: 600,
@@ -87,7 +87,7 @@ export function PostRedesButton({ propiedadId }: Props) {
 
             <button onClick={generar} disabled={generando} style={{
               width: "100%", padding: "12px", borderRadius: 6, border: "none",
-              background: generando ? "rgba(200,0,0,0.4)" : "#cc0000",
+              background: generando ? "rgba(200,0,0,0.4)" : "#990000",
               color: "#fff", cursor: generando ? "not-allowed" : "pointer",
               fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700,
               letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20,
@@ -104,7 +104,7 @@ export function PostRedesButton({ propiedadId }: Props) {
                       <button onClick={() => copiar(resultado.instagram!, "ig")} style={{
                         padding: "5px 12px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.15)",
                         background: copiado === "ig" ? "rgba(34,197,94,0.15)" : "transparent",
-                        color: copiado === "ig" ? "#22c55e" : "rgba(255,255,255,0.5)",
+                        color: copiado === "ig" ? "#3abab6" : "rgba(255,255,255,0.5)",
                         cursor: "pointer", fontSize: 10, fontWeight: 700,
                       }}>
                         {copiado === "ig" ? "✓ Copiado" : "Copiar"}
@@ -121,7 +121,7 @@ export function PostRedesButton({ propiedadId }: Props) {
                       <button onClick={() => copiar(resultado.whatsapp!, "wa")} style={{
                         padding: "5px 12px", borderRadius: 4, border: "1px solid rgba(255,255,255,0.15)",
                         background: copiado === "wa" ? "rgba(34,197,94,0.15)" : "transparent",
-                        color: copiado === "wa" ? "#22c55e" : "rgba(255,255,255,0.5)",
+                        color: copiado === "wa" ? "#3abab6" : "rgba(255,255,255,0.5)",
                         cursor: "pointer", fontSize: 10, fontWeight: 700,
                       }}>
                         {copiado === "wa" ? "✓ Copiado" : "Copiar"}

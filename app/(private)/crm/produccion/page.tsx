@@ -228,7 +228,7 @@ export default function ProduccionPage() {
           font-family: 'Inter', sans-serif;
           outline: none;
         }
-        .prod-input:focus { border-color: rgba(204,0,0,0.5); }
+        .prod-input:focus { border-color: rgba(153,0,0,0.5); }
 
         .prod-select {
           padding: 8px 12px;
@@ -241,7 +241,7 @@ export default function ProduccionPage() {
           outline: none;
           cursor: pointer;
         }
-        .prod-select:focus { border-color: rgba(204,0,0,0.5); }
+        .prod-select:focus { border-color: rgba(153,0,0,0.5); }
 
         .prod-table-row {
           position: relative;
@@ -256,7 +256,7 @@ export default function ProduccionPage() {
           position: absolute;
           inset-block: 0;
           left: 0;
-          background: linear-gradient(90deg, rgba(204,0,0,0.13) 0%, rgba(204,0,0,0.04) 100%);
+          background: linear-gradient(90deg, rgba(153,0,0,0.13) 0%, rgba(153,0,0,0.04) 100%);
           pointer-events: none;
           border-radius: 0 4px 4px 0;
           transition: width 0.5s ease;
@@ -301,7 +301,7 @@ export default function ProduccionPage() {
               margin: 0,
               lineHeight: 1.2,
             }}>
-              Producción por <span style={{ color: "#cc0000" }}>Asesor</span>
+              Producción por <span style={{ color: "#990000" }}>Asesor</span>
             </h1>
             <p style={{
               fontFamily: "Inter, sans-serif",
@@ -677,7 +677,7 @@ export default function ProduccionPage() {
                           fontFamily: "Montserrat, sans-serif",
                           fontWeight: 700,
                           fontSize: 13,
-                          color: "#cc0000",
+                          color: "#990000",
                           paddingLeft: 4,
                         }}>
                           {fmtUSD(c.honorariosNetaUSD)}
@@ -746,9 +746,9 @@ export default function ProduccionPage() {
                                 fontFamily: "Montserrat, sans-serif",
                                 fontWeight: 700,
                                 fontSize: 10,
-                                background: "rgba(204,0,0,0.15)",
-                                color: "#cc0000",
-                                border: "1px solid rgba(204,0,0,0.3)",
+                                background: "rgba(153,0,0,0.15)",
+                                color: "#990000",
+                                border: "1px solid rgba(153,0,0,0.3)",
                                 borderRadius: 4,
                                 padding: "2px 7px",
                                 flexShrink: 0,
@@ -765,7 +765,7 @@ export default function ProduccionPage() {
                               </span>
                               <span>
                                 Hon. neta:{" "}
-                                <strong style={{ color: "#cc0000" }}>
+                                <strong style={{ color: "#990000" }}>
                                   {fmtUSD(calcHonorariosNetaUSD(op, tipoCambio))}
                                 </strong>
                               </span>
@@ -867,10 +867,10 @@ export default function ProduccionPage() {
                         height={BAR_HEIGHT}
                         fill={
                           i === 0
-                            ? "#cc0000"
+                            ? "#990000"
                             : i === 1
-                            ? "rgba(204,0,0,0.75)"
-                            : "rgba(204,0,0,0.5)"
+                            ? "rgba(153,0,0,0.75)"
+                            : "rgba(153,0,0,0.5)"
                         }
                         rx={4}
                       />

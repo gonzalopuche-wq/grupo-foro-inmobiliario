@@ -34,10 +34,10 @@ function variacionPrecio(actual: number | null, original: number | null): number
 }
 
 function semaforo(dias: number): { color: string; label: string } {
-  if (dias <= 30) return { color: "#22c55e", label: "Reciente" };
-  if (dias <= 60) return { color: "#f59e0b", label: "Normal" };
-  if (dias <= 90) return { color: "#f97316", label: "Lento" };
-  return { color: "#ef4444", label: "Estancado" };
+  if (dias <= 30) return { color: "#3abab6", label: "Reciente" };
+  if (dias <= 60) return { color: "#d4960c", label: "Normal" };
+  if (dias <= 90) return { color: "#d4960c", label: "Lento" };
+  return { color: "#b80000", label: "Estancado" };
 }
 
 // ── Componente ───────────────────────────────────────────────────────────────
@@ -157,9 +157,9 @@ export default function PerformanceCartera() {
             { label: "Activas en cartera", val: kpis.total.toString(), color: "#3b82f6" },
             { label: "Prom. días en cartera", val: `${kpis.promDias.toFixed(0)} días`, color: "#a78bfa" },
             { label: "Mediana días", val: `${kpis.mediaDias} días`, color: "#a78bfa" },
-            { label: "Con reducción", val: `${kpis.conReduccion} (${kpis.pctReduccion.toFixed(0)}%)`, color: "#f59e0b" },
-            { label: "Reducción promedio", val: kpis.reduccionPromedio > 0 ? `−${kpis.reduccionPromedio.toFixed(1)}%` : "—", color: "#ef4444" },
-            { label: "Estancadas (+90d)", val: kpis.estancadas.toString(), color: kpis.estancadas > 0 ? "#ef4444" : "#22c55e" },
+            { label: "Con reducción", val: `${kpis.conReduccion} (${kpis.pctReduccion.toFixed(0)}%)`, color: "#d4960c" },
+            { label: "Reducción promedio", val: kpis.reduccionPromedio > 0 ? `−${kpis.reduccionPromedio.toFixed(1)}%` : "—", color: "#b80000" },
+            { label: "Estancadas (+90d)", val: kpis.estancadas.toString(), color: kpis.estancadas > 0 ? "#b80000" : "#3abab6" },
           ].map((kpi, i) => (
             <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px" }}>
               <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
@@ -175,7 +175,7 @@ export default function PerformanceCartera() {
           </h2>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-end", height: 80 }}>
             {Object.entries(buckets).map(([label, count]) => {
-              const colors: Record<string, string> = { "0-30d": "#22c55e", "31-60d": "#f59e0b", "61-90d": "#f97316", "+90d": "#ef4444" };
+              const colors: Record<string, string> = { "0-30d": "#3abab6", "31-60d": "#d4960c", "61-90d": "#d4960c", "+90d": "#b80000" };
               return (
                 <div key={label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                   <span style={{ fontSize: 12, color: colors[label], fontWeight: 700 }}>{count}</span>
@@ -226,7 +226,7 @@ export default function PerformanceCartera() {
                       </td>
                       <td style={{ padding: "10px 16px" }}>
                         {variacion !== null ? (
-                          <span style={{ fontSize: 13, fontWeight: 700, color: variacion < 0 ? "#ef4444" : "#22c55e" }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: variacion < 0 ? "#b80000" : "#3abab6" }}>
                             {variacion > 0 ? "+" : ""}{variacion.toFixed(1)}%
                           </span>
                         ) : <span style={{ color: "#555" }}>—</span>}

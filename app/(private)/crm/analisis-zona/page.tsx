@@ -372,7 +372,7 @@ export default function AnalisisZona() {
 
   function SortIcon({ col }: { col: SortCol }) {
     if (sortCol !== col) return <span style={{ color: "#444", marginLeft: 3 }}>⇅</span>;
-    return <span style={{ color: "#cc0000", marginLeft: 3 }}>{sortAsc ? "↑" : "↓"}</span>;
+    return <span style={{ color: "#990000", marginLeft: 3 }}>{sortAsc ? "↑" : "↓"}</span>;
   }
 
   function Th({ col, label }: { col: SortCol; label: string }) {
@@ -458,7 +458,7 @@ export default function AnalisisZona() {
               fontFamily: "Montserrat, sans-serif",
               fontWeight: 700,
               fontSize: 12,
-              background: tab === t.id ? "#cc0000" : "#1a1a1a",
+              background: tab === t.id ? "#990000" : "#1a1a1a",
               color: tab === t.id ? "#fff" : "#888",
               transition: "all 0.15s",
             }}
@@ -540,7 +540,7 @@ export default function AnalisisZona() {
                                 }
                                 style={{
                                   cursor: "pointer",
-                                  background: isSelected ? "rgba(204,0,0,0.08)" : "transparent",
+                                  background: isSelected ? "rgba(153,0,0,0.08)" : "transparent",
                                   transition: "background 0.1s",
                                 }}
                               >
@@ -550,14 +550,14 @@ export default function AnalisisZona() {
                                     fontWeight: isSelected ? 700 : 400,
                                     color: isSelected ? "#fff" : "#ccc",
                                     borderLeft: isSelected
-                                      ? "3px solid #cc0000"
+                                      ? "3px solid #990000"
                                       : "3px solid transparent",
                                   }}
                                 >
                                   {z.barrio}
                                 </td>
                                 <td style={tdStyle}>{z.stockActivo}</td>
-                                <td style={{ ...tdStyle, color: z.precioPromM2 !== null ? "#22c55e" : "#555" }}>
+                                <td style={{ ...tdStyle, color: z.precioPromM2 !== null ? "#3abab6" : "#555" }}>
                                   {z.precioPromM2 !== null
                                     ? `${fmtUSD(z.precioPromM2)}/m²`
                                     : "—"}
@@ -572,7 +572,7 @@ export default function AnalisisZona() {
                                     ? `${fmtUSD(z.precioMaxM2)}/m²`
                                     : "—"}
                                 </td>
-                                <td style={{ ...tdStyle, color: z.operacionesCerradas > 0 ? "#f59e0b" : "#555" }}>
+                                <td style={{ ...tdStyle, color: z.operacionesCerradas > 0 ? "#d4960c" : "#555" }}>
                                   {z.operacionesCerradas}
                                 </td>
                                 <td style={{ ...tdStyle, color: z.tiempoPromedioVenta !== null ? "#a78bfa" : "#555" }}>
@@ -696,8 +696,8 @@ export default function AnalisisZona() {
                                 cx={cx}
                                 cy={cy}
                                 r={r}
-                                fill={isSelected ? "#cc0000" : "rgba(204,0,0,0.35)"}
-                                stroke={isSelected ? "#ff4444" : "#cc0000"}
+                                fill={isSelected ? "#990000" : "rgba(153,0,0,0.35)"}
+                                stroke={isSelected ? "#ff4444" : "#990000"}
                                 strokeWidth={isSelected ? 2 : 1}
                               />
                               <text
@@ -820,7 +820,7 @@ export default function AnalisisZona() {
                     {
                       label: "Stock activo",
                       val: kpiTab2.stockActivo.toString(),
-                      color: "#22c55e",
+                      color: "#3abab6",
                     },
                     {
                       label: "Precio promedio",
@@ -833,7 +833,7 @@ export default function AnalisisZona() {
                         kpiTab2.pm2Promedio !== null
                           ? `${fmtUSD(kpiTab2.pm2Promedio)}/m²`
                           : "—",
-                      color: "#f59e0b",
+                      color: "#d4960c",
                     },
                   ].map((kpi, i) => (
                     <div
@@ -904,7 +904,7 @@ export default function AnalisisZona() {
                               y={y}
                               width={barW}
                               height={barH}
-                              fill="#cc000099"
+                              fill="#99000099"
                               rx={3}
                             />
                             {bin.count > 0 && (
@@ -1006,7 +1006,7 @@ export default function AnalisisZona() {
                                     ? `${fmtNum(p.superficie_cubierta)} m²`
                                     : "—"}
                                 </td>
-                                <td style={{ ...tdStyle, color: pm2 !== null ? "#22c55e" : "#555" }}>
+                                <td style={{ ...tdStyle, color: pm2 !== null ? "#3abab6" : "#555" }}>
                                   {pm2 !== null ? `${fmtUSD(pm2)}/m²` : "—"}
                                 </td>
                                 <td style={tdStyle}>
@@ -1016,13 +1016,13 @@ export default function AnalisisZona() {
                                         p.estado === "activo" || p.estado === "activa"
                                           ? "rgba(34,197,94,0.15)"
                                           : p.estado === "vendido" || p.estado === "alquilado"
-                                          ? "rgba(204,0,0,0.15)"
+                                          ? "rgba(153,0,0,0.15)"
                                           : "rgba(255,255,255,0.05)",
                                       color:
                                         p.estado === "activo" || p.estado === "activa"
-                                          ? "#22c55e"
+                                          ? "#3abab6"
                                           : p.estado === "vendido" || p.estado === "alquilado"
-                                          ? "#cc0000"
+                                          ? "#990000"
                                           : "#888",
                                       padding: "2px 8px",
                                       borderRadius: 10,
@@ -1063,7 +1063,7 @@ export default function AnalisisZona() {
                       label: "Mejor mes",
                       val: kpiTend.mejor?.label ?? "—",
                       sub: `${kpiTend.mejor?.cantidad ?? 0} operaciones`,
-                      color: "#f59e0b",
+                      color: "#d4960c",
                     },
                     {
                       label: "Promedio mensual",
@@ -1075,13 +1075,13 @@ export default function AnalisisZona() {
                       label: "Total operaciones",
                       val: kpiTend.totalOps.toString(),
                       sub: "Últimos 12 meses",
-                      color: "#22c55e",
+                      color: "#3abab6",
                     },
                     {
                       label: "Honorarios estimados",
                       val: fmtUSD(kpiTend.totalHonorarios),
                       sub: "Total acumulado",
-                      color: "#cc0000",
+                      color: "#990000",
                     },
                   ].map((kpi, i) => (
                     <div
@@ -1137,11 +1137,11 @@ export default function AnalisisZona() {
                   </h2>
                   <div style={{ display: "flex", gap: 20, marginBottom: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div style={{ width: 20, height: 2, background: "#cc0000" }} />
+                      <div style={{ width: 20, height: 2, background: "#990000" }} />
                       <span style={{ fontSize: 11, color: "#888" }}>Cantidad cierres</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <div style={{ width: 20, height: 2, background: "#f59e0b", borderTop: "1px dashed #f59e0b" }} />
+                      <div style={{ width: 20, height: 2, background: "#d4960c", borderTop: "1px dashed #d4960c" }} />
                       <span style={{ fontSize: 11, color: "#888" }}>Precio prom. (USD, eje der.)</span>
                     </div>
                   </div>
@@ -1175,7 +1175,7 @@ export default function AnalisisZona() {
                             x={865}
                             y={24 + (1 - f) * 160}
                             textAnchor="start"
-                            fill="#f59e0b55"
+                            fill="#d4960c55"
                             fontSize={9}
                           >
                             {fmtNum(f * tendMaxPrecio)}
@@ -1189,7 +1189,7 @@ export default function AnalisisZona() {
                           {/* Cantidad line */}
                           <polyline
                             fill="none"
-                            stroke="#cc0000"
+                            stroke="#990000"
                             strokeWidth={2}
                             points={tendencias
                               .map((t, i) => {
@@ -1202,7 +1202,7 @@ export default function AnalisisZona() {
                           {/* Precio line */}
                           <polyline
                             fill="none"
-                            stroke="#f59e0b"
+                            stroke="#d4960c"
                             strokeWidth={1.5}
                             strokeDasharray="4 3"
                             points={tendencias
@@ -1228,7 +1228,7 @@ export default function AnalisisZona() {
                           <g key={t.key}>
                             {t.cantidad > 0 && (
                               <>
-                                <circle cx={x} cy={y} r={4} fill="#cc0000" />
+                                <circle cx={x} cy={y} r={4} fill="#990000" />
                                 <text
                                   x={x}
                                   y={y - 8}
@@ -1308,7 +1308,7 @@ export default function AnalisisZona() {
                                 fontWeight:
                                   t.key === kpiTend.mejor?.key && t.cantidad > 0 ? 700 : 400,
                                 color:
-                                  t.key === kpiTend.mejor?.key && t.cantidad > 0 ? "#f59e0b" : "#ccc",
+                                  t.key === kpiTend.mejor?.key && t.cantidad > 0 ? "#d4960c" : "#ccc",
                               }}
                             >
                               {t.label}
@@ -1316,7 +1316,7 @@ export default function AnalisisZona() {
                             <td
                               style={{
                                 ...tdStyle,
-                                color: t.cantidad > 0 ? "#22c55e" : "#555",
+                                color: t.cantidad > 0 ? "#3abab6" : "#555",
                                 fontWeight: t.cantidad > 0 ? 600 : 400,
                               }}
                             >
@@ -1328,7 +1328,7 @@ export default function AnalisisZona() {
                             <td
                               style={{
                                 ...tdStyle,
-                                color: t.honorariosEst > 0 ? "#cc0000" : "#555",
+                                color: t.honorariosEst > 0 ? "#990000" : "#555",
                               }}
                             >
                               {t.honorariosEst > 0 ? fmtUSD(t.honorariosEst) : "—"}

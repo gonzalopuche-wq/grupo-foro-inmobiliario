@@ -144,7 +144,7 @@ export default function NotificacionesWidget() {
           disabled={guardando}
           style={{
             padding: "8px 18px",
-            background: estado === "activo" ? "transparent" : "#cc0000",
+            background: estado === "activo" ? "transparent" : "#990000",
             border: estado === "activo" ? "1px solid rgba(255,255,255,0.15)" : "none",
             borderRadius: 4,
             color: estado === "activo" ? "rgba(255,255,255,0.5)" : "#fff",

@@ -250,22 +250,22 @@ export default function PropiaPage() {
         .propia-sub   { font-size:12px; color:rgba(255,255,255,0.3); font-family:'Inter',sans-serif; margin-bottom:20px; }
         .propia-tabs { display:flex; gap:2px; margin-bottom:16px; background:rgba(255,255,255,0.04); border-radius:8px; padding:3px; width:fit-content; flex-wrap:wrap; }
         .propia-tab  { padding:7px 18px; border-radius:6px; border:none; background:transparent; color:rgba(255,255,255,0.45); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.04em; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
-        .propia-tab.act { background:#cc0000; color:#fff; }
+        .propia-tab.act { background:#990000; color:#fff; }
         .propia-filtros { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; align-items:flex-end; }
         .propia-fi { display:flex; flex-direction:column; gap:4px; }
         .propia-fi label { font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:0.1em; text-transform:uppercase; }
         .propia-input { padding:8px 10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:6px; color:#fff; font-size:12px; font-family:'Inter',sans-serif; outline:none; min-width:0; }
-        .propia-input:focus { border-color:rgba(204,0,0,0.4); }
+        .propia-input:focus { border-color:rgba(153,0,0,0.4); }
         .propia-input::placeholder { color:rgba(255,255,255,0.18); }
         .propia-select { padding:8px 10px; background:rgba(12,12,12,0.9); border:1px solid rgba(255,255,255,0.09); border-radius:6px; color:#fff; font-size:12px; font-family:'Inter',sans-serif; outline:none; }
-        .propia-btn { padding:8px 20px; background:#cc0000; border:none; border-radius:6px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; letter-spacing:0.06em; cursor:pointer; height:36px; white-space:nowrap; }
+        .propia-btn { padding:8px 20px; background:#990000; border:none; border-radius:6px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:800; letter-spacing:0.06em; cursor:pointer; height:36px; white-space:nowrap; }
         .propia-btn:hover { opacity:0.85; }
         .propia-btn:disabled { opacity:0.4; cursor:not-allowed; }
-        .propia-banner { background:rgba(96,165,250,0.07); border:1px solid rgba(96,165,250,0.18); border-radius:10px; padding:16px 20px; margin-bottom:20px; }
-        .propia-banner-t { font-family:'Montserrat',sans-serif; font-size:13px; font-weight:800; color:#60a5fa; margin-bottom:6px; }
+        .propia-banner { background:rgba(74,184,216,0.07); border:1px solid rgba(74,184,216,0.18); border-radius:10px; padding:16px 20px; margin-bottom:20px; }
+        .propia-banner-t { font-family:'Montserrat',sans-serif; font-size:13px; font-weight:800; color:#4ab8d8; margin-bottom:6px; }
         .propia-banner-d { font-size:12px; color:rgba(255,255,255,0.45); font-family:'Inter',sans-serif; line-height:1.6; }
         .propia-err { background:rgba(200,0,0,0.08); border:1px solid rgba(200,0,0,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:#f87171; font-family:'Inter',sans-serif; margin-bottom:16px; }
-        .propia-ok  { background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:#22c55e; font-family:'Inter',sans-serif; margin-bottom:16px; }
+        .propia-ok  { background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:#3abab6; font-family:'Inter',sans-serif; margin-bottom:16px; }
         .propia-meta { font-size:12px; color:rgba(255,255,255,0.3); font-family:'Inter',sans-serif; margin-bottom:12px; }
         .propia-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
         .propia-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:border-color 0.15s; }
@@ -273,18 +273,18 @@ export default function PropiaPage() {
         .propia-card-img { width:100%; height:150px; object-fit:cover; background:#111; display:block; }
         .propia-card-img-ph { width:100%; height:150px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; font-size:30px; }
         .propia-card-body { padding:12px; flex:1; display:flex; flex-direction:column; gap:4px; }
-        .propia-card-op { font-family:'Montserrat',sans-serif; font-size:8px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:#cc0000; margin-bottom:2px; }
+        .propia-card-op { font-family:'Montserrat',sans-serif; font-size:8px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:#990000; margin-bottom:2px; }
         .propia-card-titulo { font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; color:#fff; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
         .propia-card-precio { font-family:'Montserrat',sans-serif; font-size:14px; font-weight:800; color:#fff; margin-top:2px; }
         .propia-card-loc { font-size:11px; color:rgba(255,255,255,0.4); font-family:'Inter',sans-serif; }
         .propia-card-attrs { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
         .propia-attr { font-size:10px; color:rgba(255,255,255,0.5); font-family:'Inter',sans-serif; background:rgba(255,255,255,0.05); padding:2px 7px; border-radius:4px; }
         .propia-card-foot { padding:10px 12px; border-top:1px solid rgba(255,255,255,0.06); display:flex; gap:8px; }
-        .propia-import-btn { flex:1; padding:7px 0; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.04em; cursor:pointer; transition:opacity 0.15s; background:#cc0000; color:#fff; }
+        .propia-import-btn { flex:1; padding:7px 0; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.04em; cursor:pointer; transition:opacity 0.15s; background:#990000; color:#fff; }
         .propia-import-btn:hover { opacity:0.85; }
         .propia-import-btn:disabled { opacity:0.45; cursor:not-allowed; }
-        .propia-import-btn.done { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.25); color:#22c55e; }
-        .propia-import-btn.doing { background:rgba(204,0,0,0.3); color:rgba(255,255,255,0.6); }
+        .propia-import-btn.done { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.25); color:#3abab6; }
+        .propia-import-btn.doing { background:rgba(153,0,0,0.3); color:rgba(255,255,255,0.6); }
         .propia-link-btn { flex:1; padding:7px 0; border:1px solid rgba(255,255,255,0.1); border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; cursor:pointer; background:transparent; color:rgba(255,255,255,0.5); text-align:center; text-decoration:none; display:block; line-height:1.6; }
         .propia-link-btn:hover { background:rgba(255,255,255,0.05); color:#fff; }
         .propia-paginacion { display:flex; gap:8px; align-items:center; justify-content:center; margin-top:24px; }
@@ -296,7 +296,7 @@ export default function PropiaPage() {
         .propia-empty-ico { font-size:36px; margin-bottom:12px; display:block; }
         .propia-loading { text-align:center; padding:48px; color:rgba(255,255,255,0.3); font-family:'Inter',sans-serif; }
         .propia-badge { display:inline-block; font-family:'Montserrat',sans-serif; font-size:7px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border-radius:3px; }
-        .propia-badge.on { background:rgba(96,165,250,0.15); color:#60a5fa; border:1px solid rgba(96,165,250,0.25); }
+        .propia-badge.on { background:rgba(74,184,216,0.15); color:#4ab8d8; border:1px solid rgba(74,184,216,0.25); }
         .propia-badge.off { background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.3); border:1px solid rgba(255,255,255,0.08); }
         .propia-stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:16px; }
         .propia-stat-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:16px; }
@@ -317,7 +317,7 @@ export default function PropiaPage() {
           <div className="propia-banner-t">⚙️ Configurá tu API key de Propia</div>
           <div className="propia-banner-d">
             Para usar Propia necesitás ingresar tu API key en{" "}
-            <Link href="/crm/portales" style={{ color:"#60a5fa", textDecoration:"none", fontWeight:600 }}>
+            <Link href="/crm/portales" style={{ color:"#4ab8d8", textDecoration:"none", fontWeight:600 }}>
               Portales → Propia
             </Link>
             . Solicitala a <strong>soporte@propia.com</strong> indicando que sos corredor de GFI.
@@ -486,7 +486,7 @@ export default function PropiaPage() {
               <br />
               <span style={{ fontSize:11, marginTop:8, display:"block" }}>
                 Podés publicar desde la ficha de cada propiedad en tu cartera o desde{" "}
-                <Link href="/crm/portales" style={{ color:"#60a5fa" }}>CRM → Portales</Link>.
+                <Link href="/crm/portales" style={{ color:"#4ab8d8" }}>CRM → Portales</Link>.
               </span>
             </div>
           )}

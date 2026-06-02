@@ -4,9 +4,9 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../lib/supabase";
 
 const OP_COLOR: Record<string, string> = {
-  venta: "#22c55e", compra: "#22c55e", alquiler: "#60a5fa",
-  temporario: "#eab308", permuta: "#c084fc",
-  comercial: "#f97316", fondo_comercio: "#fb7185", campo: "#84cc16",
+  venta: "#3abab6", compra: "#3abab6", alquiler: "#4ab8d8",
+  temporario: "#d4960c", permuta: "#c084fc",
+  comercial: "#d4960c", fondo_comercio: "#fb7185", campo: "#84cc16",
 };
 const OP_LABEL: Record<string, string> = {
   venta: "Venta", compra: "Comprar", alquiler: "Alquiler",
@@ -140,7 +140,7 @@ export default function RedGFIPage() {
         .rgfi-wrap { max-width: 1400px; }
         .rgfi-header { margin-bottom: 24px; }
         .rgfi-title { font-family:'Montserrat',sans-serif; font-size:22px; font-weight:800; color:#fff; }
-        .rgfi-title span { color:#cc0000; }
+        .rgfi-title span { color:#990000; }
         .rgfi-sub { font-size:13px; color:rgba(255,255,255,0.35); margin-top:4px; font-family:'Inter',sans-serif; }
         .rgfi-stats { display:flex; gap:16px; margin-top:12px; flex-wrap:wrap; }
         .rgfi-stat { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 16px; }
@@ -152,8 +152,8 @@ export default function RedGFIPage() {
         .rgfi-filter-sel { padding:8px 10px; background:rgba(12,12,12,0.8); border:1px solid rgba(255,255,255,0.08); border-radius:6px; color:rgba(255,255,255,0.6); font-size:12px; font-family:'Inter',sans-serif; outline:none; cursor:pointer; }
         .rgfi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
         .rgfi-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; overflow:hidden; cursor:pointer; transition:border-color 0.15s,transform 0.1s; }
-        .rgfi-card:hover { border-color:rgba(204,0,0,0.3); transform:translateY(-1px); }
-        .rgfi-card.selected { border-color:#cc0000; }
+        .rgfi-card:hover { border-color:rgba(153,0,0,0.3); transform:translateY(-1px); }
+        .rgfi-card.selected { border-color:#990000; }
         .rgfi-card-foto { height:160px; background:rgba(255,255,255,0.03); position:relative; overflow:hidden; }
         .rgfi-card-foto img { width:100%; height:100%; object-fit:cover; }
         .rgfi-card-foto-empty { height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; }
@@ -167,11 +167,11 @@ export default function RedGFIPage() {
         .rgfi-chips { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px; }
         .rgfi-chip { font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:0.04em; }
         .rgfi-corredor { display:flex; align-items:center; gap:8px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); }
-        .rgfi-corredor-ava { width:28px; height:28px; border-radius:6px; background:rgba(200,0,0,0.12); border:1px solid rgba(200,0,0,0.2); display:flex; align-items:center; justify-content:center; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; color:#cc0000; flex-shrink:0; overflow:hidden; }
+        .rgfi-corredor-ava { width:28px; height:28px; border-radius:6px; background:rgba(200,0,0,0.12); border:1px solid rgba(200,0,0,0.2); display:flex; align-items:center; justify-content:center; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; color:#990000; flex-shrink:0; overflow:hidden; }
         .rgfi-corredor-ava img { width:100%; height:100%; object-fit:cover; }
         .rgfi-corredor-nombre { font-size:12px; font-weight:600; color:rgba(255,255,255,0.7); font-family:'Inter',sans-serif; }
         .rgfi-corredor-mat { font-size:10px; color:rgba(255,255,255,0.25); }
-        .rgfi-corredor-tel { font-size:10px; color:rgba(96,165,250,0.8); }
+        .rgfi-corredor-tel { font-size:10px; color:rgba(74,184,216,0.8); }
         .rgfi-my-badge { position:absolute; top:8px; right:8px; background:rgba(200,0,0,0.85); color:#fff; font-size:8px; font-family:'Montserrat',sans-serif; font-weight:800; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; }
         /* Detail modal */
         .rgfi-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -193,8 +193,8 @@ export default function RedGFIPage() {
         .rgfi-contact-mat { font-size:11px; color:rgba(255,255,255,0.3); margin-bottom:10px; }
         .rgfi-contact-btns { display:flex; gap:8px; flex-wrap:wrap; }
         .rgfi-contact-btn { padding:8px 16px; border-radius:6px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; text-decoration:none; letter-spacing:0.04em; display:inline-block; }
-        .rgfi-contact-btn-wa { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#22c55e; }
-        .rgfi-contact-btn-mail { background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.2); color:#60a5fa; }
+        .rgfi-contact-btn-wa { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#3abab6; }
+        .rgfi-contact-btn-mail { background:rgba(74,184,216,0.1); border:1px solid rgba(74,184,216,0.2); color:#4ab8d8; }
         .rgfi-contact-btn-ficha { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.7); }
         .rgfi-honor-badge { background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.2); border-radius:4px; padding:4px 10px; font-size:10px; font-family:'Montserrat',sans-serif; color:rgba(234,179,8,0.8); font-weight:700; }
         .rgfi-ficha-btn { margin-top:10px; width:100%; padding:8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:6px; color:rgba(255,255,255,0.4); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.06em; cursor:pointer; transition:background 0.15s,color 0.15s; text-align:center; text-decoration:none; display:block; }
@@ -261,7 +261,7 @@ export default function RedGFIPage() {
           {(busqueda || filtroOp || filtroTipo || filtroCiudad || filtroDorm) && (
             <button
               onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroCiudad(""); setFiltroDorm(""); }}
-              style={{ padding:"8px 12px", background:"rgba(200,0,0,0.1)", border:"1px solid rgba(200,0,0,0.2)", borderRadius:6, color:"#cc0000", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, cursor:"pointer" }}
+              style={{ padding:"8px 12px", background:"rgba(200,0,0,0.1)", border:"1px solid rgba(200,0,0,0.2)", borderRadius:6, color:"#990000", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, cursor:"pointer" }}
             >
               Limpiar
             </button>
@@ -276,7 +276,7 @@ export default function RedGFIPage() {
 
         {loading ? (
           <div style={{ textAlign:"center", padding:"60px 0", color:"rgba(255,255,255,0.2)" }}>
-            <div style={{ width:32, height:32, border:"2px solid rgba(200,0,0,0.2)", borderTopColor:"#cc0000", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
+            <div style={{ width:32, height:32, border:"2px solid rgba(200,0,0,0.2)", borderTopColor:"#990000", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             Cargando Red GFI...
           </div>

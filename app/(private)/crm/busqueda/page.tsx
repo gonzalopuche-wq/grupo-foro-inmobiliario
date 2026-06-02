@@ -13,14 +13,14 @@ const DORMITORIOS = ['1', '2', '3', '4', '5+']
 
 // Config visual por fuente (cubre todos los valores posibles del campo fuente en v_propiedades_mercado)
 const FUENTES_CONFIG: Record<string, { label: string; color: string; border: string; badge: string }> = {
-  gfi:           { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
-  gfi_red:       { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
-  gfi_portal:    { label: 'Red GFI',   color: 'rgba(204,0,0,0.15)',    border: 'rgba(204,0,0,0.4)',    badge: '#cc0000' },
+  gfi:           { label: 'Red GFI',   color: 'rgba(153,0,0,0.15)',    border: 'rgba(153,0,0,0.4)',    badge: '#990000' },
+  gfi_red:       { label: 'Red GFI',   color: 'rgba(153,0,0,0.15)',    border: 'rgba(153,0,0,0.4)',    badge: '#990000' },
+  gfi_portal:    { label: 'Red GFI',   color: 'rgba(153,0,0,0.15)',    border: 'rgba(153,0,0,0.4)',    badge: '#990000' },
   kiteprop:      { label: 'Kiteprop',  color: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.4)', badge: '#3b82f6' },
   tokko:         { label: 'Tokko',     color: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.4)', badge: '#8b5cf6' },
-  propia:        { label: 'Propia',    color: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', badge: '#10b981' },
-  propia_red:    { label: 'Propia',    color: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', badge: '#10b981' },
-  propia_portal: { label: 'Propia',    color: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.4)', badge: '#10b981' },
+  propia:        { label: 'Propia',    color: 'rgba(58,186,182,0.12)', border: 'rgba(58,186,182,0.4)', badge: '#3abab6' },
+  propia_red:    { label: 'Propia',    color: 'rgba(58,186,182,0.12)', border: 'rgba(58,186,182,0.4)', badge: '#3abab6' },
+  propia_portal: { label: 'Propia',    color: 'rgba(58,186,182,0.12)', border: 'rgba(58,186,182,0.4)', badge: '#3abab6' },
   zonaprop:      { label: 'ZonaProp',  color: 'rgba(230,0,0,0.08)',    border: 'rgba(230,0,0,0.25)',   badge: '#e60000' },
   argenprop:     { label: 'Argenprop', color: 'rgba(245,166,35,0.08)', border: 'rgba(245,166,35,0.3)', badge: '#f5a623' },
   mercadolibre:  { label: 'ML',        color: 'rgba(255,230,0,0.08)',  border: 'rgba(255,230,0,0.25)', badge: '#ffe600' },
@@ -28,10 +28,10 @@ const FUENTES_CONFIG: Record<string, { label: string; color: string; border: str
 
 // Grupos para los chips de filtro (cada grupo expande a múltiples valores de fuente)
 const FUENTES_GRUPOS = [
-  { id: 'gfi',          label: 'Red GFI',   badge: '#cc0000', portales: ['gfi', 'gfi_red', 'gfi_portal'] },
+  { id: 'gfi',          label: 'Red GFI',   badge: '#990000', portales: ['gfi', 'gfi_red', 'gfi_portal'] },
   { id: 'kiteprop',     label: 'Kiteprop',  badge: '#3b82f6', portales: ['kiteprop'] },
   { id: 'tokko',        label: 'Tokko',     badge: '#8b5cf6', portales: ['tokko'] },
-  { id: 'propia',       label: 'Propia',    badge: '#10b981', portales: ['propia', 'propia_red', 'propia_portal'] },
+  { id: 'propia',       label: 'Propia',    badge: '#3abab6', portales: ['propia', 'propia_red', 'propia_portal'] },
   { id: 'zonaprop',     label: 'ZonaProp',  badge: '#e60000', portales: ['zonaprop'] },
   { id: 'argenprop',    label: 'Argenprop', badge: '#f5a623', portales: ['argenprop'] },
   { id: 'mercadolibre', label: 'ML',        badge: '#ffe600', portales: ['mercadolibre'] },
@@ -141,7 +141,7 @@ const PORTALES_CONFIG = [
   { key: 'zp',    label: 'ZonaProp',    color: 'rgba(230,0,0,0.15)',     border: 'rgba(230,0,0,0.3)' },
   { key: 'ap',    label: 'Argenprop',   color: 'rgba(245,166,35,0.1)',   border: 'rgba(245,166,35,0.3)' },
   { key: 'ic',    label: 'InfoCasas',   color: 'rgba(59,130,246,0.1)',   border: 'rgba(59,130,246,0.3)' },
-  { key: 'pr',    label: 'Properati',   color: 'rgba(16,185,129,0.1)',   border: 'rgba(16,185,129,0.3)' },
+  { key: 'pr',    label: 'Properati',   color: 'rgba(58,186,182,0.1)',   border: 'rgba(58,186,182,0.3)' },
   { key: 'propia',label: 'Propia',      color: 'rgba(139,92,246,0.1)',   border: 'rgba(139,92,246,0.3)' },
   { key: 'br',    label: 'BienesRosario', color: 'rgba(236,72,153,0.1)', border: 'rgba(236,72,153,0.3)' },
   { key: 'dm',    label: 'Doomos',      color: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.3)' },
@@ -230,7 +230,7 @@ export default function BusquedaPage() {
         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', maxWidth:1200, margin:'0 auto'}}>
           <div>
             <h1 style={{margin:0, fontSize:18, fontWeight:800, fontFamily:'Montserrat,sans-serif', display:'flex', alignItems:'center', gap:8}}>
-              <Search style={{width:18, height:18, color:'#cc0000'}} />
+              <Search style={{width:18, height:18, color:'#990000'}} />
               Búsqueda Inteligente
             </h1>
             <p style={{margin:'2px 0 0', fontSize:11, color:'rgba(255,255,255,0.3)'}}>
@@ -250,7 +250,7 @@ export default function BusquedaPage() {
               <div style={{display:'flex', gap:4}}>
                 {OPERACIONES.map(op => (
                   <button key={op} onClick={() => setOperacion(op)}
-                    style={{flex:1, padding:'7px 4px', borderRadius:6, border:`1px solid ${operacion===op?'#cc0000':'rgba(255,255,255,0.1)'}`, background:operacion===op?'rgba(200,0,0,0.12)':'transparent', color:operacion===op?'#fff':'rgba(255,255,255,0.4)', fontSize:10, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer'}}>
+                    style={{flex:1, padding:'7px 4px', borderRadius:6, border:`1px solid ${operacion===op?'#990000':'rgba(255,255,255,0.1)'}`, background:operacion===op?'rgba(200,0,0,0.12)':'transparent', color:operacion===op?'#fff':'rgba(255,255,255,0.4)', fontSize:10, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer'}}>
                     {op}
                   </button>
                 ))}
@@ -295,7 +295,7 @@ export default function BusquedaPage() {
                   <div style={{display:'flex', gap:4}}>
                     {DORMITORIOS.map(d => (
                       <button key={d} onClick={() => setDormitorios(dormitorios===d?'':d)}
-                        style={{flex:1, padding:'7px 2px', borderRadius:6, border:`1px solid ${dormitorios===d?'#cc0000':'rgba(255,255,255,0.1)'}`, background:dormitorios===d?'rgba(200,0,0,0.12)':'transparent', color:dormitorios===d?'#fff':'rgba(255,255,255,0.4)', fontSize:10, fontWeight:700, cursor:'pointer'}}>
+                        style={{flex:1, padding:'7px 2px', borderRadius:6, border:`1px solid ${dormitorios===d?'#990000':'rgba(255,255,255,0.1)'}`, background:dormitorios===d?'rgba(200,0,0,0.12)':'transparent', color:dormitorios===d?'#fff':'rgba(255,255,255,0.4)', fontSize:10, fontWeight:700, cursor:'pointer'}}>
                         {d}
                       </button>
                     ))}
@@ -329,7 +329,7 @@ export default function BusquedaPage() {
 
           {/* Botón base local */}
           <button onClick={buscarLocal} disabled={cargandoLocal || gruposFiltro.length === 0}
-            style={{width:'100%', background:'rgba(204,0,0,0.85)', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:(cargandoLocal||gruposFiltro.length===0)?0.5:1, marginBottom:8}}>
+            style={{width:'100%', background:'rgba(153,0,0,0.85)', border:'none', color:'#fff', padding:'12px', borderRadius:8, fontWeight:700, fontSize:13, fontFamily:'Montserrat,sans-serif', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity:(cargandoLocal||gruposFiltro.length===0)?0.5:1, marginBottom:8}}>
             {cargandoLocal
               ? <><Loader2 style={{width:15, height:15, animation:'spin 1s linear infinite'}} />Buscando en base local...</>
               : <><Search style={{width:15, height:15}} />Buscar en base GFI + portales (todo el mercado)</>

@@ -155,7 +155,7 @@ export default function TestimoniosPage() {
         </div>
         <button
           onClick={abrirNuevo}
-          style={{ padding: "8px 16px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+          style={{ padding: "8px 16px", background: "#990000", color: "#fff", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
         >
           + Nuevo testimonio
         </button>
@@ -168,7 +168,7 @@ export default function TestimoniosPage() {
           <p style={{ fontSize: 13, color: "#6b7280", marginTop: 6 }}>
             Agregá las opiniones de tus clientes para mostrarlas en tu web.
           </p>
-          <button onClick={abrirNuevo} style={{ marginTop: 16, padding: "9px 20px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+          <button onClick={abrirNuevo} style={{ marginTop: 16, padding: "9px 20px", background: "#990000", color: "#fff", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
             + Agregar primero
           </button>
         </div>
@@ -185,7 +185,7 @@ export default function TestimoniosPage() {
                   {t.cargo_cliente && (
                     <span style={{ fontSize: 11, color: "#6b7280", background: "#f3f4f6", padding: "1px 7px", borderRadius: 10 }}>{t.cargo_cliente}</span>
                   )}
-                  <span style={{ fontSize: 14, color: "#f59e0b", letterSpacing: 1 }}>{stars(t.rating)}</span>
+                  <span style={{ fontSize: 14, color: "#d4960c", letterSpacing: 1 }}>{stars(t.rating)}</span>
                   {!t.activo && <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600 }}>OCULTO</span>}
                 </div>
                 <p style={{ fontSize: 13, color: "#374151", lineHeight: 1.6, margin: 0, borderLeft: "3px solid #e5e7eb", paddingLeft: 10 }}>
@@ -196,7 +196,7 @@ export default function TestimoniosPage() {
                 <button
                   onClick={() => toggleActivo(t)}
                   title={t.activo ? "Ocultar" : "Publicar"}
-                  style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #e5e7eb", background: t.activo ? "#f0fdf4" : "#f9fafb", color: t.activo ? "#16a34a" : "#9ca3af", fontSize: 13, cursor: "pointer", fontWeight: 700 }}
+                  style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #e5e7eb", background: t.activo ? "#f0fdf4" : "#f9fafb", color: t.activo ? "#22807c" : "#9ca3af", fontSize: 13, cursor: "pointer", fontWeight: 700 }}
                 >
                   {t.activo ? "👁" : "🙈"}
                 </button>
@@ -268,7 +268,7 @@ export default function TestimoniosPage() {
                     <button
                       key={n}
                       onClick={() => setForm(f => ({ ...f, rating: n }))}
-                      style={{ fontSize: 24, cursor: "pointer", background: "none", border: "none", color: n <= form.rating ? "#f59e0b" : "#d1d5db", padding: 0, lineHeight: 1 }}
+                      style={{ fontSize: 24, cursor: "pointer", background: "none", border: "none", color: n <= form.rating ? "#d4960c" : "#d1d5db", padding: 0, lineHeight: 1 }}
                     >
                       ★
                     </button>
@@ -294,7 +294,7 @@ export default function TestimoniosPage() {
               <button
                 onClick={guardar}
                 disabled={guardando || !form.nombre_cliente.trim() || !form.texto.trim()}
-                style={{ padding: "9px 20px", borderRadius: 7, background: "#cc0000", color: "#fff", border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.7 : 1 }}
+                style={{ padding: "9px 20px", borderRadius: 7, background: "#990000", color: "#fff", border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", opacity: guardando ? 0.7 : 1 }}
               >
                 {guardando ? "Guardando…" : editandoId ? "Guardar cambios" : "Agregar"}
               </button>

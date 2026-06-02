@@ -106,7 +106,7 @@ function DonutSVG({ ventas, alquileres }: DonutProps) {
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="#222" strokeWidth={22} />
         <circle
           cx={cx} cy={cy} r={r} fill="none"
-          stroke="#cc0000" strokeWidth={22}
+          stroke="#990000" strokeWidth={22}
           strokeDasharray={`${dashVentas} ${dashAlquileres}`}
           strokeDashoffset={circum / 4}
           style={{ transition: "stroke-dasharray 0.6s" }}
@@ -123,7 +123,7 @@ function DonutSVG({ ventas, alquileres }: DonutProps) {
       </svg>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 12, height: 12, borderRadius: 2, background: "#cc0000", flexShrink: 0 }} />
+          <div style={{ width: 12, height: 12, borderRadius: 2, background: "#990000", flexShrink: 0 }} />
           <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif" }}>Ventas</span>
           <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginLeft: "auto", paddingLeft: 16 }}>{ventas}</span>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>({Math.round((ventas / total) * 100)}%)</span>
@@ -204,7 +204,7 @@ function BarChart({ data }: BarChartProps) {
                 y={PAD.top + innerH - totalH}
                 width={halfBar * 2}
                 height={ventasH}
-                fill="#cc0000"
+                fill="#990000"
                 opacity={0.85}
                 rx={2}
               />
@@ -284,19 +284,19 @@ function LineChart({ data }: LineChartProps) {
       {pts.length > 1 && (
         <path
           d={`${pathD} L ${pts[pts.length - 1].x} ${PAD.top + innerH} L ${pts[0].x} ${PAD.top + innerH} Z`}
-          fill="rgba(204,0,0,0.08)"
+          fill="rgba(153,0,0,0.08)"
         />
       )}
 
       {/* Línea */}
       {pts.length > 1 && (
-        <path d={pathD} fill="none" stroke="#cc0000" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+        <path d={pathD} fill="none" stroke="#990000" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
       )}
 
       {/* Puntos */}
       {pts.map((p, i) => (
         <g key={i}>
-          <circle cx={p.x} cy={p.y} r={5} fill="#cc0000" stroke="#0a0a0a" strokeWidth={2} />
+          <circle cx={p.x} cy={p.y} r={5} fill="#990000" stroke="#0a0a0a" strokeWidth={2} />
           <text x={p.x} y={p.y - 12} textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize={10} fontFamily="Montserrat,sans-serif" fontWeight={700}>
             {p.honorarios >= 1000 ? `${(p.honorarios / 1000).toFixed(1)}K` : p.honorarios}
           </text>
@@ -442,7 +442,7 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                     {/* Círculo año */}
                     <div style={{
                       width: 36, height: 36, borderRadius: "50%",
-                      background: "#cc0000", border: "2px solid #0a0a0a",
+                      background: "#990000", border: "2px solid #0a0a0a",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       flexShrink: 0, zIndex: 1,
                       fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 800,
@@ -457,9 +457,9 @@ function TimelineTab({ negocios, loading }: TimelineTabProps) {
                         <span style={{
                           display: "inline-block", padding: "2px 8px", borderRadius: 10,
                           fontSize: 10, fontWeight: 700, fontFamily: "Montserrat,sans-serif",
-                          background: esVenta ? "rgba(204,0,0,0.18)" : "rgba(59,130,246,0.18)",
-                          color: esVenta ? "#cc0000" : "#3b82f6",
-                          border: `1px solid ${esVenta ? "rgba(204,0,0,0.4)" : "rgba(59,130,246,0.4)"}`,
+                          background: esVenta ? "rgba(153,0,0,0.18)" : "rgba(59,130,246,0.18)",
+                          color: esVenta ? "#990000" : "#3b82f6",
+                          border: `1px solid ${esVenta ? "rgba(153,0,0,0.4)" : "rgba(59,130,246,0.4)"}`,
                           textTransform: "uppercase", letterSpacing: "0.08em",
                         }}>
                           {n.tipo_operacion}
@@ -512,7 +512,7 @@ function HoverCard({ children }: { children: React.ReactNode }) {
       style={{
         flex: 1,
         background: "#111111",
-        border: `1px solid ${hovered ? "#cc0000" : "#222222"}`,
+        border: `1px solid ${hovered ? "#990000" : "#222222"}`,
         borderRadius: 8,
         padding: "12px 16px",
         transition: "border-color 0.15s",
@@ -650,7 +650,7 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
               Volumen {mon}
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: data.volumen >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#22c55e" }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: data.volumen >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#3abab6" }}>
               {data.volumen >= 1_000_000
                 ? `${mon} ${(data.volumen / 1_000_000).toFixed(1)}M`
                 : fmtNum(data.volumen, mon)}
@@ -665,7 +665,7 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
               Honorarios {mon}
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: data.honorarios >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#cc0000" }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: data.honorarios >= 1_000_000 ? 18 : 22, fontWeight: 800, color: "#990000" }}>
               {data.honorarios >= 1_000_000
                 ? `${mon} ${(data.honorarios / 1_000_000).toFixed(1)}M`
                 : fmtNum(data.honorarios, mon)}
@@ -679,7 +679,7 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
               Promedio {mon}
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: prom >= 1_000_000 ? 16 : 20, fontWeight: 800, color: "#f59e0b" }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: prom >= 1_000_000 ? 16 : 20, fontWeight: 800, color: "#d4960c" }}>
               {prom >= 1_000_000
                 ? `${mon} ${(prom / 1_000_000).toFixed(1)}M`
                 : fmtNum(Math.round(prom), mon)}
@@ -718,7 +718,7 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
         </div>
         <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 10, height: 10, background: "#cc0000", borderRadius: 2 }} />
+            <div style={{ width: 10, height: 10, background: "#990000", borderRadius: 2 }} />
             <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif" }}>Ventas</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -749,10 +749,10 @@ function ResumenTab({ negocios, loading }: ResumenTabProps) {
               {tablaMensual.filter(r => r.total > 0).map(r => (
                 <tr key={r.mes} style={{ borderBottom: "1px solid #1a1a1a" }}>
                   <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 600, color: "#e0e0e0" }}>{MESES_FULL[r.mes]}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ventas > 0 ? "#cc0000" : "rgba(255,255,255,0.2)" }}>{r.ventas}</td>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ventas > 0 ? "#990000" : "rgba(255,255,255,0.2)" }}>{r.ventas}</td>
                   <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.alquileres > 0 ? "#3b82f6" : "rgba(255,255,255,0.2)" }}>{r.alquileres}</td>
                   <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.total}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#22c55e" : "rgba(255,255,255,0.2)" }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#3abab6" : "rgba(255,255,255,0.2)" }}>
                     {r.honorarios > 0 ? fmtNum(r.honorarios, r.moneda) : "—"}
                   </td>
                 </tr>
@@ -887,21 +887,21 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
                 <tr key={r.anio} style={{ borderBottom: "1px solid #1a1a1a" }}>
                   <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{r.anio}</td>
                   <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.ops > 0 ? "#e0e0e0" : "rgba(255,255,255,0.2)" }}>{r.ops}</td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.volumen > 0 ? "#22c55e" : "rgba(255,255,255,0.2)" }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.volumen > 0 ? "#3abab6" : "rgba(255,255,255,0.2)" }}>
                     {r.volumen > 0
                       ? (r.volumen >= 1_000_000 ? `${r.moneda} ${(r.volumen / 1_000_000).toFixed(1)}M` : fmtNum(r.volumen, r.moneda))
                       : "—"}
                   </td>
-                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#cc0000" : "rgba(255,255,255,0.2)" }}>
+                  <td style={{ padding: "10px 16px", fontFamily: "Inter,sans-serif", fontSize: 13, color: r.honorarios > 0 ? "#990000" : "rgba(255,255,255,0.2)" }}>
                     {r.honorarios > 0 ? fmtNum(r.honorarios, r.moneda) : "—"}
                   </td>
                   <td style={{ padding: "10px 16px", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700 }}>
                     {r.crecimiento === null ? (
                       <span style={{ color: "rgba(255,255,255,0.2)" }}>—</span>
                     ) : r.crecimiento >= 0 ? (
-                      <span style={{ color: "#22c55e" }}>↑ {r.crecimiento.toFixed(1)}%</span>
+                      <span style={{ color: "#3abab6" }}>↑ {r.crecimiento.toFixed(1)}%</span>
                     ) : (
-                      <span style={{ color: "#ef4444" }}>↓ {Math.abs(r.crecimiento).toFixed(1)}%</span>
+                      <span style={{ color: "#b80000" }}>↓ {Math.abs(r.crecimiento).toFixed(1)}%</span>
                     )}
                   </td>
                 </tr>
@@ -935,12 +935,12 @@ function HistoricoTab({ negocios, loading }: HistoricoTabProps) {
                     <span style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#e0e0e0" }}>
                       #{i + 1} <span style={{ fontWeight: 600 }}>{kw}</span>
                     </span>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#cc0000" }}>
+                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#990000" }}>
                       {count} {count === 1 ? "vez" : "veces"}
                     </span>
                   </div>
                   <div style={{ height: 4, background: "#1a1a1a", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pct}%`, background: "#cc0000", borderRadius: 2, opacity: 0.7 }} />
+                    <div style={{ height: "100%", width: `${pct}%`, background: "#990000", borderRadius: 2, opacity: 0.7 }} />
                   </div>
                 </div>
               );
@@ -1000,7 +1000,7 @@ export default function HistorialOperacionesPage() {
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1.2 }}>
-            Historial de <span style={{ color: "#cc0000" }}>Operaciones</span>
+            Historial de <span style={{ color: "#990000" }}>Operaciones</span>
           </div>
           <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 5 }}>
             Registro completo de ventas y alquileres cerrados
@@ -1021,8 +1021,8 @@ export default function HistorialOperacionesPage() {
                 fontWeight: 700,
                 letterSpacing: "0.06em",
                 border: "none",
-                borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
-                color: tab === t.id ? "#cc0000" : "rgba(255,255,255,0.4)",
+                borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
+                color: tab === t.id ? "#990000" : "rgba(255,255,255,0.4)",
                 marginBottom: -1,
               }}
             >

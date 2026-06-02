@@ -36,7 +36,7 @@ export default async function FeedbackVisitaPage({ params }: Props) {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background: #0a0a0a; color: #fff; font-family: Inter,sans-serif; min-height: 100vh; }
         .wrap { max-width: 480px; margin: 0 auto; padding: 40px 20px 60px; }
-        .logo { font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.15em; color: #cc0000; text-transform: uppercase; margin-bottom: 32px; }
+        .logo { font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.15em; color: #990000; text-transform: uppercase; margin-bottom: 32px; }
         .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
         .card-label { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 4px; }
         .card-val { font-size: 15px; color: #fff; font-weight: 500; }
@@ -47,13 +47,13 @@ export default async function FeedbackVisitaPage({ params }: Props) {
         .star-btn.sel, .star-btn:hover { opacity: 1; transform: scale(1.15); }
         .interes-row { display: flex; gap: 10px; margin: 12px 0; }
         .int-btn { flex: 1; padding: 12px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.5); font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; text-align: center; }
-        .int-btn.sel { border-color: #cc0000; background: rgba(204,0,0,0.12); color: #ff6666; }
+        .int-btn.sel { border-color: #990000; background: rgba(153,0,0,0.12); color: #ff6666; }
         .int-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
         .label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px; margin-top: 18px; }
         textarea { width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; color: #fff; font-family: Inter,sans-serif; font-size: 13px; outline: none; resize: none; }
-        textarea:focus { border-color: rgba(204,0,0,0.4); }
+        textarea:focus { border-color: rgba(153,0,0,0.4); }
         textarea::placeholder { color: rgba(255,255,255,0.2); }
-        .submit-btn { width: 100%; padding: 14px; background: #cc0000; border: none; border-radius: 8px; color: #fff; font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; cursor: pointer; margin-top: 20px; transition: opacity 0.15s; }
+        .submit-btn { width: 100%; padding: 14px; background: #990000; border: none; border-radius: 8px; color: #fff; font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; cursor: pointer; margin-top: 20px; transition: opacity 0.15s; }
         .submit-btn:hover { opacity: 0.85; }
         .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
         .success { text-align: center; padding: 40px 20px; }

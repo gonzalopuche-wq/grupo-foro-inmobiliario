@@ -68,7 +68,7 @@ export default function NuevaContrasenaPage() {
         .nc-root::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,0,0,0.15) 0%, transparent 70%); pointer-events: none; }
         .nc-card { position: relative; z-index: 1; width: 100%; max-width: 440px; background: rgba(14,14,14,0.95); border: 1px solid rgba(180,0,0,0.22); border-radius: 4px; padding: 44px 40px 40px; box-shadow: 0 24px 80px rgba(0,0,0,0.7); animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
         @keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .nc-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, #e60000, #cc0000, transparent); border-radius: 4px 4px 0 0; }
+        .nc-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, #e60000, #990000, transparent); border-radius: 4px 4px 0 0; }
         .nc-logo { display: flex; justify-content: center; margin-bottom: 28px; }
         .nc-logo img { width: 120px; height: auto; }
         .nc-titulo { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #fff; text-align: center; margin-bottom: 8px; }
@@ -81,23 +81,23 @@ export default function NuevaContrasenaPage() {
         .nc-strength { height: 3px; border-radius: 2px; margin-top: 6px; transition: all 0.3s; }
         .nc-strength-txt { font-size: 10px; margin-top: 4px; font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.08em; }
         .nc-error { font-size: 12px; color: #ff4444; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 14px; }
-        .nc-btn { width: 100%; padding: 14px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+        .nc-btn { width: 100%; padding: 14px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
         .nc-btn:hover:not(:disabled) { background: #e60000; }
         .nc-btn:disabled { opacity: 0.65; cursor: not-allowed; }
         .nc-spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .nc-listo { text-align: center; padding: 8px 0; }
         .nc-listo-icon { font-size: 40px; margin-bottom: 14px; }
-        .nc-listo-titulo { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #22c55e; margin-bottom: 10px; }
+        .nc-listo-titulo { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #3abab6; margin-bottom: 10px; }
         .nc-listo-txt { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.7; }
         .nc-invalid { text-align: center; }
         .nc-invalid-icon { font-size: 36px; margin-bottom: 14px; }
         .nc-invalid-txt { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.7; margin-bottom: 20px; }
         .nc-link { display: block; text-align: center; font-size: 12px; color: rgba(200,0,0,0.7); text-decoration: none; margin-top: 16px; }
-        .nc-link:hover { color: #cc0000; }
+        .nc-link:hover { color: #990000; }
         .nc-brand { text-align: center; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.1); margin-top: 20px; }
         .nc-loading { display: flex; align-items: center; justify-content: center; padding: 40px; }
-        .nc-loading-spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .nc-loading-spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
       `}</style>
 
       <div className="nc-root">
@@ -144,10 +144,10 @@ export default function NuevaContrasenaPage() {
                     <>
                       <div className="nc-strength" style={{
                         width: password.length < 8 ? "30%" : password.length < 12 ? "60%" : "100%",
-                        background: password.length < 8 ? "#cc0000" : password.length < 12 ? "#eab308" : "#22c55e",
+                        background: password.length < 8 ? "#990000" : password.length < 12 ? "#d4960c" : "#3abab6",
                       }} />
                       <div className="nc-strength-txt" style={{
-                        color: password.length < 8 ? "#cc0000" : password.length < 12 ? "#eab308" : "#22c55e"
+                        color: password.length < 8 ? "#990000" : password.length < 12 ? "#d4960c" : "#3abab6"
                       }}>
                         {password.length < 8 ? "Muy corta" : password.length < 12 ? "Regular" : "Segura"}
                       </div>

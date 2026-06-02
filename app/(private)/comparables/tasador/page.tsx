@@ -117,13 +117,13 @@ export default function TasadorIAPage() {
         .form-field.full-width { grid-column: 1 / -1; }
         .form-label { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
         .form-input, .form-select { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 5px; padding: 8px 10px; color: #fff; font-family: Inter,sans-serif; font-size: 13px; outline: none; width: 100%; box-sizing: border-box; }
-        .form-input:focus, .form-select:focus { border-color: rgba(204,0,0,0.4); }
+        .form-input:focus, .form-select:focus { border-color: rgba(153,0,0,0.4); }
         .form-input::placeholder { color: rgba(255,255,255,0.2); }
         .form-select { background: rgba(20,20,20,0.95); cursor: pointer; }
         .form-textarea { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 5px; padding: 8px 10px; color: #fff; font-family: Inter,sans-serif; font-size: 13px; outline: none; width: 100%; box-sizing: border-box; resize: vertical; min-height: 72px; }
-        .form-textarea:focus { border-color: rgba(204,0,0,0.4); }
+        .form-textarea:focus { border-color: rgba(153,0,0,0.4); }
         .form-textarea::placeholder { color: rgba(255,255,255,0.2); }
-        .btn-tasar { width: 100%; padding: 14px; background: #cc0000; border: none; border-radius: 6px; color: #fff; font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; margin-top: 16px; }
+        .btn-tasar { width: 100%; padding: 14px; background: #990000; border: none; border-radius: 6px; color: #fff; font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; margin-top: 16px; }
         .btn-tasar:hover:not(:disabled) { background: #e60000; }
         .btn-tasar:disabled { opacity: 0.6; cursor: not-allowed; }
         .resultado-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
@@ -138,13 +138,13 @@ export default function TasadorIAPage() {
         .comparables-table th { text-align: left; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .comparables-table td { padding: 8px 8px; color: rgba(255,255,255,0.65); border-bottom: 1px solid rgba(255,255,255,0.04); font-family: Inter,sans-serif; }
         .comparables-table tr:last-child td { border-bottom: none; }
-        .recomendacion-box { border-left: 3px solid #cc0000; padding: 12px 16px; background: rgba(204,0,0,0.05); border-radius: 0 6px 6px 0; }
+        .recomendacion-box { border-left: 3px solid #990000; padding: 12px 16px; background: rgba(153,0,0,0.05); border-radius: 0 6px 6px 0; }
         .actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn-secondary { padding: 10px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 5px; color: rgba(255,255,255,0.55); font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .btn-secondary:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
-        .btn-save-hist { padding: 10px 18px; background: rgba(204,0,0,0.12); border: 1px solid rgba(204,0,0,0.3); border-radius: 5px; color: #cc0000; font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .btn-save-hist:hover { background: rgba(204,0,0,0.2); }
-        .toast-fixed { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; z-index: 999; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; animation: toastIn 0.3s ease; }
+        .btn-save-hist { padding: 10px 18px; background: rgba(153,0,0,0.12); border: 1px solid rgba(153,0,0,0.3); border-radius: 5px; color: #990000; font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .btn-save-hist:hover { background: rgba(153,0,0,0.2); }
+        .toast-fixed { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; z-index: 999; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; animation: toastIn 0.3s ease; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         @media (max-width: 900px) {
           .tasador-wrap { flex-direction: column; }
@@ -170,7 +170,7 @@ export default function TasadorIAPage() {
           <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", margin: 0 }}>
             Tasador IA
           </h1>
-          <span style={{ background: "#cc0000", color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", padding: "3px 8px", borderRadius: 3, textTransform: "uppercase" }}>
+          <span style={{ background: "#990000", color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", padding: "3px 8px", borderRadius: 3, textTransform: "uppercase" }}>
             Mod. 7
           </span>
         </div>
@@ -276,9 +276,9 @@ export default function TasadorIAPage() {
                 <button
                   className="cochera-btn"
                   style={{
-                    background: form.cochera ? "rgba(204,0,0,0.12)" : "transparent",
-                    borderColor: form.cochera ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.14)",
-                    color: form.cochera ? "#cc0000" : "rgba(255,255,255,0.4)",
+                    background: form.cochera ? "rgba(153,0,0,0.12)" : "transparent",
+                    borderColor: form.cochera ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.14)",
+                    color: form.cochera ? "#990000" : "rgba(255,255,255,0.4)",
                   }}
                   onClick={() => setForm(f => ({ ...f, cochera: !f.cochera }))}
                   type="button"
@@ -302,7 +302,7 @@ export default function TasadorIAPage() {
           </div>
 
           {error && (
-            <div style={{ marginTop: 12, padding: "10px 14px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 5, color: "#ff6666", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
+            <div style={{ marginTop: 12, padding: "10px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 5, color: "#ff6666", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
               {error}
             </div>
           )}
@@ -334,7 +334,7 @@ export default function TasadorIAPage() {
                 <div style={{ fontFamily: "Inter,sans-serif", fontSize: 14, color: "rgba(255,255,255,0.4)", marginBottom: 12 }}>
                   Rango: {formatUSD(resultado.valor_min)} — {formatUSD(resultado.valor_max)}
                 </div>
-                <div style={{ display: "inline-block", background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 20, padding: "4px 14px", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#cc0000", marginBottom: resultado.alquiler_estimado ? 10 : 0 }}>
+                <div style={{ display: "inline-block", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 20, padding: "4px 14px", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#990000", marginBottom: resultado.alquiler_estimado ? 10 : 0 }}>
                   USD {resultado.precio_m2?.toLocaleString("es-AR")} / m²
                 </div>
                 {resultado.alquiler_estimado && (
@@ -361,21 +361,21 @@ export default function TasadorIAPage() {
                 </div>
                 <div className="factores-grid">
                   <div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "#22c55e", marginBottom: 8 }}>✅ Factores positivos</div>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "#3abab6", marginBottom: 8 }}>✅ Factores positivos</div>
                     <ul className="factor-list">
                       {(resultado.factores_positivos ?? []).map((f: string, i: number) => (
                         <li key={i} style={{ color: "rgba(255,255,255,0.6)" }}>
-                          <span style={{ color: "#22c55e", marginRight: 6 }}>•</span>{f}
+                          <span style={{ color: "#3abab6", marginRight: 6 }}>•</span>{f}
                         </li>
                       ))}
                     </ul>
                   </div>
                   <div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "#f59e0b", marginBottom: 8 }}>⚠️ Factores a considerar</div>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "#d4960c", marginBottom: 8 }}>⚠️ Factores a considerar</div>
                     <ul className="factor-list">
                       {(resultado.factores_negativos ?? []).map((f: string, i: number) => (
                         <li key={i} style={{ color: "rgba(255,255,255,0.6)" }}>
-                          <span style={{ color: "#f59e0b", marginRight: 6 }}>•</span>{f}
+                          <span style={{ color: "#d4960c", marginRight: 6 }}>•</span>{f}
                         </li>
                       ))}
                     </ul>
@@ -423,7 +423,7 @@ export default function TasadorIAPage() {
                                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{c.titulo || c.barrio}</span>
                                 </div>
                                 <div style={{ textAlign: "right", flexShrink: 0 }}>
-                                  <div style={{ fontSize: 15, fontWeight: 800, color: "#22c55e", fontFamily: "Montserrat,sans-serif" }}>
+                                  <div style={{ fontSize: 15, fontWeight: 800, color: "#3abab6", fontFamily: "Montserrat,sans-serif" }}>
                                     {c.moneda} {c.precio.toLocaleString("es-AR")}
                                   </div>
                                   {c.m2 && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>{c.m2} m² · {c.moneda} {Math.round(c.precio / c.m2).toLocaleString("es-AR")}/m²</div>}
@@ -516,7 +516,7 @@ export default function TasadorIAPage() {
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
                         {res.valor_sugerido ? (
-                          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#22c55e" }}>
+                          <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#3abab6" }}>
                             USD {Number(res.valor_sugerido).toLocaleString("es-AR")}
                           </div>
                         ) : (

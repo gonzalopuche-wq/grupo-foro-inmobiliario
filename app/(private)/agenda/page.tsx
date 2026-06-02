@@ -42,11 +42,11 @@ interface AfterSave {
 }
 
 const TIPOS_COLOR: Record<TipoEvento, { color: string; bg: string; icon: string; label: string }> = {
-  cita:         { color: '#cc0000', bg: 'rgba(204,0,0,0.1)',    icon: '📌', label: 'Cita' },
-  recordatorio: { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', icon: '🔔', label: 'Recordatorio' },
+  cita:         { color: '#990000', bg: 'rgba(153,0,0,0.1)',    icon: '📌', label: 'Cita' },
+  recordatorio: { color: '#d4960c', bg: 'rgba(245,158,11,0.1)', icon: '🔔', label: 'Recordatorio' },
   evento:       { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', icon: '📅', label: 'Evento' },
   tarea:        { color: '#a855f7', bg: 'rgba(168,85,247,0.1)', icon: '✓',  label: 'Tarea' },
-  visita:       { color: '#22c55e', bg: 'rgba(34,197,94,0.1)',  icon: '🏠', label: 'Visita' },
+  visita:       { color: '#3abab6', bg: 'rgba(34,197,94,0.1)',  icon: '🏠', label: 'Visita' },
 }
 
 const CAL_COLORS = ['#4285F4','#0F9D58','#F4B400','#DB4437','#AB47BC','#00ACC1','#FF7043','#9E9E9E']
@@ -434,7 +434,7 @@ export default function AgendaPage() {
   const S = {
     input: { width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:7, color:'#fff', padding:'9px 12px', fontSize:13, fontFamily:'Inter,sans-serif', boxSizing:'border-box' as const },
     label: { fontSize:10, fontFamily:'Montserrat,sans-serif', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' as const, color:'rgba(255,255,255,0.3)', display:'block', marginBottom:5 },
-    btn: (primary?:boolean) => ({ background:primary?'#cc0000':'rgba(255,255,255,0.07)', border:primary?'none':'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'9px 18px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer' }),
+    btn: (primary?:boolean) => ({ background:primary?'#990000':'rgba(255,255,255,0.07)', border:primary?'none':'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'9px 18px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer' }),
   }
 
   return (
@@ -488,7 +488,7 @@ export default function AgendaPage() {
               onChange={e=>setQuickTitulo(e.target.value)}
               onKeyDown={e=>{ if(e.key==='Enter') guardarQuick(); if(e.key==='Escape') setQuickAdd(p=>({...p,show:false})) }}
               placeholder="Título del evento"
-              style={{width:'100%',background:'transparent',border:'none',borderBottom:'2px solid rgba(204,0,0,0.6)',color:'#fff',fontSize:16,fontFamily:'Inter,sans-serif',padding:'4px 0',outline:'none',marginBottom:14,boxSizing:'border-box'}}
+              style={{width:'100%',background:'transparent',border:'none',borderBottom:'2px solid rgba(153,0,0,0.6)',color:'#fff',fontSize:16,fontFamily:'Inter,sans-serif',padding:'4px 0',outline:'none',marginBottom:14,boxSizing:'border-box'}}
             />
 
             {/* Hora */}
@@ -530,7 +530,7 @@ export default function AgendaPage() {
               <button
                 onClick={guardarQuick}
                 disabled={quickSaving || !quickTitulo.trim()}
-                style={{padding:'8px 18px',background:'#cc0000',border:'none',color:'#fff',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer',opacity:!quickTitulo.trim()?0.4:1}}
+                style={{padding:'8px 18px',background:'#990000',border:'none',color:'#fff',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer',opacity:!quickTitulo.trim()?0.4:1}}
               >
                 {quickSaving ? '...' : 'Guardar'}
               </button>
@@ -637,9 +637,9 @@ export default function AgendaPage() {
       {/* Stats */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,marginBottom:20}}>
         {[
-          {label:'Hoy',value:hoyCount,color:'#cc0000',key:'hoy'},
-          {label:'Próximos 7 días',value:proxCount,color:'#f59e0b',key:'proximos'},
-          {label:'Vencidos',value:vencCount,color:'#ef4444',key:'vencidos'},
+          {label:'Hoy',value:hoyCount,color:'#990000',key:'hoy'},
+          {label:'Próximos 7 días',value:proxCount,color:'#d4960c',key:'proximos'},
+          {label:'Vencidos',value:vencCount,color:'#b80000',key:'vencidos'},
         ].map(s=>(
           <div key={s.key} onClick={()=>{setFiltro(s.key);setVista('lista')}} style={{background:'rgba(255,255,255,0.03)',border:`1px solid ${s.value>0?`${s.color}30`:'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 16px',cursor:'pointer'}}>
             <div style={{fontFamily:'Montserrat,sans-serif',fontSize:22,fontWeight:800,color:s.value>0?s.color:'rgba(255,255,255,0.2)'}}>{s.value}</div>
@@ -745,12 +745,12 @@ export default function AgendaPage() {
                   key={i}
                   className="day-cell"
                   onClick={e=>abrirQuickAdd(dStr,e)}
-                  style={{background:esHoyDia?'rgba(204,0,0,0.08)':'#0a0a0a',padding:'6px 4px',minHeight:80,cursor:'pointer',border:esHoyDia?'1px solid rgba(204,0,0,0.3)':undefined,position:'relative'}}
+                  style={{background:esHoyDia?'rgba(153,0,0,0.08)':'#0a0a0a',padding:'6px 4px',minHeight:80,cursor:'pointer',border:esHoyDia?'1px solid rgba(153,0,0,0.3)':undefined,position:'relative'}}
                 >
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:3}}>
-                    <span style={{fontSize:12,fontWeight:esHoyDia?800:400,color:esHoyDia?'#cc0000':'rgba(255,255,255,0.4)',fontFamily:'Montserrat,sans-serif'}}>{dia.getDate()}</span>
+                    <span style={{fontSize:12,fontWeight:esHoyDia?800:400,color:esHoyDia?'#990000':'rgba(255,255,255,0.4)',fontFamily:'Montserrat,sans-serif'}}>{dia.getDate()}</span>
                     {/* "+" hint on hover */}
-                    <span className="day-add" style={{fontSize:11,color:'rgba(204,0,0,0.5)',opacity:0,transition:'opacity 0.15s',lineHeight:1}}>+</span>
+                    <span className="day-add" style={{fontSize:11,color:'rgba(153,0,0,0.5)',opacity:0,transition:'opacity 0.15s',lineHeight:1}}>+</span>
                   </div>
                   {dItems.slice(0,3).map((it,j)=>{
                     const tc=TIPOS_COLOR[it.tipo]
@@ -770,7 +770,7 @@ export default function AgendaPage() {
         <>
           <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}}>
             {[{k:'proximos',l:'Próximos 7 días'},{k:'hoy',l:'Hoy'},{k:'vencidos',l:'Vencidos'},{k:'todos',l:'Todos'}].map(f=>(
-              <button key={f.k} onClick={()=>setFiltro(f.k)} style={{padding:'5px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:filtro===f.k?'#cc0000':'rgba(255,255,255,0.06)',color:filtro===f.k?'#fff':'rgba(255,255,255,0.4)'}}>
+              <button key={f.k} onClick={()=>setFiltro(f.k)} style={{padding:'5px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:filtro===f.k?'#990000':'rgba(255,255,255,0.06)',color:filtro===f.k?'#fff':'rgba(255,255,255,0.4)'}}>
                 {f.l}
               </button>
             ))}
@@ -795,13 +795,13 @@ export default function AgendaPage() {
                 return (
                   <div key={item.id}>
                     {item.fecha!==prevFecha&&(
-                      <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:esHoyItem?'#cc0000':vencido?'#ef4444':'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.1em',padding:'12px 0 6px',display:'flex',alignItems:'center',gap:8}}>
+                      <div style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:esHoyItem?'#990000':vencido?'#b80000':'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.1em',padding:'12px 0 6px',display:'flex',alignItems:'center',gap:8}}>
                         {labelFecha(item.fecha)}
-                        {esHoyItem&&<span style={{background:'#cc0000',color:'#fff',padding:'1px 7px',borderRadius:10,fontSize:9}}>HOY</span>}
-                        {vencido&&<span style={{background:'rgba(239,68,68,0.15)',color:'#ef4444',padding:'1px 7px',borderRadius:10,fontSize:9}}>VENCIDO</span>}
+                        {esHoyItem&&<span style={{background:'#990000',color:'#fff',padding:'1px 7px',borderRadius:10,fontSize:9}}>HOY</span>}
+                        {vencido&&<span style={{background:'rgba(239,68,68,0.15)',color:'#b80000',padding:'1px 7px',borderRadius:10,fontSize:9}}>VENCIDO</span>}
                       </div>
                     )}
-                    <div className="ag-row" style={{background:vencido?'rgba(239,68,68,0.03)':'rgba(255,255,255,0.03)',border:`1px solid ${vencido?'rgba(239,68,68,0.15)':esHoyItem?'rgba(204,0,0,0.2)':'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 14px',display:'flex',alignItems:'center',gap:12}}>
+                    <div className="ag-row" style={{background:vencido?'rgba(239,68,68,0.03)':'rgba(255,255,255,0.03)',border:`1px solid ${vencido?'rgba(239,68,68,0.15)':esHoyItem?'rgba(153,0,0,0.2)':'rgba(255,255,255,0.07)'}`,borderRadius:10,padding:'12px 14px',display:'flex',alignItems:'center',gap:12}}>
                       <div style={{width:36,height:36,borderRadius:8,background:tc.bg,border:`1px solid ${tc.color}30`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,flexShrink:0}}>
                         {tc.icon}
                       </div>
@@ -817,7 +817,7 @@ export default function AgendaPage() {
                       </div>
                       <div style={{display:'flex',gap:6,flexShrink:0}}>
                         {item.contacto_telefono&&(
-                          <a href={`https://wa.me/${item.contacto_telefono.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" style={{padding:'6px 10px',background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.25)',borderRadius:7,color:'#22c55e',fontSize:12,textDecoration:'none'}}>💬</a>
+                          <a href={`https://wa.me/${item.contacto_telefono.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" style={{padding:'6px 10px',background:'rgba(34,197,94,0.1)',border:'1px solid rgba(34,197,94,0.25)',borderRadius:7,color:'#3abab6',fontSize:12,textDecoration:'none'}}>💬</a>
                         )}
                         {/* GCal button: if linked cals, show dropdown, else direct link */}
                         {gcalCals.length > 0 ? (

@@ -33,9 +33,9 @@ const CATS_GASTOS = ["Infraestructura","Marketing","Impuestos y aportes","Operat
 const CAT_COLORES: Record<string, string> = {
   "Infraestructura": "#3b82f6",
   "Marketing": "#a855f7",
-  "Impuestos y aportes": "#f97316",
-  "Operativos": "#eab308",
-  "Capacitación": "#22c55e",
+  "Impuestos y aportes": "#d4960c",
+  "Operativos": "#d4960c",
+  "Capacitación": "#3abab6",
   "Otros": "#6b7280",
 };
 
@@ -191,7 +191,7 @@ const S = {
     boxSizing: "border-box" as const,
   } as React.CSSProperties,
   btn: {
-    background: "#cc0000",
+    background: "#990000",
     color: "#fff",
     border: "none",
     borderRadius: 6,
@@ -213,7 +213,7 @@ const S = {
   tab: (active: boolean): React.CSSProperties => ({
     padding: "10px 20px",
     border: "none",
-    borderBottom: active ? "2px solid #cc0000" : "2px solid transparent",
+    borderBottom: active ? "2px solid #990000" : "2px solid transparent",
     background: "transparent",
     color: active ? "#e0e0e0" : "#666",
     cursor: "pointer",
@@ -222,7 +222,7 @@ const S = {
     fontFamily: "'Montserrat', sans-serif",
   }),
   checkbox: {
-    accentColor: "#cc0000",
+    accentColor: "#990000",
     width: 14,
     height: 14,
     cursor: "pointer",
@@ -448,9 +448,9 @@ function TabResumen({ pres, setPres, ingresosPorMes, gastosPorMes, resultadoPorM
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:12, marginBottom:20 }}>
         <KpiCard label="Ingresos proyectados" value={fmtARS(totalIngresos)} sub={fmtUSD(ingresosUSD)} />
         <KpiCard label="Gastos proyectados" value={fmtARS(totalGastos)} color="#cc4444" />
-        <KpiCard label="Resultado neto" value={fmtARS(resultadoNeto)} color={resultadoNeto >= 0 ? "#22c55e" : "#cc0000"} />
-        <KpiCard label="Margen neto" value={margen + "%"} color={margen >= 40 ? "#22c55e" : margen >= 20 ? "#eab308" : "#cc0000"} />
-        <KpiCard label="Cumplimiento meta USD" value={cumplimientoMeta + "%"} sub={`Meta: ${fmtUSD(pres.meta_honorarios_usd)}`} color={cumplimientoMeta >= 100 ? "#22c55e" : "#eab308"} />
+        <KpiCard label="Resultado neto" value={fmtARS(resultadoNeto)} color={resultadoNeto >= 0 ? "#3abab6" : "#990000"} />
+        <KpiCard label="Margen neto" value={margen + "%"} color={margen >= 40 ? "#3abab6" : margen >= 20 ? "#d4960c" : "#990000"} />
+        <KpiCard label="Cumplimiento meta USD" value={cumplimientoMeta + "%"} sub={`Meta: ${fmtUSD(pres.meta_honorarios_usd)}`} color={cumplimientoMeta >= 100 ? "#3abab6" : "#d4960c"} />
       </div>
 
       {/* tipo de cambio */}
@@ -490,9 +490,9 @@ function TabResumen({ pres, setPres, ingresosPorMes, gastosPorMes, resultadoPorM
               {MESES_FULL.map((mes, m) => (
                 <tr key={m} style={{ borderBottom:"1px solid #1a1a1a" }}>
                   <td style={{ padding:"7px 12px", color:"#aaa" }}>{mes}</td>
-                  <td style={{ padding:"7px 12px", textAlign:"right", color:"#22c55e" }}>{fmtARS(ingresosPorMes[m])}</td>
+                  <td style={{ padding:"7px 12px", textAlign:"right", color:"#3abab6" }}>{fmtARS(ingresosPorMes[m])}</td>
                   <td style={{ padding:"7px 12px", textAlign:"right", color:"#cc4444" }}>{fmtARS(gastosPorMes[m])}</td>
-                  <td style={{ padding:"7px 12px", textAlign:"right", color: resultadoPorMes[m] >= 0 ? "#22c55e" : "#cc0000" }}>
+                  <td style={{ padding:"7px 12px", textAlign:"right", color: resultadoPorMes[m] >= 0 ? "#3abab6" : "#990000" }}>
                     {fmtARS(resultadoPorMes[m])}
                   </td>
                   <td style={{ padding:"7px 12px", textAlign:"right", color: acumuladoPorMes[m] >= 0 ? "#4ade80" : "#f87171" }}>
@@ -502,9 +502,9 @@ function TabResumen({ pres, setPres, ingresosPorMes, gastosPorMes, resultadoPorM
               ))}
               <tr style={{ background:"#161616", fontWeight:700 }}>
                 <td style={{ padding:"7px 12px" }}>TOTAL</td>
-                <td style={{ padding:"7px 12px", textAlign:"right", color:"#22c55e" }}>{fmtARS(totalIngresos)}</td>
+                <td style={{ padding:"7px 12px", textAlign:"right", color:"#3abab6" }}>{fmtARS(totalIngresos)}</td>
                 <td style={{ padding:"7px 12px", textAlign:"right", color:"#cc4444" }}>{fmtARS(totalGastos)}</td>
-                <td style={{ padding:"7px 12px", textAlign:"right", color: resultadoNeto >= 0 ? "#22c55e" : "#cc0000" }}>{fmtARS(resultadoNeto)}</td>
+                <td style={{ padding:"7px 12px", textAlign:"right", color: resultadoNeto >= 0 ? "#3abab6" : "#990000" }}>{fmtARS(resultadoNeto)}</td>
                 <td style={{ padding:"7px 12px", textAlign:"right" }}>—</td>
               </tr>
             </tbody>
@@ -586,7 +586,7 @@ function GraficoBarras({ ingresosPorMes, gastosPorMes, acumuladoPorMes }: {
                 y={Math.min(yIng, y0)}
                 width={barW}
                 height={Math.abs(yIng - y0)}
-                fill="#22c55e"
+                fill="#3abab6"
                 opacity={0.85}
                 rx={2}
               />
@@ -596,7 +596,7 @@ function GraficoBarras({ ingresosPorMes, gastosPorMes, acumuladoPorMes }: {
                 y={Math.min(yGas, y0)}
                 width={barW}
                 height={Math.abs(yGas - y0)}
-                fill="#cc0000"
+                fill="#990000"
                 opacity={0.85}
                 rx={2}
               />
@@ -620,9 +620,9 @@ function GraficoBarras({ ingresosPorMes, gastosPorMes, acumuladoPorMes }: {
         )}
 
         {/* leyenda */}
-        <rect x={padL} y={padT - 2} width={10} height={10} fill="#22c55e" rx={2} />
+        <rect x={padL} y={padT - 2} width={10} height={10} fill="#3abab6" rx={2} />
         <text x={padL + 14} y={padT + 8} fontSize={11} fill="#aaa">Ingresos</text>
-        <rect x={padL + 80} y={padT - 2} width={10} height={10} fill="#cc0000" rx={2} />
+        <rect x={padL + 80} y={padT - 2} width={10} height={10} fill="#990000" rx={2} />
         <text x={padL + 94} y={padT + 8} fontSize={11} fill="#aaa">Gastos</text>
         <circle cx={padL + 162} cy={padT + 3} r={5} fill="#3b82f6" />
         <text x={padL + 172} y={padT + 8} fontSize={11} fill="#aaa">Acumulado neto</text>
@@ -696,7 +696,7 @@ function TabIngresos({ pres, setPres, ingresosPorMes, totalIngresos, ingresosUSD
               (basado en honorario promedio de venta: {fmtUSD(promHonorariosVenta)})
             </div>
             <div style={{ background:"#1a1a1a", borderRadius:999, height:10, overflow:"hidden" }}>
-              <div style={{ width: Math.min(100, cumplimientoMeta) + "%", height:"100%", background: cumplimientoMeta >= 100 ? "#22c55e" : "#cc0000", borderRadius:999, transition:"width .3s" }} />
+              <div style={{ width: Math.min(100, cumplimientoMeta) + "%", height:"100%", background: cumplimientoMeta >= 100 ? "#3abab6" : "#990000", borderRadius:999, transition:"width .3s" }} />
             </div>
             <div style={{ fontSize:12, color:"#888", marginTop:4 }}>
               Proyección: {fmtUSD(ingresosUSD)} ({cumplimientoMeta}% de la meta)
@@ -740,11 +740,11 @@ function TabIngresos({ pres, setPres, ingresosPorMes, totalIngresos, ingresosUSD
             <tbody>
               <tr>
                 {ingresosPorMes.map((v, i) => (
-                  <td key={i} style={{ padding:"6px 8px", textAlign:"right", color:"#22c55e" }}>
+                  <td key={i} style={{ padding:"6px 8px", textAlign:"right", color:"#3abab6" }}>
                     {fmtARS(v)}
                   </td>
                 ))}
-                <td style={{ padding:"6px 8px", textAlign:"right", color:"#22c55e", fontWeight:700 }}>
+                <td style={{ padding:"6px 8px", textAlign:"right", color:"#3abab6", fontWeight:700 }}>
                   {fmtARS(totalIngresos)}
                 </td>
               </tr>
@@ -841,7 +841,7 @@ function TabGastos({ pres, setPres, gastosPorMes, totalGastos }: TabGastosProps)
             </div>
             {top3.map(({ g, total }, i) => (
               <div key={g.id} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0", borderBottom:"1px solid #1a1a1a", fontSize:13 }}>
-                <span style={{ color: i === 0 ? "#cc0000" : i === 1 ? "#f97316" : "#eab308" }}>
+                <span style={{ color: i === 0 ? "#990000" : i === 1 ? "#d4960c" : "#d4960c" }}>
                   {i + 1}. {g.nombre}
                 </span>
                 <span style={{ color:"#aaa" }}>{fmtARS(total)}</span>
@@ -863,7 +863,7 @@ function TabGastos({ pres, setPres, gastosPorMes, totalGastos }: TabGastosProps)
           </div>
           <div style={{ fontSize:13 }}>
             <span style={{ color:"#888" }}>Punto de equilibrio mensual: </span>
-            <span style={{ color:"#eab308", fontWeight:600 }}>{fmtARS(gastoMensualProm)}</span>
+            <span style={{ color:"#d4960c", fontWeight:600 }}>{fmtARS(gastoMensualProm)}</span>
             <div style={{ fontSize:11, color:"#555", marginTop:2 }}>
               (ingreso mínimo mensual para cubrir todos los gastos)
             </div>
@@ -1058,7 +1058,7 @@ function ItemEditor({ item, expandido, onToggle, onUpdate, onEliminar, categoria
               />
             </div>
             <div style={{ display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
-              <button style={{ ...S.btnSec, fontSize:11, padding:"4px 10px", color:"#cc0000", borderColor:"#cc0000" }} onClick={onEliminar}>
+              <button style={{ ...S.btnSec, fontSize:11, padding:"4px 10px", color:"#990000", borderColor:"#990000" }} onClick={onEliminar}>
                 Eliminar
               </button>
             </div>

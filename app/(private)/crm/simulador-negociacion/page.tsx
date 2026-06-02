@@ -265,17 +265,17 @@ function ZonaNegociacion({ sim }: { sim: SimulacionNegociacion }) {
         </text>
 
         {/* Punto posición comprador max */}
-        <rect x={xCompradorMin - 2} y={trackY - trackH / 2 - 4} width={4} height={trackH + 8} rx={2} fill="#60a5fa" />
-        <text x={xCompradorMin} y={trackY - 22} textAnchor="middle" fill="#60a5fa" fontSize={8} fontFamily="Inter, sans-serif">
+        <rect x={xCompradorMin - 2} y={trackY - trackH / 2 - 4} width={4} height={trackH + 8} rx={2} fill="#4ab8d8" />
+        <text x={xCompradorMin} y={trackY - 22} textAnchor="middle" fill="#4ab8d8" fontSize={8} fontFamily="Inter, sans-serif">
           Comp. máx
         </text>
-        <text x={xCompradorMin} y={H - 4} textAnchor="middle" fill="rgba(96,165,250,0.7)" fontSize={7} fontFamily="Inter, sans-serif">
+        <text x={xCompradorMin} y={H - 4} textAnchor="middle" fill="rgba(74,184,216,0.7)" fontSize={7} fontFamily="Inter, sans-serif">
           {(sim.posicionCompradorMin / 1000).toFixed(0)}k
         </text>
 
         {/* Punto posición vendedor min */}
-        <rect x={xVendedorMax - 2} y={trackY - trackH / 2 - 4} width={4} height={trackH + 8} rx={2} fill="#f97316" />
-        <text x={xVendedorMax} y={trackY - 22} textAnchor="middle" fill="#f97316" fontSize={8} fontFamily="Inter, sans-serif">
+        <rect x={xVendedorMax - 2} y={trackY - trackH / 2 - 4} width={4} height={trackH + 8} rx={2} fill="#d4960c" />
+        <text x={xVendedorMax} y={trackY - 22} textAnchor="middle" fill="#d4960c" fontSize={8} fontFamily="Inter, sans-serif">
           Vend. mín
         </text>
         <text x={xVendedorMax} y={H - 4} textAnchor="middle" fill="rgba(249,115,22,0.7)" fontSize={7} fontFamily="Inter, sans-serif">
@@ -286,11 +286,11 @@ function ZonaNegociacion({ sim }: { sim: SimulacionNegociacion }) {
         <circle cx={xOfertaFinal} cy={trackY} r={5} fill="rgba(59,130,246,0.5)" stroke="#3b82f6" strokeWidth={1.5} strokeDasharray="2,2" />
 
         {/* Precio publicado */}
-        <circle cx={xPublicado} cy={trackY} r={7} fill="#cc0000" stroke="#0a0a0a" strokeWidth={2} />
-        <text x={xPublicado} y={trackY - 14} textAnchor="middle" fill="#cc0000" fontSize={8} fontFamily="Inter, sans-serif">
+        <circle cx={xPublicado} cy={trackY} r={7} fill="#990000" stroke="#0a0a0a" strokeWidth={2} />
+        <text x={xPublicado} y={trackY - 14} textAnchor="middle" fill="#990000" fontSize={8} fontFamily="Inter, sans-serif">
           Publicado
         </text>
-        <text x={xPublicado} y={H - 4} textAnchor="middle" fill="rgba(204,0,0,0.7)" fontSize={7} fontFamily="Inter, sans-serif">
+        <text x={xPublicado} y={H - 4} textAnchor="middle" fill="rgba(153,0,0,0.7)" fontSize={7} fontFamily="Inter, sans-serif">
           {(sim.precioPublicado / 1000).toFixed(0)}k
         </text>
 
@@ -310,7 +310,7 @@ function ZonaNegociacion({ sim }: { sim: SimulacionNegociacion }) {
 
         {/* Sin overlap */}
         {!hasOverlap && (
-          <text x={W / 2} y={H - 6} textAnchor="middle" fill="rgba(204,0,0,0.6)" fontSize={9} fontFamily="Inter, sans-serif">
+          <text x={W / 2} y={H - 6} textAnchor="middle" fill="rgba(153,0,0,0.6)" fontSize={9} fontFamily="Inter, sans-serif">
             No hay zona de acuerdo visible entre las posiciones
           </text>
         )}
@@ -386,7 +386,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
   const btnPrimary: React.CSSProperties = {
     padding: "9px 22px",
     borderRadius: 8,
-    background: "#cc0000",
+    background: "#990000",
     border: "none",
     color: "#fff",
     fontSize: 12,
@@ -625,7 +625,7 @@ function FormularioSimulacion({ sim, onChange, onGuardar, onAnalizar }: Formular
                 </div>
                 <button
                   onClick={() => removeEscenario(esc.id)}
-                  style={{ marginTop: 18, padding: "7px 10px", borderRadius: 8, background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", color: "rgba(204,0,0,0.6)", fontSize: 11, cursor: "pointer" }}
+                  style={{ marginTop: 18, padding: "7px 10px", borderRadius: 8, background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", color: "rgba(153,0,0,0.6)", fontSize: 11, cursor: "pointer" }}
                 >
                   ✕
                 </button>
@@ -681,9 +681,9 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 14 }}>
           {[
             { dot: "#3b82f6", label: "Oferta inicial comprador" },
-            { dot: "#60a5fa", label: "Posición máx. comprador" },
-            { dot: "#f97316", label: "Posición mín. vendedor" },
-            { dot: "#cc0000", label: "Precio publicado" },
+            { dot: "#4ab8d8", label: "Posición máx. comprador" },
+            { dot: "#d4960c", label: "Posición mín. vendedor" },
+            { dot: "#990000", label: "Precio publicado" },
             { dot: "rgba(34,197,94,0.5)", label: "Zona de acuerdo", rect: true },
           ].map((item) => (
             <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -745,8 +745,8 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
                   { label: "Costo total comprador", val: `ARS ${fmt(res.costoTotalComprador)}`, sub: `(incluye hon. ${fmtPct(sim.honorariosComprador)})` },
                   { label: "Neto vendedor", val: `ARS ${fmt(res.neteVendedor)}`, sub: `(neto de hon. ${fmtPct(sim.honorariosVendedor)})` },
                   { label: "Honorarios totales", val: `ARS ${fmt(res.totalHonorariosARS)}` },
-                  { label: "Delta vendedor vs piso", val: `${res.deltaVendedor >= 0 ? "+" : ""}${fmtPct(res.deltaVendedor)}`, color: res.deltaVendedor >= 0 ? "#22c55e" : "#cc0000" },
-                  { label: "Delta comprador vs meta", val: `${res.deltaComprador >= 0 ? "+" : ""}${fmtPct(res.deltaComprador)}`, color: res.deltaComprador >= 0 ? "#22c55e" : "#cc0000" },
+                  { label: "Delta vendedor vs piso", val: `${res.deltaVendedor >= 0 ? "+" : ""}${fmtPct(res.deltaVendedor)}`, color: res.deltaVendedor >= 0 ? "#3abab6" : "#990000" },
+                  { label: "Delta comprador vs meta", val: `${res.deltaComprador >= 0 ? "+" : ""}${fmtPct(res.deltaComprador)}`, color: res.deltaComprador >= 0 ? "#3abab6" : "#990000" },
                 ].map((kpi) => (
                   <div key={kpi.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
                     <div>
@@ -763,11 +763,11 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
               {/* Badge zona */}
               <div>
                 {res.enZona ? (
-                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", fontSize: 10, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}>
+                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", color: "#3abab6", fontSize: 10, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}>
                     Zona de acuerdo posible
                   </span>
                 ) : (
-                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.3)", color: "#cc0000", fontSize: 10, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}>
+                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 10, fontFamily: "'Montserrat', sans-serif", fontWeight: 700 }}>
                     Fuera de zona
                   </span>
                 )}
@@ -805,7 +805,7 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
                     <td style={{ padding: "10px 12px", color: "#fff", fontWeight: 700 }}>
                       {fmt(res.precioUSD)}
                     </td>
-                    <td style={{ padding: "10px 12px", color: res.descuentoSobrePublicado > 5 ? "#22c55e" : "rgba(255,255,255,0.6)" }}>
+                    <td style={{ padding: "10px 12px", color: res.descuentoSobrePublicado > 5 ? "#3abab6" : "rgba(255,255,255,0.6)" }}>
                       {fmtPct(res.descuentoSobrePublicado)}
                     </td>
                     <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.7)" }}>
@@ -819,9 +819,9 @@ function PanelAnalisis({ sim }: { sim: SimulacionNegociacion }) {
                     </td>
                     <td style={{ padding: "10px 12px" }}>
                       {res.enZona ? (
-                        <span style={{ color: "#22c55e", fontWeight: 700 }}>SI</span>
+                        <span style={{ color: "#3abab6", fontWeight: 700 }}>SI</span>
                       ) : (
-                        <span style={{ color: "#cc0000", fontWeight: 700 }}>NO</span>
+                        <span style={{ color: "#990000", fontWeight: 700 }}>NO</span>
                       )}
                     </td>
                   </tr>
@@ -880,9 +880,9 @@ export default function SimuladorNegociacion() {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: "9px 20px",
     borderRadius: 8,
-    border: active ? "1px solid rgba(204,0,0,0.4)" : "1px solid rgba(255,255,255,0.07)",
-    background: active ? "rgba(204,0,0,0.1)" : "transparent",
-    color: active ? "#cc0000" : "rgba(255,255,255,0.38)",
+    border: active ? "1px solid rgba(153,0,0,0.4)" : "1px solid rgba(255,255,255,0.07)",
+    background: active ? "rgba(153,0,0,0.1)" : "transparent",
+    color: active ? "#990000" : "rgba(255,255,255,0.38)",
     fontSize: 11,
     fontFamily: "'Montserrat', sans-serif",
     fontWeight: 700,
@@ -933,7 +933,7 @@ export default function SimuladorNegociacion() {
               </p>
               <button
                 onClick={abrirNueva}
-                style={{ padding: "9px 20px", borderRadius: 8, background: "#cc0000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
+                style={{ padding: "9px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
               >
                 + Nueva simulación
               </button>
@@ -950,7 +950,7 @@ export default function SimuladorNegociacion() {
                 </p>
                 <button
                   onClick={abrirNueva}
-                  style={{ padding: "10px 24px", borderRadius: 8, background: "#cc0000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
+                  style={{ padding: "10px 24px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat', sans-serif", fontWeight: 700, cursor: "pointer" }}
                 >
                   + Nueva simulación
                 </button>
@@ -968,7 +968,7 @@ export default function SimuladorNegociacion() {
                       key={sim.id}
                       onClick={() => abrirSim(sim)}
                       style={{ ...cardStyle, cursor: "pointer", transition: "border-color 0.15s" }}
-                      onMouseEnter={(ev) => { (ev.currentTarget as HTMLDivElement).style.borderColor = "rgba(204,0,0,0.3)"; }}
+                      onMouseEnter={(ev) => { (ev.currentTarget as HTMLDivElement).style.borderColor = "rgba(153,0,0,0.3)"; }}
                       onMouseLeave={(ev) => { (ev.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.06)"; }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -989,7 +989,7 @@ export default function SimuladorNegociacion() {
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                           <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'Inter', sans-serif" }}>Precio publicado</span>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: "#cc0000", fontFamily: "'Montserrat', sans-serif" }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "#990000", fontFamily: "'Montserrat', sans-serif" }}>
                             {sim.moneda} {fmt(sim.precioPublicado)}
                           </span>
                         </div>

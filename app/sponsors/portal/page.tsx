@@ -68,10 +68,10 @@ export default function SponsorPortalDashboard() {
   if (loading) return <div style={{ color: "rgba(255,255,255,.3)" }}>Cargando...</div>;
 
   const stats = [
-    { val: `$${dash.saldo.toFixed(2)}`, label: "Saldo disponible", color: dash.saldo < 50 ? "#ef4444" : "#22c55e" },
-    { val: dash.campanas_activas, label: "Campañas activas", color: "#cc0000" },
+    { val: `$${dash.saldo.toFixed(2)}`, label: "Saldo disponible", color: dash.saldo < 50 ? "#b80000" : "#3abab6" },
+    { val: dash.campanas_activas, label: "Campañas activas", color: "#990000" },
     { val: dash.total_adhesiones, label: "Corredores adheridos", color: "#3b82f6" },
-    { val: dash.total_administraciones.toLocaleString("es-AR"), label: "Administraciones alcanzadas", color: "#f59e0b" },
+    { val: dash.total_administraciones.toLocaleString("es-AR"), label: "Administraciones alcanzadas", color: "#d4960c" },
     { val: dash.total_clics, label: "Clics en links de referido", color: "#8b5cf6" },
     { val: `$${dash.total_cobrado.toFixed(2)}`, label: "Total invertido", color: "rgba(255,255,255,.5)" },
   ];
@@ -90,7 +90,7 @@ export default function SponsorPortalDashboard() {
         .sp-table th { font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.3); padding:8px 12px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
         .sp-table td { font-size:12px; color:rgba(255,255,255,.7); padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
         .sp-table tr:hover td { background:rgba(255,255,255,.02); }
-        .sp-badge-ok { display:inline-block; padding:3px 8px; border-radius:10px; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); color:#22c55e; font-size:9px; font-weight:700; font-family:'Montserrat',sans-serif; }
+        .sp-badge-ok { display:inline-block; padding:3px 8px; border-radius:10px; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); color:#3abab6; font-size:9px; font-weight:700; font-family:'Montserrat',sans-serif; }
       `}</style>
 
       <div className="sp-hdr">Dashboard</div>
@@ -110,20 +110,20 @@ export default function SponsorPortalDashboard() {
         const vence = dash.suscripcion_vence ? new Date(dash.suscripcion_vence) : null;
         const activa = dash.suscripcion_activa && vence && vence > hoy;
         if (activa) return (
-          <div style={{ background: "rgba(34,197,94,.06)", border: "1px solid rgba(34,197,94,.2)", borderRadius: 8, padding: "10px 16px", marginBottom: 16, fontSize: 13, color: "#22c55e", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ background: "rgba(34,197,94,.06)", border: "1px solid rgba(34,197,94,.2)", borderRadius: 8, padding: "10px 16px", marginBottom: 16, fontSize: 13, color: "#3abab6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span>✓ Suscripción activa — plan ${dash.plan_mensual_usd}/mes</span>
             <span style={{ fontSize: 11, color: "rgba(34,197,94,.7)" }}>Vence: {vence!.toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}</span>
           </div>
         );
         return (
-          <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#ef4444" }}>
+          <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#b80000" }}>
             ⚠️ <strong>Sin suscripción activa.</strong> Contactá al administrador de GFI® para activar tu plan mensual (${dash.plan_mensual_usd}/mes) y mantener acceso al portal.
           </div>
         );
       })()}
 
       {dash.saldo < 50 && (
-        <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 20, fontSize: 13, color: "#ef4444" }}>
+        <div style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.25)", borderRadius: 8, padding: "12px 16px", marginBottom: 20, fontSize: 13, color: "#b80000" }}>
           ⚠️ Saldo bajo. Contactá al administrador de GFI® para recargar crédito antes de que las nuevas adhesiones queden bloqueadas.
         </div>
       )}
@@ -154,8 +154,8 @@ export default function SponsorPortalDashboard() {
                       {a.perfiles?.matricula && <div style={{ fontSize: 10, color: "rgba(255,255,255,.3)" }}>Mat. {a.perfiles.matricula}</div>}
                     </td>
                     <td>{a.sponsor_campanas?.titulo}</td>
-                    <td><strong style={{ color: "#f59e0b" }}>{a.cant_administraciones}</strong></td>
-                    <td><strong style={{ color: "#cc0000" }}>${a.monto_cobrado_usd}</strong></td>
+                    <td><strong style={{ color: "#d4960c" }}>{a.cant_administraciones}</strong></td>
+                    <td><strong style={{ color: "#990000" }}>${a.monto_cobrado_usd}</strong></td>
                     <td>{a.clics}</td>
                     <td style={{ fontSize: 11, color: "rgba(255,255,255,.35)" }}>
                       {new Date(a.created_at).toLocaleDateString("es-AR")}

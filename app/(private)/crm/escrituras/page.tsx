@@ -28,11 +28,11 @@ interface Hito {
 }
 
 const TIPOS_HITO = [
-  { value: "reserva",      label: "Reserva",          icon: "📝", color: "#f59e0b" },
+  { value: "reserva",      label: "Reserva",          icon: "📝", color: "#d4960c" },
   { value: "boleto",       label: "Boleto de compra",  icon: "📋", color: "#06b6d4" },
   { value: "escritura",    label: "Escritura",         icon: "⚖️", color: "#6366f1" },
-  { value: "posesion",     label: "Posesión",          icon: "🔑", color: "#10b981" },
-  { value: "liquidacion",  label: "Liquidación hon.",  icon: "💰", color: "#22c55e" },
+  { value: "posesion",     label: "Posesión",          icon: "🔑", color: "#3abab6" },
+  { value: "liquidacion",  label: "Liquidación hon.",  icon: "💰", color: "#3abab6" },
   { value: "otro",         label: "Otro",              icon: "📌", color: "#94a3b8" },
 ];
 
@@ -126,7 +126,7 @@ export default function EscriturasPage() {
 
   return (
     <div style={{ padding: "24px 20px", maxWidth: 900, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
-      {toast && <div style={{ position: "fixed", bottom: 24, right: 24, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>}
+      {toast && <div style={{ position: "fixed", bottom: 24, right: 24, background: "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>}
 
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: "#f8fafc", margin: 0 }}>⚖️ Seguimiento de Escrituras</h1>
@@ -151,7 +151,7 @@ export default function EscriturasPage() {
             const contacto = neg.contacto as any;
 
             return (
-              <div key={neg.id} style={{ background: "#1e293b", borderRadius: 14, overflow: "hidden", border: diasProx !== null && diasProx <= 3 && diasProx >= 0 ? "1px solid #ef444444" : "1px solid #334155" }}>
+              <div key={neg.id} style={{ background: "#1e293b", borderRadius: 14, overflow: "hidden", border: diasProx !== null && diasProx <= 3 && diasProx >= 0 ? "1px solid #b8000044" : "1px solid #334155" }}>
                 {/* Header */}
                 <div style={{ padding: "18px 22px", cursor: "pointer" }} onClick={() => setExpandido(isOpen ? null : neg.id)}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -167,7 +167,7 @@ export default function EscriturasPage() {
                     </div>
                     <div style={{ textAlign: "right" }}>
                       {proximo && (
-                        <div style={{ fontSize: 12, color: diasProx !== null && diasProx <= 3 ? "#ef4444" : diasProx !== null && diasProx <= 7 ? "#f59e0b" : "#94a3b8" }}>
+                        <div style={{ fontSize: 12, color: diasProx !== null && diasProx <= 3 ? "#b80000" : diasProx !== null && diasProx <= 7 ? "#d4960c" : "#94a3b8" }}>
                           {TIPOS_HITO.find(t => t.value === proximo.tipo)?.icon} {TIPOS_HITO.find(t => t.value === proximo.tipo)?.label}
                           <br />
                           <strong>{fmtFecha(proximo.fecha)}</strong> {diasProx !== null && <span>({diasProx === 0 ? "hoy" : diasProx < 0 ? `${Math.abs(diasProx)}d vencido` : `en ${diasProx}d`})</span>}
@@ -190,7 +190,7 @@ export default function EscriturasPage() {
                           return (
                             <div key={h.id} style={{ display: "flex", gap: 12, alignItems: "center", padding: "8px 0", borderBottom: "1px solid #1e293b" }}>
                               <button onClick={() => toggleHito(h)}
-                                style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${h.completado ? "#22c55e" : tipoInfo?.color ?? "#334155"}`, background: h.completado ? "#22c55e" : "transparent", cursor: "pointer", flexShrink: 0, fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                                style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${h.completado ? "#3abab6" : tipoInfo?.color ?? "#334155"}`, background: h.completado ? "#3abab6" : "transparent", cursor: "pointer", flexShrink: 0, fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
                                 {h.completado ? "✓" : ""}
                               </button>
                               <span style={{ fontSize: 16, flexShrink: 0 }}>{tipoInfo?.icon}</span>
@@ -201,7 +201,7 @@ export default function EscriturasPage() {
                                 {h.notas && <div style={{ color: "#64748b", fontSize: 12 }}>{h.notas}</div>}
                               </div>
                               <div style={{ textAlign: "right" }}>
-                                <div style={{ fontSize: 13, color: !h.completado && dias <= 3 ? "#ef4444" : !h.completado && dias <= 7 ? "#f59e0b" : "#94a3b8" }}>
+                                <div style={{ fontSize: 13, color: !h.completado && dias <= 3 ? "#b80000" : !h.completado && dias <= 7 ? "#d4960c" : "#94a3b8" }}>
                                   {fmtFecha(h.fecha)}
                                 </div>
                                 {!h.completado && <div style={{ fontSize: 11, color: "#64748b" }}>{dias < 0 ? `${Math.abs(dias)}d vencido` : dias === 0 ? "hoy" : `en ${dias}d`}</div>}
@@ -219,7 +219,7 @@ export default function EscriturasPage() {
                         const yaExiste = negHitos.some(h => h.tipo === t.value);
                         return (
                           <button key={t.value} onClick={() => setModalHito({ negocioId: neg.id, tipo: t.value, fecha: new Date().toISOString().slice(0, 10), notas: "" })}
-                            style={{ background: yaExiste ? "#052e16" : "#0f172a", color: yaExiste ? "#22c55e" : "#94a3b8", border: `1px solid ${yaExiste ? "#166534" : "#334155"}`, borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: 12 }}>
+                            style={{ background: yaExiste ? "#052e16" : "#0f172a", color: yaExiste ? "#3abab6" : "#94a3b8", border: `1px solid ${yaExiste ? "#166534" : "#334155"}`, borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: 12 }}>
                             {t.icon} {t.label} {yaExiste ? "✓" : "+"}
                           </button>
                         );

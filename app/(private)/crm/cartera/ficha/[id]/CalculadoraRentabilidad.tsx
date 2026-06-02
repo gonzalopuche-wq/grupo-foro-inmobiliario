@@ -21,8 +21,8 @@ export function CalculadoraRentabilidad({ precioVenta, moneda = "USD", precioAlq
 
   // Comparativas de inversión (referencia AR 2026)
   const alternativas = [
-    { label: "Plazo fijo (ARS)", valor: 42, color: "#f59e0b" },
-    { label: "Dólar MEP / CCL", valor: 4, color: "#60a5fa" },
+    { label: "Plazo fijo (ARS)", valor: 42, color: "#d4960c" },
+    { label: "Dólar MEP / CCL", valor: 4, color: "#4ab8d8" },
     { label: "UVA (estimado)", valor: 5.5, color: "#a78bfa" },
   ];
 
@@ -39,13 +39,13 @@ export function CalculadoraRentabilidad({ precioVenta, moneda = "USD", precioAlq
         .calc-input-group { display: flex; flex-direction: column; gap: 4px; }
         .calc-input-label { font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; }
         .calc-input { width: 100%; background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 7px; padding: 9px 12px; font-size: 15px; font-family: 'Montserrat',sans-serif; font-weight: 700; color: #111; outline: none; transition: border-color 0.15s; }
-        .calc-input:focus { border-color: #cc0000; background: #fff; }
+        .calc-input:focus { border-color: #990000; background: #fff; }
         .calc-input::placeholder { color: #bbb; font-weight: 400; }
         .calc-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         @media (max-width: 480px) { .calc-results { grid-template-columns: 1fr; } }
         .calc-result-card { background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 14px 16px; }
         .calc-result-card.highlight { background: #0a0a0a; border-color: #222; }
-        .calc-result-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #cc0000; }
+        .calc-result-val { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 800; color: #990000; }
         .calc-result-card.highlight .calc-result-val { color: #fff; }
         .calc-result-label { font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-top: 2px; }
         .calc-result-card.highlight .calc-result-label { color: rgba(255,255,255,0.4); }
@@ -128,7 +128,7 @@ export function CalculadoraRentabilidad({ precioVenta, moneda = "USD", precioAlq
               className="calc-bar-fill"
               style={{
                 width: `${Math.min(100, (rendimientoBruto / maxVal) * 100)}%`,
-                background: "#cc0000",
+                background: "#990000",
               }}
             />
           </div>

@@ -66,13 +66,13 @@ const CHECKLIST_ALQUILER: CheckItem[] = [
 ];
 
 const RESP_COLORS: Record<string, string> = {
-  corredor: "#cc0000",
+  corredor: "#990000",
   comprador: "#3b82f6",
-  vendedor: "#f97316",
+  vendedor: "#d4960c",
   escribano: "#8b5cf6",
   banco: "#06b6d4",
-  inquilino: "#22c55e",
-  propietario: "#f59e0b",
+  inquilino: "#3abab6",
+  propietario: "#d4960c",
 };
 
 const RESP_LABELS: Record<string, string> = {
@@ -199,9 +199,9 @@ export default function ChecklistCierrePage() {
             {(["venta", "alquiler"] as TipoOp[]).map((t) => (
               <button key={t} onClick={() => setTipoOp(t)} style={{
                 padding: "8px 20px", borderRadius: 8,
-                border: tipoOp === t ? "1px solid #cc0000" : "1px solid #333",
-                background: tipoOp === t ? "rgba(204,0,0,0.15)" : "#111",
-                color: tipoOp === t ? "#cc0000" : "#888",
+                border: tipoOp === t ? "1px solid #990000" : "1px solid #333",
+                background: tipoOp === t ? "rgba(153,0,0,0.15)" : "#111",
+                color: tipoOp === t ? "#990000" : "#888",
                 fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 12,
                 cursor: "pointer", textTransform: "capitalize",
               }}>
@@ -233,18 +233,18 @@ export default function ChecklistCierrePage() {
                 <span style={{ fontSize: 12, color: "#666", marginLeft: 6 }}>completado ({stats.done}/{stats.total})</span>
               </div>
               <div>
-                <span style={{ fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: stats.pctOblig === 100 ? "#22c55e" : "#cc0000" }}>{stats.pctOblig}%</span>
+                <span style={{ fontSize: 20, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: stats.pctOblig === 100 ? "#3abab6" : "#990000" }}>{stats.pctOblig}%</span>
                 <span style={{ fontSize: 12, color: "#666", marginLeft: 6 }}>obligatorios ({stats.obligDone}/{stats.oblig})</span>
               </div>
             </div>
             {stats.pctOblig === 100 && (
-              <div style={{ background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.4)", borderRadius: 8, padding: "6px 14px", fontSize: 12, color: "#22c55e", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+              <div style={{ background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.4)", borderRadius: 8, padding: "6px 14px", fontSize: 12, color: "#3abab6", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
                 ✓ Listo para cerrar
               </div>
             )}
           </div>
           <div style={{ height: 8, background: "#1a1a1a", borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ width: `${stats.pct}%`, height: "100%", background: stats.pctOblig === 100 ? "#22c55e" : "#cc0000", borderRadius: 4, transition: "width 0.3s" }} />
+            <div style={{ width: `${stats.pct}%`, height: "100%", background: stats.pctOblig === 100 ? "#3abab6" : "#990000", borderRadius: 4, transition: "width 0.3s" }} />
           </div>
         </div>
 
@@ -267,10 +267,10 @@ export default function ChecklistCierrePage() {
             return (
               <div key={cat} style={{ background: "#111", border: `1px solid ${allDone ? "rgba(34,197,94,0.3)" : "#222"}`, borderRadius: 12, overflow: "hidden" }}>
                 <div style={{ padding: "12px 18px", background: allDone ? "rgba(34,197,94,0.06)" : "#161616", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: allDone ? "#22c55e" : "#fff" }}>
+                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: allDone ? "#3abab6" : "#fff" }}>
                     {allDone ? "✓ " : ""}{cat}
                   </div>
-                  <div style={{ fontSize: 11, color: allDone ? "#22c55e" : "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                  <div style={{ fontSize: 11, color: allDone ? "#3abab6" : "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
                     {catDone}/{catItems.length}
                   </div>
                 </div>
@@ -287,8 +287,8 @@ export default function ChecklistCierrePage() {
                             onClick={() => toggleCheck(item.id)}
                             style={{
                               width: 20, height: 20, borderRadius: 5, flexShrink: 0, marginTop: 2,
-                              border: `2px solid ${done ? "#22c55e" : item.obligatorio ? "#cc0000" : "#444"}`,
-                              background: done ? "#22c55e" : "transparent",
+                              border: `2px solid ${done ? "#3abab6" : item.obligatorio ? "#990000" : "#444"}`,
+                              background: done ? "#3abab6" : "transparent",
                               cursor: "pointer",
                               display: "flex", alignItems: "center", justifyContent: "center",
                             }}
@@ -302,7 +302,7 @@ export default function ChecklistCierrePage() {
                                 {item.label}
                               </span>
                               {item.obligatorio && (
-                                <span style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, background: "rgba(204,0,0,0.15)", borderRadius: 3, padding: "1px 5px" }}>
+                                <span style={{ fontSize: 9, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, background: "rgba(153,0,0,0.15)", borderRadius: 3, padding: "1px 5px" }}>
                                   OBLIG
                                 </span>
                               )}

@@ -55,7 +55,7 @@ export default function FichaContacto({ propiedadId, titulo }: Props) {
     return (
       <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 10, padding: "24px 28px", textAlign: "center" }}>
         <div style={{ fontSize: 28, marginBottom: 10 }}>✓</div>
-        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 15, color: "#22c55e", marginBottom: 6 }}>
+        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 15, color: "#3abab6", marginBottom: 6 }}>
           ¡Consulta enviada!
         </div>
         <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
@@ -150,7 +150,7 @@ export default function FichaContacto({ propiedadId, titulo }: Props) {
           disabled={estado === "enviando" || !nombre.trim()}
           style={{
             padding: "12px 24px",
-            background: estado === "enviando" ? "rgba(204,0,0,0.4)" : "#cc0000",
+            background: estado === "enviando" ? "rgba(153,0,0,0.4)" : "#990000",
             border: "none", borderRadius: 6, cursor: estado === "enviando" ? "default" : "pointer",
             color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700,
             letterSpacing: "0.1em", textTransform: "uppercase" as const,

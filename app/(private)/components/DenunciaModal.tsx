@@ -82,7 +82,7 @@ export default function DenunciaModal({ tipoContenido, contenidoId, onClose, onS
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {MOTIVOS.map(m => (
                   <label key={m.value} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", background: motivo === m.value ? "rgba(200,0,0,0.1)" : "rgba(255,255,255,0.03)", border: "1px solid", borderColor: motivo === m.value ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.07)", borderRadius: 8, cursor: "pointer", transition: "all 0.1s" }}>
-                    <input type="radio" name="motivo" value={m.value} checked={motivo === m.value} onChange={() => setMotivo(m.value)} style={{ accentColor: "#cc0000" }} />
+                    <input type="radio" name="motivo" value={m.value} checked={motivo === m.value} onChange={() => setMotivo(m.value)} style={{ accentColor: "#990000" }} />
                     <span style={{ fontSize: 14 }}>{m.icon}</span>
                     <span style={{ fontSize: 13, color: motivo === m.value ? "#fff" : "rgba(255,255,255,0.6)" }}>{m.label}</span>
                   </label>
@@ -110,7 +110,7 @@ export default function DenunciaModal({ tipoContenido, contenidoId, onClose, onS
               <button
                 onClick={enviar}
                 disabled={!motivo || enviando}
-                style={{ flex: 2, padding: "10px", background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700, cursor: !motivo || enviando ? "not-allowed" : "pointer", opacity: !motivo || enviando ? 0.5 : 1 }}>
+                style={{ flex: 2, padding: "10px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700, cursor: !motivo || enviando ? "not-allowed" : "pointer", opacity: !motivo || enviando ? 0.5 : 1 }}>
                 {enviando ? "Enviando..." : "Enviar denuncia"}
               </button>
             </div>

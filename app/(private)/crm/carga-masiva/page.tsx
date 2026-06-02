@@ -106,7 +106,7 @@ const S = {
     cursor: "pointer",
     transition: "opacity 0.15s",
     background:
-      variant === "primary" ? "#cc0000"
+      variant === "primary" ? "#990000"
       : variant === "secondary" ? "rgba(255,255,255,0.07)"
       : "transparent",
     color: "#fff",
@@ -154,9 +154,9 @@ const S = {
     fontSize: 11,
     fontWeight: 700,
     fontFamily: "Inter,sans-serif",
-    background: ok ? "rgba(34,197,94,0.15)" : "rgba(204,0,0,0.18)",
+    background: ok ? "rgba(34,197,94,0.15)" : "rgba(153,0,0,0.18)",
     color: ok ? "#4ade80" : "#f87171",
-    border: `1px solid ${ok ? "rgba(34,197,94,0.3)" : "rgba(204,0,0,0.35)"}`,
+    border: `1px solid ${ok ? "rgba(34,197,94,0.3)" : "rgba(153,0,0,0.35)"}`,
     cursor: ok ? "default" : "help",
   }),
 };
@@ -179,9 +179,9 @@ function PasoIndicator({ paso }: { paso: number }) {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontFamily: "Montserrat,sans-serif",
                 fontSize: 13, fontWeight: 700,
-                background: completado ? "#cc0000" : activo ? "rgba(204,0,0,0.2)" : "rgba(255,255,255,0.06)",
-                border: activo ? "2px solid #cc0000" : completado ? "2px solid #cc0000" : "2px solid rgba(255,255,255,0.1)",
-                color: completado ? "#fff" : activo ? "#cc0000" : "rgba(255,255,255,0.3)",
+                background: completado ? "#990000" : activo ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.06)",
+                border: activo ? "2px solid #990000" : completado ? "2px solid #990000" : "2px solid rgba(255,255,255,0.1)",
+                color: completado ? "#fff" : activo ? "#990000" : "rgba(255,255,255,0.3)",
               }}>
                 {completado ? "✓" : num}
               </div>
@@ -198,7 +198,7 @@ function PasoIndicator({ paso }: { paso: number }) {
             {i < pasos.length - 1 && (
               <div style={{
                 flex: 1, height: 1,
-                background: completado ? "#cc0000" : "rgba(255,255,255,0.08)",
+                background: completado ? "#990000" : "rgba(255,255,255,0.08)",
                 margin: "-18px 8px 0",
               }} />
             )}
@@ -443,12 +443,12 @@ export default function CargaMasivaPage() {
               onDrop={onDrop}
               onClick={() => fileInputRef.current?.click()}
               style={{
-                border: `2px dashed ${dragging ? "#cc0000" : "rgba(255,255,255,0.18)"}`,
+                border: `2px dashed ${dragging ? "#990000" : "rgba(255,255,255,0.18)"}`,
                 borderRadius: 12,
                 padding: "52px 32px",
                 textAlign: "center",
                 cursor: "pointer",
-                background: dragging ? "rgba(204,0,0,0.04)" : "rgba(255,255,255,0.02)",
+                background: dragging ? "rgba(153,0,0,0.04)" : "rgba(255,255,255,0.02)",
                 transition: "all 0.2s",
                 marginBottom: 16,
               }}
@@ -661,8 +661,8 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                     ...S.btn(filtroVista === f ? "secondary" : "ghost"),
                     fontSize: 12,
                     padding: "7px 14px",
-                    background: filtroVista === f ? "rgba(204,0,0,0.15)" : "transparent",
-                    border: filtroVista === f ? "1px solid rgba(204,0,0,0.4)" : "1px solid rgba(255,255,255,0.1)",
+                    background: filtroVista === f ? "rgba(153,0,0,0.15)" : "transparent",
+                    border: filtroVista === f ? "1px solid rgba(153,0,0,0.4)" : "1px solid rgba(255,255,255,0.1)",
                   }}
                 >
                   {f === "todos" ? "Todos" : f === "validos" ? "Solo válidos" : "Solo errores"}
@@ -840,7 +840,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                 <div style={{
                   height: "100%",
                   width: `${Math.min(progress, 100)}%`,
-                  background: "#cc0000",
+                  background: "#990000",
                   borderRadius: 4,
                   transition: "width 0.3s ease",
                 }} />
@@ -856,7 +856,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: "50%",
-                  background: resultadoImport.ok > 0 ? "rgba(34,197,94,0.15)" : "rgba(204,0,0,0.15)",
+                  background: resultadoImport.ok > 0 ? "rgba(34,197,94,0.15)" : "rgba(153,0,0,0.15)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 22,
                 }}>
@@ -880,7 +880,7 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                   <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Importados</div>
                 </div>
                 {resultadoImport.err > 0 && (
-                  <div style={{ flex: 1, padding: "14px 16px", background: "rgba(204,0,0,0.08)", borderRadius: 8, border: "1px solid rgba(204,0,0,0.2)" }}>
+                  <div style={{ flex: 1, padding: "14px 16px", background: "rgba(153,0,0,0.08)", borderRadius: 8, border: "1px solid rgba(153,0,0,0.2)" }}>
                     <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 28, fontWeight: 800, color: "#f87171" }}>{resultadoImport.err}</div>
                     <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>Lotes con error</div>
                   </div>
@@ -895,8 +895,8 @@ Carlos,Ruiz,,carlos@gmail.com,colega,`}
                     {resultadoImport.errores.map((err, i) => (
                       <div key={i} style={{
                         padding: "8px 12px",
-                        background: "rgba(204,0,0,0.1)",
-                        border: "1px solid rgba(204,0,0,0.2)",
+                        background: "rgba(153,0,0,0.1)",
+                        border: "1px solid rgba(153,0,0,0.2)",
                         borderRadius: 6,
                         fontSize: 12,
                         color: "#f87171",

@@ -16,13 +16,13 @@ interface Referido {
 
 const TIPOS = {
   corredor:   { label: 'Corredor', color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
-  cliente:    { label: 'Cliente',  color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-  proveedor:  { label: 'Proveedor', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
+  cliente:    { label: 'Cliente',  color: '#3abab6', bg: 'rgba(34,197,94,0.1)' },
+  proveedor:  { label: 'Proveedor', color: '#d4960c', bg: 'rgba(245,158,11,0.1)' },
 }
 const ESTADOS = {
   pendiente: { label: 'Pendiente', color: 'rgba(255,255,255,0.4)' },
-  activo:    { label: 'Activo',    color: '#22c55e' },
-  inactivo:  { label: 'Inactivo',  color: '#ef4444' },
+  activo:    { label: 'Activo',    color: '#3abab6' },
+  inactivo:  { label: 'Inactivo',  color: '#b80000' },
 }
 
 type TipoReferido = 'corredor' | 'cliente' | 'proveedor'
@@ -98,7 +98,7 @@ export default function ReferidosPage() {
             {items.length} referido{items.length !== 1 ? 's' : ''} · {activos} activo{activos !== 1 ? 's' : ''}
           </p>
         </div>
-        <button onClick={() => setModal(true)} style={{ padding: '10px 20px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+        <button onClick={() => setModal(true)} style={{ padding: '10px 20px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           + Nuevo referido
         </button>
       </div>
@@ -107,8 +107,8 @@ export default function ReferidosPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
           { label: 'Total', value: items.length, color: '#fff' },
-          { label: 'Activos', value: activos, color: '#22c55e' },
-          { label: 'Pendientes', value: pendientes, color: '#f59e0b' },
+          { label: 'Activos', value: activos, color: '#3abab6' },
+          { label: 'Pendientes', value: pendientes, color: '#d4960c' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px 20px' }}>
             <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
@@ -118,8 +118,8 @@ export default function ReferidosPage() {
       </div>
 
       {/* Info recompensa */}
-      <div style={{ background: 'rgba(204,0,0,0.06)', border: '1px solid rgba(204,0,0,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
-        <strong style={{ color: '#cc0000' }}>EL QUE APORTA, GANA</strong> — Cada referido que se suscribe aplica un descuento en tu abono mensual + puntos de reputación. El admin verifica y activa la recompensa.
+      <div style={{ background: 'rgba(153,0,0,0.06)', border: '1px solid rgba(153,0,0,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+        <strong style={{ color: '#990000' }}>EL QUE APORTA, GANA</strong> — Cada referido que se suscribe aplica un descuento en tu abono mensual + puntos de reputación. El admin verifica y activa la recompensa.
       </div>
 
       {/* Lista */}
@@ -151,7 +151,7 @@ export default function ReferidosPage() {
                       {estado.label}
                     </span>
                     {r.recompensa_aplicada && (
-                      <span style={{ fontSize: 10, color: '#22c55e', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>✓ Recompensa aplicada</span>
+                      <span style={{ fontSize: 10, color: '#3abab6', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>✓ Recompensa aplicada</span>
                     )}
                     {r.referido_email && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{r.referido_email}</span>}
                     {r.referido_telefono && (
@@ -205,7 +205,7 @@ export default function ReferidosPage() {
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
-              <button onClick={guardar} disabled={guardando || !form.referido_nombre.trim()} style={{ padding: '10px 24px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.referido_nombre.trim() ? 0.5 : 1 }}>
+              <button onClick={guardar} disabled={guardando || !form.referido_nombre.trim()} style={{ padding: '10px 24px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.referido_nombre.trim() ? 0.5 : 1 }}>
                 {guardando ? 'Guardando...' : 'Registrar'}
               </button>
             </div>

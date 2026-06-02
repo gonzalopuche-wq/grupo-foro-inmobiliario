@@ -31,7 +31,7 @@ export default function SponsorPortalLayout({ children }: { children: React.Reac
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#080808" }}>
-      <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin .7s linear infinite" }} />
+      <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin .7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -74,7 +74,7 @@ export default function SponsorPortalLayout({ children }: { children: React.Reac
                 fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: activo ? 600 : 400,
                 color: activo ? "#fff" : "rgba(255,255,255,.4)",
                 background: activo ? "rgba(200,0,0,.08)" : "transparent",
-                borderLeft: activo ? "2px solid #cc0000" : "2px solid transparent",
+                borderLeft: activo ? "2px solid #990000" : "2px solid transparent",
                 textDecoration: "none", transition: "all .15s",
               }}>
                 <span style={{ fontSize: 15 }}>{item.icon}</span>

@@ -70,14 +70,14 @@ export async function GET(req: NextRequest) {
       // Email HTML
       const html = `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0d0d0d;color:#fff;border-radius:8px;overflow:hidden;">
-          <div style="background:#cc0000;padding:20px 28px;">
+          <div style="background:#990000;padding:20px 28px;">
             <div style="font-size:22px;font-weight:800;letter-spacing:0.04em;">GFI® Resumen Semanal</div>
             <div style="font-size:13px;opacity:0.8;margin-top:4px;">Hola ${p.nombre}, esto pasó esta semana:</div>
           </div>
           <div style="padding:28px;">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px;">
               <div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:16px;text-align:center;">
-                <div style="font-size:32px;font-weight:800;color:#22c55e;">${nuevosLeads ?? 0}</div>
+                <div style="font-size:32px;font-weight:800;color:#3abab6;">${nuevosLeads ?? 0}</div>
                 <div style="font-size:11px;opacity:0.5;margin-top:4px;text-transform:uppercase;letter-spacing:0.1em;">Leads nuevos</div>
               </div>
               <div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:16px;text-align:center;">
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
                 <div style="font-size:11px;opacity:0.5;margin-top:4px;text-transform:uppercase;letter-spacing:0.1em;">Negocios activos</div>
               </div>
               <div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:16px;text-align:center;">
-                <div style="font-size:32px;font-weight:800;color:#f59e0b;">${tareasHoy ?? 0}</div>
+                <div style="font-size:32px;font-weight:800;color:#d4960c;">${tareasHoy ?? 0}</div>
                 <div style="font-size:11px;opacity:0.5;margin-top:4px;text-transform:uppercase;letter-spacing:0.1em;">Tareas pendientes</div>
               </div>
             </div>
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
               </div>
             ` : ""}
             <div style="text-align:center;margin-top:24px;">
-              <a href="${siteUrl}/crm/estadisticas" style="background:#cc0000;color:#fff;padding:12px 28px;border-radius:4px;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;">Ver estadísticas completas →</a>
+              <a href="${siteUrl}/crm/estadisticas" style="background:#990000;color:#fff;padding:12px 28px;border-radius:4px;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;">Ver estadísticas completas →</a>
             </div>
           </div>
           <div style="padding:16px 28px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.3);">GFI® Grupo Foro Inmobiliario · Rosario, Argentina</div>

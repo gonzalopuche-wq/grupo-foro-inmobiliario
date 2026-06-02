@@ -24,8 +24,8 @@ interface EtapaData { etapa: string; count: number }
 
 const MESES_LABEL = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 const ETAPA_COLOR: Record<string,string> = {
-  prospecto:'#6b7280', contactado:'#3b82f6', visita:'#f59e0b',
-  oferta:'#f97316', negociacion:'#8b5cf6', cerrado:'#22c55e', perdido:'#ef4444',
+  prospecto:'#6b7280', contactado:'#3b82f6', visita:'#d4960c',
+  oferta:'#d4960c', negociacion:'#8b5cf6', cerrado:'#3abab6', perdido:'#b80000',
 }
 const PERIODOS: {key:Periodo;label:string}[] = [
   {key:'mes',label:'Este mes'},{key:'trimestre',label:'Trimestre'},{key:'anio',label:'Este año'},
@@ -154,7 +154,7 @@ export default function ReportesPage() {
 <title>Reporte GFI® — ${periodoLabel}</title>
 <style>
   body { font-family: 'Georgia',serif; color: #111; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.6; }
-  h1 { font-size: 22px; font-weight: 700; color: #cc0000; margin: 0 0 4px; }
+  h1 { font-size: 22px; font-weight: 700; color: #990000; margin: 0 0 4px; }
   .sub { color: #666; font-size: 12px; margin-bottom: 28px; }
   .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
   .kpi { background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px 16px; }
@@ -171,7 +171,7 @@ export default function ReportesPage() {
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   th { text-align: left; font-family: sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; padding: 6px 8px; border-bottom: 1px solid #e0e0e0; }
   td { padding: 7px 8px; border-bottom: 1px solid #f5f5f5; }
-  .zona-bar { display: inline-block; height: 8px; background: #cc0000; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+  .zona-bar { display: inline-block; height: 8px; background: #990000; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
   .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e0e0e0; font-size: 10px; color: #aaa; text-align: center; font-family: sans-serif; }
   @media print { @page { margin: 1.5cm; } }
 </style>
@@ -239,11 +239,11 @@ ${comisiones.length > 0 ? `<div class="section">
 
   const KPI_CARDS = kpis ? [
     { label:'Cartera', valor:kpis.propiedades, sub:`${kpis.propiedades_activas} activas`, color:'#3b82f6', icon:'🏠' },
-    { label:'Contactos CRM', valor:kpis.contactos, sub:`+${kpis.contactos_nuevos} nuevos`, color:'#22c55e', icon:'👥' },
-    { label:'Negocios', valor:kpis.negocios, sub:`${kpis.negocios_cerrados} cerrados`, color:'#f59e0b', icon:'🤝' },
-    { label:'Visitas', valor:kpis.visitas, sub:'en el período', color:'#22c55e', icon:'🗓' },
+    { label:'Contactos CRM', valor:kpis.contactos, sub:`+${kpis.contactos_nuevos} nuevos`, color:'#3abab6', icon:'👥' },
+    { label:'Negocios', valor:kpis.negocios, sub:`${kpis.negocios_cerrados} cerrados`, color:'#d4960c', icon:'🤝' },
+    { label:'Visitas', valor:kpis.visitas, sub:'en el período', color:'#3abab6', icon:'🗓' },
     { label:'Interacciones', valor:kpis.interacciones, sub:'en el período', color:'#8b5cf6', icon:'💬' },
-    { label:'Tasaciones IA', valor:kpis.tasaciones, sub:'en el período', color:'#cc0000', icon:'📊' },
+    { label:'Tasaciones IA', valor:kpis.tasaciones, sub:'en el período', color:'#990000', icon:'📊' },
   ] : []
 
   return (
@@ -259,12 +259,12 @@ ${comisiones.length > 0 ? `<div class="section">
         </div>
         <div style={{display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}}>
           {PERIODOS.map(p => (
-            <button key={p.key} onClick={()=>cambiarPeriodo(p.key)} style={{padding:'7px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:periodo===p.key?'rgba(204,0,0,0.15)':'rgba(255,255,255,0.04)',color:periodo===p.key?'#ff6666':'rgba(255,255,255,0.4)',outline:periodo===p.key?'1px solid rgba(204,0,0,0.35)':'none'}}>
+            <button key={p.key} onClick={()=>cambiarPeriodo(p.key)} style={{padding:'7px 14px',borderRadius:20,border:'none',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:periodo===p.key?'rgba(153,0,0,0.15)':'rgba(255,255,255,0.04)',color:periodo===p.key?'#ff6666':'rgba(255,255,255,0.4)',outline:periodo===p.key?'1px solid rgba(153,0,0,0.35)':'none'}}>
               {p.label}
             </button>
           ))}
           {kpis && (
-            <button onClick={exportarReportePDF} style={{padding:'7px 14px',borderRadius:20,border:'1px solid rgba(204,0,0,0.25)',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:'rgba(204,0,0,0.08)',color:'#f87171'}}>
+            <button onClick={exportarReportePDF} style={{padding:'7px 14px',borderRadius:20,border:'1px solid rgba(153,0,0,0.25)',cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,background:'rgba(153,0,0,0.08)',color:'#f87171'}}>
               📄 PDF
             </button>
           )}
@@ -295,8 +295,8 @@ ${comisiones.length > 0 ? `<div class="section">
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:16}}>
             {[
               {label:'Total registrado',valor:fmtMoneda(comTotal),color:'#fff',sub:`${comisiones.length} operaciones`},
-              {label:'Cobrado',valor:fmtMoneda(comCobradas),color:'#22c55e',sub:`${comisiones.filter(c=>c.estado==='cobrada').length} operaciones`},
-              {label:'Pendiente de cobro',valor:fmtMoneda(comPendientes),color:'#f59e0b',sub:`${comisiones.filter(c=>c.estado==='pendiente').length} operaciones`},
+              {label:'Cobrado',valor:fmtMoneda(comCobradas),color:'#3abab6',sub:`${comisiones.filter(c=>c.estado==='cobrada').length} operaciones`},
+              {label:'Pendiente de cobro',valor:fmtMoneda(comPendientes),color:'#d4960c',sub:`${comisiones.filter(c=>c.estado==='pendiente').length} operaciones`},
             ].map(card => (
               <div key={card.label} style={{background:'rgba(0,0,0,0.3)',borderRadius:10,padding:'14px 16px'}}>
                 <div style={{fontSize:11,color:'rgba(255,255,255,0.4)',marginBottom:6}}>{card.label}</div>
@@ -311,10 +311,10 @@ ${comisiones.length > 0 ? `<div class="section">
             <div style={{marginTop:16}}>
               <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
                 <span style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>Ratio de cobro</span>
-                <span style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#22c55e'}}>{Math.round((comCobradas/comTotal)*100)}%</span>
+                <span style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#3abab6'}}>{Math.round((comCobradas/comTotal)*100)}%</span>
               </div>
               <div style={{height:8,background:'rgba(255,255,255,0.06)',borderRadius:4,overflow:'hidden'}}>
-                <div style={{height:'100%',width:`${Math.round((comCobradas/comTotal)*100)}%`,background:'#22c55e',borderRadius:4,transition:'width 0.5s'}}/>
+                <div style={{height:'100%',width:`${Math.round((comCobradas/comTotal)*100)}%`,background:'#3abab6',borderRadius:4,transition:'width 0.5s'}}/>
               </div>
             </div>
           )}
@@ -333,10 +333,10 @@ ${comisiones.length > 0 ? `<div class="section">
                       </div>
                     </div>
                     <div style={{textAlign:'right',flexShrink:0}}>
-                      <div style={{fontFamily:'Montserrat,sans-serif',fontSize:13,fontWeight:700,color:c.estado==='cobrada'?'#22c55e':'#f59e0b'}}>
+                      <div style={{fontFamily:'Montserrat,sans-serif',fontSize:13,fontWeight:700,color:c.estado==='cobrada'?'#3abab6':'#d4960c'}}>
                         {fmtMoneda(c.monto_comision, c.moneda_comision)}
                       </div>
-                      <div style={{fontSize:9,color:c.estado==='cobrada'?'#22c55e':'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{c.estado}</div>
+                      <div style={{fontSize:9,color:c.estado==='cobrada'?'#3abab6':'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>{c.estado}</div>
                     </div>
                   </div>
                 ))}
@@ -456,8 +456,8 @@ ${comisiones.length > 0 ? `<div class="section">
             <div style={{fontFamily:'Montserrat,sans-serif',fontSize:11,fontWeight:700,letterSpacing:'0.12em',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',marginBottom:14}}>Productividad — Tareas CRM</div>
             <div style={{display:'flex',gap:24,alignItems:'center',flexWrap:'wrap'}}>
               {[
-                {label:'Completadas',valor:kpis.tareas_completadas,color:'#22c55e'},
-                {label:'Pendientes',valor:kpis.tareas_total-kpis.tareas_completadas,color:'#f59e0b'},
+                {label:'Completadas',valor:kpis.tareas_completadas,color:'#3abab6'},
+                {label:'Pendientes',valor:kpis.tareas_total-kpis.tareas_completadas,color:'#d4960c'},
                 {label:'Total',valor:kpis.tareas_total,color:'rgba(255,255,255,0.6)'},
               ].map(s=>(
                 <div key={s.label} style={{textAlign:'center'}}>
@@ -468,10 +468,10 @@ ${comisiones.length > 0 ? `<div class="section">
               <div style={{flex:1,minWidth:140}}>
                 <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
                   <span style={{fontSize:11,color:'rgba(255,255,255,0.4)'}}>Completadas</span>
-                  <span style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#22c55e'}}>{Math.round((kpis.tareas_completadas/kpis.tareas_total)*100)}%</span>
+                  <span style={{fontSize:11,fontFamily:'Montserrat,sans-serif',fontWeight:700,color:'#3abab6'}}>{Math.round((kpis.tareas_completadas/kpis.tareas_total)*100)}%</span>
                 </div>
                 <div style={{height:8,background:'rgba(255,255,255,0.06)',borderRadius:4,overflow:'hidden'}}>
-                  <div style={{height:'100%',width:`${Math.round((kpis.tareas_completadas/kpis.tareas_total)*100)}%`,background:'#22c55e',borderRadius:4,transition:'width 0.5s'}}/>
+                  <div style={{height:'100%',width:`${Math.round((kpis.tareas_completadas/kpis.tareas_total)*100)}%`,background:'#3abab6',borderRadius:4,transition:'width 0.5s'}}/>
                 </div>
               </div>
             </div>

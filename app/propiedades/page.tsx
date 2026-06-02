@@ -88,7 +88,7 @@ const fmtPrecio = (p: number | null, mon: string, ocultar: boolean) => {
   return mon === "USD" ? `USD ${fmtNum(p)}` : `$ ${fmtNum(p)}`;
 };
 const OP_COLOR: Record<string, string> = {
-  Venta: "#22c55e", Alquiler: "#60a5fa", "Alquiler temporal": "#f59e0b",
+  Venta: "#3abab6", Alquiler: "#4ab8d8", "Alquiler temporal": "#d4960c",
 };
 
 export default async function PropiedadesPage({ searchParams }: Props) {
@@ -114,13 +114,13 @@ export default async function PropiedadesPage({ searchParams }: Props) {
         .page { max-width: 1100px; margin: 0 auto; padding: 0 16px 80px; }
         .navbar { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); max-width: 1100px; margin: 0 auto; }
         .nav-logo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -0.02em; text-decoration: none; }
-        .nav-logo span { color: #cc0000; }
+        .nav-logo span { color: #990000; }
         .filters { background: #111; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px 20px; margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
         .f-group { display: flex; flex-direction: column; gap: 5px; min-width: 130px; }
         .f-label { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
         .f-select, .f-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-family: 'Inter',sans-serif; font-size: 13px; padding: 8px 10px; outline: none; height: 36px; }
         .f-select option { background: #1a1a1a; }
-        .f-btn { padding: 8px 20px; background: #cc0000; border: none; border-radius: 6px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; height: 36px; white-space: nowrap; }
+        .f-btn { padding: 8px 20px; background: #990000; border: none; border-radius: 6px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; height: 36px; white-space: nowrap; }
         .f-btn-clear { padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; height: 36px; text-decoration: none; display: inline-flex; align-items: center; }
         .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
         .results-count { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.4); }
@@ -137,12 +137,12 @@ export default async function PropiedadesPage({ searchParams }: Props) {
         .card-title { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
         .card-loc { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .card-precio-ant { font-size: 11px; color: rgba(255,255,255,0.3); text-decoration: line-through; font-family: 'Montserrat',sans-serif; margin-bottom: 1px; }
-        .card-precio { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #22c55e; }
+        .card-precio { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #3abab6; }
         .card-specs { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
         .card-spec { font-size: 11px; color: rgba(255,255,255,0.4); }
         .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
         .pag-btn { padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: rgba(255,255,255,0.6); font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; }
-        .pag-btn.active { background: #cc0000; border-color: #cc0000; color: #fff; }
+        .pag-btn.active { background: #990000; border-color: #990000; color: #fff; }
         .pag-btn.disabled { opacity: 0.3; pointer-events: none; }
         .empty { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.3); }
         .empty-ico { font-size: 48px; margin-bottom: 16px; }
@@ -256,7 +256,7 @@ export default async function PropiedadesPage({ searchParams }: Props) {
           <div className="empty">
             <div className="empty-ico">🔍</div>
             <div className="empty-txt">No encontramos propiedades con esos filtros</div>
-            <a href="/propiedades" style={{ display: "inline-block", marginTop: 16, fontSize: 12, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+            <a href="/propiedades" style={{ display: "inline-block", marginTop: 16, fontSize: 12, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
               Ver todas las propiedades
             </a>
           </div>

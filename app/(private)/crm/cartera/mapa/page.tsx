@@ -24,14 +24,14 @@ interface Propiedad {
 }
 
 const ESTADO_COLOR: Record<string, string> = {
-  activa: "#22c55e",
-  reservada: "#f59e0b",
+  activa: "#3abab6",
+  reservada: "#d4960c",
   vendida: "#6b7280",
-  pausada: "#ef4444",
+  pausada: "#b80000",
 };
 
 const OP_COLOR: Record<string, string> = {
-  Venta: "#cc0000",
+  Venta: "#990000",
   Alquiler: "#3b82f6",
   "Alquiler temporal": "#a78bfa",
 };
@@ -147,7 +147,7 @@ export default function MapaCarteraPage() {
 
     for (const p of conCoords) {
       if (!p.latitud || !p.longitud) continue;
-      const color = OP_COLOR[p.operacion] ?? "#cc0000";
+      const color = OP_COLOR[p.operacion] ?? "#990000";
       const marker = L.marker([p.latitud, p.longitud], { icon: makeIcon(color) })
         .addTo(map)
         .bindPopup(`
@@ -181,10 +181,10 @@ export default function MapaCarteraPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap');
         .mc-filtro-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-family: Montserrat,sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
         .mc-filtro-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
-        .mc-filtro-btn.active { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.3); color: #cc0000; }
+        .mc-filtro-btn.active { background: rgba(153,0,0,0.12); border-color: rgba(153,0,0,0.3); color: #990000; }
         .mc-prop-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
         .mc-prop-card:hover { border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); }
-        .mc-prop-card.selected { border-color: rgba(204,0,0,0.4); background: rgba(204,0,0,0.06); }
+        .mc-prop-card.selected { border-color: rgba(153,0,0,0.4); background: rgba(153,0,0,0.06); }
         .leaflet-popup-content-wrapper { border-radius: 8px !important; }
         .leaflet-popup-tip { display: none !important; }
       `}</style>
@@ -216,7 +216,7 @@ export default function MapaCarteraPage() {
         {/* Stats */}
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#cc0000", lineHeight: 1 }}>{conCoords.length}</div>
+            <div style={{ fontSize: 18, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000", lineHeight: 1 }}>{conCoords.length}</div>
             <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em" }}>EN MAPA</div>
           </div>
           {sinCoordenadas > 0 && (
@@ -238,7 +238,7 @@ export default function MapaCarteraPage() {
             <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, padding: "24px 0", textAlign: "center" }}>Sin propiedades</div>
           ) : (
             filtradas.map(p => {
-              const color = OP_COLOR[p.operacion] ?? "#cc0000";
+              const color = OP_COLOR[p.operacion] ?? "#990000";
               const estColor = ESTADO_COLOR[p.estado] ?? "#6b7280";
               const hasCoordenadas = !!(p.latitud && p.longitud);
               return (
@@ -284,17 +284,17 @@ export default function MapaCarteraPage() {
                 <img src={selected.fotos[0]} alt="" style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 6, marginBottom: 8 }} />
               )}
               <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: OP_COLOR[selected.operacion] ?? "#cc0000", background: `${(OP_COLOR[selected.operacion] ?? "#cc0000")}18`, border: `1px solid ${(OP_COLOR[selected.operacion] ?? "#cc0000")}30`, borderRadius: 4, padding: "2px 7px" }}>{selected.operacion}</span>
+                <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: OP_COLOR[selected.operacion] ?? "#990000", background: `${(OP_COLOR[selected.operacion] ?? "#990000")}18`, border: `1px solid ${(OP_COLOR[selected.operacion] ?? "#990000")}30`, borderRadius: 4, padding: "2px 7px" }}>{selected.operacion}</span>
                 <span style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: ESTADO_COLOR[selected.estado] ?? "#6b7280", background: `${(ESTADO_COLOR[selected.estado] ?? "#6b7280")}18`, borderRadius: 4, padding: "2px 7px" }}>{selected.estado}</span>
               </div>
-              <div style={{ fontSize: 16, fontFamily: "Montserrat,sans-serif", fontWeight: 900, color: OP_COLOR[selected.operacion] ?? "#cc0000", marginBottom: 6 }}>{fmtPrecio(selected)}</div>
+              <div style={{ fontSize: 16, fontFamily: "Montserrat,sans-serif", fontWeight: 900, color: OP_COLOR[selected.operacion] ?? "#990000", marginBottom: 6 }}>{fmtPrecio(selected)}</div>
               <div style={{ display: "flex", gap: 12, fontSize: 10, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>
                 {selected.tipo && <span>{selected.tipo}</span>}
                 {selected.dormitorios && <span>{selected.dormitorios} dorm.</span>}
                 {selected.superficie_cubierta && <span>{selected.superficie_cubierta} m²</span>}
               </div>
               {selected.direccion && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>📍 {selected.direccion}</div>}
-              <Link href={`/crm/cartera/ficha/${selected.id}`} style={{ display: "block", textAlign: "center", padding: "7px 0", background: "#cc0000", color: "#fff", borderRadius: 6, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", letterSpacing: "0.06em" }}>
+              <Link href={`/crm/cartera/ficha/${selected.id}`} style={{ display: "block", textAlign: "center", padding: "7px 0", background: "#990000", color: "#fff", borderRadius: 6, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", letterSpacing: "0.06em" }}>
                 VER FICHA COMPLETA →
               </Link>
             </div>
@@ -315,7 +315,7 @@ export default function MapaCarteraPage() {
             <div style={{ position: "absolute", top: 12, right: 12, background: "rgba(17,17,17,0.92)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", zIndex: 1000 }}>
               <div style={{ fontSize: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>REFERENCIAS</div>
               {[
-                { label: "Venta", color: "#cc0000" },
+                { label: "Venta", color: "#990000" },
                 { label: "Alquiler", color: "#3b82f6" },
                 { label: "Alq. temporal", color: "#a78bfa" },
               ].map(r => (

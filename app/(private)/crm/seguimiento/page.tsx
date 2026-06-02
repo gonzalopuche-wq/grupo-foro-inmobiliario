@@ -112,14 +112,14 @@ function accionSugerida(diasSinContacto: number | null, negocio: NegocioResumen 
 }
 
 const TEMP_COLOR = {
-  caliente: "#ef4444",
-  tibio:    "#f59e0b",
-  frio:     "#60a5fa",
+  caliente: "#b80000",
+  tibio:    "#d4960c",
+  frio:     "#4ab8d8",
 };
 const TEMP_BG = {
   caliente: "rgba(239,68,68,0.1)",
   tibio:    "rgba(245,158,11,0.1)",
-  frio:     "rgba(96,165,250,0.1)",
+  frio:     "rgba(74,184,216,0.1)",
 };
 const TEMP_LABEL = {
   caliente: "🔥 Caliente",
@@ -147,9 +147,9 @@ const ETAPA_LABEL: Record<string, string> = {
   cerrado: "Cerrado", perdido: "Perdido",
 };
 const ETAPA_COLOR: Record<string, string> = {
-  escritura: "#10b981", reserva: "#06b6d4", negociacion: "#f97316",
-  oferta_enviada: "#f59e0b", visita_realizada: "#a78bfa", visita_coordinada: "#8b5cf6",
-  contactado: "#3b82f6", prospecto: "#6b7280", cerrado: "#22c55e", perdido: "#ef4444",
+  escritura: "#3abab6", reserva: "#06b6d4", negociacion: "#d4960c",
+  oferta_enviada: "#d4960c", visita_realizada: "#a78bfa", visita_coordinada: "#8b5cf6",
+  contactado: "#3b82f6", prospecto: "#6b7280", cerrado: "#3abab6", perdido: "#b80000",
 };
 
 // ── componente ────────────────────────────────────────────────────────────────
@@ -276,7 +276,7 @@ export default function SeguimientoPage() {
         .seg-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:16px; transition:border-color 0.15s; }
         .seg-card:hover { border-color:rgba(255,255,255,0.13); }
         .seg-input { width:100%; padding:9px 12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:5px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
-        .seg-input:focus { border-color:rgba(204,0,0,0.4); }
+        .seg-input:focus { border-color:rgba(153,0,0,0.4); }
         .seg-btn { padding:7px 13px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
         .seg-chip { padding:5px 12px; border-radius:20px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
         .seg-score-bar { height:5px; border-radius:3px; transition:width 0.4s; }
@@ -289,7 +289,7 @@ export default function SeguimientoPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
-              Seguimiento <span style={{ color: "#cc0000" }}>de Leads</span>
+              Seguimiento <span style={{ color: "#990000" }}>de Leads</span>
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
               Prioridad automática por score · {scorados.length} contactos activos
@@ -305,9 +305,9 @@ export default function SeguimientoPage() {
         {/* ── KPIs temperatura ── */}
         <div className="seg-grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
           {[
-            { n: resumen.calientes,    l: "🔥 Calientes",    c: "#ef4444", bg: "rgba(239,68,68,0.08)",    t: "caliente" },
-            { n: resumen.tibios,       l: "🟡 Tibios",       c: "#f59e0b", bg: "rgba(245,158,11,0.08)",   t: "tibio" },
-            { n: resumen.frios,        l: "❄️ Fríos",        c: "#60a5fa", bg: "rgba(96,165,250,0.08)",   t: "frio" },
+            { n: resumen.calientes,    l: "🔥 Calientes",    c: "#b80000", bg: "rgba(239,68,68,0.08)",    t: "caliente" },
+            { n: resumen.tibios,       l: "🟡 Tibios",       c: "#d4960c", bg: "rgba(245,158,11,0.08)",   t: "tibio" },
+            { n: resumen.frios,        l: "❄️ Fríos",        c: "#4ab8d8", bg: "rgba(74,184,216,0.08)",   t: "frio" },
             { n: resumen.sinContacto,  l: "⚠️ Sin contacto", c: "#6b7280", bg: "rgba(107,114,128,0.08)", t: "" },
           ].map(k => (
             <div key={k.l}
@@ -325,9 +325,9 @@ export default function SeguimientoPage() {
           {(["todos","caliente","tibio","frio"] as const).map(t => (
             <button key={t} className="seg-chip"
               style={{
-                background: filtroTemp === t ? (t === "todos" ? "rgba(204,0,0,0.12)" : TEMP_BG[t as keyof typeof TEMP_BG]) : "rgba(255,255,255,0.04)",
-                color: filtroTemp === t ? (t === "todos" ? "#cc0000" : TEMP_COLOR[t as keyof typeof TEMP_COLOR]) : "rgba(255,255,255,0.4)",
-                border: `1px solid ${filtroTemp === t ? (t === "todos" ? "rgba(204,0,0,0.35)" : TEMP_COLOR[t as keyof typeof TEMP_COLOR] + "50") : "rgba(255,255,255,0.08)"}`,
+                background: filtroTemp === t ? (t === "todos" ? "rgba(153,0,0,0.12)" : TEMP_BG[t as keyof typeof TEMP_BG]) : "rgba(255,255,255,0.04)",
+                color: filtroTemp === t ? (t === "todos" ? "#990000" : TEMP_COLOR[t as keyof typeof TEMP_COLOR]) : "rgba(255,255,255,0.4)",
+                border: `1px solid ${filtroTemp === t ? (t === "todos" ? "rgba(153,0,0,0.35)" : TEMP_COLOR[t as keyof typeof TEMP_COLOR] + "50") : "rgba(255,255,255,0.08)"}`,
               }}
               onClick={() => setFiltroTemp(t)}>
               {t === "todos" ? "Todos" : TEMP_LABEL[t]}
@@ -368,7 +368,7 @@ export default function SeguimientoPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                         <Link href={`/crm/contactos/${c.id}`} style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "#fff", textDecoration: "none" }}
-                          onMouseEnter={e => e.currentTarget.style.color = "#cc0000"}
+                          onMouseEnter={e => e.currentTarget.style.color = "#990000"}
                           onMouseLeave={e => e.currentTarget.style.color = "#fff"}>
                           {c.nombre} {c.apellido}
                         </Link>
@@ -387,14 +387,14 @@ export default function SeguimientoPage() {
                       {/* Barra de score */}
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
                         <div style={{ flex: 1, height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden" }}>
-                          <div className="seg-score-bar" style={{ width: `${s.score}%`, background: s.temperatura === "caliente" ? "#ef4444" : s.temperatura === "tibio" ? "#f59e0b" : "#60a5fa" }} />
+                          <div className="seg-score-bar" style={{ width: `${s.score}%`, background: s.temperatura === "caliente" ? "#b80000" : s.temperatura === "tibio" ? "#d4960c" : "#4ab8d8" }} />
                         </div>
                         <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: TEMP_COLOR[s.temperatura], minWidth: 28 }}>{s.score}</span>
                       </div>
 
                       {/* Metainfo */}
                       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 6 }}>
-                        <span style={{ fontSize: 11, color: s.diasSinContacto !== null && s.diasSinContacto > 14 ? "#f59e0b" : "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
+                        <span style={{ fontSize: 11, color: s.diasSinContacto !== null && s.diasSinContacto > 14 ? "#d4960c" : "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
                           🕐 {fmtDias(s.diasSinContacto)}
                         </span>
                         {c.zona_interes && (
@@ -430,7 +430,7 @@ export default function SeguimientoPage() {
                           <a href={`tel:${c.telefono}`}
                             onClick={() => registrarInteraccion(c.id, "llamada")}
                             title="Llamar"
-                            style={{ width: 32, height: 32, borderRadius: 6, background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, textDecoration: "none", cursor: "pointer" }}>
+                            style={{ width: 32, height: 32, borderRadius: 6, background: "rgba(74,184,216,0.1)", border: "1px solid rgba(74,184,216,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, textDecoration: "none", cursor: "pointer" }}>
                             📞
                           </a>
                         )}
@@ -473,7 +473,7 @@ export default function SeguimientoPage() {
                           <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>Acciones</div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                             <Link href={`/crm/contactos/${c.id}`}
-                              style={{ padding: "8px 12px", background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 5, color: "#cc0000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
+                              style={{ padding: "8px 12px", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 5, color: "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
                               Abrir ficha completa ↗
                             </Link>
                             {s.negocio && (
@@ -483,7 +483,7 @@ export default function SeguimientoPage() {
                               </Link>
                             )}
                             <button className="seg-btn"
-                              style={{ background: "rgba(34,197,94,0.08)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)", width: "100%" }}
+                              style={{ background: "rgba(34,197,94,0.08)", color: "#3abab6", border: "1px solid rgba(34,197,94,0.2)", width: "100%" }}
                               onClick={() => { registrarInteraccion(c.id, "nota"); setVistaDetalle(null); }}>
                               ✓ Registrar contacto hoy
                             </button>

@@ -216,7 +216,7 @@ export default function WhatsAppTemplates() {
         <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
         <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Plantillas WhatsApp</h1>
-        <span style={{ background: "#22c55e", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>MENSAJES</span>
+        <span style={{ background: "#3abab6", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>MENSAJES</span>
       </div>
       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>{TEMPLATES.length} plantillas listas para usar · personalizables por contacto</div>
 
@@ -225,7 +225,7 @@ export default function WhatsAppTemplates() {
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {CATEGORIAS.map(c => (
             <button key={c.id} onClick={() => setCategoria(c.id)}
-              style={{ background: categoria === c.id ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${categoria === c.id ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: categoria === c.id ? "#22c55e" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+              style={{ background: categoria === c.id ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.04)", border: `1px solid ${categoria === c.id ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: categoria === c.id ? "#3abab6" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "5px 10px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
               {c.emoji} {c.label}
             </button>
           ))}
@@ -289,7 +289,7 @@ export default function WhatsAppTemplates() {
                     ))}
                   </div>
                   {tieneVarsVacias && (
-                    <div style={{ fontSize: 10, color: "#f59e0b", marginTop: 6 }}>⚠ Completá las variables antes de enviar</div>
+                    <div style={{ fontSize: 10, color: "#d4960c", marginTop: 6 }}>⚠ Completá las variables antes de enviar</div>
                   )}
                 </div>
               )}
@@ -297,11 +297,11 @@ export default function WhatsAppTemplates() {
               {/* Acciones */}
               <div style={{ display: "flex", gap: 6 }}>
                 <button onClick={() => copiar(t)}
-                  style={{ flex: 1, background: isCopied ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: `1px solid ${isCopied ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: 6, color: isCopied ? "#22c55e" : "rgba(255,255,255,0.6)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
+                  style={{ flex: 1, background: isCopied ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: `1px solid ${isCopied ? "rgba(34,197,94,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: 6, color: isCopied ? "#3abab6" : "rgba(255,255,255,0.6)", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
                   {isCopied ? "✓ Copiado!" : "📋 Copiar"}
                 </button>
                 <button onClick={() => abrirWhatsApp(t)}
-                  style={{ flex: 1, background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 6, color: "#22c55e", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
+                  style={{ flex: 1, background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 6, color: "#3abab6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "7px 0", cursor: "pointer", letterSpacing: "0.05em" }}>
                   WhatsApp ↗
                 </button>
               </div>

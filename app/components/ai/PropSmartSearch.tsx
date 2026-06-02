@@ -40,7 +40,7 @@ function PropCard({ id, titulo, precio, moneda, operacion, tipo, zona, ciudad, d
           {operacion.toUpperCase()}
         </span>
         {destacada && (
-          <span style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", color: "#eab308", padding: "3px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700 }}>
+          <span style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", color: "#d4960c", padding: "3px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700 }}>
             ⭐ DESTACADA
           </span>
         )}

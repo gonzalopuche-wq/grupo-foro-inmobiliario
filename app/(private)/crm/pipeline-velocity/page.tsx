@@ -32,10 +32,10 @@ const ETAPAS = [
   { value: "contactado",          label: "Contactado",          color: "#3b82f6", maxDias: 10, orden: 2 },
   { value: "visita_coordinada",   label: "Visita Coord.",       color: "#8b5cf6", maxDias: 7,  orden: 3 },
   { value: "visita_realizada",    label: "Visita Realizada",    color: "#a78bfa", maxDias: 14, orden: 4 },
-  { value: "oferta_enviada",      label: "Oferta Enviada",      color: "#f59e0b", maxDias: 10, orden: 5 },
-  { value: "negociacion",         label: "Negociación",         color: "#f97316", maxDias: 21, orden: 6 },
-  { value: "reserva",             label: "Reserva",             color: "#eab308", maxDias: 30, orden: 7 },
-  { value: "escritura",           label: "Escritura",           color: "#22c55e", maxDias: 45, orden: 8 },
+  { value: "oferta_enviada",      label: "Oferta Enviada",      color: "#d4960c", maxDias: 10, orden: 5 },
+  { value: "negociacion",         label: "Negociación",         color: "#d4960c", maxDias: 21, orden: 6 },
+  { value: "reserva",             label: "Reserva",             color: "#d4960c", maxDias: 30, orden: 7 },
+  { value: "escritura",           label: "Escritura",           color: "#3abab6", maxDias: 45, orden: 8 },
 ];
 
 const ETAPA_MAP = Object.fromEntries(ETAPAS.map(e => [e.value, e]));
@@ -153,7 +153,7 @@ export default function PipelineVelocity() {
         <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
         <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Pipeline Velocity</h1>
-        <span style={{ background: "#f97316", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
+        <span style={{ background: "#d4960c", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
       </div>
       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>Velocidad y salud de {negocios.length} negocios activos</div>
 
@@ -161,9 +161,9 @@ export default function PipelineVelocity() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 12, marginBottom: 20 }}>
         {[
           { label: "Activos", val: negocios.length, color: "#3b82f6" },
-          { label: "Críticos (>2× límite)", val: criticos.length, color: criticos.length > 0 ? "#ef4444" : "#22c55e" },
-          { label: "En atención", val: atencion.length, color: atencion.length > 0 ? "#f59e0b" : "#22c55e" },
-          { label: "En buen ritmo", val: ok.length, color: "#22c55e" },
+          { label: "Críticos (>2× límite)", val: criticos.length, color: criticos.length > 0 ? "#b80000" : "#3abab6" },
+          { label: "En atención", val: atencion.length, color: atencion.length > 0 ? "#d4960c" : "#3abab6" },
+          { label: "En buen ritmo", val: ok.length, color: "#3abab6" },
           { label: "Valor pipeline", val: totalValor > 0 ? fmtUSD(totalValor) : "—", color: "#a78bfa" },
         ].map((k, i) => (
           <div key={i} style={{ ...cardStyle, textAlign: "center", padding: "14px 12px" }}>
@@ -192,7 +192,7 @@ export default function PipelineVelocity() {
                       <div style={{ height: "100%", width: `${(e.valorPipeline / maxValorEtapa) * 100}%`, background: e.color, opacity: 0.8, borderRadius: 4 }} />
                     </div>
                     {e.estancados > 0 && (
-                      <div style={{ position: "absolute", right: 0, top: -2, width: 12, height: 12, borderRadius: "50%", background: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ position: "absolute", right: 0, top: -2, width: 12, height: 12, borderRadius: "50%", background: "#b80000", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <span style={{ fontSize: 8, color: "#fff", fontWeight: 800 }}>{e.estancados}</span>
                       </div>
                     )}
@@ -201,7 +201,7 @@ export default function PipelineVelocity() {
                     {e.valorPipeline > 0 ? fmtUSD(e.valorPipeline) : "—"}
                   </span>
                   <div style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: 10, color: e.avgDias > e.maxDias ? "#ef4444" : e.avgDias > e.maxDias * 0.7 ? "#f59e0b" : "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 600 }}>
+                    <span style={{ fontSize: 10, color: e.avgDias > e.maxDias ? "#b80000" : e.avgDias > e.maxDias * 0.7 ? "#d4960c" : "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 600 }}>
                       {e.count > 0 ? `~${e.avgDias}d` : "—"}
                     </span>
                     <span style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}> /lím.{e.maxDias}d</span>
@@ -239,7 +239,7 @@ export default function PipelineVelocity() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {filtrados.map(n => {
                   const etapaConf = ETAPA_MAP[n.etapa];
-                  const critColor = n.criticidad === "critico" ? "#ef4444" : n.criticidad === "atencion" ? "#f59e0b" : "#22c55e";
+                  const critColor = n.criticidad === "critico" ? "#b80000" : n.criticidad === "atencion" ? "#d4960c" : "#3abab6";
                   const pctUsado = Math.min(100, (n.diasSinActividad / n.maxDias) * 100);
                   return (
                     <div key={n.id} style={{ background: "#111", borderRadius: 8, padding: "12px 14px", borderLeft: `3px solid ${critColor}` }}>
@@ -249,8 +249,8 @@ export default function PipelineVelocity() {
                             <span style={{ background: (etapaConf?.color ?? "#6b7280") + "22", color: etapaConf?.color ?? "#6b7280", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>
                               {etapaConf?.label ?? n.etapa}
                             </span>
-                            {n.criticidad === "critico" && <span style={{ background: "#ef444420", color: "#ef4444", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 7px", borderRadius: 3 }}>🔴 CRÍTICO</span>}
-                            {n.criticidad === "atencion" && <span style={{ background: "#f59e0b20", color: "#f59e0b", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 7px", borderRadius: 3 }}>⚠ ATENCIÓN</span>}
+                            {n.criticidad === "critico" && <span style={{ background: "#b8000020", color: "#b80000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 7px", borderRadius: 3 }}>🔴 CRÍTICO</span>}
+                            {n.criticidad === "atencion" && <span style={{ background: "#d4960c20", color: "#d4960c", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 7px", borderRadius: 3 }}>⚠ ATENCIÓN</span>}
                           </div>
                           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.titulo}</div>
                           <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>
@@ -283,11 +283,11 @@ export default function PipelineVelocity() {
           {/* Alertas críticas */}
           {criticos.length > 0 && (
             <div style={{ ...cardStyle, borderColor: "rgba(239,68,68,0.25)" }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#ef4444", marginBottom: 12 }}>🔴 Críticos — Acción urgente</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#b80000", marginBottom: 12 }}>🔴 Críticos — Acción urgente</div>
               {criticos.slice(0, 6).map(n => (
                 <div key={n.id} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                   <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, marginBottom: 2 }}>{n.titulo}</div>
-                  <div style={{ fontSize: 10, color: "#ef4444" }}>{diasLabel(n.diasSinActividad)} sin actividad · {ETAPA_MAP[n.etapa]?.label ?? n.etapa}</div>
+                  <div style={{ fontSize: 10, color: "#b80000" }}>{diasLabel(n.diasSinActividad)} sin actividad · {ETAPA_MAP[n.etapa]?.label ?? n.etapa}</div>
                 </div>
               ))}
               {criticos.length > 6 && <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>+ {criticos.length - 6} más</div>}
@@ -325,9 +325,9 @@ export default function PipelineVelocity() {
                     const r = 40, cx = 50, cy = 50;
                     let angle = -90;
                     return [
-                      { pct: pOk, color: "#22c55e", label: "OK" },
-                      { pct: pAten, color: "#f59e0b", label: "Atención" },
-                      { pct: pCrit, color: "#ef4444", label: "Crítico" },
+                      { pct: pOk, color: "#3abab6", label: "OK" },
+                      { pct: pAten, color: "#d4960c", label: "Atención" },
+                      { pct: pCrit, color: "#b80000", label: "Crítico" },
                     ].map((seg, i) => {
                       if (seg.pct === 0) return null;
                       const startAngle = angle;
@@ -347,9 +347,9 @@ export default function PipelineVelocity() {
                   <text x="50" y="53" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#fff" fontFamily="Montserrat,sans-serif">{negocios.length}</text>
                 </svg>
                 {[
-                  { label: "En buen ritmo", n: ok.length, color: "#22c55e" },
-                  { label: "En atención", n: atencion.length, color: "#f59e0b" },
-                  { label: "Críticos", n: criticos.length, color: "#ef4444" },
+                  { label: "En buen ritmo", n: ok.length, color: "#3abab6" },
+                  { label: "En atención", n: atencion.length, color: "#d4960c" },
+                  { label: "Críticos", n: criticos.length, color: "#b80000" },
                 ].map((k, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>

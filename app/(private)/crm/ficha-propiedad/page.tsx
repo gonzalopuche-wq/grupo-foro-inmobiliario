@@ -66,7 +66,7 @@ const AMENITIES_DISPONIBLES = [
 ];
 
 const COLORES_DISPONIBLES = [
-  { label: "Rojo", value: "#cc0000" },
+  { label: "Rojo", value: "#990000" },
   { label: "Azul", value: "#1e40af" },
   { label: "Verde", value: "#15803d" },
   { label: "Negro", value: "#111111" },
@@ -104,7 +104,7 @@ function fichaVacia(base?: Partial<FichaPropiedad>): FichaPropiedad {
     telefono_corredor: "",
     email_corredor: "",
     logo_agencia: "GFI",
-    color_primario: "#cc0000",
+    color_primario: "#990000",
     created_at: now,
     updated_at: now,
     ...base,
@@ -149,7 +149,7 @@ const S = {
   } as React.CSSProperties,
   btnPrimary: {
     padding: "10px 20px",
-    background: "#cc0000",
+    background: "#990000",
     color: "#fff",
     border: "none",
     borderRadius: 7,
@@ -602,7 +602,7 @@ export default function FichaPropiedadPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
         * { box-sizing: border-box; }
         input, textarea, select { transition: border-color 0.15s; }
-        input:focus, textarea:focus, select:focus { border-color: rgba(204,0,0,0.5) !important; outline: none; }
+        input:focus, textarea:focus, select:focus { border-color: rgba(153,0,0,0.5) !important; outline: none; }
         button:active { opacity: 0.82; }
         @keyframes pulse-skeleton {
           0% { background: rgba(255,255,255,0.04); }
@@ -664,7 +664,7 @@ export default function FichaPropiedadPage() {
             style={{
               background: "none",
               border: "none",
-              borderBottom: `2px solid ${tab === t.key ? "#cc0000" : "transparent"}`,
+              borderBottom: `2px solid ${tab === t.key ? "#990000" : "transparent"}`,
               color:
                 tab === t.key
                   ? "#fff"
@@ -684,8 +684,8 @@ export default function FichaPropiedadPage() {
               <span
                 style={{
                   marginLeft: 6,
-                  background: "rgba(204,0,0,0.2)",
-                  color: "#cc0000",
+                  background: "rgba(153,0,0,0.2)",
+                  color: "#990000",
                   borderRadius: 10,
                   fontSize: 9,
                   fontWeight: 700,
@@ -910,10 +910,10 @@ export default function FichaPropiedadPage() {
                       <button
                         onClick={() => eliminarFicha(f.id)}
                         style={{
-                          background: "rgba(204,0,0,0.08)",
-                          border: "1px solid rgba(204,0,0,0.2)",
+                          background: "rgba(153,0,0,0.08)",
+                          border: "1px solid rgba(153,0,0,0.2)",
                           borderRadius: 6,
-                          color: "#cc0000",
+                          color: "#990000",
                           fontSize: 10,
                           padding: "6px 10px",
                           cursor: "pointer",
@@ -1238,12 +1238,12 @@ export default function FichaPropiedadPage() {
                           style={{
                             padding: "7px 14px",
                             borderRadius: 20,
-                            border: `1px solid ${activo ? "#cc0000" : "#333"}`,
+                            border: `1px solid ${activo ? "#990000" : "#333"}`,
                             background: activo
-                              ? "rgba(204,0,0,0.12)"
+                              ? "rgba(153,0,0,0.12)"
                               : "rgba(255,255,255,0.03)",
                             color: activo
-                              ? "#cc0000"
+                              ? "#990000"
                               : "rgba(224,224,224,0.5)",
                             fontFamily: "'Montserrat', sans-serif",
                             fontWeight: 700,
@@ -1324,7 +1324,7 @@ export default function FichaPropiedadPage() {
                             >
                               <span
                                 style={{
-                                  color: "#cc0000",
+                                  color: "#990000",
                                   fontSize: 14,
                                   lineHeight: 1,
                                 }}
@@ -2229,9 +2229,9 @@ export default function FichaPropiedadPage() {
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.borderColor =
-                        "rgba(204,0,0,0.4)";
+                        "rgba(153,0,0,0.4)";
                       (e.currentTarget as HTMLButtonElement).style.background =
-                        "rgba(204,0,0,0.05)";
+                        "rgba(153,0,0,0.05)";
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.borderColor =
@@ -2300,7 +2300,7 @@ export default function FichaPropiedadPage() {
                             fontSize: 11,
                             fontFamily: "'Montserrat', sans-serif",
                             fontWeight: 700,
-                            color: "#cc0000",
+                            color: "#990000",
                           }}
                         >
                           {p.moneda} {p.precio.toLocaleString("es-AR")}

@@ -20,10 +20,10 @@ const ETAPAS = [
   { key: "prospecto",    label: "Prospecto",    color: "#6b7280" },
   { key: "calificado",   label: "Calificado",   color: "#3b82f6" },
   { key: "propuesta",    label: "Propuesta",    color: "#a855f7" },
-  { key: "negociacion",  label: "Negociación",  color: "#f97316" },
-  { key: "reservado",    label: "Reservado",    color: "#eab308" },
-  { key: "en_escritura", label: "En Escritura", color: "#22c55e" },
-  { key: "cerrado",      label: "Cerrado",      color: "#cc0000" },
+  { key: "negociacion",  label: "Negociación",  color: "#d4960c" },
+  { key: "reservado",    label: "Reservado",    color: "#d4960c" },
+  { key: "en_escritura", label: "En Escritura", color: "#3abab6" },
+  { key: "cerrado",      label: "Cerrado",      color: "#990000" },
 ];
 
 const PROB: Record<string, number> = {
@@ -186,8 +186,8 @@ export default function EmbudoPage() {
           {[
             { label: "Pipeline Ponderado", value: `USD ${fmt(pipelineTotal)}`, sub: "valor × probabilidad etapa", color: "#3b82f6" },
             { label: "Honorarios Esperados", value: `USD ${fmt(honorariosPonderados)}`, sub: "ponderado por prob.", color: "#a855f7" },
-            { label: "Cerrado (valor)", value: `USD ${fmt(cerradosValor)}`, sub: `${porEtapa["cerrado"]?.length ?? 0} operaciones`, color: "#22c55e" },
-            { label: "Honorarios Reales", value: `USD ${fmt(cerradosHon)}`, sub: "operaciones cerradas", color: "#cc0000" },
+            { label: "Cerrado (valor)", value: `USD ${fmt(cerradosValor)}`, sub: `${porEtapa["cerrado"]?.length ?? 0} operaciones`, color: "#3abab6" },
+            { label: "Honorarios Reales", value: `USD ${fmt(cerradosHon)}`, sub: "operaciones cerradas", color: "#990000" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "14px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>

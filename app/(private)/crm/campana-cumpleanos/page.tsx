@@ -129,7 +129,7 @@ function Avatar({ nombre, apellido }: { nombre: string; apellido: string }) {
         width: 44,
         height: 44,
         borderRadius: "50%",
-        background: "linear-gradient(135deg, #cc0000, #880000)",
+        background: "linear-gradient(135deg, #990000, #880000)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -146,7 +146,7 @@ function Avatar({ nombre, apellido }: { nombre: string; apellido: string }) {
 }
 
 function DiasBadge({ dias }: { dias: number }) {
-  const color = dias === 0 ? "#cc0000" : dias < 7 ? "#cc0000" : dias < 30 ? "#eab308" : "#4ade80";
+  const color = dias === 0 ? "#990000" : dias < 7 ? "#990000" : dias < 30 ? "#d4960c" : "#4ade80";
   const label = dias === 0 ? "¡HOY!" : dias === 1 ? "mañana" : `${dias}d`;
   return (
     <span
@@ -213,8 +213,8 @@ function CalendarioMes({
   return (
     <div
       style={{
-        background: esActual ? "rgba(204,0,0,0.08)" : "rgba(255,255,255,0.03)",
-        border: `1px solid ${esActual ? "#cc0000" : "rgba(255,255,255,0.08)"}`,
+        background: esActual ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
+        border: `1px solid ${esActual ? "#990000" : "rgba(255,255,255,0.08)"}`,
         borderRadius: 12,
         padding: "12px 10px",
         position: "relative",
@@ -225,7 +225,7 @@ function CalendarioMes({
           fontFamily: "Montserrat, sans-serif",
           fontWeight: 700,
           fontSize: 13,
-          color: esActual ? "#cc0000" : "rgba(255,255,255,0.7)",
+          color: esActual ? "#990000" : "rgba(255,255,255,0.7)",
           marginBottom: 8,
           textAlign: "center",
         }}
@@ -260,7 +260,7 @@ function CalendarioMes({
                 <span
                   style={{
                     fontSize: 10,
-                    color: esHoy ? "#cc0000" : dia === null ? "transparent" : "rgba(255,255,255,0.5)",
+                    color: esHoy ? "#990000" : dia === null ? "transparent" : "rgba(255,255,255,0.5)",
                     fontFamily: "Inter, sans-serif",
                     fontWeight: esHoy ? 700 : 400,
                   }}
@@ -273,10 +273,10 @@ function CalendarioMes({
                       width: 6,
                       height: 6,
                       borderRadius: "50%",
-                      background: "#cc0000",
+                      background: "#990000",
                       display: "inline-block",
                       cursor: "pointer",
-                      boxShadow: "0 0 4px #cc0000",
+                      boxShadow: "0 0 4px #990000",
                     }}
                   />
                 )}
@@ -294,7 +294,7 @@ function CalendarioMes({
             left: "50%",
             transform: "translateX(-50%)",
             background: "#1a1a1a",
-            border: "1px solid rgba(204,0,0,0.5)",
+            border: "1px solid rgba(153,0,0,0.5)",
             borderRadius: 8,
             padding: "6px 10px",
             zIndex: 100,
@@ -531,9 +531,9 @@ export default function CampanaCumpleanosPage() {
       display: "inline-flex",
       alignItems: "center",
       gap: 6,
-      ...(variant === "primary" && { background: "#cc0000", color: "#fff" }),
+      ...(variant === "primary" && { background: "#990000", color: "#fff" }),
       ...(variant === "ghost" && { background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.8)" }),
-      ...(variant === "danger" && { background: "rgba(204,0,0,0.15)", color: "#cc0000", border: "1px solid rgba(204,0,0,0.3)" }),
+      ...(variant === "danger" && { background: "rgba(153,0,0,0.15)", color: "#990000", border: "1px solid rgba(153,0,0,0.3)" }),
       ...(variant === "success" && { background: "rgba(74,222,128,0.12)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.25)" }),
     } as React.CSSProperties),
 
@@ -592,12 +592,12 @@ export default function CampanaCumpleanosPage() {
       {cumpleHoy.length > 0 && (
         <div
           style={{
-            background: "linear-gradient(135deg, rgba(204,0,0,0.18) 0%, rgba(136,0,0,0.10) 100%)",
-            border: "1px solid rgba(204,0,0,0.6)",
+            background: "linear-gradient(135deg, rgba(153,0,0,0.18) 0%, rgba(136,0,0,0.10) 100%)",
+            border: "1px solid rgba(153,0,0,0.6)",
             borderRadius: 16,
             padding: 20,
             marginBottom: 24,
-            boxShadow: "0 0 32px rgba(204,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+            boxShadow: "0 0 32px rgba(153,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
@@ -670,12 +670,12 @@ export default function CampanaCumpleanosPage() {
           {
             label: "Cumpleaños hoy",
             value: cumpleHoy.length,
-            color: cumpleHoy.length > 0 ? "#cc0000" : "rgba(255,255,255,0.7)",
+            color: cumpleHoy.length > 0 ? "#990000" : "rgba(255,255,255,0.7)",
             icon: "🎂",
           },
           { label: "Esta semana", value: cumpleSemana.length, color: "rgba(255,255,255,0.7)", icon: "📅" },
           { label: "Este mes", value: cumpleMes.length, color: "rgba(255,255,255,0.7)", icon: "🗓️" },
-          { label: "Fechas registradas", value: `${pctConFecha}%`, color: pctConFecha < 50 ? "#eab308" : "#4ade80", icon: "📊" },
+          { label: "Fechas registradas", value: `${pctConFecha}%`, color: pctConFecha < 50 ? "#d4960c" : "#4ade80", icon: "📊" },
         ].map((kpi) => (
           <div key={kpi.label} style={s.card}>
             <div style={{ fontSize: 22, marginBottom: 6 }}>{kpi.icon}</div>
@@ -711,7 +711,7 @@ export default function CampanaCumpleanosPage() {
         >
           <span style={{ fontSize: 18 }}>⚠️</span>
           <div>
-            <div style={{ fontWeight: 600, color: "#eab308", fontFamily: "Montserrat, sans-serif", fontSize: 14, marginBottom: 4 }}>
+            <div style={{ fontWeight: 600, color: "#d4960c", fontFamily: "Montserrat, sans-serif", fontSize: 14, marginBottom: 4 }}>
               {100 - pctConFecha}% de tus contactos no tienen fecha de nacimiento
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
@@ -751,7 +751,7 @@ export default function CampanaCumpleanosPage() {
               fontFamily: "Inter, sans-serif",
               fontSize: 13,
               fontWeight: 600,
-              background: tab === t.id ? "#cc0000" : "transparent",
+              background: tab === t.id ? "#990000" : "transparent",
               color: tab === t.id ? "#fff" : "rgba(255,255,255,0.5)",
               transition: "all 0.15s",
             }}
@@ -779,15 +779,15 @@ export default function CampanaCumpleanosPage() {
                   key={f.id}
                   onClick={() => setFiltroProximos(f.id)}
                   style={{
-                    border: `1px solid ${filtroProximos === f.id ? "#cc0000" : "rgba(255,255,255,0.12)"}`,
+                    border: `1px solid ${filtroProximos === f.id ? "#990000" : "rgba(255,255,255,0.12)"}`,
                     borderRadius: 8,
                     padding: "6px 12px",
                     cursor: "pointer",
                     fontFamily: "Inter, sans-serif",
                     fontSize: 12,
                     fontWeight: 600,
-                    background: filtroProximos === f.id ? "rgba(204,0,0,0.15)" : "transparent",
-                    color: filtroProximos === f.id ? "#cc0000" : "rgba(255,255,255,0.55)",
+                    background: filtroProximos === f.id ? "rgba(153,0,0,0.15)" : "transparent",
+                    color: filtroProximos === f.id ? "#990000" : "rgba(255,255,255,0.55)",
                   }}
                 >
                   {f.label}
@@ -830,7 +830,7 @@ export default function CampanaCumpleanosPage() {
                       gap: 14,
                       flexWrap: "wrap",
                       opacity: felicitado ? 0.65 : 1,
-                      borderColor: dias === 0 ? "rgba(204,0,0,0.4)" : "rgba(255,255,255,0.08)",
+                      borderColor: dias === 0 ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.08)",
                     }}
                   >
                     <Avatar nombre={c.nombre} apellido={c.apellido} />
@@ -992,11 +992,11 @@ export default function CampanaCumpleanosPage() {
                   style={s.textarea}
                 />
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 8 }}>
-                  Variables: <code style={{ color: "#cc0000" }}>{"{nombre}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{apellido}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{edad}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{agencia}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{firma}"}</code>
+                  Variables: <code style={{ color: "#990000" }}>{"{nombre}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{apellido}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{edad}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{agencia}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{firma}"}</code>
                 </div>
               </div>
             ) : (
@@ -1078,11 +1078,11 @@ export default function CampanaCumpleanosPage() {
                   />
                 </div>
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
-                  Variables: <code style={{ color: "#cc0000" }}>{"{nombre}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{apellido}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{edad}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{agencia}"}</code>,{" "}
-                  <code style={{ color: "#cc0000" }}>{"{firma}"}</code>
+                  Variables: <code style={{ color: "#990000" }}>{"{nombre}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{apellido}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{edad}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{agencia}"}</code>,{" "}
+                  <code style={{ color: "#990000" }}>{"{firma}"}</code>
                 </div>
               </div>
             ) : (

@@ -129,7 +129,7 @@ const s = StyleSheet.create({
   actionRow:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, borderBottomWidth: 1, borderBottomColor: C.border },
   actionTxt:    { fontFamily: F.medium, fontSize: 14, color: C.text },
   actionArrow:  { fontFamily: F.body, fontSize: 20, color: C.textDim },
-  logoutBtn:    { borderWidth: 1, borderColor: 'rgba(204,0,0,0.4)', borderRadius: 10, padding: 16, alignItems: 'center', marginBottom: 20 },
+  logoutBtn:    { borderWidth: 1, borderColor: 'rgba(153,0,0,0.4)', borderRadius: 10, padding: 16, alignItems: 'center', marginBottom: 20 },
   logoutTxt:    { fontFamily: F.bold, fontSize: 14, color: C.red, letterSpacing: 0.5 },
   version:      { textAlign: 'center', fontFamily: F.body, fontSize: 11, color: C.textDim },
 });

@@ -162,7 +162,7 @@ export default function PropuestaCaptacionPage() {
 
   const sectionTitle: React.CSSProperties = {
     fontFamily: "Montserrat,sans-serif", fontSize: 13,
-    fontWeight: 700, color: "#cc0000",
+    fontWeight: 700, color: "#990000",
     letterSpacing: "0.1em", textTransform: "uppercase",
     marginBottom: 16,
   };
@@ -232,7 +232,7 @@ export default function PropuestaCaptacionPage() {
                 {(["venta", "alquiler"] as const).map(op => (
                   <button key={op} onClick={() => setForm(f => ({ ...f, operacion: op }))} style={{
                     flex: 1, padding: "9px 0", borderRadius: 8,
-                    border: `1px solid ${form.operacion === op ? "#cc0000" : "rgba(255,255,255,0.1)"}`,
+                    border: `1px solid ${form.operacion === op ? "#990000" : "rgba(255,255,255,0.1)"}`,
                     background: form.operacion === op ? "rgba(200,0,0,0.12)" : "transparent",
                     color: form.operacion === op ? "#fff" : "rgba(255,255,255,0.4)",
                     fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: 600,
@@ -290,7 +290,7 @@ export default function PropuestaCaptacionPage() {
             disabled={generando}
             style={{
               width: "100%", padding: "14px 0",
-              background: generando ? "rgba(200,0,0,0.3)" : "#cc0000",
+              background: generando ? "rgba(200,0,0,0.3)" : "#990000",
               color: "#fff", border: "none", borderRadius: 10,
               fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700,
               letterSpacing: "0.05em", cursor: generando ? "not-allowed" : "pointer",
@@ -350,8 +350,8 @@ export default function PropuestaCaptacionPage() {
               <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: "50%",
-                  border: "3px solid rgba(204,0,0,0.3)",
-                  borderTopColor: "#cc0000",
+                  border: "3px solid rgba(153,0,0,0.3)",
+                  borderTopColor: "#990000",
                   animation: "spin 0.8s linear infinite",
                 }} />
                 <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", fontSize: 13, margin: 0 }}>

@@ -100,7 +100,7 @@ export default function SponsorCampanasPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
         .sc-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
         .sc-title { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; color:#fff; }
-        .btn-new { padding:10px 20px; background:#cc0000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+        .btn-new { padding:10px 20px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
         .sc-form { background:rgba(14,14,14,.95); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:24px; margin-bottom:20px; }
         .sc-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
         .sc-field { display:flex; flex-direction:column; gap:6px; }
@@ -113,14 +113,14 @@ export default function SponsorCampanasPage() {
         .sc-card-tipo { font-size:11px; color:rgba(255,255,255,.4); }
         .sc-card-detalle { font-size:13px; color:rgba(255,255,255,.7); margin-top:8px; }
         .sc-card-meta { font-size:11px; color:rgba(255,255,255,.3); margin-top:6px; }
-        .sc-pill-on { padding:3px 10px; border-radius:10px; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); color:#22c55e; font-size:9px; font-weight:700; font-family:'Montserrat',sans-serif; cursor:pointer; }
+        .sc-pill-on { padding:3px 10px; border-radius:10px; background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.2); color:#3abab6; font-size:9px; font-weight:700; font-family:'Montserrat',sans-serif; cursor:pointer; }
         .sc-pill-off { padding:3px 10px; border-radius:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.4); font-size:9px; font-weight:700; font-family:'Montserrat',sans-serif; cursor:pointer; }
         .sc-actions { display:flex; gap:8px; flex-shrink:0; }
         .btn-edit { padding:7px 14px; background:transparent; border:1px solid rgba(255,255,255,.12); border-radius:4px; color:rgba(255,255,255,.5); font-size:11px; font-family:'Montserrat',sans-serif; cursor:pointer; }
-        .btn-save { padding:10px 24px; background:#cc0000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; cursor:pointer; }
+        .btn-save { padding:10px 24px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; cursor:pointer; }
         .btn-cancel { padding:10px 18px; background:transparent; border:1px solid rgba(255,255,255,.14); border-radius:4px; color:rgba(255,255,255,.4); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; cursor:pointer; }
         .toast { position:fixed; bottom:28px; right:28px; padding:12px 20px; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; z-index:999; }
-        .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#22c55e; }
+        .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#3abab6; }
         .toast.err { background:rgba(200,0,0,.15); border:1px solid rgba(200,0,0,.35); color:#ff6666; }
       `}</style>
 
@@ -184,7 +184,7 @@ export default function SponsorCampanasPage() {
           {form.presupuesto_usd && form.costo_por_admin_usd && (
             <div style={{ marginTop: 14, padding: "10px 14px", background: "rgba(200,0,0,.06)", border: "1px solid rgba(200,0,0,.15)", borderRadius: 6, fontSize: 12, color: "rgba(255,255,255,.5)" }}>
               Con ${form.costo_por_admin_usd} por administración y un presupuesto de ${form.presupuesto_usd},
-              podés financiar hasta <strong style={{ color: "#cc0000" }}>{Math.floor(parseFloat(form.presupuesto_usd || "0") / parseFloat(form.costo_por_admin_usd || "1")).toLocaleString("es-AR")}</strong> administraciones en total.
+              podés financiar hasta <strong style={{ color: "#990000" }}>{Math.floor(parseFloat(form.presupuesto_usd || "0") / parseFloat(form.costo_por_admin_usd || "1")).toLocaleString("es-AR")}</strong> administraciones en total.
             </div>
           )}
 
@@ -210,7 +210,7 @@ export default function SponsorCampanasPage() {
               <div className="sc-card-detalle">{c.detalle_beneficio}</div>
               <div className="sc-card-meta">
                 Presupuesto: <strong style={{ color: "#fff" }}>${c.presupuesto_usd}</strong>
-                {" · "}Costo/admin: <strong style={{ color: "#cc0000" }}>${c.costo_por_admin_usd}</strong>
+                {" · "}Costo/admin: <strong style={{ color: "#990000" }}>${c.costo_por_admin_usd}</strong>
                 {c.vigente_hasta && ` · Hasta ${new Date(c.vigente_hasta + "T12:00:00").toLocaleDateString("es-AR")}`}
               </div>
             </div>

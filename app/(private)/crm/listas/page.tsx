@@ -58,13 +58,13 @@ export default function ListasPage() {
     header: { display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24, maxWidth:900 },
     titulo: { margin:0, fontSize:18, fontWeight:800, fontFamily:'Montserrat,sans-serif', color:'#fff' },
     subtitulo: { margin:'4px 0 0', fontSize:12, color:'rgba(255,255,255,0.35)' },
-    btnNuevo: { display:'flex', alignItems:'center', gap:8, background:'#cc0000', border:'none', color:'#fff', padding:'9px 16px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none' },
+    btnNuevo: { display:'flex', alignItems:'center', gap:8, background:'#990000', border:'none', color:'#fff', padding:'9px 16px', borderRadius:8, fontSize:12, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none' },
     card: { background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10, padding:'16px 20px', marginBottom:12, maxWidth:900, display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16 },
     nombre: { margin:0, fontSize:15, fontWeight:700, fontFamily:'Montserrat,sans-serif', color:'#fff' },
     desc: { margin:'4px 0 0', fontSize:12, color:'rgba(255,255,255,0.35)' },
     meta: { display:'flex', flexWrap:'wrap' as const, gap:12, marginTop:8, fontSize:11, color:'rgba(255,255,255,0.3)' },
     linkWrap: { display:'flex', alignItems:'center', gap:8, background:'rgba(0,0,0,0.3)', borderRadius:6, padding:'6px 10px', marginTop:10 },
-    linkText: { color:'#cc0000', fontSize:11, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const },
+    linkText: { color:'#990000', fontSize:11, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const },
     acciones: { display:'flex', flexDirection:'column' as const, gap:6, flexShrink:0 },
     btnVer: { background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', color:'#fff', padding:'7px 14px', borderRadius:6, fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none', textAlign:'center' as const },
     btnDel: { background:'none', border:'none', color:'rgba(200,0,0,0.6)', fontSize:11, cursor:'pointer', textAlign:'center' as const },
@@ -107,7 +107,7 @@ export default function ListasPage() {
                 <div style={s.meta}>
                   {lista.contacto && <span>👤 {lista.contacto.nombre} {lista.contacto.apellido}</span>}
                   <span>🏠 {cantPropiedades} propiedad{cantPropiedades !== 1 ? 'es' : ''}</span>
-                  {lista.notificar_cliente && lista.email_cliente && <span style={{color:'#22c55e'}}>🔔 Alertas activas</span>}
+                  {lista.notificar_cliente && lista.email_cliente && <span style={{color:'#3abab6'}}>🔔 Alertas activas</span>}
                   <span>{new Date(lista.created_at).toLocaleDateString('es-AR')}</span>
                 </div>
                 <div style={s.linkWrap}>

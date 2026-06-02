@@ -65,11 +65,11 @@ type Fuente = "cocir" | "gfi" | "ambos";
 const ESTADOS_ALERTA = ["suspendido", "suspension", "baja", "dado de baja", "inhabilitado", "inactivo"];
 
 const estadoColor = (estado: string | null) => {
-  if (!estado) return "#22c55e";
+  if (!estado) return "#3abab6";
   const e = estado.toLowerCase();
   if (ESTADOS_ALERTA.some(s => e.includes(s))) return "#ff4444";
-  if (e.includes("habilitado") || e.includes("activo") || e.includes("vigente")) return "#22c55e";
-  return "#eab308";
+  if (e.includes("habilitado") || e.includes("activo") || e.includes("vigente")) return "#3abab6";
+  return "#d4960c";
 };
 
 // Carga todos los registros vía API server-side (bypasea RLS con service role)
@@ -270,7 +270,7 @@ export default function PadronGFIPage() {
         .pad-fuente-btn.activo { border-color: var(--gfi-red); color: var(--gfi-text-primary); background: var(--gfi-red-soft); box-shadow: 0 0 0 1px var(--gfi-red-border); }
         /* Stats bar — reusing gfi-card layout */
         .pad-statsbar { display: flex; align-items: center; gap: 20px; padding: 14px 20px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); flex-wrap: wrap; position: relative; overflow: hidden; }
-        .pad-statsbar::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204,0,0,0.05) 60%, transparent 100%); }
+        .pad-statsbar::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(153,0,0,0.05) 60%, transparent 100%); }
         .pad-stat { display: flex; flex-direction: column; gap: 2px; }
         .pad-stat-val { font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--gfi-text-primary); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
         .pad-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-muted); font-family: var(--font-display); margin-top: 2px; }
@@ -291,8 +291,8 @@ export default function PadronGFIPage() {
         .pad-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.12s; }
         .pad-tabla tbody tr:last-child { border-bottom: none; }
         .pad-tabla tbody tr:nth-child(even) { background: rgba(255,255,255,0.012); }
-        .pad-tabla tbody tr:hover { background: rgba(204,0,0,0.025); }
-        .pad-tabla tbody tr.clickable:hover { background: rgba(204,0,0,0.05); cursor: pointer; }
+        .pad-tabla tbody tr:hover { background: rgba(153,0,0,0.025); }
+        .pad-tabla tbody tr.clickable:hover { background: rgba(153,0,0,0.05); cursor: pointer; }
         .pad-tabla td { padding: 12px 14px; font-size: 12px; color: var(--gfi-text-secondary); vertical-align: middle; }
         .pad-nombre { font-weight: 600; color: var(--gfi-text-primary); font-size: 13px; font-family: var(--font-body); }
         .pad-mat { font-size: 10px; color: var(--gfi-text-muted); margin-top: 2px; font-family: var(--font-mono); font-weight: 500; }
@@ -348,7 +348,7 @@ export default function PadronGFIPage() {
               className="pad-fuente-btn"
               onClick={sincronizarTelefonos}
               disabled={syncPhonesState === "loading"}
-              style={{ borderColor: syncPhonesState === "done" ? "rgba(34,197,94,0.5)" : "rgba(99,102,241,0.4)", color: syncPhonesState === "done" ? "#22c55e" : "#818cf8" }}
+              style={{ borderColor: syncPhonesState === "done" ? "rgba(34,197,94,0.5)" : "rgba(99,102,241,0.4)", color: syncPhonesState === "done" ? "#3abab6" : "#818cf8" }}
             >
               {syncPhonesState === "loading" ? "⏳ Sincronizando…" : syncPhonesState === "done" ? "✓ Sincronizado" : "🔄 Sync teléfonos COCIR"}
             </button>
@@ -356,7 +356,7 @@ export default function PadronGFIPage() {
         </div>
         {syncPhonesState === "done" && syncPhonesResult && (
           <div style={{ padding: "10px 16px", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Inter,sans-serif" }}>
-            <strong style={{ color: "#22c55e" }}>{syncPhonesResult.actualizados}</strong> perfiles actualizados ·{" "}
+            <strong style={{ color: "#3abab6" }}>{syncPhonesResult.actualizados}</strong> perfiles actualizados ·{" "}
             <strong style={{ color: "rgba(255,255,255,0.4)" }}>{syncPhonesResult.omitidos}</strong> sin cambios ·{" "}
             <strong style={{ color: syncPhonesResult.errores > 0 ? "#f87171" : "rgba(255,255,255,0.4)" }}>{syncPhonesResult.errores}</strong> errores
             {" · "}Total: {syncPhonesResult.total_perfiles} perfiles con matrícula
@@ -377,7 +377,7 @@ export default function PadronGFIPage() {
           {fuente === "cocir" && !loading && (
             <>
               <div className="pad-stat">
-                <div className="pad-stat-val" style={{color:"#22c55e"}}>
+                <div className="pad-stat-val" style={{color:"#3abab6"}}>
                   {cocirData.filter(c => {
                     if (!c.estado) return true;
                     return !ESTADOS_ALERTA.some(s => c.estado!.toLowerCase().includes(s));
@@ -391,17 +391,17 @@ export default function PadronGFIPage() {
           {fuente === "ambos" && !loading && (
             <>
               <div className="pad-stat">
-                <div className="pad-stat-val" style={{color:"#22c55e"}}>{registros.filter(r => r.enCOCIR && r.enGFI).length}</div>
+                <div className="pad-stat-val" style={{color:"#3abab6"}}>{registros.filter(r => r.enCOCIR && r.enGFI).length}</div>
                 <div className="pad-stat-label">En ambos</div>
               </div>
               <div className="pad-stat-sep" />
               <div className="pad-stat">
-                <div className="pad-stat-val" style={{color:"#60a5fa"}}>{registros.filter(r => r.enCOCIR && !r.enGFI).length.toLocaleString("es-AR")}</div>
+                <div className="pad-stat-val" style={{color:"#4ab8d8"}}>{registros.filter(r => r.enCOCIR && !r.enGFI).length.toLocaleString("es-AR")}</div>
                 <div className="pad-stat-label">Solo COCIR</div>
               </div>
               <div className="pad-stat-sep" />
               <div className="pad-stat">
-                <div className="pad-stat-val" style={{color:"#eab308"}}>{registros.filter(r => !r.enCOCIR && r.enGFI).length}</div>
+                <div className="pad-stat-val" style={{color:"#d4960c"}}>{registros.filter(r => !r.enCOCIR && r.enGFI).length}</div>
                 <div className="pad-stat-label">Solo GFI</div>
               </div>
               <div className="pad-stat-sep" />
@@ -446,7 +446,7 @@ export default function PadronGFIPage() {
 
         {/* Error de carga */}
         {errorCarga && (
-          <div style={{ padding: '14px 18px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, fontSize: 13, color: '#ef4444', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+          <div style={{ padding: '14px 18px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, fontSize: 13, color: '#b80000', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <span style={{ flexShrink: 0 }}>⚠️</span>
             <div>
               <div style={{ fontWeight: 700, marginBottom: 4 }}>Error cargando el padrón</div>
@@ -544,9 +544,9 @@ export default function PadronGFIPage() {
                       </td>
                       {fuente === "ambos" && (
                         <td>
-                          {r.enCOCIR && r.enGFI && <span className="pad-badge" style={{background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.25)",color:"#22c55e"}}>Ambos</span>}
-                          {r.enCOCIR && !r.enGFI && <span className="pad-badge" style={{background:"rgba(96,165,250,0.1)",border:"1px solid rgba(96,165,250,0.25)",color:"#60a5fa"}}>COCIR</span>}
-                          {!r.enCOCIR && r.enGFI && <span className="pad-badge" style={{background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.25)",color:"#eab308"}}>GFI</span>}
+                          {r.enCOCIR && r.enGFI && <span className="pad-badge" style={{background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.25)",color:"#3abab6"}}>Ambos</span>}
+                          {r.enCOCIR && !r.enGFI && <span className="pad-badge" style={{background:"rgba(74,184,216,0.1)",border:"1px solid rgba(74,184,216,0.25)",color:"#4ab8d8"}}>COCIR</span>}
+                          {!r.enCOCIR && r.enGFI && <span className="pad-badge" style={{background:"rgba(234,179,8,0.1)",border:"1px solid rgba(234,179,8,0.25)",color:"#d4960c"}}>GFI</span>}
                         </td>
                       )}
                       <td>

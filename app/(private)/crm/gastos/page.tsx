@@ -19,10 +19,10 @@ interface Gasto {
 const CATEGORIAS = [
   { label: "Marketing y Publicidad", color: "#3b82f6" },
   { label: "Software y Suscripciones", color: "#a855f7" },
-  { label: "Alquiler Oficina", color: "#f97316" },
-  { label: "Sueldos y Honorarios", color: "#cc0000" },
-  { label: "Servicios (luz, internet)", color: "#eab308" },
-  { label: "Movilidad y Traslados", color: "#22c55e" },
+  { label: "Alquiler Oficina", color: "#d4960c" },
+  { label: "Sueldos y Honorarios", color: "#990000" },
+  { label: "Servicios (luz, internet)", color: "#d4960c" },
+  { label: "Movilidad y Traslados", color: "#3abab6" },
   { label: "Materiales y Papelería", color: "#6b7280" },
   { label: "Seguros", color: "#06b6d4" },
   { label: "Impuestos y Tasas", color: "#ec4899" },
@@ -180,7 +180,7 @@ export default function GastosPage() {
           <div style={{ display: "flex", gap: 10 }}>
             <Link href="/crm" style={{ color: "#9ca3af", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
             <button onClick={exportarPDF} style={{ background: "#1f2937", color: "#e5e5e5", border: "1px solid #374151", borderRadius: 6, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>📄 PDF</button>
-            <button onClick={abrirNuevo} style={{ background: "#cc000033", color: "#cc0000", border: "1px solid #cc000066", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>+ Nuevo Gasto</button>
+            <button onClick={abrirNuevo} style={{ background: "#99000033", color: "#990000", border: "1px solid #99000066", borderRadius: 8, padding: "7px 16px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>+ Nuevo Gasto</button>
           </div>
         </div>
 
@@ -219,12 +219,12 @@ export default function GastosPage() {
         {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12, marginBottom: 24 }}>
           {[
-            { label: `Gastos ${mesLabel}`, val: `$ ${fmt(stats.totalARS)}`, color: "#cc0000" },
-            { label: "Pagado", val: `$ ${fmt(stats.pagadoARS)}`, color: "#22c55e" },
-            { label: "Pendiente", val: `$ ${fmt(stats.pendienteARS)}`, color: "#f97316" },
+            { label: `Gastos ${mesLabel}`, val: `$ ${fmt(stats.totalARS)}`, color: "#990000" },
+            { label: "Pagado", val: `$ ${fmt(stats.pagadoARS)}`, color: "#3abab6" },
+            { label: "Pendiente", val: `$ ${fmt(stats.pendienteARS)}`, color: "#d4960c" },
             { label: "Gastos USD", val: `USD ${fmt(stats.totalARS / tc)}`, color: "#3b82f6" },
             ...(ingresosMes > 0 ? [
-              { label: "Margen Operativo", val: `${stats.margen.toFixed(1)}%`, color: stats.margen >= 30 ? "#22c55e" : stats.margen >= 0 ? "#f97316" : "#cc0000" },
+              { label: "Margen Operativo", val: `${stats.margen.toFixed(1)}%`, color: stats.margen >= 30 ? "#3abab6" : stats.margen >= 0 ? "#d4960c" : "#990000" },
               { label: "Ratio Gastos", val: `${(100 - stats.margen).toFixed(1)}%`, color: "#9ca3af" },
             ] : []),
           ].map(k => (
@@ -240,12 +240,12 @@ export default function GastosPage() {
           <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: 16, marginBottom: 20 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#6b7280", marginBottom: 6 }}>
               <span>Gastos sobre ingresos</span>
-              <span style={{ color: stats.margen >= 0 ? "#22c55e" : "#cc0000" }}>
+              <span style={{ color: stats.margen >= 0 ? "#3abab6" : "#990000" }}>
                 ARS {fmt(ingresosMes - stats.totalARS)} libre
               </span>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, height: 14, overflow: "hidden" }}>
-              <div style={{ width: `${Math.min(100, (stats.totalARS / ingresosMes) * 100)}%`, height: "100%", background: stats.totalARS > ingresosMes ? "#cc0000" : "#3b82f6", transition: "width 0.4s" }} />
+              <div style={{ width: `${Math.min(100, (stats.totalARS / ingresosMes) * 100)}%`, height: "100%", background: stats.totalARS > ingresosMes ? "#990000" : "#3b82f6", transition: "width 0.4s" }} />
             </div>
             <div style={{ fontSize: 11, color: "#4b5563", marginTop: 4 }}>
               {((stats.totalARS / ingresosMes) * 100).toFixed(1)}% de los ingresos en gastos
@@ -282,7 +282,7 @@ export default function GastosPage() {
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#e5e5e5" }}>{g.descripcion}</div>
                   <div style={{ fontSize: 11, color: "#6b7280" }}>
                     <span style={{ color: colCat(g.categoria) }}>{g.categoria}</span> · {g.fecha}
-                    {g.recurrente && <span style={{ color: "#f97316", marginLeft: 6 }}>↻ Recurrente</span>}
+                    {g.recurrente && <span style={{ color: "#d4960c", marginLeft: 6 }}>↻ Recurrente</span>}
                   </div>
                 </div>
                 <div style={{ textAlign: "right", minWidth: 100 }}>
@@ -290,7 +290,7 @@ export default function GastosPage() {
                   {g.moneda === "USD" && <div style={{ fontSize: 11, color: "#6b7280" }}>$ {fmt(g.monto * tc)}</div>}
                 </div>
                 <button onClick={() => togglePagado(g.id)}
-                  style={{ background: g.pagado ? "#22c55e22" : "#f9731622", color: g.pagado ? "#22c55e" : "#f97316", border: `1px solid ${g.pagado ? "#22c55e44" : "#f9731644"}`, borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  style={{ background: g.pagado ? "#3abab622" : "#d4960c22", color: g.pagado ? "#3abab6" : "#d4960c", border: `1px solid ${g.pagado ? "#3abab644" : "#d4960c44"}`, borderRadius: 6, padding: "4px 10px", fontSize: 11, cursor: "pointer", whiteSpace: "nowrap" }}>
                   {g.pagado ? "✓ Pagado" : "⏳ Pagar"}
                 </button>
                 <button onClick={() => abrirEditar(g)} style={{ background: "transparent", color: "#6b7280", border: "none", cursor: "pointer", fontSize: 14 }}>✏️</button>
@@ -333,7 +333,7 @@ export default function GastosPage() {
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
                 <button onClick={() => setFormOpen(false)} style={{ background: "#1a1a1a", color: "#9ca3af", border: "1px solid #333", borderRadius: 8, padding: "8px 18px", fontSize: 13, cursor: "pointer" }}>Cancelar</button>
-                <button onClick={guardarDraft} style={{ background: "#cc000033", color: "#cc0000", border: "1px solid #cc000066", borderRadius: 8, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>Guardar</button>
+                <button onClick={guardarDraft} style={{ background: "#99000033", color: "#990000", border: "1px solid #99000066", borderRadius: 8, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>Guardar</button>
               </div>
             </div>
           </div>

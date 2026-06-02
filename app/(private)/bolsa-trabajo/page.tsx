@@ -155,9 +155,9 @@ export default function BolsaTrabajoPage() {
         .bt-card { transition: border-color 0.15s, background 0.15s; }
         .bt-card:hover { border-color: rgba(255,255,255,0.15) !important; background: rgba(255,255,255,0.04) !important; }
         .bt-card:hover .bt-title { color: #fff !important; }
-        .bt-input:focus { border-color: rgba(204,0,0,0.5) !important; }
+        .bt-input:focus { border-color: rgba(153,0,0,0.5) !important; }
         .bt-btn-ghost:hover { color: rgba(255,255,255,0.8) !important; background: rgba(255,255,255,0.05) !important; }
-        .bt-link-email:hover { color: #60a5fa !important; }
+        .bt-link-email:hover { color: #4ab8d8 !important; }
         .bt-link-wa:hover { color: #4ade80 !important; }
         .bt-delete:hover { color: #f87171 !important; }
       `}</style>
@@ -174,7 +174,7 @@ export default function BolsaTrabajoPage() {
         </div>
         <button
           onClick={() => { setForm(EMPTY); setShowForm(true); setDetalle(null); }}
-          style={{ background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}
+          style={{ background: "#990000", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}
         >
           + Publicar
         </button>
@@ -188,7 +188,7 @@ export default function BolsaTrabajoPage() {
           { label: "Búsquedas", val: ofertas.filter(o => o.tipo === "busqueda").length },
         ].map(s => (
           <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "16px", textAlign: "center" }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 26, fontWeight: 800, color: "#cc0000" }}>{s.val}</div>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 26, fontWeight: 800, color: "#990000" }}>{s.val}</div>
             <div style={{ fontFamily: "Inter,sans-serif", fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>{s.label}</div>
           </div>
         ))}
@@ -210,8 +210,8 @@ export default function BolsaTrabajoPage() {
                 border: "1px solid",
                 cursor: "pointer",
                 transition: "all 0.15s",
-                background: tab === t.key ? "#cc0000" : "rgba(255,255,255,0.04)",
-                borderColor: tab === t.key ? "#cc0000" : "rgba(255,255,255,0.1)",
+                background: tab === t.key ? "#990000" : "rgba(255,255,255,0.04)",
+                borderColor: tab === t.key ? "#990000" : "rgba(255,255,255,0.1)",
                 color: tab === t.key ? "#fff" : "rgba(255,255,255,0.5)",
               }}
             >
@@ -242,7 +242,7 @@ export default function BolsaTrabajoPage() {
           </p>
           <button
             onClick={() => { setForm(EMPTY); setShowForm(true); }}
-            style={{ marginTop: 12, background: "none", border: "none", color: "#cc0000", fontFamily: "Inter,sans-serif", fontSize: 13, cursor: "pointer", textDecoration: "underline" }}
+            style={{ marginTop: 12, background: "none", border: "none", color: "#990000", fontFamily: "Inter,sans-serif", fontSize: 13, cursor: "pointer", textDecoration: "underline" }}
           >
             Ser el primero en publicar
           </button>
@@ -262,7 +262,7 @@ export default function BolsaTrabajoPage() {
                     <span style={{
                       fontSize: 11, padding: "3px 9px", borderRadius: 20, fontWeight: 600, fontFamily: "Montserrat,sans-serif",
                       background: o.tipo === "oferta" ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)",
-                      color: o.tipo === "oferta" ? "#60a5fa" : "#4ade80",
+                      color: o.tipo === "oferta" ? "#4ab8d8" : "#4ade80",
                     }}>
                       {o.tipo === "oferta" ? "Oferta" : "Búsqueda"}
                     </span>
@@ -271,7 +271,7 @@ export default function BolsaTrabajoPage() {
                         {CONTRATO_LABEL[o.tipo_contrato]}
                       </span>
                     )}
-                    {o.destacado && <span style={{ fontSize: 11, color: "#facc15", fontFamily: "Inter,sans-serif" }}>⭐ Destacado</span>}
+                    {o.destacado && <span style={{ fontSize: 11, color: "#d4960c", fontFamily: "Inter,sans-serif" }}>⭐ Destacado</span>}
                   </div>
                   <h3 className="bt-title" style={{ fontFamily: "Inter,sans-serif", fontWeight: 600, fontSize: 15, color: "rgba(255,255,255,0.9)", margin: "0 0 6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {o.titulo}
@@ -434,7 +434,7 @@ export default function BolsaTrabajoPage() {
               <button
                 onClick={guardar}
                 disabled={guardando}
-                style={{ padding: "9px 22px", background: guardando ? "rgba(204,0,0,0.5)" : "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: guardando ? "not-allowed" : "pointer" }}
+                style={{ padding: "9px 22px", background: guardando ? "rgba(153,0,0,0.5)" : "#990000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: guardando ? "not-allowed" : "pointer" }}
               >
                 {guardando ? "Guardando..." : form.id ? "Actualizar" : "Publicar"}
               </button>
@@ -451,7 +451,7 @@ export default function BolsaTrabajoPage() {
               <span style={{
                 fontSize: 11, padding: "4px 12px", borderRadius: 20, fontWeight: 700, fontFamily: "Montserrat,sans-serif",
                 background: detalle.tipo === "oferta" ? "rgba(59,130,246,0.15)" : "rgba(34,197,94,0.15)",
-                color: detalle.tipo === "oferta" ? "#60a5fa" : "#4ade80",
+                color: detalle.tipo === "oferta" ? "#4ab8d8" : "#4ade80",
               }}>
                 {detalle.tipo === "oferta" ? "Oferta de empleo" : "Búsqueda laboral"}
               </span>
@@ -506,7 +506,7 @@ export default function BolsaTrabajoPage() {
                   <a
                     href={`mailto:${detalle.contacto_email}`}
                     className="bt-link-email"
-                    style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#60a5fa", textDecoration: "none", transition: "color 0.15s" }}
+                    style={{ fontFamily: "Inter,sans-serif", fontSize: 13, color: "#4ab8d8", textDecoration: "none", transition: "color 0.15s" }}
                   >
                     ✉ {detalle.contacto_email}
                   </a>

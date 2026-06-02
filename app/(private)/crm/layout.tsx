@@ -242,7 +242,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         .crm2-sb-logo {
           font-family: 'Montserrat', sans-serif;
           font-size: 15px; font-weight: 800;
-          color: #cc0000; letter-spacing: 0.06em;
+          color: #990000; letter-spacing: 0.06em;
         }
         .crm2-sb-sub {
           display: block;
@@ -276,9 +276,9 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           border-left-color: rgba(255,255,255,0.15);
         }
         .crm2-nav-item.act {
-          background: rgba(204,0,0,0.12);
+          background: rgba(153,0,0,0.12);
           color: #fff;
-          border-left-color: #cc0000;
+          border-left-color: #990000;
           font-weight: 600;
         }
         .crm2-nav-ico { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
@@ -310,8 +310,8 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         }
         .crm2-nav-child.act {
           color: #fff; font-weight: 500;
-          border-left-color: rgba(204,0,0,0.6);
-          background: rgba(204,0,0,0.07);
+          border-left-color: rgba(153,0,0,0.6);
+          background: rgba(153,0,0,0.07);
         }
 
         /* ── Header mobile ── */
@@ -351,7 +351,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
         .crm2-header-title {
           font-family: 'Montserrat', sans-serif;
           font-size: 14px; font-weight: 800;
-          color: #cc0000; flex-shrink: 0;
+          color: #990000; flex-shrink: 0;
         }
 
         /* ── Overlay drawer mobile ── */

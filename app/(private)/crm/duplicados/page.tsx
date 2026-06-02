@@ -156,7 +156,7 @@ export default function DuplicadosPage() {
     }
   };
 
-  const scoreColor = (score: number) => score >= 70 ? "#cc0000" : score >= 50 ? "#f97316" : "#eab308";
+  const scoreColor = (score: number) => score >= 70 ? "#990000" : score >= 50 ? "#d4960c" : "#d4960c";
   const scoreLabel = (score: number) => score >= 70 ? "Alta" : score >= 50 ? "Media" : "Baja";
 
   return (
@@ -175,8 +175,8 @@ export default function DuplicadosPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
           {[
             { label: "Total contactos", value: contactos.length, color: "#e5e5e5" },
-            { label: "Posibles duplicados", value: pares.filter(p => !descartados.has(`${p.a.id}_${p.b.id}`)).length, color: "#cc0000" },
-            { label: "Alta confianza", value: paresVisibles.filter(p => p.score >= 50).length, color: "#f97316" },
+            { label: "Posibles duplicados", value: pares.filter(p => !descartados.has(`${p.a.id}_${p.b.id}`)).length, color: "#990000" },
+            { label: "Alta confianza", value: paresVisibles.filter(p => p.score >= 50).length, color: "#d4960c" },
             { label: "Descartados", value: descartados.size, color: "#6b7280" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
@@ -197,7 +197,7 @@ export default function DuplicadosPage() {
           ))}
           {descartados.size > 0 && (
             <button onClick={limpiarDescartados}
-              style={{ marginLeft: "auto", background: "transparent", border: "1px solid #cc000044", borderRadius: 6, color: "#cc0000", padding: "5px 12px", fontSize: 11, cursor: "pointer" }}>
+              style={{ marginLeft: "auto", background: "transparent", border: "1px solid #99000044", borderRadius: 6, color: "#990000", padding: "5px 12px", fontSize: 11, cursor: "pointer" }}>
               Limpiar {descartados.size} descartados
             </button>
           )}
@@ -208,7 +208,7 @@ export default function DuplicadosPage() {
         ) : paresVisibles.length === 0 ? (
           <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 40, textAlign: "center" }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>✅</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#22c55e" }}>Sin duplicados detectados</div>
+            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin duplicados detectados</div>
             <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
               {descartados.size > 0 ? `${descartados.size} pares marcados como distintos.` : "Tu base de contactos está limpia."}
             </div>

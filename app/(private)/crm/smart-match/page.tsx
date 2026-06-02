@@ -161,7 +161,7 @@ function calcularScore(c: Contacto, p: Propiedad): { score: number; motivos: str
   return { score: Math.round(score), motivos, alertas };
 }
 
-const scoreColor = (s: number) => s >= 75 ? "#22c55e" : s >= 50 ? "#f59e0b" : s >= 30 ? "#f97316" : "#6b7280";
+const scoreColor = (s: number) => s >= 75 ? "#3abab6" : s >= 50 ? "#d4960c" : s >= 30 ? "#d4960c" : "#6b7280";
 const scoreLabel = (s: number) => s >= 75 ? "Excelente" : s >= 50 ? "Bueno" : s >= 30 ? "Posible" : "Débil";
 
 // ── Componente ───────────────────────────────────────────────────────────────
@@ -242,7 +242,7 @@ export default function SmartMatch() {
         <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
         <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, margin: 0 }}>Smart Match</h1>
-        <span style={{ background: "#22c55e", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>AUTOMÁTICO</span>
+        <span style={{ background: "#3abab6", color: "#000", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>AUTOMÁTICO</span>
       </div>
       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 20 }}>
         Cruza {contactos.length} contactos activos con {propiedades.length} propiedades disponibles
@@ -251,9 +251,9 @@ export default function SmartMatch() {
       {/* KPIs y filtros */}
       <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
         {[
-          { label: "Matches totales", val: matches.length, color: "#22c55e" },
-          { label: "Excelentes (≥75)", val: matches.filter(m => m.score >= 75).length, color: "#22c55e" },
-          { label: "Buenos (50-74)", val: matches.filter(m => m.score >= 50 && m.score < 75).length, color: "#f59e0b" },
+          { label: "Matches totales", val: matches.length, color: "#3abab6" },
+          { label: "Excelentes (≥75)", val: matches.filter(m => m.score >= 75).length, color: "#3abab6" },
+          { label: "Buenos (50-74)", val: matches.filter(m => m.score >= 50 && m.score < 75).length, color: "#d4960c" },
           { label: "Contactos con match", val: porContacto.length, color: "#3b82f6" },
           { label: "Props con demanda", val: porPropiedad.length, color: "#a78bfa" },
         ].map((k, i) => (
@@ -267,7 +267,7 @@ export default function SmartMatch() {
           <div>
             <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", color: "rgba(255,255,255,0.35)", marginBottom: 3 }}>Score mínimo: {filtroScore}</div>
             <input type="range" min={20} max={90} step={5} value={filtroScore} onChange={e => setFiltroScore(Number(e.target.value))}
-              style={{ width: 120, accentColor: "#cc0000" }} />
+              style={{ width: 120, accentColor: "#990000" }} />
           </div>
           <input
             placeholder="Filtrar contacto…"
@@ -277,7 +277,7 @@ export default function SmartMatch() {
           />
           <div style={{ display: "flex", gap: 4 }}>
             {(["por-contacto", "por-prop"] as const).map(v => (
-              <button key={v} onClick={() => setVista(v)} style={{ background: vista === v ? "rgba(204,0,0,0.2)" : "rgba(255,255,255,0.04)", border: `1px solid ${vista === v ? "rgba(204,0,0,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: vista === v ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "6px 12px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+              <button key={v} onClick={() => setVista(v)} style={{ background: vista === v ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.04)", border: `1px solid ${vista === v ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.08)"}`, borderRadius: 6, color: vista === v ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "6px 12px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                 {v === "por-contacto" ? "Por Contacto" : "Por Propiedad"}
               </button>
             ))}
@@ -328,7 +328,7 @@ export default function SmartMatch() {
                     <div style={{ display: "flex", gap: 8 }}>
                       {contacto.telefono && (
                         <a href={`https://wa.me/${contacto.telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener"
-                          style={{ background: "#22c55e22", border: "1px solid #22c55e44", color: "#22c55e", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
+                          style={{ background: "#3abab622", border: "1px solid #3abab644", color: "#3abab6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "5px 12px", borderRadius: 5, textDecoration: "none" }}>
                           WhatsApp
                         </a>
                       )}
@@ -362,10 +362,10 @@ export default function SmartMatch() {
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                             {m.motivos.map((mot, k) => (
-                              <span key={k} style={{ background: "#22c55e18", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
+                              <span key={k} style={{ background: "#3abab618", color: "#3abab6", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
                             ))}
                             {m.alertas.map((al, k) => (
-                              <span key={k} style={{ background: "#f59e0b18", color: "#f59e0b", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
+                              <span key={k} style={{ background: "#d4960c18", color: "#d4960c", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
                             ))}
                           </div>
                         </div>
@@ -423,17 +423,17 @@ export default function SmartMatch() {
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
                             {m.motivos.map((mot, k) => (
-                              <span key={k} style={{ background: "#22c55e18", color: "#22c55e", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
+                              <span key={k} style={{ background: "#3abab618", color: "#3abab6", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>✓ {mot}</span>
                             ))}
                             {m.alertas.map((al, k) => (
-                              <span key={k} style={{ background: "#f59e0b18", color: "#f59e0b", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
+                              <span key={k} style={{ background: "#d4960c18", color: "#d4960c", fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "2px 7px", borderRadius: 3 }}>⚠ {al}</span>
                             ))}
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                           {m.contacto.telefono && (
                             <a href={`https://wa.me/${m.contacto.telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener"
-                              style={{ background: "#22c55e22", border: "1px solid #22c55e44", color: "#22c55e", fontSize: 10, padding: "4px 9px", borderRadius: 5, textDecoration: "none" }}>
+                              style={{ background: "#3abab622", border: "1px solid #3abab644", color: "#3abab6", fontSize: 10, padding: "4px 9px", borderRadius: 5, textDecoration: "none" }}>
                               WA
                             </a>
                           )}

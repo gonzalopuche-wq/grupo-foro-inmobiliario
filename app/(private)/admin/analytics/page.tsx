@@ -83,7 +83,7 @@ function seccionLabel(ruta: string) {
 
 // ── Barras CSS ────────────────────────────────────────────────────────────────
 
-function BarChart({ data, color = "#cc0000", height = 120 }: {
+function BarChart({ data, color = "#990000", height = 120 }: {
   data: { label: string; value: number }[];
   color?: string;
   height?: number;
@@ -125,7 +125,7 @@ function BarChart({ data, color = "#cc0000", height = 120 }: {
   );
 }
 
-function HBarChart({ data, color = "#cc0000" }: {
+function HBarChart({ data, color = "#990000" }: {
   data: { label: string; value: number; sub?: string }[];
   color?: string;
 }) {
@@ -326,13 +326,13 @@ export default function AnalyticsPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .an-section { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 20px 22px; margin-bottom: 18px; }
         .an-title { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .an-title span { color: #cc0000; }
+        .an-title span { color: #990000; }
         .an-h1 { font-family: Montserrat,sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 4px; }
         .an-sub { font-size: 12px; color: rgba(255,255,255,0.3); }
         .an-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .an-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
         @media (max-width: 700px) { .an-grid2, .an-grid3 { grid-template-columns: 1fr; } }
-        .kit-box { background: rgba(204,0,0,0.06); border: 1px solid rgba(204,0,0,0.2); border-radius: 10px; padding: 22px; margin-bottom: 18px; }
+        .kit-box { background: rgba(153,0,0,0.06); border: 1px solid rgba(153,0,0,0.2); border-radius: 10px; padding: 22px; margin-bottom: 18px; }
         .kit-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
         .kit-stat:last-child { border-bottom: none; }
         .kit-stat-label { color: rgba(255,255,255,0.5); }
@@ -350,13 +350,13 @@ export default function AnalyticsPage() {
           <div className="no-print">
             <Link href="/admin" style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", textDecoration: "none" }}>← Admin</Link>
           </div>
-          <h1 className="an-h1" style={{ marginTop: 6 }}>📊 Analytics <span style={{ color: "#cc0000" }}>GFI®</span></h1>
+          <h1 className="an-h1" style={{ marginTop: 6 }}>📊 Analytics <span style={{ color: "#990000" }}>GFI®</span></h1>
           <p className="an-sub">Métricas de plataforma · Actualizado: {hoy}</p>
         </div>
         <button
           className="no-print"
           onClick={() => window.print()}
-          style={{ padding: "10px 20px", background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+          style={{ padding: "10px 20px", background: "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
         >
           🖨 Kit de medios
         </button>
@@ -365,12 +365,12 @@ export default function AnalyticsPage() {
       {/* KPIs principales */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12, marginBottom: 18 }}>
         <KPI label="Corredores activos" value={stats.totalUsuarios} icon="👥" color="#3b82f6" bg="rgba(59,130,246,0.08)" sub="Con suscripción aprobada" />
-        <KPI label="Logins este mes" value={stats.activosMes} icon="🔐" color="#22c55e" bg="rgba(34,197,94,0.08)" sub="Usuarios activos mes actual" />
+        <KPI label="Logins este mes" value={stats.activosMes} icon="🔐" color="#3abab6" bg="rgba(34,197,94,0.08)" sub="Usuarios activos mes actual" />
         <KPI label="Nuevos este mes" value={stats.nuevosMes} icon="🆕" color="#a78bfa" bg="rgba(167,139,250,0.08)" />
-        <KPI label="Suscripciones activas" value={stats.suscripcionesActivas} icon="✅" color="#f59e0b" bg="rgba(245,158,11,0.08)" />
+        <KPI label="Suscripciones activas" value={stats.suscripcionesActivas} icon="✅" color="#d4960c" bg="rgba(245,158,11,0.08)" />
         <KPI label="Propiedades en CRM" value={stats.totalProps} icon="🏠" color="#06b6d4" bg="rgba(6,182,212,0.08)" sub="Gestionadas activamente" />
-        <KPI label="Entradas MIR activas" value={stats.totalMIR} icon="🔁" color="#eab308" bg="rgba(234,179,8,0.08)" />
-        <KPI label="Negocios totales" value={stats.totalNegocios} icon="🤝" color="#cc0000" bg="rgba(204,0,0,0.08)" />
+        <KPI label="Entradas MIR activas" value={stats.totalMIR} icon="🔁" color="#d4960c" bg="rgba(234,179,8,0.08)" />
+        <KPI label="Negocios totales" value={stats.totalNegocios} icon="🤝" color="#990000" bg="rgba(153,0,0,0.08)" />
         <KPI label="Visitas rastreadas (30d)" value={derived.totalPageViews} icon="👁" color="rgba(255,255,255,0.6)" bg="rgba(255,255,255,0.04)" sub="Desde activación del tracking" />
       </div>
 
@@ -383,7 +383,7 @@ export default function AnalyticsPage() {
       {/* Logins diarios */}
       <div className="an-section">
         <div className="an-title">🔐 <span>Actividad</span> — Logins diarios (últimos 30 días)</div>
-        <BarChart data={derived.loginsDiario} color="#22c55e" height={120} />
+        <BarChart data={derived.loginsDiario} color="#3abab6" height={120} />
       </div>
 
       <div className="an-grid2">
@@ -391,7 +391,7 @@ export default function AnalyticsPage() {
         <div className="an-section">
           <div className="an-title">📍 <span>Secciones</span> más visitadas (30d)</div>
           {derived.topSecciones.length > 0 ? (
-            <HBarChart data={derived.topSecciones} color="#cc0000" />
+            <HBarChart data={derived.topSecciones} color="#990000" />
           ) : (
             <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12, textAlign: "center", padding: "20px 0" }}>
               Sin datos aún — el tracking de páginas acumula a partir de ahora
@@ -402,10 +402,10 @@ export default function AnalyticsPage() {
         {/* Actividad por hora */}
         <div className="an-section">
           <div className="an-title">🕐 <span>Horarios</span> de mayor actividad (30d)</div>
-          <BarChart data={derived.horasData} color="#f59e0b" height={120} />
+          <BarChart data={derived.horasData} color="#d4960c" height={120} />
           <div style={{ marginTop: 12, fontSize: 11, color: "rgba(255,255,255,0.3)", textAlign: "center" }}>
             Pico:{" "}
-            <strong style={{ color: "#f59e0b" }}>
+            <strong style={{ color: "#d4960c" }}>
               {derived.horasData.indexOf(derived.horasData.reduce((m, d) => d.value > m.value ? d : m, derived.horasData[0]))}h
             </strong>
           </div>
@@ -417,7 +417,7 @@ export default function AnalyticsPage() {
         <div className="an-section">
           <div className="an-title">📍 <span>Ciudades</span> — distribución de usuarios</div>
           {derived.topCiudades.length > 0
-            ? <HBarChart data={derived.topCiudades} color="#60a5fa" />
+            ? <HBarChart data={derived.topCiudades} color="#4ab8d8" />
             : <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 12 }}>Sin datos de ciudad registrados</div>
           }
         </div>
@@ -437,7 +437,7 @@ export default function AnalyticsPage() {
       {/* Kit de medios para patrocinadores */}
       <div className="kit-box">
         <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-          🎯 Kit de medios — <span style={{ color: "#cc0000" }}>GFI® Grupo Foro Inmobiliario</span>
+          🎯 Kit de medios — <span style={{ color: "#990000" }}>GFI® Grupo Foro Inmobiliario</span>
         </div>
         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 16 }}>
           Métricas de alcance para propuestas comerciales a patrocinadores · {hoy}

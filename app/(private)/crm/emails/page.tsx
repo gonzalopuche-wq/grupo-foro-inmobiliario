@@ -165,7 +165,7 @@ function EmailsContent() {
   return (
     <div style={{ padding: "24px 20px", maxWidth: 900, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: toast.includes("Error") ? "#ef4444" : "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: toast.includes("Error") ? "#b80000" : "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
       )}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
@@ -198,7 +198,7 @@ function EmailsContent() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 2 }}>
                     <span style={{ fontWeight: 700, fontSize: 14, color: "#f8fafc" }}>{e.asunto}</span>
-                    {e.estado === "error" && <span style={{ fontSize: 10, background: "#ef444422", color: "#ef4444", padding: "2px 7px", borderRadius: 6, fontWeight: 700 }}>Error</span>}
+                    {e.estado === "error" && <span style={{ fontSize: 10, background: "#b8000022", color: "#b80000", padding: "2px 7px", borderRadius: 6, fontWeight: 700 }}>Error</span>}
                   </div>
                   <div style={{ fontSize: 12, color: "#64748b" }}>Para: {e.para}{con ? ` · ${con.apellido ? `${con.apellido}, ${con.nombre}` : con.nombre}` : ""}{neg ? ` · ${neg.titulo}` : ""}</div>
                   <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>{fmtFecha(e.created_at)}</div>

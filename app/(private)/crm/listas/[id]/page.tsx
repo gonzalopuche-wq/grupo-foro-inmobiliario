@@ -324,7 +324,7 @@ export default function ListaDetallePage() {
     titulo: { margin: 0, fontSize: 20, fontWeight: 800, fontFamily: 'Montserrat,sans-serif', color: '#fff' },
     subtitulo: { margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' },
     linkBar: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 16, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, maxWidth: 900 },
-    linkText: { flex: 1, fontSize: 12, color: '#cc0000', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+    linkText: { flex: 1, fontSize: 12, color: '#990000', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
     btnCopiar: { background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' },
     btnWa: { background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.25)', color: '#25D366', padding: '5px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', textDecoration: 'none', whiteSpace: 'nowrap' },
     btnVista: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', padding: '5px 12px', borderRadius: 5, fontSize: 11, cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap' },
@@ -336,10 +336,10 @@ export default function ListaDetallePage() {
     chip: { display: 'inline-block', padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', marginRight: 5, marginBottom: 5 },
     cardAcciones: { display: 'flex', flexDirection: 'column' as const, gap: 6, padding: '14px 14px 14px 0', flexShrink: 0, justifyContent: 'center' },
     btnEliminar: { background: 'none', border: 'none', color: 'rgba(200,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '4px 10px', borderRadius: 5 },
-    btnAgregar: { display: 'flex', alignItems: 'center', gap: 8, background: '#cc0000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', maxWidth: 900, marginBottom: 16 },
+    btnAgregar: { display: 'flex', alignItems: 'center', gap: 8, background: '#990000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', maxWidth: 900, marginBottom: 16 },
     importBox: { maxWidth: 900, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 },
     urlInput: { flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', fontFamily: 'Inter,sans-serif' },
-    btnImportar: { background: '#cc0000', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' },
+    btnImportar: { background: '#990000', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap' },
   }
 
   if (cargando) return (
@@ -476,12 +476,12 @@ export default function ListaDetallePage() {
                       </div>
                     </div>
                     {enLista ? (
-                      <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓ En lista</span>
+                      <span style={{ fontSize: 11, color: '#3abab6', fontWeight: 700, flexShrink: 0 }}>✓ En lista</span>
                     ) : (
                       <button
                         onClick={() => agregarDesdeCartera(prop)}
                         disabled={agregandoCarteraId === prop.id}
-                        style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
+                        style={{ background: '#990000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
                       >
                         {agregandoCarteraId === prop.id ? '…' : 'Agregar'}
                       </button>
@@ -536,12 +536,12 @@ export default function ListaDetallePage() {
                       </div>
                     </div>
                     {enLista ? (
-                      <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓ En lista</span>
+                      <span style={{ fontSize: 11, color: '#3abab6', fontWeight: 700, flexShrink: 0 }}>✓ En lista</span>
                     ) : (
                       <button
                         onClick={() => agregarDesdeRedGFI(prop)}
                         disabled={agregandoRedGFIId === prop.id}
-                        style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
+                        style={{ background: '#990000', border: 'none', color: '#fff', padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', flexShrink: 0, fontFamily: 'Montserrat,sans-serif' }}
                       >
                         {agregandoRedGFIId === prop.id ? '…' : 'Agregar'}
                       </button>
@@ -580,7 +580,7 @@ export default function ListaDetallePage() {
                     </span>
                   )}
                   {prop.operacion && (
-                    <span style={{ ...s.chip, background: prop.operacion === 'Venta' ? 'rgba(204,0,0,0.12)' : 'rgba(59,130,246,0.12)', border: `1px solid ${prop.operacion === 'Venta' ? 'rgba(204,0,0,0.3)' : 'rgba(59,130,246,0.3)'}`, color: prop.operacion === 'Venta' ? '#cc0000' : '#60a5fa' }}>
+                    <span style={{ ...s.chip, background: prop.operacion === 'Venta' ? 'rgba(153,0,0,0.12)' : 'rgba(59,130,246,0.12)', border: `1px solid ${prop.operacion === 'Venta' ? 'rgba(153,0,0,0.3)' : 'rgba(59,130,246,0.3)'}`, color: prop.operacion === 'Venta' ? '#990000' : '#4ab8d8' }}>
                       {prop.operacion}
                     </span>
                   )}
@@ -591,7 +591,7 @@ export default function ListaDetallePage() {
                   )}
                 </div>
                 <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
-                  <span style={{ fontFamily: 'Montserrat,sans-serif', fontWeight: 800, color: '#22c55e', fontSize: 14 }}>
+                  <span style={{ fontFamily: 'Montserrat,sans-serif', fontWeight: 800, color: '#3abab6', fontSize: 14 }}>
                     {fmtPrecio(prop.precio_actual, prop.moneda)}
                   </span>
                   {(prop.zona || prop.ciudad) && <span>📍 {[prop.zona, prop.ciudad].filter(Boolean).join(', ')}</span>}
@@ -621,7 +621,7 @@ export default function ListaDetallePage() {
       )}
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 28, right: 28, padding: '12px 20px', borderRadius: 8, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontFamily: 'Montserrat,sans-serif', fontSize: 12, fontWeight: 700, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 28, right: 28, padding: '12px 20px', borderRadius: 8, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.35)', color: '#3abab6', fontFamily: 'Montserrat,sans-serif', fontSize: 12, fontWeight: 700, zIndex: 999 }}>
           {toast}
         </div>
       )}

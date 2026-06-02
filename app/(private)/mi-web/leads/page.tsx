@@ -17,7 +17,7 @@ interface Lead {
   cartera_propiedades?: { titulo: string } | null;
 }
 
-const TIPO_COLOR = { contacto: "#3b82f6", tasacion: "#f59e0b" };
+const TIPO_COLOR = { contacto: "#3b82f6", tasacion: "#d4960c" };
 const TIPO_LABEL = { contacto: "Contacto", tasacion: "Tasación" };
 
 export default function LeadsPage() {
@@ -202,7 +202,7 @@ export default function LeadsPage() {
             <span style={{ fontSize: 22 }}>📬</span>
             <h1 style={{ fontSize: 20, fontWeight: 700, color: "#111", margin: 0 }}>Leads de mi web</h1>
             {noLeidos > 0 && (
-              <span style={{ background: "#ef4444", color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
+              <span style={{ background: "#b80000", color: "#fff", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>
                 {noLeidos} nuevo{noLeidos > 1 ? "s" : ""}
               </span>
             )}
@@ -280,7 +280,7 @@ export default function LeadsPage() {
                       <a href={`mailto:${lead.email}`} style={{ fontSize: 12, color: "#2563eb", textDecoration: "none" }}>✉️ {lead.email}</a>
                     )}
                     {lead.telefono && (
-                      <a href={`https://wa.me/${lead.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "#16a34a", textDecoration: "none" }}>💬 {lead.telefono}</a>
+                      <a href={`https://wa.me/${lead.telefono.replace(/\D/g,"")}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "#22807c", textDecoration: "none" }}>💬 {lead.telefono}</a>
                     )}
                   </div>
 
@@ -320,7 +320,7 @@ export default function LeadsPage() {
                     </a>
                   )}
                   {convertidos.has(lead.id) ? (
-                    <div style={{ fontSize: 11, padding: "6px 12px", background: "#dcfce7", color: "#16a34a", borderRadius: 6, fontWeight: 700, textAlign: "center" }}>
+                    <div style={{ fontSize: 11, padding: "6px 12px", background: "#dcfce7", color: "#22807c", borderRadius: 6, fontWeight: 700, textAlign: "center" }}>
                       ✓ En CRM
                     </div>
                   ) : (

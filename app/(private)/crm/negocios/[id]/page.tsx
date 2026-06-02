@@ -62,20 +62,20 @@ const ETAPAS = [
   { value: "contactado",        label: "Contactado",       color: "#3b82f6" },
   { value: "visita_coordinada", label: "Visita coord.",    color: "#8b5cf6" },
   { value: "visita_realizada",  label: "Visita realiz.",   color: "#a78bfa" },
-  { value: "oferta_enviada",    label: "Oferta enviada",   color: "#f59e0b" },
-  { value: "negociacion",       label: "Negociación",      color: "#f97316" },
+  { value: "oferta_enviada",    label: "Oferta enviada",   color: "#d4960c" },
+  { value: "negociacion",       label: "Negociación",      color: "#d4960c" },
   { value: "reserva",           label: "Reserva",          color: "#06b6d4" },
-  { value: "escritura",         label: "Escritura",        color: "#10b981" },
-  { value: "cerrado",           label: "Cerrado ✓",        color: "#22c55e" },
-  { value: "perdido",           label: "Perdido",          color: "#ef4444" },
+  { value: "escritura",         label: "Escritura",        color: "#3abab6" },
+  { value: "cerrado",           label: "Cerrado ✓",        color: "#3abab6" },
+  { value: "perdido",           label: "Perdido",          color: "#b80000" },
 ];
 
 const TIPOS_HITO = [
-  { value: "reserva",     label: "Reserva",         icon: "📝", color: "#f59e0b" },
+  { value: "reserva",     label: "Reserva",         icon: "📝", color: "#d4960c" },
   { value: "boleto",      label: "Boleto",          icon: "📋", color: "#06b6d4" },
   { value: "escritura",   label: "Escritura",       icon: "⚖️", color: "#6366f1" },
-  { value: "posesion",    label: "Posesión",        icon: "🔑", color: "#10b981" },
-  { value: "liquidacion", label: "Liquidación",     icon: "💰", color: "#22c55e" },
+  { value: "posesion",    label: "Posesión",        icon: "🔑", color: "#3abab6" },
+  { value: "liquidacion", label: "Liquidación",     icon: "💰", color: "#3abab6" },
   { value: "otro",        label: "Otro",            icon: "📌", color: "#94a3b8" },
 ];
 
@@ -210,9 +210,9 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
     return [
       { label: "Primer contacto",   fecha: negocio.fecha_primer_contacto, icon: "📞", color: "#3b82f6" },
       { label: "Visita",            fecha: negocio.fecha_visita,          icon: "🏠", color: "#8b5cf6" },
-      { label: "Reserva",           fecha: negocio.fecha_reserva,         icon: "📝", color: "#f59e0b" },
-      { label: "Escritura prevista",fecha: negocio.fecha_escritura,       icon: "⚖️", color: "#10b981" },
-      { label: "Cierre",            fecha: negocio.fecha_cierre,          icon: "✓",  color: "#22c55e" },
+      { label: "Reserva",           fecha: negocio.fecha_reserva,         icon: "📝", color: "#d4960c" },
+      { label: "Escritura prevista",fecha: negocio.fecha_escritura,       icon: "⚖️", color: "#3abab6" },
+      { label: "Cierre",            fecha: negocio.fecha_cierre,          icon: "✓",  color: "#3abab6" },
     ].filter(t => !!t.fecha);
   }, [negocio]);
 
@@ -225,7 +225,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
   );
   if (!negocio) return (
     <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: 60, fontFamily: "Inter,sans-serif" }}>
-      Negocio no encontrado. <Link href="/crm/negocios" style={{ color: "#cc0000" }}>← Volver</Link>
+      Negocio no encontrado. <Link href="/crm/negocios" style={{ color: "#990000" }}>← Volver</Link>
     </div>
   );
 
@@ -237,7 +237,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
         .nd-btn { padding:7px 14px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; }
         .nd-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); font-family:'Montserrat',sans-serif; margin-bottom:4px; display:block; }
         .nd-input { width:100%; padding:8px 10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
-        .nd-input:focus { border-color:rgba(204,0,0,0.5); }
+        .nd-input:focus { border-color:rgba(153,0,0,0.5); }
         .nd-select { width:100%; padding:8px 10px; background:rgba(14,14,14,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
         .nd-tab { padding:8px 16px; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:all 0.15s; }
         .nd-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
@@ -305,12 +305,12 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
               <div className="nd-card">
                 <div className="nd-label" style={{ marginBottom: 10 }}>Contacto</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 800, color: "#cc0000", flexShrink: 0 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 800, color: "#990000", flexShrink: 0 }}>
                     {contacto.nombre[0]}{contacto.apellido[0]}
                   </div>
                   <div>
                     <Link href={`/crm/contactos/${contacto.id}`} style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff", textDecoration: "none" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "#cc0000"}
+                      onMouseEnter={e => e.currentTarget.style.color = "#990000"}
                       onMouseLeave={e => e.currentTarget.style.color = "#fff"}>
                       {contacto.nombre} {contacto.apellido}
                     </Link>
@@ -324,7 +324,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                   )}
                   {contacto.telefono && (
                     <a href={`tel:${contacto.telefono}`}
-                      style={{ flex: 1, padding: "7px 0", textAlign: "center", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 5, fontSize: 13, textDecoration: "none" }}>📞</a>
+                      style={{ flex: 1, padding: "7px 0", textAlign: "center", background: "rgba(74,184,216,0.08)", border: "1px solid rgba(74,184,216,0.2)", borderRadius: 5, fontSize: 13, textDecoration: "none" }}>📞</a>
                   )}
                   {contacto.email && (
                     <a href={`mailto:${contacto.email}`}
@@ -383,7 +383,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
               {editandoNotas ? (
                 <>
                   <textarea className="nd-input" rows={4} style={{ resize: "vertical" }} value={notas} onChange={e => setNotas(e.target.value)} />
-                  <button className="nd-btn" style={{ background: "#cc0000", color: "#fff", marginTop: 8, width: "100%" }} onClick={guardarNotas}>Guardar</button>
+                  <button className="nd-btn" style={{ background: "#990000", color: "#fff", marginTop: 8, width: "100%" }} onClick={guardarNotas}>Guardar</button>
                 </>
               ) : (
                 <div style={{ fontSize: 12, color: negocio.notas ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
@@ -405,9 +405,9 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
               ] as const).map(t => (
                 <button key={t.key} className="nd-tab"
                   style={{
-                    background: tab === t.key ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.04)",
-                    color: tab === t.key ? "#cc0000" : "rgba(255,255,255,0.4)",
-                    border: `1px solid ${tab === t.key ? "rgba(204,0,0,0.35)" : "rgba(255,255,255,0.08)"}`,
+                    background: tab === t.key ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)",
+                    color: tab === t.key ? "#990000" : "rgba(255,255,255,0.4)",
+                    border: `1px solid ${tab === t.key ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}`,
                   }}
                   onClick={() => setTab(t.key)}>{t.label}
                 </button>
@@ -419,7 +419,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
               <div className="nd-card">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                   <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>Hitos de la operación</div>
-                  <button className="nd-btn" style={{ background: "rgba(204,0,0,0.1)", color: "#cc0000", border: "1px solid rgba(204,0,0,0.25)" }}
+                  <button className="nd-btn" style={{ background: "rgba(153,0,0,0.1)", color: "#990000", border: "1px solid rgba(153,0,0,0.25)" }}
                     onClick={() => setModalHito({ tipo: "reserva", fecha: new Date().toISOString().slice(0,10), notas: "" })}>
                     + Agregar hito
                   </button>
@@ -436,7 +436,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                       const diasRestantes = Math.ceil((new Date(h.fecha).getTime() - Date.now()) / 86400000);
                       return (
                         <div key={h.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: h.completado ? "rgba(34,197,94,0.05)" : "rgba(255,255,255,0.02)", border: `1px solid ${h.completado ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)"}`, borderRadius: 6, transition: "all 0.15s" }}>
-                          <button onClick={() => toggleHito(h)} style={{ width: 22, height: 22, borderRadius: 4, border: `2px solid ${h.completado ? "#22c55e" : info.color}`, background: h.completado ? "#22c55e" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#fff", fontSize: 12 }}>
+                          <button onClick={() => toggleHito(h)} style={{ width: 22, height: 22, borderRadius: 4, border: `2px solid ${h.completado ? "#3abab6" : info.color}`, background: h.completado ? "#3abab6" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#fff", fontSize: 12 }}>
                             {h.completado ? "✓" : ""}
                           </button>
                           <span style={{ fontSize: 18 }}>{info.icon}</span>
@@ -447,10 +447,10 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
                               {fmtFecha(h.fecha)}
                               {!h.completado && diasRestantes <= 7 && diasRestantes >= 0 && (
-                                <span style={{ marginLeft: 8, color: "#f59e0b", fontWeight: 600 }}>· en {diasRestantes}d</span>
+                                <span style={{ marginLeft: 8, color: "#d4960c", fontWeight: 600 }}>· en {diasRestantes}d</span>
                               )}
                               {!h.completado && diasRestantes < 0 && (
-                                <span style={{ marginLeft: 8, color: "#ef4444", fontWeight: 600 }}>· vencido hace {Math.abs(diasRestantes)}d</span>
+                                <span style={{ marginLeft: 8, color: "#b80000", fontWeight: 600 }}>· vencido hace {Math.abs(diasRestantes)}d</span>
                               )}
                             </div>
                             {h.notas && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>{h.notas}</div>}
@@ -477,7 +477,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                   </div>
                   <div className="nd-card" style={{ textAlign: "center", border: "1px solid rgba(34,197,94,0.2)", background: "rgba(34,197,94,0.04)" }}>
                     <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: "rgba(34,197,94,0.6)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Honorario neto estimado</div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#22c55e" }}>{fmtMon(fin.honNeto, negocio.moneda)}</div>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#3abab6" }}>{fmtMon(fin.honNeto, negocio.moneda)}</div>
                   </div>
                 </div>
 
@@ -490,20 +490,20 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                   </div>
                   <div className="nd-row">
                     <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "Inter,sans-serif" }}>IIBB (5.5%)</span>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#ef4444" }}>− {fmtMon(fin.iibb, negocio.moneda)}</span>
+                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#b80000" }}>− {fmtMon(fin.iibb, negocio.moneda)}</span>
                   </div>
                   <div className="nd-row">
                     <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "Inter,sans-serif" }}>IVA (21%)</span>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#ef4444" }}>− {fmtMon(fin.iva, negocio.moneda)}</span>
+                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#b80000" }}>− {fmtMon(fin.iva, negocio.moneda)}</span>
                   </div>
                   <div className="nd-row" style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 10, marginTop: 4 }}>
-                    <span style={{ fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#22c55e" }}>Honorario neto</span>
-                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#22c55e" }}>{fmtMon(fin.honNeto, negocio.moneda)}</span>
+                    <span style={{ fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#3abab6" }}>Honorario neto</span>
+                    <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 15, fontWeight: 800, color: "#3abab6" }}>{fmtMon(fin.honNeto, negocio.moneda)}</span>
                   </div>
                   {fin.sPct > 0 && (
                     <div className="nd-row">
                       <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Mi parte ({100 - fin.sPct}% del bruto)</span>
-                      <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#f59e0b" }}>{fmtMon(fin.miParte, negocio.moneda)}</span>
+                      <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#d4960c" }}>{fmtMon(fin.miParte, negocio.moneda)}</span>
                     </div>
                   )}
                 </div>
@@ -511,7 +511,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                 {/* Link a split */}
                 <div style={{ padding: "10px 14px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Calculá el split exacto con la calculadora de honorarios:</span>
-                  <Link href="/calculadoras/split" style={{ fontSize: 11, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>Split Honorarios ↗</Link>
+                  <Link href="/calculadoras/split" style={{ fontSize: 11, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>Split Honorarios ↗</Link>
                 </div>
               </div>
             )}
@@ -527,13 +527,13 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
                 </div>
                 {postCierre.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "32px 0", color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", fontSize: 12 }}>
-                    Sin items post-cierre. Usá <Link href="/crm/post-cierre" style={{ color: "#cc0000" }}>Post-Cierre</Link> para agregar.
+                    Sin items post-cierre. Usá <Link href="/crm/post-cierre" style={{ color: "#990000" }}>Post-Cierre</Link> para agregar.
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {postCierre.map(p => (
                       <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: p.completado ? "rgba(34,197,94,0.04)" : "rgba(255,255,255,0.02)", border: `1px solid ${p.completado ? "rgba(34,197,94,0.12)" : "rgba(255,255,255,0.06)"}`, borderRadius: 6 }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 3, border: `2px solid ${p.completado ? "#22c55e" : "rgba(255,255,255,0.2)"}`, background: p.completado ? "#22c55e" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#fff", flexShrink: 0 }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 3, border: `2px solid ${p.completado ? "#3abab6" : "rgba(255,255,255,0.2)"}`, background: p.completado ? "#3abab6" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#fff", flexShrink: 0 }}>
                           {p.completado ? "✓" : ""}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -571,7 +571,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
               <button className="nd-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }} onClick={() => setModalHito(null)}>Cancelar</button>
-              <button className="nd-btn" style={{ background: "#cc0000", color: "#fff", opacity: guardandoHito ? 0.6 : 1 }} onClick={agregarHito} disabled={guardandoHito}>
+              <button className="nd-btn" style={{ background: "#990000", color: "#fff", opacity: guardandoHito ? 0.6 : 1 }} onClick={agregarHito} disabled={guardandoHito}>
                 {guardandoHito ? "Guardando..." : "Agregar"}
               </button>
             </div>

@@ -61,7 +61,7 @@ const ESTADO_BG: Record<EstadoVisita, string> = {
 const ESTADO_COLOR: Record<EstadoVisita, string> = {
   programada: "#aaaaaa",
   confirmada: "#4ade80",
-  realizada: "#60a5fa",
+  realizada: "#4ab8d8",
   cancelada: "#f87171",
   no_asistio: "#fb923c",
 };
@@ -419,7 +419,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
             id="recordatorio"
             checked={form.recordatorio}
             onChange={(e) => set("recordatorio", e.target.checked)}
-            style={{ width: 16, height: 16, accentColor: "#cc0000", cursor: "pointer" }}
+            style={{ width: 16, height: 16, accentColor: "#990000", cursor: "pointer" }}
           />
           <label
             htmlFor="recordatorio"
@@ -436,7 +436,7 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
             style={{
               flex: 1,
               padding: "10px 0",
-              background: "#cc0000",
+              background: "#990000",
               color: "#fff",
               border: "none",
               borderRadius: 6,
@@ -476,9 +476,9 @@ function ModalVisita({ visita, onGuardar, onEliminar, onCerrar }: ModalProps) {
               }}
               style={{
                 padding: "10px 18px",
-                background: "rgba(204,0,0,0.1)",
+                background: "rgba(153,0,0,0.1)",
                 color: "#f87171",
-                border: "1px solid rgba(204,0,0,0.3)",
+                border: "1px solid rgba(153,0,0,0.3)",
                 borderRadius: 6,
                 fontFamily: "Montserrat, sans-serif",
                 fontSize: 11,
@@ -794,7 +794,7 @@ export default function AgendaVisitasPage() {
             style={{
               background: "#2a2500",
               border: "1px solid #554d00",
-              borderLeft: "4px solid #eab308",
+              borderLeft: "4px solid #d4960c",
               margin: "12px 16px 0",
               borderRadius: 8,
               padding: "12px 16px",
@@ -810,7 +810,7 @@ export default function AgendaVisitasPage() {
                   fontFamily: "Montserrat, sans-serif",
                   fontSize: 12,
                   fontWeight: 700,
-                  color: "#eab308",
+                  color: "#d4960c",
                   marginBottom: 4,
                 }}
               >
@@ -851,7 +851,7 @@ export default function AgendaVisitasPage() {
                 padding: "8px 16px",
                 background: "none",
                 border: "none",
-                borderBottom: tab === key ? "2px solid #cc0000" : "2px solid transparent",
+                borderBottom: tab === key ? "2px solid #990000" : "2px solid transparent",
                 color: tab === key ? "#e0e0e0" : "rgba(224,224,224,0.35)",
                 fontFamily: "Montserrat, sans-serif",
                 fontSize: 11,
@@ -868,7 +868,7 @@ export default function AgendaVisitasPage() {
                 <span
                   style={{
                     marginLeft: 6,
-                    background: "#cc0000",
+                    background: "#990000",
                     color: "#fff",
                     fontSize: 9,
                     fontWeight: 700,
@@ -912,7 +912,7 @@ export default function AgendaVisitasPage() {
                   fontFamily: "Montserrat, sans-serif",
                   fontSize: 12,
                   fontWeight: 700,
-                  color: semanaOffset === 0 ? "#cc0000" : "rgba(224,224,224,0.6)",
+                  color: semanaOffset === 0 ? "#990000" : "rgba(224,224,224,0.6)",
                 }}
               >
                 {semanaOffset === 0 ? "Esta semana" : semanaLabel(lunesBase)}
@@ -920,7 +920,7 @@ export default function AgendaVisitasPage() {
               {semanaOffset !== 0 && (
                 <button
                   onClick={() => setSemanaOffset(0)}
-                  style={{ ...btnAccionStyle("#cc0000"), padding: "4px 8px", fontSize: 9 }}
+                  style={{ ...btnAccionStyle("#990000"), padding: "4px 8px", fontSize: 9 }}
                 >
                   Hoy
                 </button>
@@ -954,7 +954,7 @@ export default function AgendaVisitasPage() {
                     key={fecha}
                     style={{
                       background: "#111111",
-                      border: esHoy ? "1px solid #cc0000" : "1px solid #222222",
+                      border: esHoy ? "1px solid #990000" : "1px solid #222222",
                       borderRadius: 8,
                       minHeight: 160,
                       padding: 8,
@@ -967,7 +967,7 @@ export default function AgendaVisitasPage() {
                         fontSize: 10,
                         fontWeight: 700,
                         letterSpacing: "0.06em",
-                        color: esHoy ? "#cc0000" : "rgba(224,224,224,0.45)",
+                        color: esHoy ? "#990000" : "rgba(224,224,224,0.45)",
                         marginBottom: 8,
                         textAlign: "center",
                         textTransform: "uppercase",
@@ -979,7 +979,7 @@ export default function AgendaVisitasPage() {
                           style={{
                             display: "block",
                             fontSize: 8,
-                            color: "#cc0000",
+                            color: "#990000",
                             marginTop: 1,
                           }}
                         >
@@ -1236,8 +1236,8 @@ export default function AgendaVisitasPage() {
                       fontWeight: 700,
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
-                      color: fecha === hoy ? "#cc0000" : "rgba(224,224,224,0.4)",
-                      borderBottom: `1px solid ${fecha === hoy ? "#cc000033" : "#222222"}`,
+                      color: fecha === hoy ? "#990000" : "rgba(224,224,224,0.4)",
+                      borderBottom: `1px solid ${fecha === hoy ? "#99000033" : "#222222"}`,
                       paddingBottom: 6,
                       marginBottom: 10,
                     }}
@@ -1247,7 +1247,7 @@ export default function AgendaVisitasPage() {
                       <span
                         style={{
                           marginLeft: 8,
-                          background: "#cc0000",
+                          background: "#990000",
                           color: "#fff",
                           fontSize: 8,
                           padding: "2px 6px",
@@ -1365,7 +1365,7 @@ export default function AgendaVisitasPage() {
                         {(v.estado === "programada" || v.estado === "confirmada") && (
                           <>
                             <button
-                              style={btnAccionStyle("#60a5fa")}
+                              style={btnAccionStyle("#4ab8d8")}
                               onClick={() => cambiarEstado(v.id, "realizada")}
                             >
                               Realizada
@@ -1405,7 +1405,7 @@ export default function AgendaVisitasPage() {
                 {
                   label: "Visitas este mes",
                   value: visitasMes.length.toString(),
-                  color: "#60a5fa",
+                  color: "#4ab8d8",
                 },
                 {
                   label: "Tasa de asistencia",
@@ -1417,7 +1417,7 @@ export default function AgendaVisitasPage() {
                   value: tipoMasFrecuente
                     ? `${TIPO_EMOJI[tipoMasFrecuente]} ${TIPO_LABEL[tipoMasFrecuente]}`
                     : "—",
-                  color: "#eab308",
+                  color: "#d4960c",
                 },
               ].map(({ label, value, color }) => (
                 <div
@@ -1499,7 +1499,7 @@ export default function AgendaVisitasPage() {
                     no_asistio: "#2a2a1a",
                   };
                   const strokeColores: Record<EstadoVisita, string> = {
-                    realizada: "#60a5fa",
+                    realizada: "#4ab8d8",
                     confirmada: "#4ade80",
                     programada: "#aaaaaa",
                     cancelada: "#f87171",
@@ -1570,7 +1570,7 @@ export default function AgendaVisitasPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 8 }}>
                 {(["realizada", "confirmada", "programada", "cancelada", "no_asistio"] as EstadoVisita[]).map((est) => {
                   const dotColors: Record<EstadoVisita, string> = {
-                    realizada: "#60a5fa",
+                    realizada: "#4ab8d8",
                     confirmada: "#4ade80",
                     programada: "#aaaaaa",
                     cancelada: "#f87171",
@@ -1697,7 +1697,7 @@ export default function AgendaVisitasPage() {
                               fontFamily: "Montserrat, sans-serif",
                               fontSize: 13,
                               fontWeight: 700,
-                              color: pct >= 70 ? "#4ade80" : pct >= 40 ? "#eab308" : "#f87171",
+                              color: pct >= 70 ? "#4ade80" : pct >= 40 ? "#d4960c" : "#f87171",
                             }}
                           >
                             {pct}%
@@ -1736,12 +1736,12 @@ export default function AgendaVisitasPage() {
             width: 52,
             height: 52,
             borderRadius: "50%",
-            background: "#cc0000",
+            background: "#990000",
             border: "none",
             color: "#fff",
             fontSize: 24,
             cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(204,0,0,0.5)",
+            boxShadow: "0 4px 20px rgba(153,0,0,0.5)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

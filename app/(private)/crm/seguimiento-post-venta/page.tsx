@@ -67,10 +67,10 @@ const TIPO_CONTACTO_ICONS: Record<TipoContacto, string> = {
 };
 
 const ESTADO_CONFIG: Record<EstadoSeguimiento, { label: string; color: string; bg: string }> = {
-  activo:        { label: "Activo",        color: "#22c55e", bg: "rgba(34,197,94,0.12)" },
-  pausado:       { label: "Pausado",       color: "#eab308", bg: "rgba(234,179,8,0.12)" },
+  activo:        { label: "Activo",        color: "#3abab6", bg: "rgba(34,197,94,0.12)" },
+  pausado:       { label: "Pausado",       color: "#d4960c", bg: "rgba(234,179,8,0.12)" },
   completado:    { label: "Completado",    color: "#6b7280", bg: "rgba(107,114,128,0.12)" },
-  sin_respuesta: { label: "Sin respuesta", color: "#f97316", bg: "rgba(249,115,22,0.12)" },
+  sin_respuesta: { label: "Sin respuesta", color: "#d4960c", bg: "rgba(249,115,22,0.12)" },
 };
 
 const ROL_LABELS: Record<SeguimientoPost["clienteRol"], string> = {
@@ -81,10 +81,10 @@ const ROL_LABELS: Record<SeguimientoPost["clienteRol"], string> = {
 };
 
 const RESULTADO_CONFIG: Record<ContactoPost["resultado"], { label: string; color: string }> = {
-  positivo:     { label: "Positivo",     color: "#22c55e" },
+  positivo:     { label: "Positivo",     color: "#3abab6" },
   neutro:       { label: "Neutro",       color: "#6b7280" },
-  negativo:     { label: "Negativo",     color: "#cc0000" },
-  sin_respuesta: { label: "Sin respuesta", color: "#f97316" },
+  negativo:     { label: "Negativo",     color: "#990000" },
+  sin_respuesta: { label: "Sin respuesta", color: "#d4960c" },
 };
 
 // ── utilidades ────────────────────────────────────────────────────────────────
@@ -127,9 +127,9 @@ function isSameDay(a: Date, b: Date): boolean {
 }
 
 function npsColor(nps: number): string {
-  if (nps >= 8) return "#22c55e";
-  if (nps >= 6) return "#eab308";
-  return "#cc0000";
+  if (nps >= 8) return "#3abab6";
+  if (nps >= 6) return "#d4960c";
+  return "#990000";
 }
 
 function diasHasta(fecha: string): number {
@@ -401,7 +401,7 @@ export default function SeguimientoPostVentaPage() {
         const d = new Date(s.proximoContacto);
         const key = d.toISOString().slice(0, 10);
         if (!map[key]) map[key] = [];
-        map[key].push({ tipo: "contacto", label: s.clienteNombre, color: "#cc0000" });
+        map[key].push({ tipo: "contacto", label: s.clienteNombre, color: "#990000" });
       }
 
       const cierre = new Date(s.fechaCierre);
@@ -496,7 +496,7 @@ export default function SeguimientoPostVentaPage() {
 
       {/* KPIs */}
       <div style={S.kpiGrid}>
-        <KpiCard titulo="En seguimiento activo" valor={String(kpis.activos)} color="#cc0000" />
+        <KpiCard titulo="En seguimiento activo" valor={String(kpis.activos)} color="#990000" />
         <KpiCard
           titulo="NPS promedio"
           valor={kpis.npsPromedio !== null ? String(kpis.npsPromedio) : "—"}
@@ -505,7 +505,7 @@ export default function SeguimientoPostVentaPage() {
             ? kpis.npsPromedio >= 8 ? "Promotores" : kpis.npsPromedio >= 6 ? "Pasivos" : "Detractores"
             : "Sin datos"}
         />
-        <KpiCard titulo="Referidos generados" valor={String(kpis.referidos)} color="#22c55e" />
+        <KpiCard titulo="Referidos generados" valor={String(kpis.referidos)} color="#3abab6" />
         <KpiCard titulo="Contactos próx. 7 días" valor={String(kpis.enSieteDias)} color="#3b82f6" />
       </div>
 
@@ -513,10 +513,10 @@ export default function SeguimientoPostVentaPage() {
       {(alertas.vencidos.length > 0 || alertas.aniversarios.length > 0) && (
         <div style={S.alertasContainer}>
           {alertas.vencidos.length > 0 && (
-            <div style={{ ...S.alertaItem, borderColor: "#cc0000" }}>
+            <div style={{ ...S.alertaItem, borderColor: "#990000" }}>
               <span style={S.alertaIcon}>⚠️</span>
               <span style={S.alertaTexto}>
-                <strong style={{ color: "#cc0000" }}>{alertas.vencidos.length} seguimiento{alertas.vencidos.length > 1 ? "s" : ""}</strong>
+                <strong style={{ color: "#990000" }}>{alertas.vencidos.length} seguimiento{alertas.vencidos.length > 1 ? "s" : ""}</strong>
                 {" "}con contacto programado vencido:{" "}
                 {alertas.vencidos.slice(0, 3).map(s => s.clienteNombre).join(", ")}
                 {alertas.vencidos.length > 3 && ` y ${alertas.vencidos.length - 3} más`}
@@ -631,7 +631,7 @@ export default function SeguimientoPostVentaPage() {
                       </span>
                     )}
                     {seg.generaReferido && (
-                      <span style={{ ...S.chip, color: "#22c55e", background: "rgba(34,197,94,0.12)" }}>
+                      <span style={{ ...S.chip, color: "#3abab6", background: "rgba(34,197,94,0.12)" }}>
                         Referido
                       </span>
                     )}
@@ -679,7 +679,7 @@ export default function SeguimientoPostVentaPage() {
                                   <div style={S.timelineHeader}>
                                     <span style={S.timelineTipo}>{TIPO_CONTACTO_LABELS[c.tipo]}</span>
                                     <span style={{ color: resCfg.color, fontSize: 11 }}>{resCfg.label}</span>
-                                    {c.generaReferido && <span style={{ color: "#22c55e", fontSize: 11 }}>· Referido</span>}
+                                    {c.generaReferido && <span style={{ color: "#3abab6", fontSize: 11 }}>· Referido</span>}
                                     <span style={S.timelineFecha}>{fmtFecha(c.fecha)}</span>
                                   </div>
                                   {c.descripcion && <p style={S.timelineDesc}>{c.descripcion}</p>}
@@ -766,7 +766,7 @@ export default function SeguimientoPostVentaPage() {
                                   onChange={e => setNuevoContactoForm(f => ({
                                     ...f, [seg.id]: { ...formC, generaReferido: e.target.checked }
                                   }))}
-                                  style={{ accentColor: "#cc0000" }}
+                                  style={{ accentColor: "#990000" }}
                                 />
                                 Este contacto genera un referido
                               </label>
@@ -829,7 +829,7 @@ export default function SeguimientoPostVentaPage() {
                               type="checkbox"
                               checked={seg.generaReferido}
                               onChange={() => toggleReferido(seg.id)}
-                              style={{ accentColor: "#22c55e" }}
+                              style={{ accentColor: "#3abab6" }}
                             />
                             Este cliente generó un referido
                           </label>
@@ -872,7 +872,7 @@ export default function SeguimientoPostVentaPage() {
       {activeTab === "calendario" && (
         <div>
           <div style={S.calLeyenda}>
-            <span style={{ ...S.chip, background: "rgba(204,0,0,0.15)", color: "#cc0000" }}>● Contacto programado</span>
+            <span style={{ ...S.chip, background: "rgba(153,0,0,0.15)", color: "#990000" }}>● Contacto programado</span>
             <span style={{ ...S.chip, background: "rgba(59,130,246,0.15)", color: "#3b82f6" }}>● Aniversario</span>
           </div>
           <div style={S.calGrid}>
@@ -897,7 +897,7 @@ export default function SeguimientoPostVentaPage() {
                       key={j}
                       style={{
                         ...S.calEvento,
-                        background: ev.color === "#cc0000" ? "rgba(204,0,0,0.18)" : "rgba(59,130,246,0.18)",
+                        background: ev.color === "#990000" ? "rgba(153,0,0,0.18)" : "rgba(59,130,246,0.18)",
                         color: ev.color,
                       }}
                       title={ev.label}
@@ -923,9 +923,9 @@ export default function SeguimientoPostVentaPage() {
             <div style={S.analyticsTitle}>Distribución NPS</div>
             <svg viewBox="0 0 300 140" style={{ width: "100%", maxHeight: 160 }}>
               {[
-                { label: "0–6\nDetractores", val: analytics.npsDist["0-6"], color: "#cc0000", x: 30 },
-                { label: "7–8\nPasivos",     val: analytics.npsDist["7-8"], color: "#eab308", x: 130 },
-                { label: "9–10\nPromotores", val: analytics.npsDist["9-10"], color: "#22c55e", x: 220 },
+                { label: "0–6\nDetractores", val: analytics.npsDist["0-6"], color: "#990000", x: 30 },
+                { label: "7–8\nPasivos",     val: analytics.npsDist["7-8"], color: "#d4960c", x: 130 },
+                { label: "9–10\nPromotores", val: analytics.npsDist["9-10"], color: "#3abab6", x: 220 },
               ].map(({ label, val, color, x }) => {
                 const total = Object.values(analytics.npsDist).reduce((a, b) => a + b, 0) || 1;
                 const pct = val / total;
@@ -977,9 +977,9 @@ export default function SeguimientoPostVentaPage() {
                 const barY = 95 - barH;
                 return (
                   <g key={i}>
-                    <rect x={x} y={barY} width={barW} height={barH} rx={4} fill="#cc0000" fillOpacity={0.8} />
+                    <rect x={x} y={barY} width={barW} height={barH} rx={4} fill="#990000" fillOpacity={0.8} />
                     {count > 0 && (
-                      <text x={x + barW / 2} y={barY - 4} textAnchor="middle" fill="#cc0000" fontSize={11} fontWeight={700}>{count}</text>
+                      <text x={x + barW / 2} y={barY - 4} textAnchor="middle" fill="#990000" fontSize={11} fontWeight={700}>{count}</text>
                     )}
                     <text x={x + barW / 2} y={110} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize={10}>{label}</text>
                   </g>
@@ -1004,7 +1004,7 @@ export default function SeguimientoPostVentaPage() {
                     <div style={S.alertNombre}>{s.clienteNombre}</div>
                     <div style={S.alertSub}>{s.direccionInmueble || s.tipoOperacion}</div>
                   </div>
-                  <span style={{ color: "#cc0000", fontWeight: 700, fontSize: 13 }}>{diasUltimo}d sin contacto</span>
+                  <span style={{ color: "#990000", fontWeight: 700, fontSize: 13 }}>{diasUltimo}d sin contacto</span>
                 </div>
               );
             })}
@@ -1277,7 +1277,7 @@ const styles = {
 
   tabActivo: {
     color: "#ffffff",
-    borderBottom: "2px solid #cc0000",
+    borderBottom: "2px solid #990000",
   } as React.CSSProperties,
 
   filtrosRow: {
@@ -1378,7 +1378,7 @@ const styles = {
   } as React.CSSProperties,
 
   segRol: {
-    color: "#cc0000",
+    color: "#990000",
     fontWeight: 600,
   } as React.CSSProperties,
 
@@ -1528,7 +1528,7 @@ const styles = {
   } as React.CSSProperties,
 
   btnPrimario: {
-    background: "#cc0000",
+    background: "#990000",
     color: "#ffffff",
     border: "none",
     borderRadius: 6,
@@ -1552,8 +1552,8 @@ const styles = {
 
   btnDanger: {
     background: "transparent",
-    color: "#cc0000",
-    border: "1px solid rgba(204,0,0,0.3)",
+    color: "#990000",
+    border: "1px solid rgba(153,0,0,0.3)",
     borderRadius: 6,
     padding: "7px 14px",
     fontSize: 12,
@@ -1593,8 +1593,8 @@ const styles = {
   } as React.CSSProperties,
 
   calHoy: {
-    border: "1px solid rgba(204,0,0,0.5)",
-    background: "rgba(204,0,0,0.05)",
+    border: "1px solid rgba(153,0,0,0.5)",
+    background: "rgba(153,0,0,0.05)",
   } as React.CSSProperties,
 
   calDiaNum: {
@@ -1663,7 +1663,7 @@ const styles = {
 
   tasaBarInner: {
     height: "100%",
-    background: "#cc0000",
+    background: "#990000",
     borderRadius: 4,
     transition: "width 0.3s",
   } as React.CSSProperties,

@@ -563,7 +563,7 @@ export default function ForoPage() {
               <div style={{ fontSize: 11, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{adj.nombre}</div>
               {adj.tamano && <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)" }}>{formatTamano(adj.tamano)}</div>}
             </div>
-            <span style={{ fontSize: 12, color: "#cc0000" }}>↓</span>
+            <span style={{ fontSize: 12, color: "#990000" }}>↓</span>
           </a>
         );
       })}
@@ -619,7 +619,7 @@ export default function ForoPage() {
         .f-search-ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--gfi-text-muted); }
         .f-btn-nuevo { padding: 9px 18px; background: var(--gfi-red-gradient); border: none; border-radius: var(--gfi-radius-sm); color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; box-shadow: var(--gfi-shadow-red); transition: var(--gfi-transition); }
         .f-btn-nuevo:hover { box-shadow: var(--gfi-shadow-red-lg); transform: translateY(-1px); }
-        .f-btn-urgente { padding: 9px 14px; background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); border-radius: var(--gfi-radius-sm); color: #f97316; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: var(--gfi-transition); }
+        .f-btn-urgente { padding: 9px 14px; background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); border-radius: var(--gfi-radius-sm); color: #d4960c; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: var(--gfi-transition); }
         .f-btn-urgente:hover { background: rgba(196,74,0,0.18); }
         .f-filtros { display: flex; gap: 6px; flex-wrap: wrap; }
         .f-filtro { padding: 5px 11px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-size: 10px; cursor: pointer; transition: var(--gfi-transition); font-family: var(--font-body); }
@@ -630,14 +630,14 @@ export default function ForoPage() {
         .f-topic:hover { border-color: var(--gfi-red-border); box-shadow: var(--gfi-shadow-sm); }
         .f-topic.urgent { border-color: var(--gfi-orange-border); }
         .f-topic.urgent::after, .f-topic.pinned::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-        .f-topic.urgent::after { background: #f97316; }
-        .f-topic.pinned::after { background: #60a5fa; }
+        .f-topic.urgent::after { background: #d4960c; }
+        .f-topic.pinned::after { background: #4ab8d8; }
         .f-topic-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 7px; }
         .f-topic-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
         .f-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 6px; border-radius: 10px; font-family: var(--font-display); }
         .f-badge.cat { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
-        .f-badge.urg { background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); color: #f97316; }
-        .f-badge.res { background: rgba(10,37,64,0.5); border: 1px solid rgba(30,74,122,0.4); color: #60a5fa; }
+        .f-badge.urg { background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); color: #d4960c; }
+        .f-badge.res { background: rgba(10,37,64,0.5); border: 1px solid rgba(30,74,122,0.4); color: #4ab8d8; }
         .f-badge.pin { background: rgba(10,37,64,0.3); border: 1px solid rgba(30,74,122,0.25); color: #93c5fd; }
         .f-topic-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--gfi-text-primary); line-height: 1.4; }
         .f-topic-body { font-size: 12px; color: var(--gfi-text-muted); line-height: 1.5; margin-bottom: 9px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -679,14 +679,14 @@ export default function ForoPage() {
         .f-replies-title { font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 10px; }
         .f-reply { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 16px 20px; margin-bottom: 10px; position: relative; }
         .f-reply.accepted { border-color: rgba(30,74,122,0.5); background: rgba(10,37,64,0.3); }
-        .f-reply.accepted::after { content: '✓ Respuesta destacada'; position: absolute; top: -1px; right: 16px; background: #1e4a7a; color: #60a5fa; font-size: 8px; font-weight: 700; letter-spacing: 0.12em; font-family: var(--font-display); padding: 3px 10px; border-radius: 0 0 4px 4px; text-transform: uppercase; border: 1px solid rgba(30,74,122,0.5); border-top: none; }
+        .f-reply.accepted::after { content: '✓ Respuesta destacada'; position: absolute; top: -1px; right: 16px; background: #1e4a7a; color: #4ab8d8; font-size: 8px; font-weight: 700; letter-spacing: 0.12em; font-family: var(--font-display); padding: 3px 10px; border-radius: 0 0 4px 4px; text-transform: uppercase; border: 1px solid rgba(30,74,122,0.5); border-top: none; }
         .f-reply-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .f-reply-body { font-size: 13px; line-height: 1.7; color: var(--gfi-text-secondary); white-space: pre-wrap; margin-bottom: 12px; }
         .f-reply-actions { display: flex; align-items: center; gap: 8px; }
         .f-vote { display: flex; align-items: center; gap: 3px; padding: 3px 9px; background: var(--gfi-bg-elevated); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-muted); font-size: 11px; cursor: pointer; transition: var(--gfi-transition); }
-        .f-vote.up.voted { border-color: rgba(16,185,129,0.4); background: var(--gfi-green-soft); color: var(--gfi-green-text); }
+        .f-vote.up.voted { border-color: rgba(58,186,182,0.4); background: var(--gfi-green-soft); color: var(--gfi-green-text); }
         .f-vote.down.voted { border-color: var(--gfi-red-border); background: var(--gfi-red-soft); color: var(--gfi-red); }
-        .f-accept-btn { padding: 3px 10px; background: rgba(10,37,64,0.5); border: 1px solid rgba(30,74,122,0.4); border-radius: var(--gfi-radius-sm); color: #60a5fa; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; font-family: var(--font-display); transition: var(--gfi-transition); }
+        .f-accept-btn { padding: 3px 10px; background: rgba(10,37,64,0.5); border: 1px solid rgba(30,74,122,0.4); border-radius: var(--gfi-radius-sm); color: #4ab8d8; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; font-family: var(--font-display); transition: var(--gfi-transition); }
         .f-accept-btn:hover { background: rgba(10,37,64,0.7); }
         .f-editor { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); padding: 18px 22px; }
         .f-editor-title { font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 10px; }
@@ -711,7 +711,7 @@ export default function ForoPage() {
         .fn-tag.active { border-color: var(--gfi-red-border); background: var(--gfi-red-soft); color: var(--gfi-text-primary); }
         .fn-urg { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); border-radius: var(--gfi-radius-sm); cursor: pointer; transition: var(--gfi-transition); }
         .fn-urg.active { background: rgba(196,74,0,0.18); }
-        .fn-urg-t { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: #f97316; }
+        .fn-urg-t { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: #d4960c; }
         .fn-urg-d { font-size: 11px; color: var(--gfi-text-muted); margin-top: 1px; }
         .fn-error { font-size: 12px; color: var(--gfi-red); background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-sm); padding: 9px 13px; margin-bottom: 12px; }
         .fn-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
@@ -884,7 +884,7 @@ export default function ForoPage() {
                 <div className={`fn-urg${nUrgent?" active":""}`} onClick={() => setNUrgent(u=>!u)}>
                   <span style={{fontSize:16}}>⚡</span>
                   <div style={{flex:1}}><div className="fn-urg-t">Marcar como urgente</div><div className="fn-urg-d">Notifica a todos y aparece destacado</div></div>
-                  <div style={{width:34,height:18,borderRadius:9,background:nUrgent?"#eab308":"rgba(255,255,255,0.1)",position:"relative",transition:"background 0.2s",flexShrink:0}}>
+                  <div style={{width:34,height:18,borderRadius:9,background:nUrgent?"#d4960c":"rgba(255,255,255,0.1)",position:"relative",transition:"background 0.2s",flexShrink:0}}>
                     <div style={{position:"absolute",top:2,left:nUrgent?18:2,width:14,height:14,borderRadius:"50%",background:"#fff",transition:"left 0.2s"}}/>
                   </div>
                 </div>
@@ -952,14 +952,14 @@ export default function ForoPage() {
                           </div>
                         )}
                         {!esMio && !eliminado && (
-                          <div style={{ fontSize: 10, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }} onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
+                          <div style={{ fontSize: 10, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 3, cursor: "pointer" }} onClick={e => { e.stopPropagation(); setPerfilRapidoId(m.user_id); }}>
                             {fullName(m.perfiles)}{m.perfiles?.matricula && <span style={{ color: "rgba(255,255,255,0.3)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
                           </div>
                         )}
                         <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
                           {m.reply && !eliminado && (
-                            <div style={{ background: "rgba(255,255,255,0.04)", borderLeft: "2px solid #cc0000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
-                              <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>{(m.reply as any).perfiles?.nombre ?? ""}</div>
+                            <div style={{ background: "rgba(255,255,255,0.04)", borderLeft: "2px solid #990000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                              <div style={{ fontSize: 9, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>{(m.reply as any).perfiles?.nombre ?? ""}</div>
                               <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>{(m.reply as any).body}</div>
                             </div>
                           )}
@@ -972,7 +972,7 @@ export default function ForoPage() {
                                 style={{ width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(200,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, padding: "6px 8px", outline: "none", resize: "none", minHeight: 60, fontFamily: "Inter,sans-serif" }} autoFocus />
                               <div style={{ display: "flex", gap: 6, marginTop: 5, justifyContent: "flex-end" }}>
                                 <button onClick={() => { setChatEditId(null); setChatEditText(""); }} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "rgba(255,255,255,0.4)", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Cancelar</button>
-                                <button onClick={() => editarChatMsg(m.id)} style={{ fontSize: 10, background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
+                                <button onClick={() => editarChatMsg(m.id)} style={{ fontSize: 10, background: "#990000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
                               </div>
                             </div>
                           ) : (
@@ -1010,8 +1010,8 @@ export default function ForoPage() {
               {/* Reply preview */}
               {chatReplyMsg && (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(200,0,0,0.06)", borderTop: "1px solid rgba(200,0,0,0.15)" }}>
-                  <div style={{ borderLeft: "2px solid #cc0000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 9, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>Respondiendo a {fullName(chatReplyMsg.perfiles)}</div>
+                  <div style={{ borderLeft: "2px solid #990000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 9, color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>Respondiendo a {fullName(chatReplyMsg.perfiles)}</div>
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatReplyMsg.body}</div>
                   </div>
                   <button onClick={() => setChatReplyMsg(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 16, padding: 4 }}>×</button>
@@ -1034,7 +1034,7 @@ export default function ForoPage() {
                       <button onClick={() => setChatAdjuntos(prev => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 14, padding: "0 2px", lineHeight: 1 }}>×</button>
                     </div>
                   ))}
-                  {subiendoChatAdj && <div style={{ width: 14, height: 14, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
+                  {subiendoChatAdj && <div style={{ width: 14, height: 14, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
                 </div>
               )}
 
@@ -1054,7 +1054,7 @@ export default function ForoPage() {
                   <div className="f-audio-grabando">
                     <div className="f-audio-dot" />
                     <span style={{fontSize:12,color:"rgba(255,255,255,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando {fmtSegundos(audioSegundos)}</span>
-                    <button onClick={detenerGrabacion} style={{marginLeft:"auto",padding:"4px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>⏹ Detener</button>
+                    <button onClick={detenerGrabacion} style={{marginLeft:"auto",padding:"4px 12px",background:"#990000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>⏹ Detener</button>
                     <button onClick={cancelarAudio} style={{padding:"4px 10px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:4,color:"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>✕ Cancelar</button>
                   </div>
                 )}
@@ -1064,7 +1064,7 @@ export default function ForoPage() {
                     <span style={{fontSize:16}}>🎙</span>
                     <audio src={audioUrl} controls style={{flex:1,height:32,minWidth:0}} />
                     <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif"}}>{fmtSegundos(audioSegundos)}</span>
-                    <button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#cc0000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
+                    <button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#990000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
                       {subiendoAudio ? "Enviando..." : "Enviar"}
                     </button>
                     <button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:4,color:"rgba(200,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button>
@@ -1145,13 +1145,13 @@ export default function ForoPage() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) setMostrarModalEvento(false); }}>
           <div style={{ background: "#0f0f0f", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#cc0000,transparent)", borderRadius: "8px 8px 0 0" }} />
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Proponer <span style={{ color: "#cc0000" }}>evento</span></div>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#990000,transparent)", borderRadius: "8px 8px 0 0" }} />
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Proponer <span style={{ color: "#990000" }}>evento</span></div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.</div>
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>Tipo</label>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {[["gfi","GFI®","#cc0000"],["cocir","COCIR","#f97316"],["cir","CIR","#818cf8"],["externo","Externo","#64748b"]].map(([k,l,c]) => (
+                {[["gfi","GFI®","#990000"],["cocir","COCIR","#d4960c"],["cir","CIR","#818cf8"],["externo","Externo","#64748b"]].map(([k,l,c]) => (
                   <button key={k} type="button" onClick={() => setEF("tipo", k)} style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${eventoForm.tipo === k ? c : "rgba(255,255,255,0.1)"}`, background: eventoForm.tipo === k ? `${c}22` : "transparent", color: eventoForm.tipo === k ? c : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{l}</button>
                 ))}
               </div>
@@ -1176,7 +1176,7 @@ export default function ForoPage() {
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20, borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: 16 }}>
               <button onClick={() => setMostrarModalEvento(false)} style={{ padding: "9px 20px", background: "transparent", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 3, color: "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer" }}>Cancelar</button>
-              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha} style={{ padding: "9px 24px", background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
+              <button onClick={guardarEventoDesdeChat} disabled={guardandoEvento || !eventoForm.titulo || !eventoForm.fecha} style={{ padding: "9px 24px", background: "#990000", border: "none", borderRadius: 3, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", opacity: guardandoEvento || !eventoForm.titulo || !eventoForm.fecha ? 0.6 : 1 }}>
                 {guardandoEvento ? "Enviando..." : "Enviar propuesta"}
               </button>
             </div>
@@ -1214,8 +1214,8 @@ export default function ForoPage() {
             )}
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 10 }}>Pasos:</p>
 
-            <div style={{ background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#cc0000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
+            <div style={{ background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 10, padding: "14px", marginBottom: 10 }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#990000", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>Opción A — Desde Chrome Android</div>
               {[
                 "Tocá los 3 puntitos ⋮ arriba a la derecha de Chrome",
                 "Ir a Configuración → Configuración del sitio",
@@ -1224,7 +1224,7 @@ export default function ForoPage() {
                 "Volvé atrás y recargá la página",
               ].map((txt, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 8 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#cc0000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#990000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
                   <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", lineHeight: 1.5, paddingTop: 2 }}>{txt}</div>
                 </div>
               ))}
@@ -1247,7 +1247,7 @@ export default function ForoPage() {
             <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 18, lineHeight: 1.5 }}>
               📱 iPhone: Ajustes → Chrome → Micrófono → Activar
             </div>
-            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#990000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
               Recargar página
             </button>
           </div>

@@ -21,9 +21,9 @@ interface Profesional {
 }
 
 const PROFESIONES: Record<string, { label: string; plural: string; color: string; bg: string; icon: string }> = {
-  escribano: { label: 'Escribano',  plural: 'Escribanos',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  icon: '✍️' },
+  escribano: { label: 'Escribano',  plural: 'Escribanos',  color: '#d4960c', bg: 'rgba(245,158,11,0.1)',  icon: '✍️' },
   abogado:   { label: 'Abogado',    plural: 'Abogados',    color: '#3b82f6', bg: 'rgba(59,130,246,0.1)',  icon: '⚖️' },
-  contador:  { label: 'Contador',   plural: 'Contadores',  color: '#22c55e', bg: 'rgba(34,197,94,0.1)',   icon: '📊' },
+  contador:  { label: 'Contador',   plural: 'Contadores',  color: '#3abab6', bg: 'rgba(34,197,94,0.1)',   icon: '📊' },
 }
 
 // Directorio estático base (se combina con los de la DB)
@@ -153,7 +153,7 @@ export default function DirectoriosPage() {
 
       {/* Filtros profesión */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
-        <button onClick={() => setFiltro('todos')} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#cc0000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+        <button onClick={() => setFiltro('todos')} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'rgba(255,255,255,0.4)' }}>
           Todos
         </button>
         {Object.entries(PROFESIONES).map(([k, v]) => (
@@ -186,8 +186,8 @@ export default function DirectoriosPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 3 }}>
                     <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{p.nombre} {p.apellido}</span>
-                    {p.verificado && <span style={{ fontSize: 9, color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '2px 7px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>✓ VERIFICADO</span>}
-                    {p.destacado && <span style={{ fontSize: 9, color: '#cc0000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>★ DESTACADO</span>}
+                    {p.verificado && <span style={{ fontSize: 9, color: '#3abab6', background: 'rgba(34,197,94,0.1)', padding: '2px 7px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>✓ VERIFICADO</span>}
+                    {p.destacado && <span style={{ fontSize: 9, color: '#990000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700 }}>★ DESTACADO</span>}
                   </div>
 
                   <div style={{ display: 'flex', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
@@ -204,7 +204,7 @@ export default function DirectoriosPage() {
 
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {p.telefono && (
-                      <a href={`https://wa.me/${p.telefono.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 12px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 7, color: '#22c55e', fontSize: 11, fontWeight: 700, textDecoration: 'none', fontFamily: 'Montserrat,sans-serif' }}>
+                      <a href={`https://wa.me/${p.telefono.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 12px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 7, color: '#3abab6', fontSize: 11, fontWeight: 700, textDecoration: 'none', fontFamily: 'Montserrat,sans-serif' }}>
                         💬 {p.telefono}
                       </a>
                     )}

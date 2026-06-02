@@ -59,8 +59,8 @@ const labelMes = (offset: number) => {
 
 const ETAPA_COLOR: Record<string, string> = {
   prospecto: "#6b7280", contactado: "#3b82f6", visita_coordinada: "#8b5cf6",
-  visita_realizada: "#a78bfa", oferta_enviada: "#f59e0b", negociacion: "#f97316",
-  reserva: "#06b6d4", escritura: "#10b981", cerrado: "#22c55e", perdido: "#ef4444",
+  visita_realizada: "#a78bfa", oferta_enviada: "#d4960c", negociacion: "#d4960c",
+  reserva: "#06b6d4", escritura: "#3abab6", cerrado: "#3abab6", perdido: "#b80000",
 };
 
 // ── componente ────────────────────────────────────────────────────────────────
@@ -189,7 +189,7 @@ export default function ProyeccionIngresosPage() {
     setTimeout(() => win.print(), 400);
   };
 
-  const escenarioColor = { base: "#fff", opt: "#22c55e", pes: "#f59e0b" };
+  const escenarioColor = { base: "#fff", opt: "#3abab6", pes: "#d4960c" };
   const escenarioLabel = { base: "Base", opt: "Optimista", pes: "Pesimista" };
 
   return (
@@ -198,7 +198,7 @@ export default function ProyeccionIngresosPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .pi-card { background:rgba(14,14,14,0.9); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:18px; }
         .pi-input { width:100%; padding:8px 10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
-        .pi-input:focus { border-color:rgba(204,0,0,0.5); }
+        .pi-input:focus { border-color:rgba(153,0,0,0.5); }
         .pi-select { width:100%; padding:8px 10px; background:rgba(14,14,14,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; font-family:'Inter',sans-serif; outline:none; }
         .pi-label { display:block; font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:5px; font-family:'Montserrat',sans-serif; }
         .pi-btn { padding:8px 14px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; }
@@ -215,7 +215,7 @@ export default function ProyeccionIngresosPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
-              Proyección de <span style={{ color: "#cc0000" }}>Ingresos</span>
+              Proyección de <span style={{ color: "#990000" }}>Ingresos</span>
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
               Comisiones esperadas basadas en el pipeline CRM · probabilidad por etapa
@@ -277,9 +277,9 @@ export default function ProyeccionIngresosPage() {
             <div className="pi-grid4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
               {[
                 { n: fmtUSD(totales.bruto),          l: "Total bruto esperado",   c: "#fff" },
-                { n: fmtUSD(totales.impuestos),      l: `IIBB+IVA estimado`,      c: "#ef4444" },
-                { n: fmtUSD(totales.neto),           l: "Honorario neto",          c: "#22c55e" },
-                { n: fmtUSD(totales.mensualPromedio), l: "Promedio / mes",         c: "#60a5fa" },
+                { n: fmtUSD(totales.impuestos),      l: `IIBB+IVA estimado`,      c: "#b80000" },
+                { n: fmtUSD(totales.neto),           l: "Honorario neto",          c: "#3abab6" },
+                { n: fmtUSD(totales.mensualPromedio), l: "Promedio / mes",         c: "#4ab8d8" },
               ].map(k => (
                 <div key={k.l} className="pi-card pi-kpi">
                   <div className="pi-kpi-n" style={{ color: k.c, fontSize: 14 }}>{k.n}</div>
@@ -313,8 +313,8 @@ export default function ProyeccionIngresosPage() {
                             <rect x={x + 16} y={180 - optH} width={48} height={optH - pesH} fill="rgba(255,255,255,0.06)" rx={2} />
                             {/* Barra principal */}
                             <rect x={x + 8} y={180 - barH} width={64} height={barH}
-                              fill={escenario === "opt" ? "rgba(34,197,94,0.7)" : escenario === "pes" ? "rgba(245,158,11,0.7)" : "rgba(204,0,0,0.7)"}
-                              stroke={escenario === "opt" ? "#22c55e" : escenario === "pes" ? "#f59e0b" : "#cc0000"}
+                              fill={escenario === "opt" ? "rgba(34,197,94,0.7)" : escenario === "pes" ? "rgba(245,158,11,0.7)" : "rgba(153,0,0,0.7)"}
+                              stroke={escenario === "opt" ? "#3abab6" : escenario === "pes" ? "#d4960c" : "#990000"}
                               strokeWidth={0.5} rx={3} />
                             {/* Valor */}
                             {val > 0 && (
@@ -356,17 +356,17 @@ export default function ProyeccionIngresosPage() {
                         {proyeccion.map((m, i) => (
                           <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                             <td style={{ padding: "9px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{m.mes}</td>
-                            <td style={{ padding: "9px 10px", textAlign: "right", color: "#f59e0b" }}>{fmtUSD(m.pes)}</td>
+                            <td style={{ padding: "9px 10px", textAlign: "right", color: "#d4960c" }}>{fmtUSD(m.pes)}</td>
                             <td style={{ padding: "9px 10px", textAlign: "right", color: "#fff", fontWeight: 600 }}>{fmtUSD(m.base)}</td>
-                            <td style={{ padding: "9px 10px", textAlign: "right", color: "#22c55e" }}>{fmtUSD(m.opt)}</td>
+                            <td style={{ padding: "9px 10px", textAlign: "right", color: "#3abab6" }}>{fmtUSD(m.opt)}</td>
                             <td style={{ padding: "9px 10px", color: "rgba(255,255,255,0.4)" }}>{m.negocios.length}</td>
                           </tr>
                         ))}
                         <tr style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
                           <td style={{ padding: "10px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>Total</td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#f59e0b" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.pes,0))}</td>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#d4960c" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.pes,0))}</td>
                           <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#fff" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.base,0))}</td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#22c55e" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.opt,0))}</td>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#3abab6" }}>{fmtUSD(proyeccion.reduce((s,m)=>s+m.opt,0))}</td>
                           <td />
                         </tr>
                       </tbody>
@@ -409,9 +409,9 @@ export default function ProyeccionIngresosPage() {
                     <div key={etapa} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                       <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>{etapa.replace("_"," ")}</span>
                       <div style={{ display: "flex", gap: 8, fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
-                        <span style={{ color: "#f59e0b" }}>{fmtPct(PROB_PES[etapa])}</span>
+                        <span style={{ color: "#d4960c" }}>{fmtPct(PROB_PES[etapa])}</span>
                         <span style={{ color: "rgba(255,255,255,0.5)" }}>{fmtPct(prob)}</span>
-                        <span style={{ color: "#22c55e" }}>{fmtPct(PROB_OPT[etapa])}</span>
+                        <span style={{ color: "#3abab6" }}>{fmtPct(PROB_OPT[etapa])}</span>
                       </div>
                     </div>
                   ))}

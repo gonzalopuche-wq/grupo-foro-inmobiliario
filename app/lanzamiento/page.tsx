@@ -53,10 +53,10 @@ function VideoPlaceholder({ video, destacado = false }: { video: typeof VIDEOS[0
       style={{
         borderRadius: 16,
         overflow: 'hidden',
-        border: `1px solid ${hover ? 'rgba(204,0,0,0.4)' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${hover ? 'rgba(153,0,0,0.4)' : 'rgba(255,255,255,0.08)'}`,
         transition: 'border-color 0.3s, transform 0.3s, box-shadow 0.3s',
         transform: hover ? 'translateY(-4px)' : 'none',
-        boxShadow: hover ? '0 12px 40px rgba(204,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.3)',
+        boxShadow: hover ? '0 12px 40px rgba(153,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.3)',
         background: '#111',
         cursor: 'default',
       }}
@@ -82,7 +82,7 @@ function VideoPlaceholder({ video, destacado = false }: { video: typeof VIDEOS[0
         {/* Tag */}
         <div style={{
           position: 'absolute', top: 16, left: 16,
-          background: 'rgba(204,0,0,0.9)', color: '#fff',
+          background: 'rgba(153,0,0,0.9)', color: '#fff',
           fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
           letterSpacing: '0.1em', textTransform: 'uppercase',
           padding: '4px 10px', borderRadius: 4,
@@ -95,7 +95,7 @@ function VideoPlaceholder({ video, destacado = false }: { video: typeof VIDEOS[0
         }}>
           <div style={{
             width: destacado ? 80 : 64, height: destacado ? 80 : 64, borderRadius: '50%',
-            background: 'rgba(204,0,0,0.15)', border: '2px solid rgba(204,0,0,0.5)',
+            background: 'rgba(153,0,0,0.15)', border: '2px solid rgba(153,0,0,0.5)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'background 0.3s, transform 0.3s',
             transform: hover ? 'scale(1.1)' : 'scale(1)',
@@ -104,7 +104,7 @@ function VideoPlaceholder({ video, destacado = false }: { video: typeof VIDEOS[0
               width: 0, height: 0,
               borderStyle: 'solid',
               borderWidth: `${destacado ? 14 : 11}px 0 ${destacado ? 14 : 11}px ${destacado ? 24 : 20}px`,
-              borderColor: `transparent transparent transparent #cc0000`,
+              borderColor: `transparent transparent transparent #990000`,
               marginLeft: 4,
             }} />
           </div>
@@ -160,7 +160,7 @@ function StatCard({ valor, label, sub }: typeof STATS[0]) {
     }}>
       <div style={{
         fontFamily: 'Montserrat, sans-serif', fontWeight: 800,
-        fontSize: 52, color: '#cc0000', lineHeight: 1,
+        fontSize: 52, color: '#990000', lineHeight: 1,
         marginBottom: 8,
       }}>{valor}</div>
       <div style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: 14, color: '#fff', marginBottom: 4 }}>{label}</div>
@@ -184,12 +184,12 @@ export default function LanzamientoPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        .lanz-btn-primary { display:inline-block; background:#cc0000; color:#fff; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:14px 32px; border-radius:8px; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
-        .lanz-btn-primary:hover { background:#e60000; transform:translateY(-2px); box-shadow:0 8px 24px rgba(204,0,0,0.4); }
+        .lanz-btn-primary { display:inline-block; background:#990000; color:#fff; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:14px 32px; border-radius:8px; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
+        .lanz-btn-primary:hover { background:#e60000; transform:translateY(-2px); box-shadow:0 8px 24px rgba(153,0,0,0.4); }
         .lanz-btn-outline { display:inline-block; background:transparent; color:#fff; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:13px 32px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); transition:border-color 0.2s,background 0.2s,transform 0.2s; }
         .lanz-btn-outline:hover { border-color:rgba(255,255,255,0.6); background:rgba(255,255,255,0.05); transform:translateY(-2px); }
         .mod-card { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:24px; transition:border-color 0.25s,background 0.25s,transform 0.25s; }
-        .mod-card:hover { border-color:rgba(204,0,0,0.3); background:rgba(204,0,0,0.04); transform:translateY(-3px); }
+        .mod-card:hover { border-color:rgba(153,0,0,0.3); background:rgba(153,0,0,0.04); transform:translateY(-3px); }
       `}</style>
 
       {/* ── NAV ── */}
@@ -203,7 +203,7 @@ export default function LanzamientoPage() {
         transition: 'background 0.3s, backdrop-filter 0.3s, border-color 0.3s',
       }}>
         <div style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 20, letterSpacing: '-0.02em' }}>
-          GFI<span style={{ color: '#cc0000' }}>®</span>
+          GFI<span style={{ color: '#990000' }}>®</span>
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <a href="#videos" className="lanz-btn-outline" style={{ padding: '8px 20px', fontSize: 12 }}>Ver videos</a>
@@ -221,7 +221,7 @@ export default function LanzamientoPage() {
         {/* Fondo radial */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(204,0,0,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(153,0,0,0.12) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
         {/* Grid pattern */}
@@ -234,10 +234,10 @@ export default function LanzamientoPage() {
 
         <div style={{ position: 'relative', maxWidth: 800 }}>
           <div style={{
-            display: 'inline-block', background: 'rgba(204,0,0,0.12)', border: '1px solid rgba(204,0,0,0.3)',
+            display: 'inline-block', background: 'rgba(153,0,0,0.12)', border: '1px solid rgba(153,0,0,0.3)',
             borderRadius: 100, padding: '6px 18px', marginBottom: 32,
             fontFamily: 'Montserrat, sans-serif', fontSize: 11, fontWeight: 700,
-            letterSpacing: '0.15em', textTransform: 'uppercase', color: '#cc0000',
+            letterSpacing: '0.15em', textTransform: 'uppercase', color: '#990000',
           }}>● Plataforma en lanzamiento · 2ª Circunscripción COCIR</div>
 
           <h1 style={{
@@ -247,7 +247,7 @@ export default function LanzamientoPage() {
           }}>
             La plataforma que el<br />
             <span style={{
-              background: 'linear-gradient(135deg, #cc0000, #ff4444)',
+              background: 'linear-gradient(135deg, #990000, #ff4444)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             }}>corredor inmobiliario</span><br />
             estaba esperando.
@@ -291,10 +291,10 @@ export default function LanzamientoPage() {
       <section id="videos" style={{ padding: '80px 24px 100px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div style={{
-            display: 'inline-block', background: 'rgba(204,0,0,0.1)', border: '1px solid rgba(204,0,0,0.25)',
+            display: 'inline-block', background: 'rgba(153,0,0,0.1)', border: '1px solid rgba(153,0,0,0.25)',
             borderRadius: 100, padding: '5px 16px', marginBottom: 20,
             fontFamily: 'Montserrat, sans-serif', fontSize: 10, fontWeight: 700,
-            letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(204,0,0,0.8)',
+            letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(153,0,0,0.8)',
           }}>Próximamente</div>
           <h2 style={{
             fontFamily: 'Montserrat, sans-serif', fontWeight: 800,
@@ -361,8 +361,8 @@ export default function LanzamientoPage() {
       {/* ── CTA CORREDORES ── */}
       <section style={{ padding: '100px 24px', maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(204,0,0,0.08) 0%, rgba(204,0,0,0.03) 100%)',
-          border: '1px solid rgba(204,0,0,0.2)', borderRadius: 24,
+          background: 'linear-gradient(135deg, rgba(153,0,0,0.08) 0%, rgba(153,0,0,0.03) 100%)',
+          border: '1px solid rgba(153,0,0,0.2)', borderRadius: 24,
           padding: '64px 48px',
         }}>
           <div style={{ fontSize: 40, marginBottom: 20 }}>🏡</div>
@@ -414,7 +414,7 @@ export default function LanzamientoPage() {
       }}>
         <div>
           <div style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 800, fontSize: 16, marginBottom: 4 }}>
-            GFI<span style={{ color: '#cc0000' }}>®</span>
+            GFI<span style={{ color: '#990000' }}>®</span>
           </div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Grupo Foro Inmobiliario · Rosario, Santa Fe

@@ -18,9 +18,9 @@ interface Contacto {
 
 const ESTADOS: Record<string, { label: string; color: string }> = {
   'lead:nuevo':      { label: 'Lead nuevo',   color: '#3b82f6' },
-  'lead:contactado': { label: 'Contactado',   color: '#f59e0b' },
+  'lead:contactado': { label: 'Contactado',   color: '#d4960c' },
   'lead:calificado': { label: 'Calificado',   color: '#8b5cf6' },
-  'cliente':         { label: 'Cliente',      color: '#22c55e' },
+  'cliente':         { label: 'Cliente',      color: '#3abab6' },
   'inactivo':        { label: 'Inactivo',     color: 'rgba(255,255,255,0.25)' },
 };
 

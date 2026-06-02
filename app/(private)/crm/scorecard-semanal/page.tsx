@@ -125,13 +125,13 @@ function calcularScore(kpis: KPIs, metas: KPIs): number {
 }
 
 function scoreColor(score: number): string {
-  if (score < 40) return "#cc0000";
+  if (score < 40) return "#990000";
   if (score < 70) return "#f5a623";
   return "#27ae60";
 }
 
 function barColor(pct: number): string {
-  if (pct < 0.5) return "#cc0000";
+  if (pct < 0.5) return "#990000";
   if (pct < 0.8) return "#f5a623";
   return "#27ae60";
 }
@@ -249,9 +249,9 @@ function HistoricoChart({ semanas }: { semanas: SemanaScore[] }) {
       <line x1={padL} y1={targetY} x2={padL + chartW} y2={targetY} stroke="#f5a623" strokeWidth={1} strokeDasharray="4 4" />
       <text x={padL + chartW + 4} y={targetY} dominantBaseline="middle" fill="#f5a623" fontSize={10} fontFamily="Inter, sans-serif">70</text>
       {/* area */}
-      <path d={areaPath} fill="rgba(204,0,0,0.15)" />
+      <path d={areaPath} fill="rgba(153,0,0,0.15)" />
       {/* line */}
-      <path d={linePath} fill="none" stroke="#cc0000" strokeWidth={2.5} strokeLinejoin="round" />
+      <path d={linePath} fill="none" stroke="#990000" strokeWidth={2.5} strokeLinejoin="round" />
       {/* dots + x labels */}
       {semanas.map((s, i) => (
         <g key={s.semana}>
@@ -508,7 +508,7 @@ export default function ScorecardSemanal() {
       fontFamily: "Montserrat, sans-serif",
       fontWeight: 700,
       fontSize: 13,
-      background: active ? "#cc0000" : "#1a1a1a",
+      background: active ? "#990000" : "#1a1a1a",
       color: active ? "#fff" : "rgba(255,255,255,0.6)",
       transition: "background 0.2s",
     };
@@ -555,7 +555,7 @@ export default function ScorecardSemanal() {
   };
 
   const btnPrimaryStyle: React.CSSProperties = {
-    background: "#cc0000",
+    background: "#990000",
     color: "#fff",
     border: "none",
     borderRadius: 8,
@@ -701,7 +701,7 @@ export default function ScorecardSemanal() {
               <span style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
                 Negocios cerrados
               </span>
-              <p style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#cc0000", margin: "4px 0 0" }}>
+              <p style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#990000", margin: "4px 0 0" }}>
                 {semanaData.negociosCerrados}
               </p>
             </div>
@@ -795,7 +795,7 @@ export default function ScorecardSemanal() {
                           style={{
                             background: "none",
                             border: "none",
-                            color: "#cc0000",
+                            color: "#990000",
                             cursor: "pointer",
                             fontFamily: "Inter, sans-serif",
                             fontSize: 13,

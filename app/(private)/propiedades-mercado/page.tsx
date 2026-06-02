@@ -5,7 +5,7 @@ import { supabase } from "../../lib/supabase";
 
 // ── Configuración de portales ──────────────────────────────────────────────
 const PORTALES = [
-  { id: "gfi_red",      label: "Red GFI",       color: "#cc0000", bg: "rgba(200,0,0,0.14)", textColor: "#fff" },
+  { id: "gfi_red",      label: "Red GFI",       color: "#990000", bg: "rgba(200,0,0,0.14)", textColor: "#fff" },
   { id: "gfi_portal",   label: "Portal GFI",    color: "#ff4444", bg: "rgba(255,68,68,0.10)", textColor: "#fff" },
   { id: "kiteprop",     label: "Kiteprop",      color: "#7c3aed", bg: "rgba(124,58,237,0.12)", textColor: "#fff" },
   { id: "tokko",        label: "Tokko Broker",  color: "#0ea5e9", bg: "rgba(14,165,233,0.12)", textColor: "#fff" },
@@ -115,7 +115,7 @@ function PropCard({ p }: { p: Propiedad }) {
   if (p.superficie_cubierta) specs.push(`${p.superficie_cubierta} m²`);
   else if (p.sup_terreno) specs.push(`${p.sup_terreno} m² terreno`);
 
-  const opColor = p.operacion === "venta" ? "#22c55e" : p.operacion === "alquiler" ? "#60a5fa" : "#f59e0b";
+  const opColor = p.operacion === "venta" ? "#3abab6" : p.operacion === "alquiler" ? "#4ab8d8" : "#d4960c";
 
   return (
     <a
@@ -357,7 +357,7 @@ export default function PropiedadesMercadoPage() {
             padding: "6px 14px", borderRadius: 20,
             background: filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.05)",
             border: `1px solid ${filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.4)" : "rgba(255,255,255,0.1)"}`,
-            color: filters.portalesActivos.length === 0 ? "#cc0000" : "rgba(255,255,255,0.5)",
+            color: filters.portalesActivos.length === 0 ? "#990000" : "rgba(255,255,255,0.5)",
             cursor: "pointer", fontSize: 12, fontFamily: "'Inter',sans-serif",
           }}
         >
@@ -426,7 +426,7 @@ export default function PropiedadesMercadoPage() {
             onClick={() => setFilters(defaultFilters)}
             style={{
               background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)",
-              borderRadius: 5, color: "#cc0000", cursor: "pointer",
+              borderRadius: 5, color: "#990000", cursor: "pointer",
               fontSize: 11, fontFamily: "'Inter',sans-serif", padding: "8px 12px",
             }}
           >
@@ -462,18 +462,18 @@ export default function PropiedadesMercadoPage() {
               padding: "8px 18px", borderRadius: 5,
               background: syncing ? "rgba(255,255,255,0.05)" : "rgba(200,0,0,0.15)",
               border: "1px solid rgba(200,0,0,0.3)",
-              color: syncing ? "rgba(255,255,255,0.35)" : "#cc0000",
+              color: syncing ? "rgba(255,255,255,0.35)" : "#990000",
               cursor: syncing ? "not-allowed" : "pointer",
               fontSize: 12, fontFamily: "'Montserrat',sans-serif",
               fontWeight: 700, letterSpacing: "0.05em",
               display: "flex", alignItems: "center", gap: 8,
             }}
           >
-            {syncing && <span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(200,0,0,0.4)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
+            {syncing && <span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(200,0,0,0.4)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
             {syncing ? "Sincronizando..." : "⟳ Sincronizar"}
           </button>
           {syncResultado && (
-            <span style={{ fontSize: 11, color: syncResultado.startsWith("✓") ? "#22c55e" : "#ef4444", fontFamily: "'Inter',sans-serif" }}>
+            <span style={{ fontSize: 11, color: syncResultado.startsWith("✓") ? "#3abab6" : "#b80000", fontFamily: "'Inter',sans-serif" }}>
               {syncResultado}
             </span>
           )}

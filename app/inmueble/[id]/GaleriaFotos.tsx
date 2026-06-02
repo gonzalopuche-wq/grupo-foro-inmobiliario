@@ -36,7 +36,7 @@ export default function GaleriaFotos({ fotos }: { fotos: string[] }) {
         <div style={{ display: "flex", gap: 3, padding: "4px", overflowX: "auto", background: "#0a0a0a" }}>
           {fotos.map((f, i) => (
             <img key={i} src={f} alt="" onClick={() => setIdx(i)}
-              style={{ width: 70, height: 50, objectFit: "cover", borderRadius: 3, flexShrink: 0, cursor: "pointer", border: `2px solid ${i === idx ? "#cc0000" : "transparent"}`, opacity: i === idx ? 1 : 0.6, transition: "all 0.15s" }}
+              style={{ width: 70, height: 50, objectFit: "cover", borderRadius: 3, flexShrink: 0, cursor: "pointer", border: `2px solid ${i === idx ? "#990000" : "transparent"}`, opacity: i === idx ? 1 : 0.6, transition: "all 0.15s" }}
             />
           ))}
         </div>

@@ -29,12 +29,12 @@ interface Curso {
 
 const CATEGORIAS: Record<string, { label: string; color: string; bg: string }> = {
   legal:       { label: "Legal",        color: "#818cf8", bg: "rgba(129,140,248,0.1)" },
-  comercial:   { label: "Comercial",    color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+  comercial:   { label: "Comercial",    color: "#d4960c", bg: "rgba(245,158,11,0.1)" },
   tecnologia:  { label: "Tecnología",   color: "#22d3ee", bg: "rgba(34,211,238,0.1)" },
   marketing:   { label: "Marketing",    color: "#fb923c", bg: "rgba(251,146,60,0.1)" },
   financiero:  { label: "Financiero",   color: "#4ade80", bg: "rgba(74,222,128,0.1)" },
   general:     { label: "General",      color: "#94a3b8", bg: "rgba(148,163,184,0.1)" },
-  cocir:       { label: "COCIR",        color: "#cc0000", bg: "rgba(200,0,0,0.1)" },
+  cocir:       { label: "COCIR",        color: "#990000", bg: "rgba(200,0,0,0.1)" },
 };
 
 const NIVELES: Record<string, string> = {
@@ -146,7 +146,7 @@ export default function CursosPage() {
         </div>
         {esAdmin && (
           <button onClick={() => setMostrarForm(true)} style={{
-            padding: "9px 18px", background: "#cc0000", border: "none", borderRadius: 8,
+            padding: "9px 18px", background: "#990000", border: "none", borderRadius: 8,
             color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "Montserrat,sans-serif", cursor: "pointer",
           }}>+ Nuevo curso</button>
         )}
@@ -154,13 +154,13 @@ export default function CursosPage() {
 
       {/* Filtros */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <button onClick={() => setFiltroVista("todos")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "todos" ? "#cc0000" : "rgba(255,255,255,0.1)", background: filtroVista === "todos" ? "rgba(200,0,0,0.15)" : "transparent", color: filtroVista === "todos" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Todos</button>
-        <button onClick={() => setFiltroVista("mis")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "mis" ? "#cc0000" : "rgba(255,255,255,0.1)", background: filtroVista === "mis" ? "rgba(200,0,0,0.15)" : "transparent", color: filtroVista === "mis" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Mis cursos</button>
+        <button onClick={() => setFiltroVista("todos")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "todos" ? "#990000" : "rgba(255,255,255,0.1)", background: filtroVista === "todos" ? "rgba(200,0,0,0.15)" : "transparent", color: filtroVista === "todos" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Todos</button>
+        <button onClick={() => setFiltroVista("mis")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "mis" ? "#990000" : "rgba(255,255,255,0.1)", background: filtroVista === "mis" ? "rgba(200,0,0,0.15)" : "transparent", color: filtroVista === "mis" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Mis cursos</button>
         <div style={{ width: 1, background: "rgba(255,255,255,0.1)", margin: "0 4px" }} />
         {["todas", ...Object.keys(CATEGORIAS)].map(cat => (
           <button key={cat} onClick={() => setFiltroCategoria(cat)} style={{
             padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid",
-            borderColor: filtroCategoria === cat ? (CATEGORIAS[cat]?.color ?? "#cc0000") : "rgba(255,255,255,0.1)",
+            borderColor: filtroCategoria === cat ? (CATEGORIAS[cat]?.color ?? "#990000") : "rgba(255,255,255,0.1)",
             background: filtroCategoria === cat ? (CATEGORIAS[cat]?.bg ?? "rgba(200,0,0,0.15)") : "transparent",
             color: filtroCategoria === cat ? (CATEGORIAS[cat]?.color ?? "#fff") : "rgba(255,255,255,0.45)",
             cursor: "pointer",
@@ -196,7 +196,7 @@ export default function CursosPage() {
                   </div>
                 )}
                 <div style={{ padding: "14px 16px" }}>
-                  {c.destacado && <div style={{ fontSize: 10, color: "#f59e0b", fontWeight: 700, marginBottom: 4 }}>⭐ DESTACADO</div>}
+                  {c.destacado && <div style={{ fontSize: 10, color: "#d4960c", fontWeight: 700, marginBottom: 4 }}>⭐ DESTACADO</div>}
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                     <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 10, color: cat.color, background: cat.bg, border: `1px solid ${cat.color}30` }}>
                       {cat.label}
@@ -211,7 +211,7 @@ export default function CursosPage() {
                       {c.duracion_horas && `⏱ ${c.duracion_horas}hs`}
                       {c.modalidad !== "online" && ` · ${c.modalidad}`}
                     </div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: c.gratuito ? "#22c55e" : "#eab308" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: c.gratuito ? "#3abab6" : "#d4960c" }}>
                       {c.gratuito ? "Gratuito" : `${c.precio.toLocaleString("es-AR")} ${c.moneda}`}
                     </div>
                   </div>
@@ -221,7 +221,7 @@ export default function CursosPage() {
                         <span>{completado ? "✓ Completado" : `Progreso: ${c.mi_inscripcion!.progreso}%`}</span>
                       </div>
                       <div style={{ height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 2, overflow: "hidden" }}>
-                        <div style={{ height: "100%", borderRadius: 2, width: `${c.mi_inscripcion!.progreso}%`, background: completado ? "#22c55e" : "#cc0000", transition: "width 0.4s" }} />
+                        <div style={{ height: "100%", borderRadius: 2, width: `${c.mi_inscripcion!.progreso}%`, background: completado ? "#3abab6" : "#990000", transition: "width 0.4s" }} />
                       </div>
                     </div>
                   )}
@@ -267,7 +267,7 @@ export default function CursosPage() {
               )}
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-                <div style={{ fontSize: 20, fontWeight: 800, color: cursoVer.gratuito ? "#22c55e" : "#eab308", fontFamily: "Montserrat,sans-serif" }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: cursoVer.gratuito ? "#3abab6" : "#d4960c", fontFamily: "Montserrat,sans-serif" }}>
                   {cursoVer.gratuito ? "Gratuito" : `${cursoVer.precio.toLocaleString("es-AR")} ${cursoVer.moneda}`}
                 </div>
                 {cursoVer.max_inscriptos && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>Cupos: {cursoVer.max_inscriptos}</div>}
@@ -275,18 +275,18 @@ export default function CursosPage() {
 
               {cursoVer.mi_inscripcion && (
                 <div style={{ marginBottom: 16, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "10px 14px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#22c55e", marginBottom: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#3abab6", marginBottom: 4 }}>
                     <span>✓ Inscripto — {cursoVer.mi_inscripcion.estado === "completado" ? "Completado" : `Progreso: ${cursoVer.mi_inscripcion.progreso}%`}</span>
                   </div>
                   <div style={{ height: 6, background: "rgba(255,255,255,0.1)", borderRadius: 3 }}>
-                    <div style={{ height: "100%", borderRadius: 3, width: `${cursoVer.mi_inscripcion.progreso}%`, background: "#22c55e" }} />
+                    <div style={{ height: "100%", borderRadius: 3, width: `${cursoVer.mi_inscripcion.progreso}%`, background: "#3abab6" }} />
                   </div>
                 </div>
               )}
 
               <div style={{ display: "flex", gap: 10 }}>
                 {cursoVer.link_acceso && (cursoVer.mi_inscripcion || cursoVer.gratuito) && (
-                  <a href={cursoVer.link_acceso} target="_blank" rel="noopener noreferrer" style={{ flex: 1, padding: "11px", background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700, textDecoration: "none", textAlign: "center", fontFamily: "Montserrat,sans-serif" }}>
+                  <a href={cursoVer.link_acceso} target="_blank" rel="noopener noreferrer" style={{ flex: 1, padding: "11px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700, textDecoration: "none", textAlign: "center", fontFamily: "Montserrat,sans-serif" }}>
                     Acceder al curso →
                   </a>
                 )}
@@ -370,7 +370,7 @@ export default function CursosPage() {
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
               <button onClick={() => setMostrarForm(false)} style={{ flex: 1, padding: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: 13 }}>Cancelar</button>
-              <button onClick={crearCurso} disabled={guardando || !form.titulo} style={{ flex: 2, padding: "10px", background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700, cursor: guardando ? "not-allowed" : "pointer", opacity: guardando ? 0.6 : 1 }}>
+              <button onClick={crearCurso} disabled={guardando || !form.titulo} style={{ flex: 2, padding: "10px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 700, cursor: guardando ? "not-allowed" : "pointer", opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? "Guardando..." : "Crear curso"}
               </button>
             </div>

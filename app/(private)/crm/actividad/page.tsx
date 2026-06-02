@@ -22,10 +22,10 @@ interface Interaccion {
 const TIPO_CONFIG: Record<string, { icon: string; color: string; label: string }> = {
   llamada:    { icon: "📞", color: "#3b82f6",  label: "Llamada" },
   email:      { icon: "✉️",  color: "#6b7280",  label: "Email" },
-  whatsapp:   { icon: "💬", color: "#22c55e",  label: "WhatsApp" },
-  visita:     { icon: "🏠", color: "#f59e0b",  label: "Visita" },
+  whatsapp:   { icon: "💬", color: "#3abab6",  label: "WhatsApp" },
+  visita:     { icon: "🏠", color: "#d4960c",  label: "Visita" },
   reunion:    { icon: "👥", color: "#a78bfa",  label: "Reunión" },
-  oferta:     { icon: "💰", color: "#cc0000",  label: "Oferta" },
+  oferta:     { icon: "💰", color: "#990000",  label: "Oferta" },
   nota:       { icon: "📝", color: "#6b7280",  label: "Nota" },
   otro:       { icon: "⚡", color: "#888",     label: "Otro" },
 };
@@ -163,7 +163,7 @@ export default function ActividadCRM() {
           </select>
           {(["timeline", "estadisticas"] as const).map(v => (
             <button key={v} onClick={() => setVistaMode(v)} style={{
-              background: vistaMode === v ? "#cc0000" : "#1a1a1a", border: "1px solid #333",
+              background: vistaMode === v ? "#990000" : "#1a1a1a", border: "1px solid #333",
               borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 12, cursor: "pointer",
               fontFamily: "Montserrat, sans-serif", fontWeight: 700,
             }}>{v === "timeline" ? "🕐 Timeline" : "📊 Stats"}</button>
@@ -190,7 +190,7 @@ export default function ActividadCRM() {
                     <div key={key} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                       <div style={{ fontSize: 11, color: "#888", textAlign: "center" }}>{count}</div>
                       <div style={{
-                        width: "100%", background: "#cc0000",
+                        width: "100%", background: "#990000",
                         height: `${(count / stats.maxSemana) * 80}px`,
                         borderRadius: "3px 3px 0 0", minHeight: 4,
                       }} />
@@ -242,7 +242,7 @@ export default function ActividadCRM() {
                   <div style={{ height: 1, flex: 1, background: "#1a1a1a" }} />
                   <span style={{
                     fontSize: 11, fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase",
-                    color: esHoy ? "#cc0000" : "#666", letterSpacing: "0.05em",
+                    color: esHoy ? "#990000" : "#666", letterSpacing: "0.05em",
                   }}>
                     {esHoy ? "HOY" : diaLabel}
                   </span>

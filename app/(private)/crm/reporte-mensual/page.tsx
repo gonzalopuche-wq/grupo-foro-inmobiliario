@@ -66,9 +66,9 @@ const ETAPA_COLOR: Record<string, string> = {
   prospecto:   "#6b7280",
   contactado:  "#3b82f6",
   visita:      "#8b5cf6",
-  oferta:      "#f59e0b",
-  negociacion: "#ef4444",
-  escritura:   "#22c55e",
+  oferta:      "#d4960c",
+  negociacion: "#b80000",
+  escritura:   "#3abab6",
 };
 
 const TIPO_CONTACTO_LABEL: Record<string, string> = {
@@ -80,8 +80,8 @@ const TIPO_CONTACTO_LABEL: Record<string, string> = {
 
 const DONUT_COLORS: Record<string, string> = {
   cliente:     "#3b82f6",
-  propietario: "#22c55e",
-  colega:      "#f59e0b",
+  propietario: "#3abab6",
+  colega:      "#d4960c",
   otro:        "#6b7280",
 };
 
@@ -110,8 +110,8 @@ function calcVariacion(actual: number, anterior: number): number {
 }
 
 function arrowColor(v: number): string {
-  if (v > 0) return "#22c55e";
-  if (v < 0) return "#ef4444";
+  if (v > 0) return "#3abab6";
+  if (v < 0) return "#b80000";
   return "rgba(255,255,255,0.35)";
 }
 
@@ -442,7 +442,7 @@ export default function ReporteMensualPage() {
       <style>
         body{font-family:Arial,sans-serif;padding:40px;color:#111;max-width:900px;margin:0 auto}
         h1{font-size:24px;margin:0 0 4px}
-        h2{font-size:14px;margin:28px 0 8px;border-bottom:2px solid #cc0000;padding-bottom:5px;color:#cc0000;text-transform:uppercase;letter-spacing:0.06em}
+        h2{font-size:14px;margin:28px 0 8px;border-bottom:2px solid #990000;padding-bottom:5px;color:#990000;text-transform:uppercase;letter-spacing:0.06em}
         p{font-size:12px;color:#6b7280;margin:0 0 16px}
         table{width:100%;border-collapse:collapse;margin-bottom:20px}
         td,th{padding:8px 10px;border:1px solid #e5e7eb;font-size:12px;text-align:left}
@@ -458,8 +458,8 @@ export default function ReporteMensualPage() {
       <p>Generado el ${fechaHoy} · Tipo de cambio USD/ARS: $${tc.toLocaleString("es-AR")}</p>
       <h2>Resumen ejecutivo</h2>
       <div class="kpi-grid">
-        <div class="kpi"><div class="kpi-label">Negocios cerrados</div><div class="kpi-valor" style="color:#cc0000">${negociosCerrados.length}</div></div>
-        <div class="kpi"><div class="kpi-label">Honorarios generados</div><div class="kpi-valor" style="color:#16a34a">${fmtARS(honorariosMes)}</div></div>
+        <div class="kpi"><div class="kpi-label">Negocios cerrados</div><div class="kpi-valor" style="color:#990000">${negociosCerrados.length}</div></div>
+        <div class="kpi"><div class="kpi-label">Honorarios generados</div><div class="kpi-valor" style="color:#22807c">${fmtARS(honorariosMes)}</div></div>
         <div class="kpi"><div class="kpi-label">Contactos nuevos</div><div class="kpi-valor" style="color:#2563eb">${contactosNuevos.length}</div></div>
         <div class="kpi"><div class="kpi-label">Pipeline activo</div><div class="kpi-valor" style="color:#d97706">${fmtARS(valorPipeline)}</div></div>
       </div>
@@ -494,7 +494,7 @@ export default function ReporteMensualPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
         .rm-input { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; }
-        .rm-input:focus { border-color:rgba(204,0,0,0.45); }
+        .rm-input:focus { border-color:rgba(153,0,0,0.45); }
         .rm-select { background:#111; border:1px solid rgba(255,255,255,0.12); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; cursor:pointer; }
         .rm-tab { padding:8px 18px; border-radius:7px; font-family:Montserrat,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; border:1px solid transparent; transition:background 0.15s,color 0.15s; }
         .rm-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:20px; }
@@ -546,7 +546,7 @@ export default function ReporteMensualPage() {
               lineHeight: 1.1,
             }}
           >
-            Reporte <span style={{ color: "#cc0000" }}>Mensual</span>
+            Reporte <span style={{ color: "#990000" }}>Mensual</span>
           </h1>
           <p style={{ fontSize: 12, color: "rgba(255,255,255,0.32)", marginTop: 5, marginBottom: 0 }}>
             Actividad ejecutiva del corredor · Generado el {fechaHoy}
@@ -610,7 +610,7 @@ export default function ReporteMensualPage() {
             style={{
               padding: "9px 20px",
               borderRadius: 8,
-              background: "#cc0000",
+              background: "#990000",
               color: "#fff",
               border: "none",
               fontFamily: "Montserrat,sans-serif",
@@ -632,9 +632,9 @@ export default function ReporteMensualPage() {
             key={t}
             className="rm-tab"
             style={{
-              background: tab === t ? "#cc0000" : "rgba(255,255,255,0.05)",
+              background: tab === t ? "#990000" : "rgba(255,255,255,0.05)",
               color:      tab === t ? "#fff"    : "rgba(255,255,255,0.4)",
-              border:     tab === t ? "1px solid #cc0000" : "1px solid rgba(255,255,255,0.08)",
+              border:     tab === t ? "1px solid #990000" : "1px solid rgba(255,255,255,0.08)",
             }}
             onClick={() => setTab(t)}
           >
@@ -664,7 +664,7 @@ export default function ReporteMensualPage() {
                   style={{
                     width: 4,
                     height: 32,
-                    background: "#cc0000",
+                    background: "#990000",
                     borderRadius: 2,
                     flexShrink: 0,
                   }}
@@ -697,13 +697,13 @@ export default function ReporteMensualPage() {
                     label: "Negocios cerrados",
                     valor: String(negociosCerrados.length),
                     sub:   `en ${mesLabel}`,
-                    color: "#cc0000",
+                    color: "#990000",
                   },
                   {
                     label: "Honorarios generados",
                     valor: fmtARS(honorariosMes),
                     sub:   "netos del mes",
-                    color: "#22c55e",
+                    color: "#3abab6",
                   },
                   {
                     label: "Contactos nuevos",
@@ -715,7 +715,7 @@ export default function ReporteMensualPage() {
                     label: "Pipeline activo",
                     valor: fmtARS(valorPipeline),
                     sub:   "hon. estimados totales",
-                    color: "#f59e0b",
+                    color: "#d4960c",
                   },
                 ].map(card => (
                   <div
@@ -760,7 +760,7 @@ export default function ReporteMensualPage() {
               <div className="rm-card">
                 <div className="rm-section-title">
                   Negocios del mes —{" "}
-                  <span style={{ color: "#22c55e" }}>{negociosCerrados.length} cerrados</span>
+                  <span style={{ color: "#3abab6" }}>{negociosCerrados.length} cerrados</span>
                   {" · "}
                   <span style={{ color: "#3b82f6" }}>{negociosNuevos.length} iniciados</span>
                 </div>
@@ -793,7 +793,7 @@ export default function ReporteMensualPage() {
                                   border: "1px solid rgba(34,197,94,0.3)",
                                   borderRadius: 4,
                                   padding: "2px 7px",
-                                  color: "#22c55e",
+                                  color: "#3abab6",
                                   fontFamily: "Montserrat,sans-serif",
                                   fontWeight: 700,
                                   whiteSpace: "nowrap",
@@ -810,7 +810,7 @@ export default function ReporteMensualPage() {
                                 textAlign: "right",
                                 fontFamily: "Montserrat,sans-serif",
                                 fontWeight: 700,
-                                color: "#22c55e",
+                                color: "#3abab6",
                                 whiteSpace: "nowrap",
                               }}
                             >
@@ -1161,7 +1161,7 @@ export default function ReporteMensualPage() {
               }}
             >
               {/* Cabecera preview */}
-              <div style={{ borderBottom: "3px solid #cc0000", paddingBottom: 18, marginBottom: 28 }}>
+              <div style={{ borderBottom: "3px solid #990000", paddingBottom: 18, marginBottom: 28 }}>
                 <h1
                   style={{
                     fontFamily: "Montserrat, sans-serif",
@@ -1172,7 +1172,7 @@ export default function ReporteMensualPage() {
                   }}
                 >
                   Reporte Mensual —{" "}
-                  <span style={{ color: "#cc0000" }}>{mesLabel}</span>
+                  <span style={{ color: "#990000" }}>{mesLabel}</span>
                 </h1>
                 <p style={{ fontSize: 12, color: "#6b7280", margin: "6px 0 0" }}>
                   Generado el {fechaHoy} · TC USD/ARS: ${tc.toLocaleString("es-AR")}
@@ -1189,8 +1189,8 @@ export default function ReporteMensualPage() {
                 }}
               >
                 {[
-                  { label: "Negocios cerrados",   valor: String(negociosCerrados.length), color: "#cc0000" },
-                  { label: "Honorarios generados", valor: fmtARS(honorariosMes),          color: "#16a34a" },
+                  { label: "Negocios cerrados",   valor: String(negociosCerrados.length), color: "#990000" },
+                  { label: "Honorarios generados", valor: fmtARS(honorariosMes),          color: "#22807c" },
                   { label: "Contactos nuevos",     valor: String(contactosNuevos.length), color: "#2563eb" },
                   { label: "Pipeline activo",      valor: fmtARS(valorPipeline),          color: "#d97706" },
                 ].map(card => (

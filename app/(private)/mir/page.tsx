@@ -58,8 +58,8 @@ const ANTIGUEDADES = [
 ];
 
 const OP_COLOR: Record<string, string> = {
-  venta: "#22c55e", compra: "#22c55e", alquiler: "#60a5fa",
-  temporario: "#eab308", permuta: "#c084fc", comercial: "#f97316",
+  venta: "#3abab6", compra: "#3abab6", alquiler: "#4ab8d8",
+  temporario: "#d4960c", permuta: "#c084fc", comercial: "#d4960c",
   fondo_comercio: "#fb7185", campo: "#84cc16",
 };
 
@@ -182,7 +182,7 @@ const formatHora = (iso: string) =>
 
 const Toggle = ({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => onChange(!value)}>
-    <div style={{ width: 38, height: 22, borderRadius: 11, background: value ? "#cc0000" : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
+    <div style={{ width: 38, height: 22, borderRadius: 11, background: value ? "#990000" : "rgba(255,255,255,0.1)", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
       <div style={{ position: "absolute", top: 3, left: value ? 19 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
     </div>
     <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>{label}</span>
@@ -669,21 +669,21 @@ export default function MirPage() {
     return (
       <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
         <button
-          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaInteresa ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaInteresa ? "rgba(34,197,94,0.1)" : "transparent", color: yaInteresa ? "#22c55e" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaInteresa ? "default" : "pointer", transition: "all 0.15s" }}
+          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaInteresa ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaInteresa ? "rgba(34,197,94,0.1)" : "transparent", color: yaInteresa ? "#3abab6" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaInteresa ? "default" : "pointer", transition: "all 0.15s" }}
           onClick={() => !yaInteresa && setModalInteres({ pub, tipo: "me_interesa", pubTipo })}
           disabled={interesando === pub.id}
         >
           {yaInteresa ? "✓ Interesado" : "Me interesa"}
         </button>
         <button
-          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaTengo ? "rgba(96,165,250,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaTengo ? "rgba(96,165,250,0.1)" : "transparent", color: yaTengo ? "#60a5fa" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaTengo ? "default" : "pointer", transition: "all 0.15s" }}
+          style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${yaTengo ? "rgba(74,184,216,0.5)" : "rgba(255,255,255,0.15)"}`, background: yaTengo ? "rgba(74,184,216,0.1)" : "transparent", color: yaTengo ? "#4ab8d8" : "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: yaTengo ? "default" : "pointer", transition: "all 0.15s" }}
           onClick={() => !yaTengo && setModalInteres({ pub, tipo: "tengo", pubTipo })}
           disabled={interesando === pub.id}
         >
           {yaTengo ? "✓ Enviado" : "Tengo"}
         </button>
         {cantIntereses(pub.id) > 0 && (
-          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.25)", color: "#cc0000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.25)", color: "#990000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
             {cantIntereses(pub.id)} nuevo{cantIntereses(pub.id) !== 1 ? "s" : ""}
           </span>
         )}
@@ -714,7 +714,7 @@ export default function MirPage() {
         .mir-card:hover { border-color: var(--gfi-border-bright); box-shadow: var(--gfi-shadow-md); }
         .mir-card.propia { border-color: var(--gfi-red-border); background: var(--gfi-bg-elevated); }
         .mir-card.urgente-card { border-color: rgba(196,74,0,0.4); box-shadow: 0 0 12px rgba(196,74,0,0.1); }
-        .mir-urgente-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); color: #f97316; font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; }
+        .mir-urgente-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--gfi-orange-soft); border: 1px solid var(--gfi-orange-border); color: #d4960c; font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; }
         .mir-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
         .mir-card-titulo { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: var(--gfi-text-primary); }
         .mir-op-badge { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; flex-shrink: 0; }
@@ -729,7 +729,7 @@ export default function MirPage() {
         .mir-corredor { font-size: 11px; color: var(--gfi-text-muted); }
         .mir-corredor b { color: var(--gfi-text-secondary); }
         .mir-fecha { font-family: var(--font-mono); font-size: 10px; color: var(--gfi-text-dim); margin-top: 2px; }
-        .mir-btn-baja { padding: 4px 10px; background: transparent; border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-sm); color: rgba(204,0,0,0.7); font-size: 9px; cursor: pointer; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transition: var(--gfi-transition); }
+        .mir-btn-baja { padding: 4px 10px; background: transparent; border: 1px solid var(--gfi-red-border); border-radius: var(--gfi-radius-sm); color: rgba(153,0,0,0.7); font-size: 9px; cursor: pointer; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transition: var(--gfi-transition); }
         .mir-btn-baja:hover { background: var(--gfi-red-soft); color: var(--gfi-red); }
         .mir-btn-editar { padding: 4px 10px; background: transparent; border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-sm); color: var(--gfi-text-muted); font-size: 9px; cursor: pointer; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transition: var(--gfi-transition); }
         .mir-btn-editar:hover { border-color: var(--gfi-border-bright); color: var(--gfi-text-primary); }
@@ -1017,25 +1017,25 @@ export default function MirPage() {
                       <div className="mir-match-lado-titulo">Ofrecido</div>
                       <div className="mir-match-info">{of?.tipo_propiedad} · {of?.ciudad}</div>
                       <div className="mir-match-sub">{OP_LABEL[of?.operacion ?? ""]}{of?.precio ? ` · ${formatPeso(of.precio, of.moneda)}` : ""}</div>
-                      {esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>Es tuyo</div>}
+                      {esDuenioOf && <div className="mir-match-sub" style={{color:"#990000",marginTop:4}}>Es tuyo</div>}
                     </div>
                     <div className="mir-match-sep"/>
                     <div className="mir-match-lado">
                       <div className="mir-match-lado-titulo">Busqueda</div>
                       <div className="mir-match-info">{bu?.tipo_propiedad} · {bu?.ciudad}</div>
                       <div className="mir-match-sub">{OP_LABEL[bu?.operacion ?? ""]}{bu?.presupuesto_max ? ` · hasta ${formatPeso(bu.presupuesto_max, bu.moneda)}` : ""}</div>
-                      {!esDuenioOf && <div className="mir-match-sub" style={{color:"#cc0000",marginTop:4}}>Es tuya</div>}
+                      {!esDuenioOf && <div className="mir-match-sub" style={{color:"#990000",marginTop:4}}>Es tuya</div>}
                     </div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
                     <div style={{background:"rgba(34,197,94,0.08)",border:"1px solid rgba(34,197,94,0.2)",borderRadius:6,padding:"10px 14px",minWidth:160}}>
-                      <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#22c55e",marginBottom:6}}>CONTACTO</div>
+                      <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.1em",color:"#3abab6",marginBottom:6}}>CONTACTO</div>
                       <div style={{fontSize:12,color:"#fff",fontWeight:600}}>{esDuenioOf ? bu?.perfiles?.nombre : of?.perfiles?.nombre} {esDuenioOf ? bu?.perfiles?.apellido : of?.perfiles?.apellido}</div>
                       {(esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginTop:3}}>📱 {esDuenioOf ? bu?.perfiles?.telefono : of?.perfiles?.telefono}</div>}
                       {(esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email) && <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>✉️ {esDuenioOf ? bu?.perfiles?.email : of?.perfiles?.email}</div>}
                       {otroId && (
                         <button onClick={() => abrirChat(m.ofrecido_id, "ofrecido", otroId)}
-                          style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#22c55e",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer",width:"100%"}}>
+                          style={{marginTop:8,padding:"5px 12px",background:"rgba(34,197,94,0.1)",border:"1px solid rgba(34,197,94,0.3)",borderRadius:4,color:"#3abab6",fontSize:10,fontFamily:"'Montserrat',sans-serif",fontWeight:700,cursor:"pointer",width:"100%"}}>
                           Abrir chat
                         </button>
                       )}
@@ -1206,7 +1206,7 @@ export default function MirPage() {
         <div className="mir-interes-bg" onClick={e => { if (e.target === e.currentTarget) setModalInteres(null); }}>
           <div className="mir-interes-modal">
             <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:15,fontWeight:800,color:"#fff",marginBottom:6}}>
-              {modalInteres.tipo === "me_interesa" ? "Me interesa" : "Tengo"} <span style={{color:"#cc0000"}}>esta publicacion</span>
+              {modalInteres.tipo === "me_interesa" ? "Me interesa" : "Tengo"} <span style={{color:"#990000"}}>esta publicacion</span>
             </div>
             <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:16}}>
               {modalInteres.pub.tipo_propiedad} · {modalInteres.pub.ciudad}

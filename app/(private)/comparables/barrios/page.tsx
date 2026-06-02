@@ -34,15 +34,15 @@ const ZONAS = ["Todos", "CABA", "GBA Norte", "GBA Sur", "GBA Oeste"];
 type SortKey = "m2_venta_usd_asc" | "m2_venta_usd_desc" | "m2_alquiler_ars_asc" | "m2_alquiler_ars_desc" | "demanda";
 
 function TendenciaIcon({ t }: { t: string }) {
-  if (t === "alza")   return <span style={{ color: "#22c55e", fontWeight: 700 }}>↑ alza</span>;
-  if (t === "baja")   return <span style={{ color: "#ef4444", fontWeight: 700 }}>↓ baja</span>;
-  return <span style={{ color: "#eab308", fontWeight: 700 }}>→ estable</span>;
+  if (t === "alza")   return <span style={{ color: "#3abab6", fontWeight: 700 }}>↑ alza</span>;
+  if (t === "baja")   return <span style={{ color: "#b80000", fontWeight: 700 }}>↓ baja</span>;
+  return <span style={{ color: "#d4960c", fontWeight: 700 }}>→ estable</span>;
 }
 
 function DemandaBadge({ d }: { d: string }) {
   const estilos: Record<string, { bg: string; border: string; color: string }> = {
-    alta:  { bg: "rgba(34,197,94,0.1)",  border: "rgba(34,197,94,0.3)",  color: "#22c55e" },
-    media: { bg: "rgba(234,179,8,0.1)",  border: "rgba(234,179,8,0.3)",  color: "#eab308" },
+    alta:  { bg: "rgba(34,197,94,0.1)",  border: "rgba(34,197,94,0.3)",  color: "#3abab6" },
+    media: { bg: "rgba(234,179,8,0.1)",  border: "rgba(234,179,8,0.3)",  color: "#d4960c" },
     baja:  { bg: "rgba(120,120,120,0.1)", border: "rgba(120,120,120,0.3)", color: "#888" },
   };
   const s = estilos[d] ?? estilos.baja;
@@ -100,7 +100,7 @@ export default function BarriosPage() {
         .bar-wrap { display: flex; flex-direction: column; gap: 20px; }
         .bar-header { }
         .bar-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .bar-titulo span { color: #cc0000; }
+        .bar-titulo span { color: #990000; }
         .bar-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
         .bar-controles { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
         .bar-search { flex: 1; min-width: 180px; padding: 9px 12px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
@@ -124,7 +124,7 @@ export default function BarriosPage() {
         .bar-tabla td { padding: 12px 14px; font-size: 13px; color: rgba(255,255,255,0.75); vertical-align: middle; }
         .bar-barrio-name { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #fff; font-size: 13px; }
         .bar-zona-badge { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
-        .bar-precio { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #60a5fa; }
+        .bar-precio { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #4ab8d8; }
         .bar-precio-alq { font-family: 'Montserrat',sans-serif; font-weight: 700; color: #a78bfa; }
         /* Detail card */
         .bar-detail-row td { padding: 0 14px 14px; }
@@ -247,7 +247,7 @@ export default function BarriosPage() {
                                 </div>
                                 <div>
                                   <div className="bar-detail-label">Precio venta</div>
-                                  <div className="bar-detail-value" style={{ color: "#60a5fa" }}>USD {b.m2_venta_usd.toLocaleString("es-AR")} /m²</div>
+                                  <div className="bar-detail-value" style={{ color: "#4ab8d8" }}>USD {b.m2_venta_usd.toLocaleString("es-AR")} /m²</div>
                                 </div>
                                 <div>
                                   <div className="bar-detail-label">Precio alquiler</div>

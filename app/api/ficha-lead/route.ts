@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     const htmlBody = `
       <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;color:#222;">
-        <div style="background:#cc0000;padding:20px 24px;">
+        <div style="background:#990000;padding:20px 24px;">
           <div style="color:#fff;font-size:18px;font-weight:bold;">GFI® · ${esc(perfil?.inmobiliaria || corredor)}</div>
           <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">Nueva consulta sobre una propiedad</div>
         </div>
@@ -65,12 +65,12 @@ export async function POST(req: NextRequest) {
             <strong>Propiedad:</strong> ${esc(prop.titulo)}${prop.ciudad ? ` · ${esc(prop.ciudad)}` : ""}
           </div>
           <table style="width:100%;border-collapse:collapse;">
-            ${tipo_consulta ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Tipo</td><td style="padding:8px 0;font-size:14px;font-weight:600;color:#cc0000;">${esc(tipo_consulta)}</td></tr>` : ""}
+            ${tipo_consulta ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Tipo</td><td style="padding:8px 0;font-size:14px;font-weight:600;color:#990000;">${esc(tipo_consulta)}</td></tr>` : ""}
             <tr><td style="padding:8px 0;font-size:12px;color:#666;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:600;">${esc(nombre)}</td></tr>
-            ${email ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Email</td><td style="padding:8px 0;font-size:14px;"><a href="mailto:${esc(email)}" style="color:#cc0000;">${esc(email)}</a></td></tr>` : ""}
-            ${telefono ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Teléfono</td><td style="padding:8px 0;font-size:14px;"><a href="tel:${esc(telefono)}" style="color:#cc0000;">${esc(telefono)}</a></td></tr>` : ""}
+            ${email ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Email</td><td style="padding:8px 0;font-size:14px;"><a href="mailto:${esc(email)}" style="color:#990000;">${esc(email)}</a></td></tr>` : ""}
+            ${telefono ? `<tr><td style="padding:8px 0;font-size:12px;color:#666;">Teléfono</td><td style="padding:8px 0;font-size:14px;"><a href="tel:${esc(telefono)}" style="color:#990000;">${esc(telefono)}</a></td></tr>` : ""}
           </table>
-          ${mensaje ? `<div style="margin-top:16px;padding:16px;background:#f9f9f9;border-radius:6px;border-left:3px solid #cc0000;"><div style="font-size:12px;color:#666;margin-bottom:6px;">MENSAJE</div><div style="font-size:14px;white-space:pre-wrap;">${esc(mensaje)}</div></div>` : ""}
+          ${mensaje ? `<div style="margin-top:16px;padding:16px;background:#f9f9f9;border-radius:6px;border-left:3px solid #990000;"><div style="font-size:12px;color:#666;margin-bottom:6px;">MENSAJE</div><div style="font-size:14px;white-space:pre-wrap;">${esc(mensaje)}</div></div>` : ""}
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:11px;color:#999;">
             Recibido desde la ficha pública GFI® · ${new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
           </div>

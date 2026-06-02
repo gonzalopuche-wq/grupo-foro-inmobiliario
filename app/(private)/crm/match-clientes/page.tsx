@@ -182,7 +182,7 @@ export default function MatchClientesPage() {
     });
   };
 
-  const scoreColor = (s: number) => s >= 70 ? "#22c55e" : s >= 50 ? "#f97316" : "#eab308";
+  const scoreColor = (s: number) => s >= 70 ? "#3abab6" : s >= 50 ? "#d4960c" : "#d4960c";
   const scoreLabel = (s: number) => s >= 70 ? "Alta" : s >= 50 ? "Media" : "Baja";
 
   const fmtPresup = (c: Contacto) => {
@@ -236,10 +236,10 @@ export default function MatchClientesPage() {
         {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
           {[
-            { label: "Matches encontrados", value: matches.length, color: "#cc0000" },
-            { label: "Clientes con match", value: porContacto.length, color: "#f97316" },
+            { label: "Matches encontrados", value: matches.length, color: "#990000" },
+            { label: "Clientes con match", value: porContacto.length, color: "#d4960c" },
             { label: "Negocios activos", value: negociosFiltrados.length, color: "#3b82f6" },
-            { label: "Alta compatibilidad", value: matches.filter(m => m.score >= 70).length, color: "#22c55e" },
+            { label: "Alta compatibilidad", value: matches.filter(m => m.score >= 70).length, color: "#3abab6" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
@@ -376,7 +376,7 @@ export default function MatchClientesPage() {
               if (!c) return null;
               return (
                 <span key={id} style={{ fontSize: 12, color: "#e5e5e5" }}>
-                  <strong style={{ color: "#cc0000" }}>{c.nombre} {c.apellido}</strong>
+                  <strong style={{ color: "#990000" }}>{c.nombre} {c.apellido}</strong>
                   <span style={{ color: "#6b7280", marginLeft: 4 }}>({count} matches)</span>
                 </span>
               );

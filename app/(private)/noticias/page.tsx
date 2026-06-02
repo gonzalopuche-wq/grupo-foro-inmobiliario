@@ -312,23 +312,23 @@ export default function NoticiasPage() {
         .not-tab { flex: 1; padding: 7px; background: none; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; position: relative; }
         .not-tab:first-child { border-radius: 3px 0 0 3px; }
         .not-tab:last-child { border-radius: 0 3px 3px 0; border-left: none; }
-        .not-tab.activo { background: rgba(200,0,0,0.1); border-color: #cc0000; color: #fff; }
-        .not-tab-badge { position: absolute; top: -5px; right: -5px; background: #cc0000; color: #fff; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 8px; min-width: 14px; text-align: center; }
+        .not-tab.activo { background: rgba(200,0,0,0.1); border-color: #990000; color: #fff; }
+        .not-tab-badge { position: absolute; top: -5px; right: -5px; background: #990000; color: #fff; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 8px; min-width: 14px; text-align: center; }
         .not-lista { flex: 1; overflow-y: auto; }
         .not-lista::-webkit-scrollbar { width: 3px; }
         .not-lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
         .not-item { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.15s; display: flex; gap: 10px; }
         .not-item:hover { background: rgba(255,255,255,0.03); }
-        .not-item.activo { background: rgba(200,0,0,0.07); border-left: 2px solid #cc0000; }
+        .not-item.activo { background: rgba(200,0,0,0.07); border-left: 2px solid #990000; }
         .not-item-img { width: 52px; height: 52px; border-radius: 5px; object-fit: cover; flex-shrink: 0; background: rgba(255,255,255,0.05); }
         .not-item-img-placeholder { width: 52px; height: 52px; border-radius: 5px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .not-item-info { flex: 1; min-width: 0; }
         .not-item-titulo { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .not-item-meta { font-size: 10px; color: rgba(255,255,255,0.3); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .not-item-fuente { font-size: 9px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-        .not-badge-dest { font-size: 8px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #eab308; padding: 1px 5px; border-radius: 3px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .not-item-fuente { font-size: 9px; color: #990000; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+        .not-badge-dest { font-size: 8px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; padding: 1px 5px; border-radius: 3px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
         .not-badge-pend { font-size: 8px; background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.25); color: #fb923c; padding: 1px 5px; border-radius: 3px; font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-        .not-btn-nueva { padding: 7px 14px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+        .not-btn-nueva { padding: 7px 14px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .not-btn-nueva:hover { background: #e60000; }
 
         /* Detalle */
@@ -338,21 +338,21 @@ export default function NoticiasPage() {
         .not-detalle-empty { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: rgba(255,255,255,0.15); }
         .not-detalle-imagen { width: 100%; height: 220px; object-fit: cover; border-radius: 8px 8px 0 0; }
         .not-detalle-body { padding: 24px 28px; flex: 1; }
-        .not-detalle-fuente { font-size: 10px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .not-detalle-fuente { font-size: 10px; color: #990000; font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
         .not-detalle-titulo { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 10px; }
         .not-detalle-meta { font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 18px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
         .not-detalle-cuerpo { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; font-family: 'Inter', sans-serif; white-space: pre-wrap; word-break: break-word; }
-        .not-detalle-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
+        .not-detalle-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #990000; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
         .not-detalle-link:hover { background: rgba(200,0,0,0.15); color: #fff; }
         .not-detalle-actions { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07); flex-wrap: wrap; }
-        .not-btn-aprobar { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #22c55e; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-btn-aprobar { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-aprobar:hover { background: rgba(34,197,94,0.2); }
         .not-btn-rechazar { padding: 8px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-rechazar:hover { border-color: rgba(200,0,0,0.3); color: #cc0000; }
+        .not-btn-rechazar:hover { border-color: rgba(200,0,0,0.3); color: #990000; }
         .not-btn-eliminar { padding: 8px 16px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-eliminar:hover { background: rgba(200,0,0,0.1); color: #ff4444; }
         .not-btn-dest { padding: 8px 16px; background: transparent; border: 1px solid rgba(234,179,8,0.2); border-radius: 3px; color: rgba(234,179,8,0.7); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-dest:hover { background: rgba(234,179,8,0.1); color: #eab308; }
+        .not-btn-dest:hover { background: rgba(234,179,8,0.1); color: #d4960c; }
         .not-btn-redes { padding: 8px 16px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 3px; color: #3b82f6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-redes:hover { background: rgba(59,130,246,0.2); }
         .not-btn-redes:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -362,9 +362,9 @@ export default function NoticiasPage() {
         /* Modal form */
         .not-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: flex-start; justify-content: center; z-index: 200; padding: 24px; overflow-y: auto; }
         .not-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 600px; position: relative; margin: auto; }
-        .not-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
+        .not-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .not-modal-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-        .not-modal-title span { color: #cc0000; }
+        .not-modal-title span { color: #990000; }
         .not-field { margin-bottom: 14px; }
         .not-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }
         .not-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
@@ -374,7 +374,7 @@ export default function NoticiasPage() {
         .not-textarea:focus { border-color: rgba(200,0,0,0.5); }
         .not-modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
         .not-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-guardar { padding: 10px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .not-btn-guardar:hover { background: #e60000; }
         .not-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .not-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
@@ -404,11 +404,11 @@ export default function NoticiasPage() {
         .not-btn-traer { padding: 5px 10px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; color: #8b5cf6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
         .not-btn-traer:hover { background: rgba(139,92,246,0.2); }
         .not-btn-traer:disabled { opacity: 0.5; cursor: not-allowed; }
-        .not-btn-publicar-ai { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #22c55e; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+        .not-btn-publicar-ai { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-publicar-ai:hover { background: rgba(34,197,94,0.2); }
         .not-btn-publicar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
         .not-btn-descartar-ai { padding: 8px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-descartar-ai:hover { border-color: rgba(200,0,0,0.3); color: #cc0000; }
+        .not-btn-descartar-ai:hover { border-color: rgba(200,0,0,0.3); color: #990000; }
         .not-btn-descartar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
 
         @media (max-width: 768px) {
@@ -422,7 +422,7 @@ export default function NoticiasPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
         <div>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
-            Noticias <span style={{ color: "#cc0000" }}>del Sector</span>
+            Noticias <span style={{ color: "#990000" }}>del Sector</span>
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>
             Información relevante para el corredor inmobiliario
@@ -463,7 +463,7 @@ export default function NoticiasPage() {
             <div className="not-verif-grid">
               {(verificacionResult ?? []).map(r => (
                 <div key={r.red} className="not-verif-card" style={{ background: r.ok ? "rgba(34,197,94,0.05)" : r.configurada ? "rgba(239,68,68,0.05)" : "rgba(255,255,255,0.03)", borderColor: r.ok ? "rgba(34,197,94,0.2)" : r.configurada ? "rgba(239,68,68,0.2)" : "rgba(255,255,255,0.07)" }}>
-                  <div className="not-verif-red" style={{ color: r.ok ? "#22c55e" : r.configurada ? "#ef4444" : "rgba(255,255,255,0.3)" }}>
+                  <div className="not-verif-red" style={{ color: r.ok ? "#3abab6" : r.configurada ? "#b80000" : "rgba(255,255,255,0.3)" }}>
                     {r.ok ? "✓" : r.configurada ? "✗" : "—"} {r.red}
                   </div>
                   {r.ok ? (
@@ -472,7 +472,7 @@ export default function NoticiasPage() {
                       {r.detalle && <div className="not-verif-detalle" style={{ color: "rgba(255,255,255,0.5)" }}>{r.detalle}</div>}
                     </>
                   ) : (
-                    <div className="not-verif-error" style={{ color: r.configurada ? "#ef4444" : "rgba(255,255,255,0.3)" }}>
+                    <div className="not-verif-error" style={{ color: r.configurada ? "#b80000" : "rgba(255,255,255,0.3)" }}>
                       {r.error ?? (r.configurada ? "Error de autenticación" : "Sin configurar")}
                     </div>
                   )}
@@ -485,7 +485,7 @@ export default function NoticiasPage() {
 
       {loading ? (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-          <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+          <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         </div>
       ) : errorCarga ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12 }}>
@@ -493,7 +493,7 @@ export default function NoticiasPage() {
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>No se pudieron cargar las noticias</div>
           <button
             onClick={() => cargarNoticias(esAdmin)}
-            style={{ padding: "8px 20px", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.1em" }}
+            style={{ padding: "8px 20px", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 4, color: "#990000", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", letterSpacing: "0.1em" }}
           >
             Reintentar
           </button>
@@ -534,7 +534,7 @@ export default function NoticiasPage() {
                   </div>
                 ) : (
                   aiFeedItems.map(item => {
-                    const scoreColor = item.score >= 70 ? "#22c55e" : item.score >= 50 ? "#eab308" : "#fb923c";
+                    const scoreColor = item.score >= 70 ? "#3abab6" : item.score >= 50 ? "#d4960c" : "#fb923c";
                     const scoreBg = item.score >= 70 ? "rgba(34,197,94,0.15)" : item.score >= 50 ? "rgba(234,179,8,0.15)" : "rgba(251,146,60,0.15)";
                     const scoreBorder = item.score >= 70 ? "rgba(34,197,94,0.3)" : item.score >= 50 ? "rgba(234,179,8,0.3)" : "rgba(251,146,60,0.3)";
                     return (
@@ -600,7 +600,7 @@ export default function NoticiasPage() {
                     <div className="not-detalle-meta">
                       {(() => {
                         const s = aiFeedActivo.score;
-                        const c = s >= 70 ? "#22c55e" : s >= 50 ? "#eab308" : "#fb923c";
+                        const c = s >= 70 ? "#3abab6" : s >= 50 ? "#d4960c" : "#fb923c";
                         const bg = s >= 70 ? "rgba(34,197,94,0.12)" : s >= 50 ? "rgba(234,179,8,0.12)" : "rgba(251,146,60,0.12)";
                         const bd = s >= 70 ? "rgba(34,197,94,0.3)" : s >= 50 ? "rgba(234,179,8,0.3)" : "rgba(251,146,60,0.3)";
                         return (
@@ -691,7 +691,7 @@ export default function NoticiasPage() {
                       {redesResultados[noticiaActiva.id] && (
                         <div className="not-redes-resultado">
                           {redesResultados[noticiaActiva.id].map(r => (
-                            <span key={r.red} className="not-red-badge" style={{ background: r.ok ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: r.ok ? "#22c55e" : "#ef4444", border: `1px solid ${r.ok ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
+                            <span key={r.red} className="not-red-badge" style={{ background: r.ok ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: r.ok ? "#3abab6" : "#b80000", border: `1px solid ${r.ok ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}` }}>
                               {r.ok ? "✓" : "✗"} {r.red}{!r.ok && r.error ? ` · ${r.error}` : ""}
                             </span>
                           ))}
@@ -737,7 +737,7 @@ export default function NoticiasPage() {
                   style={{paddingRight: fetchandoLink ? 36 : undefined}}
                 />
                 {fetchandoLink && (
-                  <div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",width:14,height:14,border:"2px solid rgba(200,0,0,0.3)",borderTopColor:"#cc0000",borderRadius:"50%",animation:"not-spin 0.7s linear infinite"}}/>
+                  <div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",width:14,height:14,border:"2px solid rgba(200,0,0,0.3)",borderTopColor:"#990000",borderRadius:"50%",animation:"not-spin 0.7s linear infinite"}}/>
                 )}
               </div>
             </div>
@@ -748,7 +748,7 @@ export default function NoticiasPage() {
             {esAdmin && (
               <div className="not-field">
                 <div className="not-toggle-row" onClick={() => setForm(p => ({ ...p, destacado: !p.destacado }))}>
-                  <div className="not-toggle" style={{ background: form.destacado ? "#cc0000" : "rgba(255,255,255,0.1)" }}>
+                  <div className="not-toggle" style={{ background: form.destacado ? "#990000" : "rgba(255,255,255,0.1)" }}>
                     <div className="not-toggle-knob" style={{ left: form.destacado ? 19 : 3 }} />
                   </div>
                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>Marcar como destacada</span>

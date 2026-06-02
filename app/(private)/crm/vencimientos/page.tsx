@@ -53,9 +53,9 @@ interface ItemVencimiento {
 }
 
 const TIPO_COLORS: Record<string, string> = {
-  reserva:   "#f97316", escritura: "#cc0000", cierre:    "#a855f7",
-  visita:    "#3b82f6", contrato:  "#eab308", documento: "#6b7280",
-  pago:      "#22c55e", llamada:   "#06b6d4", otro:      "#9ca3af",
+  reserva:   "#d4960c", escritura: "#990000", cierre:    "#a855f7",
+  visita:    "#3b82f6", contrato:  "#d4960c", documento: "#6b7280",
+  pago:      "#3abab6", llamada:   "#06b6d4", otro:      "#9ca3af",
 };
 
 const TIPO_LABELS: Record<string, string> = {
@@ -79,10 +79,10 @@ function calcUrgencia(dias: number): ItemVencimiento["urgencia"] {
 }
 
 const URG_CONFIG = {
-  vencido: { label: "Vencido",  color: "#cc0000",  bg: "rgba(204,0,0,0.08)" },
-  critico: { label: "Crítico",  color: "#f97316",  bg: "rgba(249,115,22,0.08)" },
-  proximo: { label: "Próximo",  color: "#eab308",  bg: "rgba(234,179,8,0.08)" },
-  normal:  { label: "Ok",       color: "#22c55e",  bg: "rgba(34,197,94,0.04)" },
+  vencido: { label: "Vencido",  color: "#990000",  bg: "rgba(153,0,0,0.08)" },
+  critico: { label: "Crítico",  color: "#d4960c",  bg: "rgba(249,115,22,0.08)" },
+  proximo: { label: "Próximo",  color: "#d4960c",  bg: "rgba(234,179,8,0.08)" },
+  normal:  { label: "Ok",       color: "#3abab6",  bg: "rgba(34,197,94,0.04)" },
 };
 
 const FORM_DEFAULT: {
@@ -267,12 +267,12 @@ export default function VencimientosPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 18, color: "#fff" }}>
-            Vencimientos <span style={{ color: "#cc0000" }}>CRM</span>
+            Vencimientos <span style={{ color: "#990000" }}>CRM</span>
           </div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>Reservas, escrituras, cierres y recordatorios</div>
         </div>
         <button onClick={() => setMostrarForm(v => !v)}
-          style={{ background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", padding: "8px 14px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+          style={{ background: "#990000", border: "none", borderRadius: 8, color: "#fff", padding: "8px 14px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
           + Agregar
         </button>
       </div>
@@ -281,9 +281,9 @@ export default function VencimientosPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 20 }}>
         {[
           { label: "Total", value: stats.total, color: "#e5e5e5" },
-          { label: "🔴 Vencidas", value: stats.vencido, color: "#cc0000" },
-          { label: "🟠 Críticas ≤3d", value: stats.critico, color: "#f97316" },
-          { label: "🟡 Próximas ≤14d", value: stats.proximo, color: "#eab308" },
+          { label: "🔴 Vencidas", value: stats.vencido, color: "#990000" },
+          { label: "🟠 Críticas ≤3d", value: stats.critico, color: "#d4960c" },
+          { label: "🟡 Próximas ≤14d", value: stats.proximo, color: "#d4960c" },
         ].map(k => (
           <div key={k.label} style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 16px" }}>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginBottom: 4 }}>{k.label}</div>
@@ -294,8 +294,8 @@ export default function VencimientosPage() {
 
       {/* Formulario agregar */}
       {mostrarForm && (
-        <div style={{ background: "#111", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Nuevo recordatorio</div>
+        <div style={{ background: "#111", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Nuevo recordatorio</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
             {[
               { label: "Título *", key: "titulo" as const, type: "text", ph: "Ej: Vence contrato García" },
@@ -329,7 +329,7 @@ export default function VencimientosPage() {
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <button onClick={agregarCustom} disabled={guardando}
-              style={{ background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", padding: "8px 16px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, opacity: guardando ? 0.6 : 1 }}>
+              style={{ background: "#990000", border: "none", borderRadius: 6, color: "#fff", padding: "8px 16px", fontSize: 12, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700, opacity: guardando ? 0.6 : 1 }}>
               {guardando ? "Guardando..." : "Guardar"}
             </button>
             <button onClick={() => { setMostrarForm(false); setForm(FORM_DEFAULT); }}
@@ -362,7 +362,7 @@ export default function VencimientosPage() {
       ) : visibles.length === 0 ? (
         <div style={{ background: "#111", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 48, textAlign: "center" }}>
           <div style={{ fontSize: 36, marginBottom: 10 }}>🗓️</div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 16, color: "#22c55e" }}>Sin vencimientos pendientes</div>
+          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin vencimientos pendientes</div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>Completá fechas en tus negocios o agregá recordatorios</div>
         </div>
       ) : (
@@ -410,13 +410,13 @@ export default function VencimientosPage() {
                       </Link>
                     )}
                     <button onClick={() => marcarCompletado(item)}
-                      style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 5, color: "#22c55e", padding: "5px 8px", fontSize: 10, cursor: "pointer" }}
+                      style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 5, color: "#3abab6", padding: "5px 8px", fontSize: 10, cursor: "pointer" }}
                       title="Marcar como completado">
                       ✓
                     </button>
                     {item.esCustom && (
                       <button onClick={() => eliminarCustom(item.id)}
-                        style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 5, color: "#ef4444", padding: "5px 8px", fontSize: 10, cursor: "pointer" }}>
+                        style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 5, color: "#b80000", padding: "5px 8px", fontSize: 10, cursor: "pointer" }}>
                         ×
                       </button>
                     )}

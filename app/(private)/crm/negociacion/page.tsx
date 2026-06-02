@@ -162,7 +162,7 @@ export default function Negociacion() {
               <label style={labelStyle}>Estrategia</label>
               <div style={{ display: "flex", gap: 6 }}>
                 {(["agresiva", "moderada", "conservadora"] as const).map(e => (
-                  <button key={e} onClick={() => setEstrategia(e)} style={{ flex: 1, padding: "6px 0", borderRadius: 8, border: `1px solid ${estrategia === e ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: estrategia === e ? "rgba(204,0,0,0.12)" : "transparent", color: estrategia === e ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "capitalize" }}>
+                  <button key={e} onClick={() => setEstrategia(e)} style={{ flex: 1, padding: "6px 0", borderRadius: 8, border: `1px solid ${estrategia === e ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: estrategia === e ? "rgba(153,0,0,0.12)" : "transparent", color: estrategia === e ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 9, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "capitalize" }}>
                     {e}
                   </button>
                 ))}
@@ -174,7 +174,7 @@ export default function Negociacion() {
               </p>
             </div>
 
-            <button onClick={iniciarNegociacion} style={{ width: "100%", padding: "9px", borderRadius: 8, background: "rgba(204,0,0,0.15)", border: "1px solid rgba(204,0,0,0.4)", color: "#cc0000", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+            <button onClick={iniciarNegociacion} style={{ width: "100%", padding: "9px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
               {movimientos.length > 0 ? "↺ Reiniciar" : "▶ Iniciar Negociación"}
             </button>
           </div>
@@ -183,8 +183,8 @@ export default function Negociacion() {
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 16 }}>
             <p style={{ margin: "0 0 10px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Rangos</p>
             {[
-              { label: "Precio pedido", val: precioPedido, color: "#cc0000" },
-              { label: "Piso vendedor", val: objetivoVendedor, color: "#f97316" },
+              { label: "Precio pedido", val: precioPedido, color: "#990000" },
+              { label: "Piso vendedor", val: objetivoVendedor, color: "#d4960c" },
               { label: "Oferta inicial", val: ofertaInicial, color: "#3b82f6" },
               { label: "Brecha total", val: precioPedido - ofertaInicial, color: "rgba(255,255,255,0.4)" },
             ].map(r => (
@@ -201,9 +201,9 @@ export default function Negociacion() {
                 {/* Oferta inicial */}
                 <div style={{ position: "absolute", left: `${((ofertaInicial - ofertaInicial * 0.98) / (precioPedido * 1.02 - ofertaInicial * 0.98)) * 100}%`, top: -2, width: 3, height: 12, background: "#3b82f6", borderRadius: 2 }} />
                 {/* Piso vendedor */}
-                <div style={{ position: "absolute", left: `${((objetivoVendedor - ofertaInicial * 0.98) / (precioPedido * 1.02 - ofertaInicial * 0.98)) * 100}%`, top: -2, width: 3, height: 12, background: "#f97316", borderRadius: 2 }} />
+                <div style={{ position: "absolute", left: `${((objetivoVendedor - ofertaInicial * 0.98) / (precioPedido * 1.02 - ofertaInicial * 0.98)) * 100}%`, top: -2, width: 3, height: 12, background: "#d4960c", borderRadius: 2 }} />
                 {/* Precio pedido */}
-                <div style={{ position: "absolute", right: "2%", top: -2, width: 3, height: 12, background: "#cc0000", borderRadius: 2 }} />
+                <div style={{ position: "absolute", right: "2%", top: -2, width: 3, height: 12, background: "#990000", borderRadius: 2 }} />
               </div>
             </div>
           </div>
@@ -223,8 +223,8 @@ export default function Negociacion() {
                 <div style={{ background: estado.posibleCierre ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.02)", border: `1px solid ${estado.posibleCierre ? "rgba(34,197,94,0.2)" : "rgba(255,255,255,0.06)"}`, borderRadius: 12, padding: 20, marginBottom: 16 }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 16 }}>
                     {[
-                      { label: "Última oferta", val: `USD ${fmt(estado.ultima.monto)}`, color: estado.ultima.parte === "comprador" ? "#3b82f6" : "#cc0000" },
-                      { label: "Brecha restante", val: `USD ${fmt(estado.brecha)}`, color: estado.brechaPct < 3 ? "#22c55e" : "#f97316" },
+                      { label: "Última oferta", val: `USD ${fmt(estado.ultima.monto)}`, color: estado.ultima.parte === "comprador" ? "#3b82f6" : "#990000" },
+                      { label: "Brecha restante", val: `USD ${fmt(estado.brecha)}`, color: estado.brechaPct < 3 ? "#3abab6" : "#d4960c" },
                       { label: "Diferencia precio", val: `${pct(estado.ultima.monto, precioPedido).toFixed(1)}%`, color: "rgba(255,255,255,0.6)" },
                       { label: "Honorarios est.", val: `USD ${fmt(estado.honorariosUSD)}`, color: "#a78bfa" },
                     ].map(kpi => (
@@ -238,10 +238,10 @@ export default function Negociacion() {
                   {/* Zona */}
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                     <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>ZONA:</span>
-                    <span style={{ fontSize: 12, padding: "3px 12px", borderRadius: 20, background: estado.zona === "zona de acuerdo" ? "rgba(34,197,94,0.15)" : estado.zona === "cerca del piso" ? "rgba(249,115,22,0.15)" : "rgba(204,0,0,0.15)", color: estado.zona === "zona de acuerdo" ? "#22c55e" : estado.zona === "cerca del piso" ? "#f97316" : "#cc0000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 12, padding: "3px 12px", borderRadius: 20, background: estado.zona === "zona de acuerdo" ? "rgba(34,197,94,0.15)" : estado.zona === "cerca del piso" ? "rgba(249,115,22,0.15)" : "rgba(153,0,0,0.15)", color: estado.zona === "zona de acuerdo" ? "#3abab6" : estado.zona === "cerca del piso" ? "#d4960c" : "#990000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
                       {estado.zona.toUpperCase()}
                     </span>
-                    {estado.posibleCierre && <span style={{ fontSize: 12, color: "#22c55e", fontWeight: 700 }}>✅ Supera piso del vendedor — posible cierre</span>}
+                    {estado.posibleCierre && <span style={{ fontSize: 12, color: "#3abab6", fontWeight: 700 }}>✅ Supera piso del vendedor — posible cierre</span>}
                   </div>
 
                   {/* Sugerencia */}
@@ -250,9 +250,9 @@ export default function Negociacion() {
                       Sugerencia ({estrategia}) — próxima jugada del {estado.ultima.parte === "comprador" ? "VENDEDOR" : "COMPRADOR"}
                     </p>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <span style={{ fontSize: 20, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#f97316" }}>USD {fmt(estado.sugerencia.monto)}</span>
+                      <span style={{ fontSize: 20, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#d4960c" }}>USD {fmt(estado.sugerencia.monto)}</span>
                       <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", flex: 1 }}>{estado.sugerencia.mensaje}</span>
-                      <button onClick={() => { setNuevaOferta(estado.sugerencia.monto); setNuevaParte(estado.ultima.parte === "comprador" ? "vendedor" : "comprador"); setNuevaNota(estado.sugerencia.mensaje); }} style={{ padding: "5px 12px", borderRadius: 8, background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.3)", color: "#f97316", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+                      <button onClick={() => { setNuevaOferta(estado.sugerencia.monto); setNuevaParte(estado.ultima.parte === "comprador" ? "vendedor" : "comprador"); setNuevaNota(estado.sugerencia.mensaje); }} style={{ padding: "5px 12px", borderRadius: 8, background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.3)", color: "#d4960c", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
                         Usar
                       </button>
                     </div>
@@ -268,8 +268,8 @@ export default function Negociacion() {
                   {[precioPedido, objetivoVendedor].map((ref, i) => {
                     const y = 100 - ((ref - minMonto) / (maxMonto - minMonto)) * 100;
                     return (
-                      <div key={i} style={{ position: "absolute", top: `${y}%`, left: 40, right: 40, height: 1, background: i === 0 ? "rgba(204,0,0,0.3)" : "rgba(249,115,22,0.3)", borderTop: `1px dashed ${i === 0 ? "rgba(204,0,0,0.4)" : "rgba(249,115,22,0.4)"}` }}>
-                        <span style={{ position: "absolute", right: -36, fontSize: 8, color: i === 0 ? "rgba(204,0,0,0.7)" : "rgba(249,115,22,0.7)", top: -6 }}>{i === 0 ? "Pedido" : "Piso"}</span>
+                      <div key={i} style={{ position: "absolute", top: `${y}%`, left: 40, right: 40, height: 1, background: i === 0 ? "rgba(153,0,0,0.3)" : "rgba(249,115,22,0.3)", borderTop: `1px dashed ${i === 0 ? "rgba(153,0,0,0.4)" : "rgba(249,115,22,0.4)"}` }}>
+                        <span style={{ position: "absolute", right: -36, fontSize: 8, color: i === 0 ? "rgba(153,0,0,0.7)" : "rgba(249,115,22,0.7)", top: -6 }}>{i === 0 ? "Pedido" : "Piso"}</span>
                       </div>
                     );
                   })}
@@ -288,7 +288,7 @@ export default function Negociacion() {
                     {movimientos.map((m, i) => {
                       const x = movimientos.length > 1 ? (i / (movimientos.length - 1)) * (Math.max(movimientos.length * 60, 300) - 40) + 20 : 150;
                       const y = 110 - ((m.monto - minMonto) / (maxMonto - minMonto)) * 100;
-                      const color = m.parte === "comprador" ? "#3b82f6" : "#cc0000";
+                      const color = m.parte === "comprador" ? "#3b82f6" : "#990000";
                       return (
                         <g key={m.id}>
                           <circle cx={x} cy={y} r={6} fill={color} stroke="#0a0a0a" strokeWidth={2} />
@@ -310,18 +310,18 @@ export default function Negociacion() {
                   const diff = anterior !== null ? m.monto - anterior : null;
                   return (
                     <div key={m.id} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 0", borderBottom: idx < movimientos.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: m.parte === "comprador" ? "rgba(59,130,246,0.15)" : "rgba(204,0,0,0.15)", border: `1px solid ${m.parte === "comprador" ? "rgba(59,130,246,0.3)" : "rgba(204,0,0,0.3)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: m.parte === "comprador" ? "rgba(59,130,246,0.15)" : "rgba(153,0,0,0.15)", border: `1px solid ${m.parte === "comprador" ? "rgba(59,130,246,0.3)" : "rgba(153,0,0,0.3)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12 }}>
                         {m.parte === "comprador" ? "🏠" : "🤝"}
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ fontSize: 11, color: m.parte === "comprador" ? "#3b82f6" : "#cc0000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{m.parte === "comprador" ? "Comprador" : "Vendedor"}</span>
+                          <span style={{ fontSize: 11, color: m.parte === "comprador" ? "#3b82f6" : "#990000", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{m.parte === "comprador" ? "Comprador" : "Vendedor"}</span>
                           <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{m.fecha}</span>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <span style={{ fontSize: 18, fontWeight: 800, fontFamily: "'Montserrat',sans-serif" }}>USD {fmt(m.monto)}</span>
                           {diff !== null && (
-                            <span style={{ fontSize: 11, color: diff > 0 ? "#22c55e" : "#cc0000", fontWeight: 700 }}>
+                            <span style={{ fontSize: 11, color: diff > 0 ? "#3abab6" : "#990000", fontWeight: 700 }}>
                               {diff > 0 ? "+" : ""}USD {fmt(diff)}
                             </span>
                           )}
@@ -352,7 +352,7 @@ export default function Negociacion() {
                     <label style={labelStyle}>Nota</label>
                     <input type="text" value={nuevaNota} onChange={e => setNuevaNota(e.target.value)} placeholder="Comentario opcional" style={inputStyle} />
                   </div>
-                  <button onClick={agregarMovimiento} style={{ padding: "7px 20px", borderRadius: 8, background: "#cc0000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                  <button onClick={agregarMovimiento} style={{ padding: "7px 20px", borderRadius: 8, background: "#990000", border: "none", color: "#fff", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
                     + Agregar
                   </button>
                 </div>

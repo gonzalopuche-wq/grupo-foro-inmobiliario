@@ -119,7 +119,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
       <div style={s.modal}>
         <div style={s.header}>
           <div style={{display:'flex',alignItems:'center',gap:8}}>
-            <BookmarkPlus style={{width:18,height:18,color:'#cc0000'}} />
+            <BookmarkPlus style={{width:18,height:18,color:'#990000'}} />
             <span style={{fontWeight:700,fontSize:15,color:'#fff',fontFamily:'Montserrat,sans-serif'}}>
               {listo ? 'Lista creada' : 'Guardar en lista'}
             </span>
@@ -165,7 +165,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
             <div style={{background:'rgba(200,0,0,0.05)',border:'1px solid rgba(200,0,0,0.15)',borderRadius:8,padding:14,marginBottom:14}}>
               <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:notificarCliente?12:0}}>
                 <input type="checkbox" id="notif" checked={notificarCliente} onChange={e => setNotificarCliente(e.target.checked)}
-                  style={{marginTop:2,accentColor:'#cc0000'}} />
+                  style={{marginTop:2,accentColor:'#990000'}} />
                 <label htmlFor="notif" style={{fontSize:12,color:'rgba(255,255,255,0.6)',cursor:'pointer'}}>
                   Notificar al cliente cuando cambie el precio o se dé de baja una propiedad
                 </label>
@@ -182,14 +182,14 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
             {error && <p style={{color:'#f87171',fontSize:12,marginBottom:12}}>{error}</p>}
 
             <button onClick={guardar} disabled={guardando}
-              style={{width:'100%',background:'#cc0000',border:'none',color:'#fff',padding:'12px',borderRadius:8,fontWeight:700,fontSize:13,fontFamily:'Montserrat,sans-serif',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,opacity:guardando?0.7:1}}>
+              style={{width:'100%',background:'#990000',border:'none',color:'#fff',padding:'12px',borderRadius:8,fontWeight:700,fontSize:13,fontFamily:'Montserrat,sans-serif',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,opacity:guardando?0.7:1}}>
               {guardando ? <><Loader2 style={{width:15,height:15,animation:'spin 1s linear infinite'}} />Guardando...</> : <><BookmarkPlus style={{width:15,height:15}} />Crear lista</>}
             </button>
           </div>
         ) : (
           <div style={{padding:24,textAlign:'center'}}>
             <div style={{width:56,height:56,background:'rgba(34,197,94,0.15)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 12px'}}>
-              <CheckCircle2 style={{width:28,height:28,color:'#22c55e'}} />
+              <CheckCircle2 style={{width:28,height:28,color:'#3abab6'}} />
             </div>
             <h3 style={{margin:'0 0 6px',color:'#fff',fontFamily:'Montserrat,sans-serif'}}>{propiedades.length} propiedades guardadas</h3>
             <p style={{margin:'0 0 20px',color:'rgba(255,255,255,0.4)',fontSize:13}}>La lista se actualiza automáticamente</p>
@@ -197,7 +197,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
             <div style={{background:'rgba(255,255,255,0.04)',borderRadius:8,padding:14,marginBottom:20,textAlign:'left'}}>
               <p style={{margin:'0 0 6px',fontSize:10,color:'rgba(255,255,255,0.3)',fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase'}}>Link para el cliente:</p>
               <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(0,0,0,0.3)',borderRadius:6,padding:'8px 12px'}}>
-                <span style={{color:'#cc0000',fontSize:12,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{urlLista}</span>
+                <span style={{color:'#990000',fontSize:12,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{urlLista}</span>
                 <button onClick={() => navigator.clipboard.writeText(urlLista)}
                   style={{background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',padding:'4px 10px',borderRadius:4,fontSize:11,cursor:'pointer'}}>
                   Copiar
@@ -207,7 +207,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
 
             <div style={{display:'flex',gap:10}}>
               <button onClick={onClose} style={{flex:1,background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',cursor:'pointer'}}>Cerrar</button>
-              <a href="/crm/listas" style={{flex:1,background:'#cc0000',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',textDecoration:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>Ver mis listas</a>
+              <a href="/crm/listas" style={{flex:1,background:'#990000',color:'#fff',padding:'10px',borderRadius:8,fontSize:12,fontWeight:700,fontFamily:'Montserrat,sans-serif',textDecoration:'none',display:'flex',alignItems:'center',justifyContent:'center'}}>Ver mis listas</a>
             </div>
           </div>
         )}

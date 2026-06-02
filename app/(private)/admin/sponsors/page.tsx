@@ -197,21 +197,21 @@ export default function AdminSponsorsPage() {
         .sp-wrap{display:flex;flex-direction:column;gap:20px}
         .sp-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
         .sp-titulo{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:800;color:#fff}
-        .sp-titulo span{color:#cc0000}
+        .sp-titulo span{color:#990000}
         .sp-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:4px}
         .sp-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.04);border-radius:6px;padding:4px;width:fit-content}
         .sp-tab{padding:7px 18px;border-radius:4px;border:none;background:transparent;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;position:relative}
         .sp-tab.activo{background:rgba(200,0,0,0.15);color:#fff;border:1px solid rgba(200,0,0,0.3)}
-        .sp-tab-badge{position:absolute;top:-4px;right:-4px;background:#cc0000;color:#fff;font-size:8px;font-weight:800;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
+        .sp-tab-badge{position:absolute;top:-4px;right:-4px;background:#990000;color:#fff;font-size:8px;font-weight:800;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
         .sp-stats{display:flex;gap:10px;flex-wrap:wrap}
         .sp-stat{background:rgba(14,14,14,0.95);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:12px 18px;text-align:center;min-width:90px}
         .sp-stat-num{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:#fff}
-        .sp-stat-num.verde{color:#22c55e} .sp-stat-num.rojo{color:#cc0000} .sp-stat-num.amarillo{color:#f59e0b}
+        .sp-stat-num.verde{color:#3abab6} .sp-stat-num.rojo{color:#990000} .sp-stat-num.amarillo{color:#d4960c}
         .sp-stat-label{font-size:9px;color:rgba(255,255,255,0.3);font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
         .sp-filtros{display:flex;gap:6px;flex-wrap:wrap}
         .sp-filtro-btn{padding:6px 14px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
-        .sp-filtro-btn.activo{border-color:rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#cc0000}
-        .sp-btn-nuevo{padding:10px 20px;background:#cc0000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+        .sp-filtro-btn.activo{border-color:rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000}
+        .sp-btn-nuevo{padding:10px 20px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
         .sp-grid{display:flex;flex-direction:column;gap:10px}
         .sp-card{background:rgba(14,14,14,0.98);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden}
         .sp-card.activa{border-color:rgba(34,197,94,0.2)} .sp-card.vencida{border-color:rgba(245,158,11,0.25)} .sp-card.suspendida{border-color:rgba(200,0,0,0.2)}
@@ -221,18 +221,18 @@ export default function AdminSponsorsPage() {
         .sp-info{flex:1;min-width:0}
         .sp-nombre{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .sp-badge-estado{font-size:8px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
-        .sp-badge-estado.activa{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e}
-        .sp-badge-estado.vencida{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b}
+        .sp-badge-estado.activa{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#3abab6}
+        .sp-badge-estado.vencida{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#d4960c}
         .sp-badge-estado.suspendida{background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.3);color:#ff6666}
         .sp-badge-estado.sin-estado,.sp-badge-estado.pendiente{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4)}
-        .sp-destacado{color:#eab308;font-size:14px}
+        .sp-destacado{color:#d4960c;font-size:14px}
         .sp-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
         .sp-meta-item{font-size:11px;color:rgba(255,255,255,0.4)}
         .sp-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6;margin-top:6px;font-style:italic}
         .sp-nota-admin{font-size:11px;color:rgba(245,158,11,0.6);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:6px 10px;margin-top:6px}
         .sp-beneficio{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,0.65);background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5}
-        .sp-beneficio strong{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#cc0000;margin-right:4px;flex-shrink:0}
-        .sp-interesados-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;color:#22c55e;margin-top:6px;cursor:pointer;transition:background 0.2s}
+        .sp-beneficio strong{font-family:'Montserrat',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#990000;margin-right:4px;flex-shrink:0}
+        .sp-interesados-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;color:#3abab6;margin-top:6px;cursor:pointer;transition:background 0.2s}
         .sp-interesados-chip:hover{background:rgba(34,197,94,0.18)}
         .sp-interesados-chip.cero{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);cursor:default}
         .sp-lista-tabla{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
@@ -240,26 +240,26 @@ export default function AdminSponsorsPage() {
         .sp-lista-tabla td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);vertical-align:middle}
         .sp-lista-tabla tr:last-child td{border-bottom:none}
         .sp-lista-tabla tr:hover td{background:rgba(255,255,255,0.02)}
-        .sp-gfi-num{font-family:'Montserrat',sans-serif;font-weight:800;color:#cc0000;font-size:11px}
+        .sp-gfi-num{font-family:'Montserrat',sans-serif;font-weight:800;color:#990000;font-size:11px}
         .sp-lista-empty{padding:28px;text-align:center;color:rgba(255,255,255,0.2);font-style:italic;font-size:13px}
         .sp-acciones{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
         .sp-btn{padding:6px 12px;border-radius:3px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;border:1px solid}
         .sp-btn-editar{background:transparent;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5)}
         .sp-btn-editar:hover{border-color:rgba(255,255,255,0.3);color:#fff}
-        .sp-btn-extender{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#22c55e}
+        .sp-btn-extender{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#3abab6}
         .sp-btn-extender:hover{background:rgba(34,197,94,0.2)}
-        .sp-btn-activar{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#22c55e}
+        .sp-btn-activar{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#3abab6}
         .sp-btn-suspender{background:rgba(200,0,0,0.1);border-color:rgba(200,0,0,0.3);color:#ff6666}
-        .sp-btn-star{background:transparent;border-color:rgba(234,179,8,0.3);color:#eab308}
-        .sp-btn-beneficios{background:rgba(200,0,0,0.08);border-color:rgba(200,0,0,0.3);color:#cc0000}
+        .sp-btn-star{background:transparent;border-color:rgba(234,179,8,0.3);color:#d4960c}
+        .sp-btn-beneficios{background:rgba(200,0,0,0.08);border-color:rgba(200,0,0,0.3);color:#990000}
         .sp-btn-beneficios:hover{background:rgba(200,0,0,0.18)}
         .sp-venc{font-size:10px;padding:4px 8px;border-radius:3px;font-family:'Inter',sans-serif}
         .sp-venc.ok{background:rgba(34,197,94,0.07);color:rgba(34,197,94,0.7)}
-        .sp-venc.pronto{background:rgba(245,158,11,0.1);color:#f59e0b}
+        .sp-venc.pronto{background:rgba(245,158,11,0.1);color:#d4960c}
         .sp-venc.vencido{background:rgba(200,0,0,0.07);color:rgba(200,0,0,0.7)}
         .sp-empty{padding:48px;text-align:center;color:rgba(255,255,255,0.2);font-size:13px;font-style:italic;background:rgba(14,14,14,0.9);border:1px solid rgba(255,255,255,0.07);border-radius:6px}
         .sp-spin-wrap{padding:48px;display:flex;justify-content:center}
-        .sp-spin{width:28px;height:28px;border:2px solid rgba(200,0,0,0.2);border-top-color:#cc0000;border-radius:50%;animation:spin 0.7s linear infinite}
+        .sp-spin{width:28px;height:28px;border:2px solid rgba(200,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
         /* Solicitudes */
         .sol-card{background:rgba(14,14,14,0.95);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -272,12 +272,12 @@ export default function AdminSponsorsPage() {
         .sol-desc{font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.5}
         .sol-msg{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;padding:7px 10px;background:rgba(255,255,255,0.03);border-radius:4px;border-left:2px solid rgba(200,0,0,0.3);font-style:italic}
         .sol-acciones{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
-        .sol-btn-aprobar{padding:7px 14px;border-radius:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+        .sol-btn-aprobar{padding:7px 14px;border-radius:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#3abab6;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
         .sol-btn-aprobar:hover{background:rgba(34,197,94,0.22)}
         .sol-btn-rechazar{padding:7px 14px;border-radius:3px;background:transparent;border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.6);font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer}
         .sol-estado-badge{font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
-        .sol-estado-badge.pendiente{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b}
-        .sol-estado-badge.aprobada{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e}
+        .sol-estado-badge.pendiente{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#d4960c}
+        .sol-estado-badge.aprobada{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#3abab6}
         .sol-estado-badge.rechazada{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.7)}
         /* Beneficios modal */
         .ben-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
@@ -290,17 +290,17 @@ export default function AdminSponsorsPage() {
         .ben-item-desc{font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px;line-height:1.5}
         .ben-item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
         .ben-item-chip{font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px}
-        .ben-item-chip.activo{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#22c55e}
+        .ben-item-chip.activo{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#3abab6}
         .ben-item-chip.inactivo{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
-        .ben-item-chip.freq{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:#cc0000}
-        .ben-item-chip.venc{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:#f59e0b}
+        .ben-item-chip.freq{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:#990000}
+        .ben-item-chip.venc{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:#d4960c}
         .ben-item-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
         /* Modals */
         .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;z-index:400;padding:24px}
         .modal{background:#0f0f0f;border:1px solid rgba(200,0,0,0.25);border-radius:8px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative}
-        .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#cc0000,transparent);border-radius:8px 8px 0 0}
+        .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#990000,transparent);border-radius:8px 8px 0 0}
         .modal-titulo{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:20px}
-        .modal-titulo span{color:#cc0000}
+        .modal-titulo span{color:#990000}
         .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .modal-grid .full{grid-column:1/-1}
         .field{display:flex;flex-direction:column;gap:5px}
@@ -312,13 +312,13 @@ export default function AdminSponsorsPage() {
         .field-check{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:4px;cursor:pointer}
         .field-check input{width:16px;height:16px;flex-shrink:0}
         .field-check-label{font-size:12px;color:rgba(255,255,255,0.6);font-family:'Inter',sans-serif}
-        .field-check-label strong{color:#eab308}
+        .field-check-label strong{color:#d4960c}
         .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07)}
         .btn-cancel{padding:9px 18px;background:transparent;border:1px solid rgba(255,255,255,0.14);border-radius:4px;color:rgba(255,255,255,0.45);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
-        .btn-save{padding:9px 22px;background:#cc0000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
+        .btn-save{padding:9px 22px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
         .btn-save:disabled{opacity:0.6;cursor:not-allowed}
         .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;z-index:999}
-        .toast.ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#22c55e}
+        .toast.ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#3abab6}
         .toast.err{background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.35);color:#ff6666}
         @media(max-width:600px){.sp-card-top{flex-direction:column}.sp-acciones{flex-direction:row;flex-wrap:wrap}.modal-grid{grid-template-columns:1fr}.modal-grid .full{grid-column:1}}
       `}</style>
@@ -348,7 +348,7 @@ export default function AdminSponsorsPage() {
             <div className="sp-stat"><div className="sp-stat-num verde">{stats.activos}</div><div className="sp-stat-label">Activos</div></div>
             <div className="sp-stat"><div className="sp-stat-num amarillo">{stats.vencidos}</div><div className="sp-stat-label">Vencidos</div></div>
             <div className="sp-stat"><div className="sp-stat-num rojo">{stats.suspendidos}</div><div className="sp-stat-label">Suspendidos</div></div>
-            <div className="sp-stat"><div className="sp-stat-num" style={{color:"#cc0000"}}>USD {sponsors.filter(s=>s.suscripcion_estado==="activa").reduce((a,s)=>a+(s.monto_mensual_usd??0),0)}</div><div className="sp-stat-label">Ingresos/mes</div></div>
+            <div className="sp-stat"><div className="sp-stat-num" style={{color:"#990000"}}>USD {sponsors.filter(s=>s.suscripcion_estado==="activa").reduce((a,s)=>a+(s.monto_mensual_usd??0),0)}</div><div className="sp-stat-label">Ingresos/mes</div></div>
           </div>
           <div className="sp-filtros">
             {(["todos","activa","vencida","suspendida"] as const).map(f=>(
@@ -379,7 +379,7 @@ export default function AdminSponsorsPage() {
                         {s.monto_mensual_usd ? <span className="sp-meta-item">💰 USD {s.monto_mensual_usd}/mes</span> : null}
                         {s.telefono && <span className="sp-meta-item">📞 {s.telefono}</span>}
                         {s.email && <span className="sp-meta-item">✉️ {s.email}</span>}
-                        {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"#cc0000",textDecoration:"none"}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
+                        {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"#990000",textDecoration:"none"}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
                       </div>
                       {s.descripcion && <div className="sp-desc">"{s.descripcion}"</div>}
                       {s.beneficio && <div className="sp-beneficio"><strong>🎁 Beneficio</strong>{s.beneficio}</div>}
@@ -432,7 +432,7 @@ export default function AdminSponsorsPage() {
                     <span>👤 {s.contacto_nombre}</span>
                     <span>✉️ {s.contacto_email}</span>
                     {s.contacto_telefono && <span>📞 {s.contacto_telefono}</span>}
-                    {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{color:"#cc0000",textDecoration:"none",fontSize:11}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
+                    {s.sitio_web && <a href={s.sitio_web} target="_blank" rel="noopener noreferrer" style={{color:"#990000",textDecoration:"none",fontSize:11}}>🌐 {s.sitio_web.replace(/https?:\/\//,"")}</a>}
                     <span style={{marginLeft:"auto",color:"rgba(255,255,255,0.2)",fontSize:10}}>{ff(s.created_at)}</span>
                   </div>
                   {s.descripcion && <div className="sol-desc">{s.descripcion}</div>}
@@ -505,7 +505,7 @@ export default function AdminSponsorsPage() {
                     </div>
                     <div className="ben-item-actions">
                       <button className="sp-btn sp-btn-editar" style={{fontSize:8}} onClick={()=>{setFormBen({titulo:b.titulo,descripcion:b.descripcion??"",imagen_url:b.imagen_url??"",vigente_desde:b.vigente_desde,vigente_hasta:b.vigente_hasta??"",activo:b.activo,republica_frecuencia:b.republica_frecuencia});setEditandoBenId(b.id);setMostrarFormBen(true);}}>✏️</button>
-                      <button className="sp-btn" style={{fontSize:8,background:b.activo?"rgba(200,0,0,0.1)":"rgba(34,197,94,0.1)",borderColor:b.activo?"rgba(200,0,0,0.3)":"rgba(34,197,94,0.3)",color:b.activo?"#ff6666":"#22c55e"}} onClick={()=>toggleActivoBeneficio(b)}>{b.activo?"⏸":"▶"}</button>
+                      <button className="sp-btn" style={{fontSize:8,background:b.activo?"rgba(200,0,0,0.1)":"rgba(34,197,94,0.1)",borderColor:b.activo?"rgba(200,0,0,0.3)":"rgba(34,197,94,0.3)",color:b.activo?"#ff6666":"#3abab6"}} onClick={()=>toggleActivoBeneficio(b)}>{b.activo?"⏸":"▶"}</button>
                       <button className="sp-btn sp-btn-suspender" style={{fontSize:8}} onClick={()=>eliminarBeneficio(b.id)}>🗑</button>
                     </div>
                   </div>
@@ -538,7 +538,7 @@ export default function AdminSponsorsPage() {
                 </div>
               </div>
             ) : (
-              <button style={{width:"100%",padding:"10px",background:"rgba(200,0,0,0.1)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:5,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",cursor:"pointer",marginTop:4}} onClick={()=>{setFormBen(FORM_BEN_VACIO);setEditandoBenId(null);setMostrarFormBen(true);}}>+ Agregar beneficio</button>
+              <button style={{width:"100%",padding:"10px",background:"rgba(200,0,0,0.1)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:5,color:"#990000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",cursor:"pointer",marginTop:4}} onClick={()=>{setFormBen(FORM_BEN_VACIO);setEditandoBenId(null);setMostrarFormBen(true);}}>+ Agregar beneficio</button>
             )}
 
             <div className="modal-actions">

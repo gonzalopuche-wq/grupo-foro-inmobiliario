@@ -284,7 +284,7 @@ export default function ParametrosCarteraPage() {
         <button onClick={guardar} disabled={guardando} style={s.btn}>
           {guardando ? "Guardando…" : "Guardar parámetros"}
         </button>
-        {ok && <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 600 }}>✓ Guardado correctamente</span>}
+        {ok && <span style={{ fontSize: 13, color: "#22807c", fontWeight: 600 }}>✓ Guardado correctamente</span>}
       </div>
     </div>
   );

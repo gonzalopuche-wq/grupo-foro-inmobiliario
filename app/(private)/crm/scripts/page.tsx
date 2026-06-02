@@ -196,8 +196,8 @@ export default function ScriptsLlamada() {
                   onClick={() => abrirScript(script)}
                   style={{
                     padding: "14px 16px", borderBottom: "1px solid #111", cursor: "pointer",
-                    background: sel ? "#cc000015" : "transparent",
-                    borderLeft: sel ? "3px solid #cc0000" : "3px solid transparent",
+                    background: sel ? "#99000015" : "transparent",
+                    borderLeft: sel ? "3px solid #990000" : "3px solid transparent",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -237,13 +237,13 @@ export default function ScriptsLlamada() {
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 12, color: "#cc0000", background: "#cc000015", padding: "3px 10px", borderRadius: 6 }}>{scriptSeleccionado.categoria}</span>
+                  <span style={{ fontSize: 12, color: "#990000", background: "#99000015", padding: "3px 10px", borderRadius: 6 }}>{scriptSeleccionado.categoria}</span>
                   <span style={{ fontSize: 12, color: "#888" }}>⏱ {scriptSeleccionado.duracion}</span>
                   <span style={{ fontSize: 12, color: "#888" }}>🎯 {scriptSeleccionado.objetivo}</span>
                   <button
                     onClick={() => setModoEnsayo(!modoEnsayo)}
                     style={{
-                      marginLeft: "auto", background: modoEnsayo ? "#cc0000" : "#1a1a1a", border: "1px solid #333",
+                      marginLeft: "auto", background: modoEnsayo ? "#990000" : "#1a1a1a", border: "1px solid #333",
                       borderRadius: 6, color: "#fff", padding: "6px 14px", fontSize: 12, cursor: "pointer",
                       fontFamily: "Montserrat, sans-serif", fontWeight: 700,
                     }}
@@ -262,8 +262,8 @@ export default function ScriptsLlamada() {
                       onClick={() => setPasoActivo(i)}
                       style={{
                         padding: "4px 12px", fontSize: 12, borderRadius: 20, cursor: "pointer",
-                        background: pasoActivo === i ? "#cc0000" : "#1a1a1a",
-                        border: `1px solid ${pasoActivo === i ? "#cc0000" : "#333"}`,
+                        background: pasoActivo === i ? "#990000" : "#1a1a1a",
+                        border: `1px solid ${pasoActivo === i ? "#990000" : "#333"}`,
                         color: pasoActivo === i ? "#fff" : "#888",
                         fontFamily: "Montserrat, sans-serif", fontWeight: 700,
                       }}
@@ -283,7 +283,7 @@ export default function ScriptsLlamada() {
                   >
                     <div style={{
                       background: pasoActivo === i ? "#111" : "#0d0d0d",
-                      border: `1px solid ${pasoActivo === i ? "#cc0000" : "#1a1a1a"}`,
+                      border: `1px solid ${pasoActivo === i ? "#990000" : "#1a1a1a"}`,
                       borderRadius: 10, padding: "16px 20px",
                       cursor: "pointer",
                       transition: "all 0.15s",
@@ -292,7 +292,7 @@ export default function ScriptsLlamada() {
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                         <div style={{
-                          width: 24, height: 24, borderRadius: "50%", background: pasoActivo === i ? "#cc0000" : "#1a1a1a",
+                          width: 24, height: 24, borderRadius: "50%", background: pasoActivo === i ? "#990000" : "#1a1a1a",
                           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0,
                           color: pasoActivo === i ? "#fff" : "#666",
                         }}>{i + 1}</div>
@@ -303,12 +303,12 @@ export default function ScriptsLlamada() {
                       <div style={{
                         background: "#0a0a0a", borderRadius: 6, padding: "14px 16px",
                         fontSize: 14, color: "#e0e0e0", lineHeight: 1.7, fontStyle: "italic",
-                        borderLeft: "3px solid #cc0000",
+                        borderLeft: "3px solid #990000",
                       }}>
                         "{paso.guion}"
                       </div>
                       {paso.tips && pasoActivo === i && (
-                        <div style={{ marginTop: 10, fontSize: 12, color: "#f59e0b", background: "#f59e0b10", borderRadius: 6, padding: "8px 12px" }}>
+                        <div style={{ marginTop: 10, fontSize: 12, color: "#d4960c", background: "#d4960c10", borderRadius: 6, padding: "8px 12px" }}>
                           💡 {paso.tips}
                         </div>
                       )}
@@ -326,7 +326,7 @@ export default function ScriptsLlamada() {
                     <button
                       onClick={() => setPasoActivo(Math.min(scriptSeleccionado.pasos.length - 1, pasoActivo + 1))}
                       disabled={pasoActivo === scriptSeleccionado.pasos.length - 1}
-                      style={{ background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", padding: "10px 20px", fontSize: 13, cursor: pasoActivo === scriptSeleccionado.pasos.length - 1 ? "not-allowed" : "pointer", fontWeight: 700 }}
+                      style={{ background: "#990000", border: "none", borderRadius: 8, color: "#fff", padding: "10px 20px", fontSize: 13, cursor: pasoActivo === scriptSeleccionado.pasos.length - 1 ? "not-allowed" : "pointer", fontWeight: 700 }}
                     >Siguiente →</button>
                   </div>
                 )}
@@ -335,15 +335,15 @@ export default function ScriptsLlamada() {
               {/* Objeciones */}
               {scriptSeleccionado.objeciones && scriptSeleccionado.objeciones.length > 0 && (
                 <div>
-                  <h3 style={{ margin: "0 0 12px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  <h3 style={{ margin: "0 0 12px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", textTransform: "uppercase", letterSpacing: "0.06em" }}>
                     🛡 Manejo de objeciones
                   </h3>
                   {scriptSeleccionado.objeciones.map((obj, i) => (
                     <div key={i} style={{ background: "#111", border: "1px solid #222", borderRadius: 8, padding: "14px 16px", marginBottom: 10 }}>
-                      <div style={{ fontSize: 13, color: "#f59e0b", fontWeight: 600, marginBottom: 8 }}>
+                      <div style={{ fontSize: 13, color: "#d4960c", fontWeight: 600, marginBottom: 8 }}>
                         🔴 "{obj.objecion}"
                       </div>
-                      <div style={{ fontSize: 13, color: "#ccc", lineHeight: 1.6, borderLeft: "2px solid #22c55e", paddingLeft: 12 }}>
+                      <div style={{ fontSize: 13, color: "#ccc", lineHeight: 1.6, borderLeft: "2px solid #3abab6", paddingLeft: 12 }}>
                         🟢 "{obj.respuesta}"
                       </div>
                     </div>

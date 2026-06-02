@@ -33,8 +33,8 @@ const ANTIGUEDADES = [
 const MONEDAS = ["USD", "ARS"];
 
 const OP_COLOR: Record<string, string> = {
-  venta: "#22c55e", compra: "#22c55e", alquiler: "#60a5fa",
-  temporario: "#eab308", permuta: "#c084fc", comercial: "#f97316",
+  venta: "#3abab6", compra: "#3abab6", alquiler: "#4ab8d8",
+  temporario: "#d4960c", permuta: "#c084fc", comercial: "#d4960c",
   fondo_comercio: "#fb7185", campo: "#84cc16",
 };
 
@@ -203,10 +203,10 @@ function ModalOfrecido({
           <textarea style={{ ...inp, height: 80, resize: "vertical" }} value={form.descripcion ?? ""} onChange={e => setF("descripcion", e.target.value)} />
         </div>
 
-        {error && <div style={{ color: "#ef4444", fontSize: 12, marginBottom: 10 }}>✕ {error}</div>}
+        {error && <div style={{ color: "#b80000", fontSize: 12, marginBottom: 10 }}>✕ {error}</div>}
 
         <button onClick={guardar} disabled={guardando}
-          style={{ width: "100%", padding: 12, background: guardando ? "rgba(204,0,0,0.4)" : "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
+          style={{ width: "100%", padding: 12, background: guardando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
           {guardando ? "Guardando..." : "Guardar cambios"}
         </button>
       </div>
@@ -350,10 +350,10 @@ function ModalBusqueda({
           <textarea style={{ ...inp, height: 80, resize: "vertical" }} value={form.descripcion ?? ""} onChange={e => setF("descripcion", e.target.value)} />
         </div>
 
-        {error && <div style={{ color: "#ef4444", fontSize: 12, marginBottom: 10 }}>✕ {error}</div>}
+        {error && <div style={{ color: "#b80000", fontSize: 12, marginBottom: 10 }}>✕ {error}</div>}
 
         <button onClick={guardar} disabled={guardando}
-          style={{ width: "100%", padding: 12, background: guardando ? "rgba(204,0,0,0.4)" : "#cc0000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
+          style={{ width: "100%", padding: 12, background: guardando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 6, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: guardando ? "not-allowed" : "pointer" }}>
           {guardando ? "Guardando..." : "Guardar cambios"}
         </button>
       </div>
@@ -511,7 +511,7 @@ export default function AdminMirPage() {
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "8px 18px", borderRadius: 6, border: "none", cursor: "pointer",
               fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-              background: tab === t ? "#cc0000" : "rgba(255,255,255,0.06)",
+              background: tab === t ? "#990000" : "rgba(255,255,255,0.06)",
               color: tab === t ? "#fff" : "rgba(255,255,255,0.4)",
             }}>
               {t === "ofrecidos" ? "🏠 Ofrecidos" : "🔍 Búsquedas"}
@@ -522,8 +522,8 @@ export default function AdminMirPage() {
           ))}
           <div style={{ marginLeft: "auto", display: "flex", gap: 12, fontSize: 12, color: "rgba(255,255,255,0.5)" }}>
             <span>Total: <strong style={{ color: "#fff" }}>{total}</strong></span>
-            <span>Activos: <strong style={{ color: "#22c55e" }}>{activos}</strong></span>
-            <span>Inactivos: <strong style={{ color: "#ef4444" }}>{total - activos}</strong></span>
+            <span>Activos: <strong style={{ color: "#3abab6" }}>{activos}</strong></span>
+            <span>Inactivos: <strong style={{ color: "#b80000" }}>{total - activos}</strong></span>
           </div>
         </div>
 
@@ -566,7 +566,7 @@ export default function AdminMirPage() {
             }} style={{
               padding: "3px 10px", borderRadius: 3, cursor: "pointer", fontSize: 10,
               fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em",
-              border: `1px solid ${sortCol === key ? "#cc0000" : "rgba(255,255,255,0.1)"}`,
+              border: `1px solid ${sortCol === key ? "#990000" : "rgba(255,255,255,0.1)"}`,
               background: sortCol === key ? "rgba(200,0,0,0.12)" : "transparent",
               color: sortCol === key ? "#fff" : "rgba(255,255,255,0.4)",
             }}>
@@ -596,8 +596,8 @@ export default function AdminMirPage() {
                   {/* Badges */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 120 }}>
                     <span style={st.badge(OP_COLOR[o.operacion] ?? "#888")}>{o.operacion}</span>
-                    {!o.activo && <span style={st.badge("#ef4444")}>Inactivo</span>}
-                    {o.urgente && <span style={st.badge("#f97316")}>⚡ Urgente</span>}
+                    {!o.activo && <span style={st.badge("#b80000")}>Inactivo</span>}
+                    {o.urgente && <span style={st.badge("#d4960c")}>⚡ Urgente</span>}
                   </div>
                   {/* Info */}
                   <div style={{ flex: 1, minWidth: 200 }}>
@@ -611,7 +611,7 @@ export default function AdminMirPage() {
                       {o.precio && <span>{o.moneda} {fmt(o.precio)}</span>}
                       {o.dormitorios && <span>{o.dormitorios} dorm.</span>}
                       {o.superficie_cubierta && <span>{o.superficie_cubierta} m²</span>}
-                      {o.apto_credito && <span style={{ color: "#22c55e" }}>Apto crédito</span>}
+                      {o.apto_credito && <span style={{ color: "#3abab6" }}>Apto crédito</span>}
                     </div>
                     {o.descripcion && (
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>
@@ -621,14 +621,14 @@ export default function AdminMirPage() {
                   </div>
                   {/* Acciones */}
                   <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <button onClick={() => setEditandoOf(o)} style={st.btn("#60a5fa")}>✏️ Editar</button>
+                    <button onClick={() => setEditandoOf(o)} style={st.btn("#4ab8d8")}>✏️ Editar</button>
                     <button onClick={() => toggleActivo("mir_ofrecidos", o.id, o.activo)}
-                      style={st.btn(o.activo ? "#ef4444" : "#22c55e")}>
+                      style={st.btn(o.activo ? "#b80000" : "#3abab6")}>
                       {o.activo ? "Pausar" : "Activar"}
                     </button>
                     <button onClick={() => eliminar("mir_ofrecidos", o.id)}
                       disabled={eliminando === o.id}
-                      style={st.btn("#ef4444")}>
+                      style={st.btn("#b80000")}>
                       {eliminando === o.id ? "..." : "🗑"}
                     </button>
                   </div>
@@ -652,8 +652,8 @@ export default function AdminMirPage() {
                 }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 120 }}>
                     <span style={st.badge(OP_COLOR[b.operacion] ?? "#888")}>{b.operacion}</span>
-                    {!b.activo && <span style={st.badge("#ef4444")}>Inactiva</span>}
-                    {b.urgente && <span style={st.badge("#f97316")}>⚡ Urgente</span>}
+                    {!b.activo && <span style={st.badge("#b80000")}>Inactiva</span>}
+                    {b.urgente && <span style={st.badge("#d4960c")}>⚡ Urgente</span>}
                   </div>
                   <div style={{ flex: 1, minWidth: 200 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 2 }}>
@@ -666,7 +666,7 @@ export default function AdminMirPage() {
                       {presup && <span>{presup}</span>}
                       {b.dormitorios_min && <span>{b.dormitorios_min}{b.dormitorios_max ? `–${b.dormitorios_max}` : "+"} dorm.</span>}
                       {b.superficie_min && <span>desde {b.superficie_min} m²</span>}
-                      {b.apto_credito && <span style={{ color: "#22c55e" }}>Apto crédito</span>}
+                      {b.apto_credito && <span style={{ color: "#3abab6" }}>Apto crédito</span>}
                     </div>
                     {b.descripcion && (
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 4, fontStyle: "italic" }}>
@@ -675,14 +675,14 @@ export default function AdminMirPage() {
                     )}
                   </div>
                   <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                    <button onClick={() => setEditandoBq(b)} style={st.btn("#60a5fa")}>✏️ Editar</button>
+                    <button onClick={() => setEditandoBq(b)} style={st.btn("#4ab8d8")}>✏️ Editar</button>
                     <button onClick={() => toggleActivo("mir_busquedas", b.id, b.activo)}
-                      style={st.btn(b.activo ? "#ef4444" : "#22c55e")}>
+                      style={st.btn(b.activo ? "#b80000" : "#3abab6")}>
                       {b.activo ? "Pausar" : "Activar"}
                     </button>
                     <button onClick={() => eliminar("mir_busquedas", b.id)}
                       disabled={eliminando === b.id}
-                      style={st.btn("#ef4444")}>
+                      style={st.btn("#b80000")}>
                       {eliminando === b.id ? "..." : "🗑"}
                     </button>
                   </div>

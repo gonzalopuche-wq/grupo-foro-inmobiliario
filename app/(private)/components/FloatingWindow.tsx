@@ -99,9 +99,9 @@ export default function FloatingWindow({ win }: { win: GFIWindow }) {
         }}
       >
         {/* Controles macOS-style */}
-        <button onClick={() => closeWindow(win.id)} style={{ ...BTN, background: "#ef4444" }} title="Cerrar">×</button>
-        <button onClick={() => minimizeWindow(win.id)} style={{ ...BTN, background: "#f59e0b" }} title="Minimizar">−</button>
-        <button onClick={toggleMax} style={{ ...BTN, background: "#22c55e" }} title="Maximizar">+</button>
+        <button onClick={() => closeWindow(win.id)} style={{ ...BTN, background: "#b80000" }} title="Cerrar">×</button>
+        <button onClick={() => minimizeWindow(win.id)} style={{ ...BTN, background: "#d4960c" }} title="Minimizar">−</button>
+        <button onClick={toggleMax} style={{ ...BTN, background: "#3abab6" }} title="Maximizar">+</button>
 
         <span style={{ fontSize: 13, marginLeft: 4 }}>{win.icon}</span>
         <span style={{

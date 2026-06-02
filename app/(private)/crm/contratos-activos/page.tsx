@@ -40,9 +40,9 @@ type FiltroEstado = "todos" | "vigente" | "por_vencer" | "vencido";
 const STORAGE_KEY = "crm_contratos_v1";
 
 const ESTADO_COLORS: Record<EstadoContrato, { bg: string; text: string; border: string }> = {
-  vigente:    { bg: "rgba(34,197,94,0.12)",     text: "#22c55e", border: "rgba(34,197,94,0.3)" },
-  por_vencer: { bg: "rgba(245,158,11,0.12)",    text: "#f59e0b", border: "rgba(245,158,11,0.3)" },
-  vencido:    { bg: "rgba(239,68,68,0.12)",     text: "#ef4444", border: "rgba(239,68,68,0.3)" },
+  vigente:    { bg: "rgba(34,197,94,0.12)",     text: "#3abab6", border: "rgba(34,197,94,0.3)" },
+  por_vencer: { bg: "rgba(245,158,11,0.12)",    text: "#d4960c", border: "rgba(245,158,11,0.3)" },
+  vencido:    { bg: "rgba(239,68,68,0.12)",     text: "#b80000", border: "rgba(239,68,68,0.3)" },
   renovado:   { bg: "rgba(59,130,246,0.12)",    text: "#3b82f6", border: "rgba(59,130,246,0.3)" },
   rescindido: { bg: "rgba(255,255,255,0.05)",   text: "rgba(255,255,255,0.3)", border: "rgba(255,255,255,0.1)" },
 };
@@ -561,8 +561,8 @@ export default function ContratosActivosPage() {
     },
 
     tabBtn: (active: boolean): React.CSSProperties => ({
-      background: active ? "rgba(204,0,0,0.18)" : "transparent",
-      border: active ? "1px solid rgba(204,0,0,0.5)" : "1px solid rgba(255,255,255,0.1)",
+      background: active ? "rgba(153,0,0,0.18)" : "transparent",
+      border: active ? "1px solid rgba(153,0,0,0.5)" : "1px solid rgba(255,255,255,0.1)",
       color: active ? "#ff4444" : "rgba(255,255,255,0.6)",
       borderRadius: 8,
       padding: "7px 18px",
@@ -586,7 +586,7 @@ export default function ContratosActivosPage() {
     }),
 
     btn: {
-      background: "#cc0000",
+      background: "#990000",
       color: "#fff",
       border: "none",
       borderRadius: 8,
@@ -611,7 +611,7 @@ export default function ContratosActivosPage() {
 
     btnDanger: {
       background: "rgba(239,68,68,0.15)",
-      color: "#ef4444",
+      color: "#b80000",
       border: "1px solid rgba(239,68,68,0.3)",
       borderRadius: 8,
       padding: "8px 16px",
@@ -687,17 +687,17 @@ export default function ContratosActivosPage() {
 
         {/* Honorarios */}
         <div style={s.kpiCard}>
-          <div style={{ ...s.kpiVal, color: "#22c55e" }}>$ {fmt(totalHonorarios)}</div>
+          <div style={{ ...s.kpiVal, color: "#3abab6" }}>$ {fmt(totalHonorarios)}</div>
           <div style={s.kpiLabel}>Honorarios admin/mes</div>
         </div>
 
         {/* Por vencer */}
-        <div style={{ ...s.kpiCard, borderColor: porVencerCount > 0 ? "rgba(204,0,0,0.4)" : "rgba(255,255,255,0.08)" }}>
+        <div style={{ ...s.kpiCard, borderColor: porVencerCount > 0 ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ ...s.kpiVal, color: porVencerCount > 0 ? "#ef4444" : "#fff" }}>{porVencerCount}</div>
+            <div style={{ ...s.kpiVal, color: porVencerCount > 0 ? "#b80000" : "#fff" }}>{porVencerCount}</div>
             {porVencerCount > 0 && (
               <span style={{
-                background: "#cc0000",
+                background: "#990000",
                 color: "#fff",
                 fontSize: 10,
                 fontWeight: 700,
@@ -716,8 +716,8 @@ export default function ContratosActivosPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
           {alertasVencimiento.map(c => (
             <div key={`alv-${c.id}`} style={{
-              background: "rgba(204,0,0,0.1)",
-              border: "1px solid rgba(204,0,0,0.35)",
+              background: "rgba(153,0,0,0.1)",
+              border: "1px solid rgba(153,0,0,0.35)",
               borderRadius: 10,
               padding: "10px 16px",
               display: "flex",
@@ -743,7 +743,7 @@ export default function ContratosActivosPage() {
             }}>
               <span style={{ fontSize: 16 }}>🟠</span>
               <span style={{ fontSize: 13, color: "rgba(255,255,255,0.9)" }}>
-                <strong style={{ color: "#f59e0b" }}>Ajuste {c.indice_ajuste} en {diasParaAjuste(c)} días</strong>
+                <strong style={{ color: "#d4960c" }}>Ajuste {c.indice_ajuste} en {diasParaAjuste(c)} días</strong>
                 {" — "}{c.inquilino_nombre}, {c.direccion}
               </span>
             </div>
@@ -795,8 +795,8 @@ export default function ContratosActivosPage() {
                     style={{
                       ...s.card,
                       cursor: "pointer",
-                      borderColor: isSelected ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.08)",
-                      background: isSelected ? "rgba(204,0,0,0.07)" : "rgba(255,255,255,0.04)",
+                      borderColor: isSelected ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.08)",
+                      background: isSelected ? "rgba(153,0,0,0.07)" : "rgba(255,255,255,0.04)",
                       transition: "all 0.15s",
                     }}
                   >
@@ -823,7 +823,7 @@ export default function ContratosActivosPage() {
                     <div style={{ display: "flex", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
                       <span style={{
                         fontSize: 11,
-                        color: dias < 0 ? "#ef4444" : dias < 30 ? "#f59e0b" : "rgba(255,255,255,0.4)",
+                        color: dias < 0 ? "#b80000" : dias < 30 ? "#d4960c" : "rgba(255,255,255,0.4)",
                         fontWeight: dias < 30 ? 700 : 400,
                       }}>
                         {dias < 0 ? `Vencido hace ${Math.abs(dias)} días` : `Vence en ${dias} días (${fmtFecha(c.fecha_fin)})`}
@@ -831,7 +831,7 @@ export default function ContratosActivosPage() {
                       {c.indice_ajuste !== "fijo" && dAjuste >= 0 && (
                         <span style={{
                           fontSize: 11,
-                          color: dAjuste <= 7 ? "#f59e0b" : "rgba(255,255,255,0.35)",
+                          color: dAjuste <= 7 ? "#d4960c" : "rgba(255,255,255,0.35)",
                           fontWeight: dAjuste <= 7 ? 700 : 400,
                         }}>
                           Ajuste {c.indice_ajuste} en {dAjuste} días
@@ -949,7 +949,7 @@ export default function ContratosActivosPage() {
                 }}>
                   <div style={{
                     width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
-                    background: ev.tipo === "vencimiento" ? "#ef4444" : "#f59e0b",
+                    background: ev.tipo === "vencimiento" ? "#b80000" : "#d4960c",
                   }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, color: "#fff", fontWeight: 600 }}>
@@ -964,7 +964,7 @@ export default function ContratosActivosPage() {
                   <div style={{
                     fontSize: 12,
                     fontWeight: 700,
-                    color: diasEntre(hoy(), ev.fecha) <= 7 ? "#ef4444" : "rgba(255,255,255,0.5)",
+                    color: diasEntre(hoy(), ev.fecha) <= 7 ? "#b80000" : "rgba(255,255,255,0.5)",
                   }}>
                     {diasEntre(hoy(), ev.fecha)} días
                   </div>
@@ -1048,8 +1048,8 @@ export default function ContratosActivosPage() {
                   const todayX = totalMs > 0 ? 100 + ((todayDate.getTime() - minDate.getTime()) / totalMs) * 580 : 100;
                   return (
                     <>
-                      <line x1={todayX} y1={10} x2={todayX} y2={Math.max(60, contratosConEstado.length * 36 + 10)} stroke="#cc0000" strokeWidth={1.5} strokeDasharray="4,3" />
-                      <text x={todayX + 3} y={22} fill="#cc0000" fontSize={9} fontFamily="Inter, sans-serif">Hoy</text>
+                      <line x1={todayX} y1={10} x2={todayX} y2={Math.max(60, contratosConEstado.length * 36 + 10)} stroke="#990000" strokeWidth={1.5} strokeDasharray="4,3" />
+                      <text x={todayX + 3} y={22} fill="#990000" fontSize={9} fontFamily="Inter, sans-serif">Hoy</text>
                     </>
                   );
                 })()}
@@ -1119,14 +1119,14 @@ export default function ContratosActivosPage() {
               {/* Relleno bajo curva */}
               <polyline
                 points={`${padL},${padT + innerH} ${polyline} ${padL + innerW},${padT + innerH}`}
-                fill="rgba(204,0,0,0.1)"
+                fill="rgba(153,0,0,0.1)"
                 stroke="none"
               />
               {/* Línea */}
-              <polyline points={polyline} fill="none" stroke="#cc0000" strokeWidth={2.5} strokeLinejoin="round" />
+              <polyline points={polyline} fill="none" stroke="#990000" strokeWidth={2.5} strokeLinejoin="round" />
               {/* Puntos */}
               {linePoints.slice(1).map((p, i) => (
-                <circle key={i} cx={p.x} cy={p.y} r={3} fill="#cc0000" />
+                <circle key={i} cx={p.x} cy={p.y} r={3} fill="#990000" />
               ))}
             </svg>
           </div>
@@ -1147,10 +1147,10 @@ export default function ContratosActivosPage() {
                 </thead>
                 <tbody>
                   {/* Mes actual */}
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(204,0,0,0.05)" }}>
-                    <td style={{ padding: "10px 12px", color: "#cc0000", fontWeight: 700 }}>Actual</td>
+                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(153,0,0,0.05)" }}>
+                    <td style={{ padding: "10px 12px", color: "#990000", fontWeight: 700 }}>Actual</td>
                     <td style={{ padding: "10px 12px", color: "#fff", fontWeight: 600 }}>$ {fmt(totalCartera)}</td>
-                    <td style={{ padding: "10px 12px", color: "#22c55e", fontWeight: 600 }}>$ {fmt(totalHonorarios)}</td>
+                    <td style={{ padding: "10px 12px", color: "#3abab6", fontWeight: 600 }}>$ {fmt(totalHonorarios)}</td>
                     <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.5)" }}>{vigentes.length}</td>
                   </tr>
                   {proyeccion12.map((p, i) => {
@@ -1161,7 +1161,7 @@ export default function ContratosActivosPage() {
                       <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                         <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.6)" }}>{MESES_FULL[parseInt(m) - 1]} {y}</td>
                         <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.85)" }}>$ {fmt(p.totalMes)}</td>
-                        <td style={{ padding: "9px 12px", color: "#22c55e" }}>$ {fmt(p.honorariosMes)}</td>
+                        <td style={{ padding: "9px 12px", color: "#3abab6" }}>$ {fmt(p.honorariosMes)}</td>
                         <td style={{ padding: "9px 12px", color: "rgba(255,255,255,0.5)" }}>{activosEnMes}</td>
                       </tr>
                     );
@@ -1174,7 +1174,7 @@ export default function ContratosActivosPage() {
           {/* Total proyectado 12 meses */}
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <div style={{ ...s.kpiCard, borderColor: "rgba(34,197,94,0.2)" }}>
-              <div style={{ ...s.kpiVal, color: "#22c55e" }}>
+              <div style={{ ...s.kpiVal, color: "#3abab6" }}>
                 $ {fmt(proyeccion12.reduce((s, p) => s + p.honorariosMes, 0))}
               </div>
               <div style={s.kpiLabel}>Total honorarios proyectados 12 meses</div>
@@ -1220,7 +1220,7 @@ export default function ContratosActivosPage() {
 
             <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {/* Sección inquilino */}
-              <div style={{ fontSize: 11, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Inquilino</div>
+              <div style={{ fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Inquilino</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
                   <label style={s.label}>Nombre y apellido</label>
@@ -1232,7 +1232,7 @@ export default function ContratosActivosPage() {
                 </div>
               </div>
 
-              <div style={{ fontSize: 11, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginTop: 4 }}>Propietario</div>
+              <div style={{ fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginTop: 4 }}>Propietario</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
                   <label style={s.label}>Nombre y apellido</label>
@@ -1244,7 +1244,7 @@ export default function ContratosActivosPage() {
                 </div>
               </div>
 
-              <div style={{ fontSize: 11, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginTop: 4 }}>Propiedad</div>
+              <div style={{ fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginTop: 4 }}>Propiedad</div>
               <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 12 }}>
                 <div>
                   <label style={s.label}>Dirección</label>
@@ -1260,7 +1260,7 @@ export default function ContratosActivosPage() {
                 </div>
               </div>
 
-              <div style={{ fontSize: 11, color: "#cc0000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginTop: 4 }}>Contrato</div>
+              <div style={{ fontSize: 11, color: "#990000", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginTop: 4 }}>Contrato</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
                   <label style={s.label}>Fecha inicio</label>

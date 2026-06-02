@@ -255,7 +255,7 @@ const C = {
   bg: "#0a0a0a",
   card: "#111111",
   border: "#222222",
-  red: "#cc0000",
+  red: "#990000",
   text: "#e0e0e0",
   muted: "#888888",
   green: "#2d7a2d",

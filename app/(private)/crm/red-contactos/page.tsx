@@ -31,9 +31,9 @@ type TabId = "directorio" | "red" | "referidos";
 const TIPO_COLORES: Record<Contacto["tipo"], string> = {
   propietario: "#7c3aed",
   comprador:   "#0ea5e9",
-  inquilino:   "#16a34a",
+  inquilino:   "#22807c",
   inversor:    "#d97706",
-  colega:      "#cc0000",
+  colega:      "#990000",
   otros:       "#6b7280",
 };
 
@@ -47,10 +47,10 @@ const TIPO_LABELS: Record<Contacto["tipo"], string> = {
 };
 
 const RELACION_TIPOS: Array<{ value: Relacion["tipo"]; label: string; color: string }> = [
-  { value: "referido",  label: "Referido",  color: "#cc0000"  },
+  { value: "referido",  label: "Referido",  color: "#990000"  },
   { value: "colega",    label: "Colega",    color: "#0ea5e9"  },
   { value: "socio",     label: "Socio",     color: "#d97706"  },
-  { value: "conocido",  label: "Conocido",  color: "#16a34a"  },
+  { value: "conocido",  label: "Conocido",  color: "#22807c"  },
   { value: "familiar",  label: "Familiar",  color: "#7c3aed"  },
 ];
 
@@ -301,7 +301,7 @@ function ModalRelacion({ contactos, preseleccionado, onCerrar, onGuardar }: Moda
           }}
         />
 
-        {error && <p style={{ color: "#cc0000", fontSize: 13, marginBottom: 12 }}>{error}</p>}
+        {error && <p style={{ color: "#990000", fontSize: 13, marginBottom: 12 }}>{error}</p>}
 
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button
@@ -317,7 +317,7 @@ function ModalRelacion({ contactos, preseleccionado, onCerrar, onGuardar }: Moda
           <button
             onClick={handleGuardar}
             style={{
-              background: "#cc0000", border: "none", borderRadius: 8,
+              background: "#990000", border: "none", borderRadius: 8,
               padding: "9px 20px", color: "#fff", cursor: "pointer",
               fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14,
             }}
@@ -449,7 +449,7 @@ function GraficoBarsas({ relaciones }: { relaciones: Relacion[] }) {
         const y = padT + chartH - barH;
         return (
           <g key={i}>
-            <rect x={x} y={y} width={barW} height={barH} fill="#cc0000" rx={3} />
+            <rect x={x} y={y} width={barW} height={barH} fill="#990000" rx={3} />
             {d.count > 0 && (
               <text x={x + barW / 2} y={y - 4} textAnchor="middle" fill="#e0e0e0" fontSize={10} fontFamily="Inter">{d.count}</text>
             )}
@@ -643,12 +643,12 @@ function TabDirectorio({ contactos, onAgregarRelacion }: TabDirectorioProps) {
                       <button
                         onClick={() => onAgregarRelacion(c.id)}
                         style={{
-                          background: "transparent", border: "1px solid #cc0000",
-                          borderRadius: 8, padding: "6px 12px", color: "#cc0000",
+                          background: "transparent", border: "1px solid #990000",
+                          borderRadius: 8, padding: "6px 12px", color: "#990000",
                           cursor: "pointer", fontFamily: "Inter, sans-serif",
                           fontSize: 12, fontWeight: 600, width: "100%",
                         }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#cc000022"; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#99000022"; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
                       >
                         + Agregar relación
@@ -721,7 +721,7 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
       {/* Estadísticas */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
         <div style={{ background: "#111", border: "1px solid #222", borderRadius: 10, padding: 20 }}>
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 32, color: "#cc0000" }}>
+          <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 32, color: "#990000" }}>
             {relaciones.length}
           </div>
           <div style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#a0a0a0", marginTop: 4 }}>
@@ -788,7 +788,7 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
                       padding: "6px 12px", color: "#a0a0a0", cursor: "pointer",
                       fontFamily: "Inter, sans-serif", fontSize: 12,
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#cc0000"; (e.currentTarget as HTMLButtonElement).style.color = "#cc0000"; }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#990000"; (e.currentTarget as HTMLButtonElement).style.color = "#990000"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#333"; (e.currentTarget as HTMLButtonElement).style.color = "#a0a0a0"; }}
                   >
                     + Relación
@@ -829,7 +829,7 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
                             <button
                               onClick={() => { onEliminarRelacion(rel.id); setConfirmando(null); }}
                               style={{
-                                background: "#cc0000", border: "none", borderRadius: 6,
+                                background: "#990000", border: "none", borderRadius: 6,
                                 padding: "4px 10px", color: "#fff", cursor: "pointer",
                                 fontFamily: "Inter, sans-serif", fontSize: 12,
                               }}
@@ -856,7 +856,7 @@ function TabRed({ contactos, relaciones, onAgregarRelacion, onEliminarRelacion }
                               color: "#555", cursor: "pointer", fontSize: 18,
                               lineHeight: 1, padding: "0 4px",
                             }}
-                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#cc0000"; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#990000"; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#555"; }}
                           >
                             ×
@@ -997,7 +997,7 @@ function TabReferidos({ contactos, relaciones }: TabReferidosProps) {
                   </div>
                 </div>
 
-                <div style={{ color: "#cc0000", fontSize: 18, fontWeight: 700 }}>→</div>
+                <div style={{ color: "#990000", fontSize: 18, fontWeight: 700 }}>→</div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Avatar nombre={referido.nombre} tipo={referido.tipo} size={32} />
@@ -1160,7 +1160,7 @@ export default function RedContactosPage() {
             <button
               onClick={() => abrirModal(null)}
               style={{
-                background: "#cc0000", border: "none", borderRadius: 10,
+                background: "#990000", border: "none", borderRadius: 10,
                 padding: "10px 20px", color: "#fff", cursor: "pointer",
                 fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14,
               }}
@@ -1177,7 +1177,7 @@ export default function RedContactosPage() {
                 onClick={() => setTab(t.id)}
                 style={{
                   background: "transparent", border: "none",
-                  borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
+                  borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
                   padding: "10px 16px", cursor: "pointer",
                   fontFamily: "Inter, sans-serif", fontWeight: tab === t.id ? 600 : 400,
                   fontSize: 14, color: tab === t.id ? "#e0e0e0" : "#666",

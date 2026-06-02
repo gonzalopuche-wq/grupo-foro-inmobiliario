@@ -15,9 +15,9 @@ interface Resultado {
 // GFI design-system palette per category
 const TIPO_CONFIG: Record<Resultado["tipo"], { label: string; color: string; bg: string; border: string; icon: string }> = {
   propiedad: { label: "Propiedad", color: "#1e4a7a", bg: "rgba(10,37,64,0.35)", border: "rgba(30,74,122,0.4)",  icon: "🏠" },
-  contacto:  { label: "Contacto",  color: "#10b981", bg: "rgba(10,61,46,0.35)", border: "rgba(16,185,129,0.3)", icon: "👤" },
-  foro:      { label: "Foro",      color: "#cc0000", bg: "rgba(204,0,0,0.12)",  border: "rgba(204,0,0,0.3)",    icon: "💬" },
-  negocio:   { label: "Negocio",   color: "#f97316", bg: "rgba(196,74,0,0.18)", border: "rgba(249,115,22,0.35)", icon: "🤝" },
+  contacto:  { label: "Contacto",  color: "#3abab6", bg: "rgba(10,61,46,0.35)", border: "rgba(58,186,182,0.3)", icon: "👤" },
+  foro:      { label: "Foro",      color: "#990000", bg: "rgba(153,0,0,0.12)",  border: "rgba(153,0,0,0.3)",    icon: "💬" },
+  negocio:   { label: "Negocio",   color: "#d4960c", bg: "rgba(196,74,0,0.18)", border: "rgba(249,115,22,0.35)", icon: "🤝" },
 };
 
 export default function BusquedaGlobal() {

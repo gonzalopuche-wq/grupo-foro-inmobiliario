@@ -182,13 +182,13 @@ export default function WinLossPage() {
         {/* KPIs principales */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12, marginBottom: 28 }}>
           {[
-            { label: "Win Rate", value: `${stats.winRate.toFixed(0)}%`, sub: `${stats.cerrados} cerrados`, color: "#22c55e" },
-            { label: "Loss Rate", value: `${stats.lossRate.toFixed(0)}%`, sub: `${stats.perdidos} perdidos`, color: "#cc0000" },
+            { label: "Win Rate", value: `${stats.winRate.toFixed(0)}%`, sub: `${stats.cerrados} cerrados`, color: "#3abab6" },
+            { label: "Loss Rate", value: `${stats.lossRate.toFixed(0)}%`, sub: `${stats.perdidos} perdidos`, color: "#990000" },
             { label: "En Pipeline", value: stats.activos, sub: "negocios activos", color: "#3b82f6" },
-            { label: "Días Prom. Cierre", value: `${stats.avgDiasCierre.toFixed(0)}d`, sub: "primer contacto → cierre", color: "#f97316" },
-            { label: "Valor Cerrado", value: `USD ${fmt(stats.valorCerrado)}`, sub: "total período", color: "#22c55e" },
+            { label: "Días Prom. Cierre", value: `${stats.avgDiasCierre.toFixed(0)}d`, sub: "primer contacto → cierre", color: "#d4960c" },
+            { label: "Valor Cerrado", value: `USD ${fmt(stats.valorCerrado)}`, sub: "total período", color: "#3abab6" },
             { label: "Honorarios", value: `USD ${fmt(stats.honCerrado)}`, sub: "cobrados período", color: "#a855f7" },
-            { label: "Ticket Promedio", value: `USD ${fmt(stats.avgValorCerrado)}`, sub: "por operación", color: "#eab308" },
+            { label: "Ticket Promedio", value: `USD ${fmt(stats.avgValorCerrado)}`, sub: "por operación", color: "#d4960c" },
             { label: "Interacc./Cierre", value: stats.avgIntCierre.toFixed(1), sub: "interacciones promedio", color: "#6b7280" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: `1px solid ${k.color}33`, borderRadius: 10, padding: "12px 14px" }}>
@@ -206,8 +206,8 @@ export default function WinLossPage() {
             <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 16 }}>Tasa de Cierre</div>
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               {[
-                { label: "Cerrados", pct: stats.winRate, color: "#22c55e", count: stats.cerrados },
-                { label: "Perdidos", pct: stats.lossRate, color: "#cc0000", count: stats.perdidos },
+                { label: "Cerrados", pct: stats.winRate, color: "#3abab6", count: stats.cerrados },
+                { label: "Perdidos", pct: stats.lossRate, color: "#990000", count: stats.perdidos },
                 { label: "Activos", pct: stats.total > 0 ? (stats.activos / stats.total) * 100 : 0, color: "#3b82f6", count: stats.activos },
               ].map(s => (
                 <div key={s.label} style={{ flex: 1 }}>
@@ -231,7 +231,7 @@ export default function WinLossPage() {
               const pct = (count / maxE) * 100;
               const colores: Record<string, string> = {
                 prospecto: "#6b7280", calificado: "#3b82f6", propuesta: "#a855f7",
-                negociacion: "#f97316", reservado: "#eab308", en_escritura: "#22c55e",
+                negociacion: "#d4960c", reservado: "#d4960c", en_escritura: "#3abab6",
               };
               return (
                 <div key={etapa} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
@@ -269,9 +269,9 @@ export default function WinLossPage() {
                       <tr key={tipo} style={{ background: i % 2 === 0 ? "#0f0f0f" : "#111", borderBottom: "1px solid #1f2937" }}>
                         <td style={{ padding: "9px 14px", color: "#e5e5e5", fontWeight: 600 }}>{tipo}</td>
                         <td style={{ padding: "9px 14px", textAlign: "right", color: "#9ca3af" }}>{t.total}</td>
-                        <td style={{ padding: "9px 14px", textAlign: "right", color: "#22c55e", fontWeight: 700 }}>{t.cerrados}</td>
-                        <td style={{ padding: "9px 14px", textAlign: "right", color: "#cc0000" }}>{t.perdidos}</td>
-                        <td style={{ padding: "9px 14px", textAlign: "right", color: winR >= 50 ? "#22c55e" : winR >= 25 ? "#f97316" : "#cc0000", fontWeight: 700 }}>
+                        <td style={{ padding: "9px 14px", textAlign: "right", color: "#3abab6", fontWeight: 700 }}>{t.cerrados}</td>
+                        <td style={{ padding: "9px 14px", textAlign: "right", color: "#990000" }}>{t.perdidos}</td>
+                        <td style={{ padding: "9px 14px", textAlign: "right", color: winR >= 50 ? "#3abab6" : winR >= 25 ? "#d4960c" : "#990000", fontWeight: 700 }}>
                           {winR.toFixed(0)}%
                         </td>
                         <td style={{ padding: "9px 14px", textAlign: "right", color: "#e5e5e5" }}>
@@ -295,17 +295,17 @@ export default function WinLossPage() {
           <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 14 }}>💡 Insights</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {stats.winRate >= 50 && (
-              <div style={{ background: "#15803d22", border: "1px solid #22c55e33", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#22c55e" }}>
+              <div style={{ background: "#15803d22", border: "1px solid #3abab633", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#3abab6" }}>
                 ✅ Win rate {stats.winRate.toFixed(0)}% — Por encima del promedio del mercado (35-45%). Excelente performance.
               </div>
             )}
             {stats.winRate < 30 && (
-              <div style={{ background: "#7f1d1d22", border: "1px solid #cc000033", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#cc0000" }}>
+              <div style={{ background: "#7f1d1d22", border: "1px solid #99000033", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#990000" }}>
                 ⚠️ Win rate {stats.winRate.toFixed(0)}% — Por debajo del promedio. Revisar estrategia de calificación y propuestas.
               </div>
             )}
             {stats.avgDiasCierre > 90 && (
-              <div style={{ background: "#78350f22", border: "1px solid #f9731633", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#f97316" }}>
+              <div style={{ background: "#78350f22", border: "1px solid #d4960c33", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#d4960c" }}>
                 🕐 Ciclo de cierre promedio: {stats.avgDiasCierre.toFixed(0)} días. Ciclos largos impactan el cash flow. Revisar seguimiento y urgencia.
               </div>
             )}
@@ -321,7 +321,7 @@ export default function WinLossPage() {
               </div>
             )}
             {stats.activos === 0 && stats.total > 0 && (
-              <div style={{ background: "#1c1107", border: "1px solid #f9731644", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#f97316" }}>
+              <div style={{ background: "#1c1107", border: "1px solid #d4960c44", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#d4960c" }}>
                 🔥 Pipeline vacío — Todos los negocios del período están cerrados o perdidos. Momento de prospectar.
               </div>
             )}

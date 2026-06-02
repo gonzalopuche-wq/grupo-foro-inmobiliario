@@ -13,11 +13,11 @@ interface Plantilla {
 }
 
 const TIPOS: Record<string, { label: string; color: string; bg: string }> = {
-  llamada:     { label: 'Llamada',    color: '#60a5fa', bg: 'rgba(96,165,250,0.12)' },
-  whatsapp:    { label: 'WhatsApp',   color: '#22c55e', bg: 'rgba(34,197,94,0.12)' },
+  llamada:     { label: 'Llamada',    color: '#4ab8d8', bg: 'rgba(74,184,216,0.12)' },
+  whatsapp:    { label: 'WhatsApp',   color: '#3abab6', bg: 'rgba(34,197,94,0.12)' },
   email:       { label: 'Email',      color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
-  visita:      { label: 'Visita',     color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-  reunion:     { label: 'Reunión',    color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  visita:      { label: 'Visita',     color: '#d4960c', bg: 'rgba(245,158,11,0.12)' },
+  reunion:     { label: 'Reunión',    color: '#d4960c', bg: 'rgba(249,115,22,0.12)' },
   nota:        { label: 'Nota',       color: 'rgba(255,255,255,0.4)', bg: 'rgba(255,255,255,0.06)' },
 }
 
@@ -109,9 +109,9 @@ export default function PlantillasPage() {
     header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap' as const, gap: 12 },
     titulo: { margin: 0, fontSize: 18, fontWeight: 800, fontFamily: 'Montserrat,sans-serif' },
     sub: { margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' },
-    btnNuevo: { display: 'flex', alignItems: 'center', gap: 8, background: '#cc0000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' },
+    btnNuevo: { display: 'flex', alignItems: 'center', gap: 8, background: '#990000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' },
     filtros: { display: 'flex', gap: 6, flexWrap: 'wrap' as const, marginBottom: 20 },
-    chip: (activo: boolean) => ({ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activo ? '#cc0000' : 'rgba(255,255,255,0.1)'}`, background: activo ? 'rgba(200,0,0,0.1)' : 'transparent', color: activo ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' } as React.CSSProperties),
+    chip: (activo: boolean) => ({ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activo ? '#990000' : 'rgba(255,255,255,0.1)'}`, background: activo ? 'rgba(200,0,0,0.1)' : 'transparent', color: activo ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' } as React.CSSProperties),
     card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '16px 20px', marginBottom: 10 } as React.CSSProperties,
     badge: (tipo: string) => ({ display: 'inline-block', padding: '2px 9px', borderRadius: 10, fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', background: TIPOS[tipo]?.bg ?? 'rgba(255,255,255,0.06)', color: TIPOS[tipo]?.color ?? 'rgba(255,255,255,0.4)' } as React.CSSProperties),
   }
@@ -196,7 +196,7 @@ export default function PlantillasPage() {
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {TIPO_LIST.map(t => (
                   <button key={t} onClick={() => setForm(f => ({ ...f, tipo: t }))}
-                    style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${form.tipo === t ? '#cc0000' : 'rgba(255,255,255,0.1)'}`, background: form.tipo === t ? 'rgba(200,0,0,0.12)' : 'transparent', color: form.tipo === t ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+                    style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${form.tipo === t ? '#990000' : 'rgba(255,255,255,0.1)'}`, background: form.tipo === t ? 'rgba(200,0,0,0.12)' : 'transparent', color: form.tipo === t ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
                     {TIPOS[t]?.label}
                   </button>
                 ))}
@@ -242,7 +242,7 @@ export default function PlantillasPage() {
                 Cancelar
               </button>
               <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.contenido.trim()}
-                style={{ background: '#cc0000', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', opacity: guardando ? 0.6 : 1 }}>
+                style={{ background: '#990000', border: 'none', color: '#fff', padding: '9px 18px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? 'Guardando…' : editId ? 'Guardar cambios' : 'Crear plantilla'}
               </button>
             </div>
@@ -251,7 +251,7 @@ export default function PlantillasPage() {
       )}
 
       {toast && (
-        <div style={{ position: 'fixed', bottom: 28, right: 28, padding: '12px 20px', borderRadius: 8, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontFamily: 'Montserrat,sans-serif', fontSize: 12, fontWeight: 700, zIndex: 999 }}>
+        <div style={{ position: 'fixed', bottom: 28, right: 28, padding: '12px 20px', borderRadius: 8, background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.35)', color: '#3abab6', fontFamily: 'Montserrat,sans-serif', fontSize: 12, fontWeight: 700, zIndex: 999 }}>
           {toast}
         </div>
       )}

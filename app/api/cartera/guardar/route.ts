@@ -203,7 +203,7 @@ async function notificarBajaDePrecio({
 
       const html = `
         <div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;color:#222;">
-          <div style="background:#cc0000;padding:20px 24px;">
+          <div style="background:#990000;padding:20px 24px;">
             <div style="color:#fff;font-size:18px;font-weight:bold;">GFI® · Bajó el precio</div>
             <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">Una propiedad que te interesó bajó de precio</div>
           </div>
@@ -214,11 +214,11 @@ async function notificarBajaDePrecio({
             </p>
             <div style="margin:20px 0;padding:16px;background:#f9f9f9;border-radius:8px;text-align:center;">
               <div style="font-size:13px;color:#999;text-decoration:line-through;">${sym} ${fmt(precioAnterior)}</div>
-              <div style="font-size:26px;font-weight:700;color:#cc0000;margin:4px 0;">${sym} ${fmt(precioNuevo)}</div>
-              <div style="display:inline-block;background:#16a34a;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;">-${pct}%</div>
+              <div style="font-size:26px;font-weight:700;color:#990000;margin:4px 0;">${sym} ${fmt(precioNuevo)}</div>
+              <div style="display:inline-block;background:#22807c;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;">-${pct}%</div>
             </div>
             <div style="text-align:center;margin-top:24px;">
-              <a href="${url}" style="background:#cc0000;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:14px;font-weight:600;">Ver propiedad</a>
+              <a href="${url}" style="background:#990000;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:14px;font-weight:600;">Ver propiedad</a>
             </div>
             <div style="margin-top:28px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:11px;color:#999;">
               Recibís este email porque consultaste esta propiedad en GFI®.

@@ -375,7 +375,7 @@ export default function DescuentosPage() {
   function SortIndicator({ col }: { col: SortCol }) {
     if (sortCol !== col) return <span style={{ color: "#444", marginLeft: 4 }}>↕</span>;
     return (
-      <span style={{ color: "#cc0000", marginLeft: 4 }}>
+      <span style={{ color: "#990000", marginLeft: 4 }}>
         {sortDir === "asc" ? "↑" : "↓"}
       </span>
     );
@@ -434,7 +434,7 @@ export default function DescuentosPage() {
                       style={{
                         position: "absolute",
                         inset: 0,
-                        background: `rgba(204,0,0,${Math.max(0, Math.min(0.25, pct / 100 * 0.25))}`,
+                        background: `rgba(153,0,0,${Math.max(0, Math.min(0.25, pct / 100 * 0.25))}`,
                         borderRadius: 0,
                         width: `${pct}%`,
                       }}
@@ -449,10 +449,10 @@ export default function DescuentosPage() {
                       ...tdStyle,
                       color:
                         row.descuento_promedio > 10
-                          ? "#cc0000"
+                          ? "#990000"
                           : row.descuento_promedio > 5
-                          ? "#f59e0b"
-                          : "#22c55e",
+                          ? "#d4960c"
+                          : "#3abab6",
                       fontWeight: 700,
                     }}
                   >
@@ -587,7 +587,7 @@ export default function DescuentosPage() {
           <div
             style={{
               textAlign: "center",
-              color: "#cc0000",
+              color: "#990000",
               padding: 64,
               fontSize: 14,
             }}
@@ -619,7 +619,7 @@ export default function DescuentosPage() {
               <div
                 style={{
                   ...cardStyle,
-                  border: "1px solid rgba(204,0,0,0.3)",
+                  border: "1px solid rgba(153,0,0,0.3)",
                 }}
               >
                 <div
@@ -639,7 +639,7 @@ export default function DescuentosPage() {
                     fontSize: 28,
                     fontWeight: 800,
                     fontFamily: "Montserrat, sans-serif",
-                    color: "#cc0000",
+                    color: "#990000",
                     lineHeight: 1,
                   }}
                 >
@@ -654,7 +654,7 @@ export default function DescuentosPage() {
               <div
                 style={{
                   ...cardStyle,
-                  border: "1px solid rgba(204,0,0,0.2)",
+                  border: "1px solid rgba(153,0,0,0.2)",
                 }}
               >
                 <div
@@ -674,7 +674,7 @@ export default function DescuentosPage() {
                     fontSize: 28,
                     fontWeight: 800,
                     fontFamily: "Montserrat, sans-serif",
-                    color: "#cc0000",
+                    color: "#990000",
                     lineHeight: 1,
                   }}
                 >
@@ -689,7 +689,7 @@ export default function DescuentosPage() {
               <div
                 style={{
                   ...cardStyle,
-                  border: "1px solid rgba(204,0,0,0.2)",
+                  border: "1px solid rgba(153,0,0,0.2)",
                 }}
               >
                 <div
@@ -709,7 +709,7 @@ export default function DescuentosPage() {
                     fontSize: 28,
                     fontWeight: 800,
                     fontFamily: "Montserrat, sans-serif",
-                    color: "#cc0000",
+                    color: "#990000",
                     lineHeight: 1,
                   }}
                 >
@@ -746,7 +746,7 @@ export default function DescuentosPage() {
                     fontSize: 28,
                     fontWeight: 800,
                     fontFamily: "Montserrat, sans-serif",
-                    color: "#22c55e",
+                    color: "#3abab6",
                     lineHeight: 1,
                   }}
                 >
@@ -784,7 +784,7 @@ export default function DescuentosPage() {
                     style={{
                       background: "none",
                       border: "none",
-                      borderBottom: tab === t.key ? "2px solid #cc0000" : "2px solid transparent",
+                      borderBottom: tab === t.key ? "2px solid #990000" : "2px solid transparent",
                       color: tab === t.key ? "#fff" : "#666",
                       fontFamily: "Montserrat, sans-serif",
                       fontWeight: 700,
@@ -893,7 +893,7 @@ export default function DescuentosPage() {
                               y={y}
                               width={barW}
                               height={barH}
-                              fill="#cc0000"
+                              fill="#990000"
                               rx={4}
                             />
                           )}
@@ -1024,7 +1024,7 @@ export default function DescuentosPage() {
                           key={row.id}
                           style={{
                             background: esGranDesc
-                              ? "rgba(204,0,0,0.07)"
+                              ? "rgba(153,0,0,0.07)"
                               : esPremio
                               ? "rgba(34,197,94,0.05)"
                               : "transparent",
@@ -1045,11 +1045,11 @@ export default function DescuentosPage() {
                               fontWeight: 700,
                               color:
                                 row.descuento_pct > 10
-                                  ? "#cc0000"
+                                  ? "#990000"
                                   : row.descuento_pct > 5
-                                  ? "#f59e0b"
+                                  ? "#d4960c"
                                   : row.descuento_pct < 0
-                                  ? "#22c55e"
+                                  ? "#3abab6"
                                   : "#aaa",
                             }}
                           >

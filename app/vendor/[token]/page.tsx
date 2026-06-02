@@ -9,9 +9,9 @@ const sb = createClient(
 );
 
 const TIPO_NOV: Record<string, { icon: string; color: string }> = {
-  nota:      { icon: "📝", color: "#60a5fa" },
-  visita:    { icon: "🗓",  color: "#22c55e" },
-  oferta:    { icon: "💰",  color: "#f59e0b" },
+  nota:      { icon: "📝", color: "#4ab8d8" },
+  visita:    { icon: "🗓",  color: "#3abab6" },
+  oferta:    { icon: "💰",  color: "#d4960c" },
   escritura: { icon: "📋",  color: "#a78bfa" },
   otro:      { icon: "📌",  color: "#6b7280" },
 };
@@ -68,7 +68,7 @@ export default async function VendorPortalPage({ params }: { params: Promise<{ t
         {/* Header */}
         <div style={{ background: "rgba(6,6,6,0.98)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "16px 24px", display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: "#fff" }}>
-            GFI<span style={{ color: "#cc0000" }}>®</span>
+            GFI<span style={{ color: "#990000" }}>®</span>
           </div>
           <div style={{ height: 16, width: 1, background: "rgba(255,255,255,0.1)" }} />
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
@@ -101,13 +101,13 @@ export default async function VendorPortalPage({ params }: { params: Promise<{ t
               <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>
                 Estado actual de su propiedad
               </div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#22c55e", fontFamily: "Montserrat,sans-serif", marginBottom: 14 }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#3abab6", fontFamily: "Montserrat,sans-serif", marginBottom: 14 }}>
                 {portal.etapa_actual}
               </div>
               {/* Barra de progreso */}
               <div style={{ marginBottom: 10 }}>
                 <div style={{ height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #cc0000, #22c55e)", borderRadius: 3, transition: "width 0.5s" }} />
+                  <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #990000, #3abab6)", borderRadius: 3, transition: "width 0.5s" }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, fontSize: 10, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif" }}>
                   <span>Ingresada</span>
@@ -124,7 +124,7 @@ export default async function VendorPortalPage({ params }: { params: Promise<{ t
                     <span key={e} style={{
                       fontSize: 10, padding: "3px 9px", borderRadius: 4, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
                       background: actual ? "rgba(34,197,94,0.15)" : hecho ? "rgba(255,255,255,0.04)" : "transparent",
-                      color: actual ? "#22c55e" : hecho ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.2)",
+                      color: actual ? "#3abab6" : hecho ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.2)",
                       border: `1px solid ${actual ? "rgba(34,197,94,0.3)" : hecho ? "rgba(255,255,255,0.08)" : "transparent"}`,
                     }}>
                       {hecho && !actual ? "✓ " : actual ? "⬤ " : ""}{e}
@@ -169,7 +169,7 @@ export default async function VendorPortalPage({ params }: { params: Promise<{ t
                 Su corredor inmobiliario
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#cc0000", overflow: "hidden", flexShrink: 0 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#990000", overflow: "hidden", flexShrink: 0 }}>
                   {corredor.foto_url
                     ? <img src={corredor.foto_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     : `${corredor.nombre?.charAt(0) ?? ""}${corredor.apellido?.charAt(0) ?? ""}`}

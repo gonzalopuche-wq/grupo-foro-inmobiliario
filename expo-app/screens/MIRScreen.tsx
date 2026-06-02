@@ -24,7 +24,7 @@ interface Propiedad {
 
 const OPERACION_COLOR: Record<string, string> = {
   venta: '#3b82f6',
-  alquiler: '#22c55e',
+  alquiler: '#3abab6',
   ambas: '#8b5cf6',
 };
 

@@ -260,11 +260,11 @@ function calcPrecioM2(precio: number, m2: number | null): number | null {
 function estadoBadge(estado: PropiedadCompetencia["estado"]): { label: string; bg: string; color: string } {
   switch (estado) {
     case "activa":
-      return { label: "Activa", bg: "rgba(34,197,94,0.15)", color: "#22c55e" };
+      return { label: "Activa", bg: "rgba(34,197,94,0.15)", color: "#3abab6" };
     case "vendida":
-      return { label: "Vendida", bg: "rgba(204,0,0,0.15)", color: "#cc0000" };
+      return { label: "Vendida", bg: "rgba(153,0,0,0.15)", color: "#990000" };
     case "retirada":
-      return { label: "Retirada", bg: "rgba(249,115,22,0.15)", color: "#f97316" };
+      return { label: "Retirada", bg: "rgba(249,115,22,0.15)", color: "#d4960c" };
   }
 }
 
@@ -312,7 +312,7 @@ const cardStyle: React.CSSProperties = {
 const btnPrimary: React.CSSProperties = {
   padding: "7px 18px",
   borderRadius: 8,
-  background: "#cc0000",
+  background: "#990000",
   border: "none",
   color: "#fff",
   fontSize: 12,
@@ -780,7 +780,7 @@ export default function AnalisisCompetencia() {
                 padding: "12px 20px",
                 background: "transparent",
                 border: "none",
-                borderBottom: active ? "2px solid #cc0000" : "2px solid transparent",
+                borderBottom: active ? "2px solid #990000" : "2px solid transparent",
                 color: active ? "#e0e0e0" : "rgba(255,255,255,0.4)",
                 fontSize: 12,
                 fontFamily: "'Montserrat',sans-serif",
@@ -842,24 +842,24 @@ export default function AnalisisCompetencia() {
                             key={inm.id}
                             onClick={() => setSelectedInmId(sel ? null : inm.id)}
                             style={{
-                              background: sel ? "rgba(204,0,0,0.07)" : "transparent",
+                              background: sel ? "rgba(153,0,0,0.07)" : "transparent",
                               cursor: "pointer",
                               transition: "background 0.15s",
                             }}
                           >
                             <td style={tdStyle}>
-                              <div style={{ fontWeight: 600, fontSize: 13, color: sel ? "#cc0000" : "#e0e0e0" }}>{inm.nombre}</div>
+                              <div style={{ fontWeight: 600, fontSize: 13, color: sel ? "#990000" : "#e0e0e0" }}>{inm.nombre}</div>
                               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{inm.zona}</div>
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center" }}>
-                              <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 16, color: "#22c55e" }}>{nActivas}</span>
+                              <span style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 16, color: "#3abab6" }}>{nActivas}</span>
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#e0e0e0" }}>
                               {avgPrecioM2 !== null ? `${fmt(avgPrecioM2)}/m²` : "—"}
                             </td>
                             <td style={{ ...tdStyle, textAlign: "center" }}>
                               {avgDias !== null ? (
-                                <span style={{ color: avgDias > 90 ? "#cc0000" : avgDias > 60 ? "#f97316" : "#22c55e", fontWeight: 700 }}>
+                                <span style={{ color: avgDias > 90 ? "#990000" : avgDias > 60 ? "#d4960c" : "#3abab6", fontWeight: 700 }}>
                                   {fmt(avgDias)}d
                                 </span>
                               ) : "—"}
@@ -886,7 +886,7 @@ export default function AnalisisCompetencia() {
                   <div style={{ flex: "1 1 300px", ...cardStyle }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
                       <div>
-                        <p style={{ margin: "0 0 2px 0", fontSize: 15, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#cc0000" }}>{selectedInm.nombre}</p>
+                        <p style={{ margin: "0 0 2px 0", fontSize: 15, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: "#990000" }}>{selectedInm.nombre}</p>
                         <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{selectedInm.zona}</p>
                       </div>
                       <button onClick={() => setSelectedInmId(null)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 14 }}>✕</button>
@@ -923,9 +923,9 @@ export default function AnalisisCompetencia() {
                     {/* KPIs */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
                       {[
-                        { label: "Activas", val: statsDetalle.activas.length, color: "#22c55e" },
+                        { label: "Activas", val: statsDetalle.activas.length, color: "#3abab6" },
                         { label: "$/m² prom.", val: statsDetalle.avgPrecioM2 !== null ? `${fmt(statsDetalle.avgPrecioM2)}/m²` : "—", color: "#e0e0e0" },
-                        { label: "Días prom.", val: statsDetalle.avgDias !== null ? `${fmt(statsDetalle.avgDias)}d` : "—", color: statsDetalle.avgDias !== null && statsDetalle.avgDias > 90 ? "#cc0000" : statsDetalle.avgDias !== null && statsDetalle.avgDias > 60 ? "#f97316" : "#22c55e" },
+                        { label: "Días prom.", val: statsDetalle.avgDias !== null ? `${fmt(statsDetalle.avgDias)}d` : "—", color: statsDetalle.avgDias !== null && statsDetalle.avgDias > 90 ? "#990000" : statsDetalle.avgDias !== null && statsDetalle.avgDias > 60 ? "#d4960c" : "#3abab6" },
                         { label: "Total prop.", val: statsDetalle.total, color: "rgba(255,255,255,0.6)" },
                         { label: "Rotación", val: `${statsDetalle.rotacion.toFixed(0)}%`, color: "#3b82f6" },
                       ].map((k) => (
@@ -1005,9 +1005,9 @@ export default function AnalisisCompetencia() {
                     style={{
                       padding: "5px 12px", borderRadius: 16, fontSize: 10,
                       fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer",
-                      border: `1px solid ${filtroOp === op ? "rgba(204,0,0,0.5)" : "#222222"}`,
-                      background: filtroOp === op ? "rgba(204,0,0,0.12)" : "transparent",
-                      color: filtroOp === op ? "#cc0000" : "rgba(255,255,255,0.4)",
+                      border: `1px solid ${filtroOp === op ? "rgba(153,0,0,0.5)" : "#222222"}`,
+                      background: filtroOp === op ? "rgba(153,0,0,0.12)" : "transparent",
+                      color: filtroOp === op ? "#990000" : "rgba(255,255,255,0.4)",
                     }}
                   >
                     {op === "todos" ? "Todas" : op === "venta" ? "Venta" : "Alquiler"}
@@ -1122,7 +1122,7 @@ export default function AnalisisCompetencia() {
                               <td style={{ ...tdStyle, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 13, whiteSpace: "nowrap" }}>
                                 {p.moneda} {fmt(p.precio)}
                               </td>
-                              <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#cc0000" }}>
+                              <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#990000" }}>
                                 {p.precio_m2 !== null ? `${fmt(p.precio_m2)}/m²` : "—"}
                               </td>
                               <td style={{ ...tdStyle, textAlign: "center" }}>
@@ -1132,7 +1132,7 @@ export default function AnalisisCompetencia() {
                               </td>
                               <td style={{ ...tdStyle, textAlign: "center" }}>
                                 {p.dias_en_mercado !== null ? (
-                                  <span style={{ fontWeight: 700, color: p.dias_en_mercado > 90 ? "#cc0000" : p.dias_en_mercado > 60 ? "#f97316" : "#22c55e" }}>
+                                  <span style={{ fontWeight: 700, color: p.dias_en_mercado > 90 ? "#990000" : p.dias_en_mercado > 60 ? "#d4960c" : "#3abab6" }}>
                                     {p.dias_en_mercado}d
                                   </span>
                                 ) : "—"}
@@ -1180,7 +1180,7 @@ export default function AnalisisCompetencia() {
                       {barrioPreciosComp.map(({ barrio, competencia }) => (
                         <tr key={barrio}>
                           <td style={tdStyle}>{barrio}</td>
-                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#cc0000" }}>
+                          <td style={{ ...tdStyle, textAlign: "center", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#990000" }}>
                             {fmt(competencia)}/m²
                           </td>
                           <td style={{ ...tdStyle, textAlign: "center", color: "rgba(255,255,255,0.4)" }}>
@@ -1222,8 +1222,8 @@ export default function AnalisisCompetencia() {
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {insights.map((insight, idx) => (
-                  <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid #cc0000" }}>
-                    <span style={{ color: "#cc0000", fontSize: 14, lineHeight: 1.5, flexShrink: 0 }}>▸</span>
+                  <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8, borderLeft: "3px solid #990000" }}>
+                    <span style={{ color: "#990000", fontSize: 14, lineHeight: 1.5, flexShrink: 0 }}>▸</span>
                     <p style={{ margin: 0, fontSize: 12, color: "#e0e0e0", lineHeight: 1.6 }}>{insight}</p>
                   </div>
                 ))}
@@ -1455,7 +1455,7 @@ function PropiedadDetalle({
         </a>
       )}
       <div style={{ marginTop: 20 }}>
-        <button onClick={onActualizarEstado} style={{ padding: "8px 18px", borderRadius: 8, background: "rgba(204,0,0,0.15)", border: "1px solid rgba(204,0,0,0.4)", color: "#cc0000", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+        <button onClick={onActualizarEstado} style={{ padding: "8px 18px", borderRadius: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.4)", color: "#990000", fontSize: 12, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
           Actualizar estado
         </button>
       </div>
@@ -1505,8 +1505,8 @@ function PrecioM2Chart({ data }: { data: { nombre: string; avg: number | null }[
           const y = paddingTop + chartH - barH;
           return (
             <g key={d.nombre}>
-              <rect x={x} y={y} width={barW} height={barH} fill="#cc0000" rx={4} />
-              <text x={x + barW / 2} y={y - 5} textAnchor="middle" fill="#cc0000" fontSize={10} fontFamily="Montserrat,sans-serif" fontWeight={700}>
+              <rect x={x} y={y} width={barW} height={barH} fill="#990000" rx={4} />
+              <text x={x + barW / 2} y={y - 5} textAnchor="middle" fill="#990000" fontSize={10} fontFamily="Montserrat,sans-serif" fontWeight={700}>
                 {fmt(d.avg)}
               </text>
               <text
@@ -1542,7 +1542,7 @@ function DiasChart({ data }: { data: { nombre: string; avg: number | null }[] })
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {validData.map((d) => {
         const pct = (d.avg / maxVal) * 100;
-        const color = d.avg < 60 ? "#22c55e" : d.avg > 90 ? "#cc0000" : "#f97316";
+        const color = d.avg < 60 ? "#3abab6" : d.avg > 90 ? "#990000" : "#d4960c";
         return (
           <div key={d.nombre} style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", minWidth: 180, flexShrink: 0 }}>{d.nombre}</span>
@@ -1556,7 +1556,7 @@ function DiasChart({ data }: { data: { nombre: string; avg: number | null }[] })
         );
       })}
       <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
-        {[{ color: "#22c55e", label: "< 60 días" }, { color: "#f97316", label: "60–90 días" }, { color: "#cc0000", label: "> 90 días" }].map((leg) => (
+        {[{ color: "#3abab6", label: "< 60 días" }, { color: "#d4960c", label: "60–90 días" }, { color: "#990000", label: "> 90 días" }].map((leg) => (
           <div key={leg.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: leg.color }} />
             <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{leg.label}</span>

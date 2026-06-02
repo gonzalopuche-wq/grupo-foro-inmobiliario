@@ -158,10 +158,10 @@ interface Propiedad {
 const OPERACIONES = ["Venta", "Alquiler", "Alquiler temporal"];
 const TIPOS = ["Departamento", "Casa", "PH", "Local", "Oficina", "Terreno", "Cochera", "Galpon", "Chalet", "Cabaña", "Otro"];
 const ESTADOS = [
-  { value: "activa", label: "ACTIVA", color: "#22c55e" },
-  { value: "reservada", label: "RESERVADA", color: "#f59e0b" },
+  { value: "activa", label: "ACTIVA", color: "#3abab6" },
+  { value: "reservada", label: "RESERVADA", color: "#d4960c" },
   { value: "vendida", label: "VENDIDA", color: "#6b7280" },
-  { value: "pausada", label: "PAUSADA", color: "#ef4444" },
+  { value: "pausada", label: "PAUSADA", color: "#b80000" },
 ];
 const CONDICIONES = ["A estrenar", "Muy bueno", "Bueno", "Regular", "A reciclar"];
 const ORIENTACIONES = ["Norte", "Sur", "Este", "Oeste", "Noreste", "Noroeste", "Sureste", "Suroeste"];
@@ -171,9 +171,9 @@ const HONORARIOS_COMPARTIR = ["No comparte", "50%", "40%", "30%"];
 const MAX_FOTOS = 40;
 
 const PORTALES_EXT = [
-  { id: "gfi_red",       label: "Red GFI",      color: "#cc0000", bg: "rgba(200,0,0,0.15)" },
+  { id: "gfi_red",       label: "Red GFI",      color: "#990000", bg: "rgba(200,0,0,0.15)" },
   { id: "gfi_portal",    label: "Portal GFI",   color: "#ff4444", bg: "rgba(255,68,68,0.12)" },
-  { id: "propia_red",    label: "Red Propia",   color: "#10b981", bg: "rgba(16,185,129,0.13)" },
+  { id: "propia_red",    label: "Red Propia",   color: "#3abab6", bg: "rgba(58,186,182,0.13)" },
   { id: "propia_portal", label: "Propia.com.ar",color: "#059669", bg: "rgba(5,150,105,0.12)" },
   { id: "kiteprop",      label: "Kiteprop",     color: "#7c3aed", bg: "rgba(124,58,237,0.13)" },
   { id: "tokko",         label: "Tokko Broker", color: "#0ea5e9", bg: "rgba(14,165,233,0.13)" },
@@ -1264,20 +1264,20 @@ export default function CarteraPage() {
           border-bottom: 1px solid #252a35;
         }
         .cart-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 900; color: #f0f4f8; letter-spacing: -0.01em; }
-        .cart-titulo span { color: #cc0000; }
+        .cart-titulo span { color: #990000; }
         .cart-stats { display: flex; gap: 20px; }
         .cart-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
         .cart-stat-val { font-family: 'JetBrains Mono','Courier New',monospace; font-size: 18px; font-weight: 700; color: #f0f4f8; font-variant-numeric: tabular-nums; }
         .cart-stat-label { font-size: 8px; color: #4a5568; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
         .cart-btn-nueva {
           padding: 9px 20px;
-          background: linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
+          background: linear-gradient(135deg, #990000 0%, #b80000 100%);
           border: none; border-radius: 6px; color: #fff;
           font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800;
           letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer;
-          box-shadow: 0 2px 12px rgba(204,0,0,0.35); transition: all 0.15s;
+          box-shadow: 0 2px 12px rgba(153,0,0,0.35); transition: all 0.15s;
         }
-        .cart-btn-nueva:hover { box-shadow: 0 4px 20px rgba(204,0,0,0.50); transform: translateY(-1px); }
+        .cart-btn-nueva:hover { box-shadow: 0 4px 20px rgba(153,0,0,0.50); transform: translateY(-1px); }
 
         /* ── Toolbar (command bar) ── */
         .cart-toolbar {
@@ -1292,7 +1292,7 @@ export default function CarteraPage() {
           color: #f0f4f8; font-size: 12px; outline: none;
           font-family: 'Inter',sans-serif; width: 220px; transition: border-color 0.15s;
         }
-        .cart-search:focus { border-color: rgba(204,0,0,0.45); box-shadow: 0 0 0 3px rgba(204,0,0,0.08); }
+        .cart-search:focus { border-color: rgba(153,0,0,0.45); box-shadow: 0 0 0 3px rgba(153,0,0,0.08); }
         .cart-search::placeholder { color: #4a5568; }
         .cart-select {
           padding: 7px 28px 7px 10px; background: #111318;
@@ -1303,7 +1303,7 @@ export default function CarteraPage() {
           background-repeat: no-repeat; background-position: right 10px center;
           transition: border-color 0.15s;
         }
-        .cart-select:focus { border-color: rgba(204,0,0,0.35); }
+        .cart-select:focus { border-color: rgba(153,0,0,0.35); }
         .cart-count { font-family: 'JetBrains Mono','Courier New',monospace; font-size: 10px; color: #4a5568; margin-left: auto; font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
 
         /* ── Cards ── */
@@ -1329,17 +1329,17 @@ export default function CarteraPage() {
         .cart-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
         .cart-card-codigo { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; letter-spacing: 0.08em; margin-bottom: 3px; }
         .cart-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #f0f4f8; cursor: pointer; line-height: 1.3; transition: color 0.15s; }
-        .cart-card-titulo:hover { color: #cc0000; }
+        .cart-card-titulo:hover { color: #990000; }
         .cart-card-tipo { font-size: 11px; color: #8892a4; margin-top: 3px; font-family: 'Inter',sans-serif; }
         /* Precio lado derecho */
         .cart-precio-block { text-align: right; flex-shrink: 0; }
         .cart-precio-op { display: inline-block; font-size: 8px; font-family: 'Montserrat',sans-serif; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; margin-bottom: 5px; }
-        .cart-precio-op-venta { background: rgba(10,61,46,0.40); color: #10b981; border: 1px solid rgba(16,185,129,0.22); }
-        .cart-precio-op-alquiler { background: rgba(10,37,64,0.50); color: #60a5fa; border: 1px solid rgba(96,165,250,0.22); }
-        .cart-precio-op-temporal { background: rgba(196,74,0,0.12); color: #f97316; border: 1px solid rgba(196,74,0,0.28); }
+        .cart-precio-op-venta { background: rgba(10,61,46,0.40); color: #3abab6; border: 1px solid rgba(58,186,182,0.22); }
+        .cart-precio-op-alquiler { background: rgba(10,37,64,0.50); color: #4ab8d8; border: 1px solid rgba(74,184,216,0.22); }
+        .cart-precio-op-temporal { background: rgba(196,74,0,0.12); color: #d4960c; border: 1px solid rgba(196,74,0,0.28); }
         .cart-card-precio { font-family: 'JetBrains Mono','Courier New',monospace; font-size: 18px; font-weight: 700; color: #f0f4f8; white-space: nowrap; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
-        .cart-card-precio.usd { color: #10b981; }
-        .cart-card-precio.ars { color: #f97316; }
+        .cart-card-precio.usd { color: #3abab6; }
+        .cart-card-precio.ars { color: #d4960c; }
         .cart-card-exp { font-size: 10px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; margin-top: 2px; font-variant-numeric: tabular-nums; }
         /* Dirección */
         .cart-card-dir { font-size: 11px; color: #8892a4; display: flex; align-items: center; gap: 5px; margin: 4px 0 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1350,36 +1350,36 @@ export default function CarteraPage() {
         /* Chips */
         .cart-card-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
         .cart-chip { font-size: 8px; padding: 2px 8px; border-radius: 20px; border: 1px solid #252a35; color: #8892a4; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.05em; }
-        .cart-chip-v { border-color: rgba(16,185,129,0.25); color: #10b981; }
+        .cart-chip-v { border-color: rgba(58,186,182,0.25); color: #3abab6; }
         /* Footer */
         .cart-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 8px; border-top: 1px solid #1c2030; }
         .cart-card-fecha { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; font-variant-numeric: tabular-nums; }
-        .cart-mir-badge { font-size: 8px; padding: 2px 8px; border-radius: 10px; background: rgba(204,0,0,0.10); border: 1px solid rgba(204,0,0,0.25); color: rgba(204,0,0,0.80); font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .cart-mir-badge-red { display:inline-flex; align-items:center; gap:3px; font-size:8px; padding:2px 7px; border-radius:4px; font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:0.05em; background:rgba(204,0,0,0.12); border:1px solid rgba(204,0,0,0.25); color:rgba(204,0,0,0.8); }
+        .cart-mir-badge { font-size: 8px; padding: 2px 8px; border-radius: 10px; background: rgba(153,0,0,0.10); border: 1px solid rgba(153,0,0,0.25); color: rgba(153,0,0,0.80); font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .cart-mir-badge-red { display:inline-flex; align-items:center; gap:3px; font-size:8px; padding:2px 7px; border-radius:4px; font-family:'Montserrat',sans-serif; font-weight:800; letter-spacing:0.05em; background:rgba(153,0,0,0.12); border:1px solid rgba(153,0,0,0.25); color:rgba(153,0,0,0.8); }
         /* Portal sync pills */
         .sync-badge { font-size: 8px; padding: 3px 8px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.06em; }
         .sync-badge-tokko { background: rgba(220,38,38,0.10); border: 1px solid rgba(220,38,38,0.22); color: #f87171; }
-        .sync-badge-kite  { background: rgba(96,165,250,0.10); border: 1px solid rgba(96,165,250,0.22); color: #60a5fa; }
-        .sync-badge-propia{ background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.22); color: #34d399; }
+        .sync-badge-kite  { background: rgba(74,184,216,0.10); border: 1px solid rgba(74,184,216,0.22); color: #4ab8d8; }
+        .sync-badge-propia{ background: rgba(58,186,182,0.10); border: 1px solid rgba(58,186,182,0.22); color: #34d399; }
         /* Portal chips (filtros) */
         .portal-chip { padding: 5px 12px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; border: 1px solid #252a35; background: rgba(255,255,255,0.025); color: #4a5568; transition: all 0.15s; }
         .portal-chip:hover { border-color: #333b4d; color: #8892a4; }
-        .portal-chip.active-kite { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); color: #60a5fa; }
-        .portal-chip.active-propia { background: rgba(204,0,0,0.12); border-color: rgba(204,0,0,0.4); color: #cc0000; }
+        .portal-chip.active-kite { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); color: #4ab8d8; }
+        .portal-chip.active-propia { background: rgba(153,0,0,0.12); border-color: rgba(153,0,0,0.4); color: #990000; }
         .portal-chip.active-tokko { background: rgba(220,38,38,0.1); border-color: rgba(220,38,38,0.3); color: rgba(220,38,38,0.85); }
-        .portal-chip.active-gfi { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #22c55e; }
+        .portal-chip.active-gfi { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #3abab6; }
         /* Acciones */
         .cart-card-acciones { width: 114px; flex-shrink: 0; padding: 10px 8px; display: flex; flex-direction: column; gap: 4px; border-left: 1px solid #1c2030; background: rgba(0,0,0,0.12); }
         .cart-acc-btn { padding: 5px 6px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; text-align: center; width: 100%; transition: all 0.12s; }
         .cart-acc-editar { background: rgba(255,255,255,0.04); border: 1px solid #252a35; color: #8892a4; }
         .cart-acc-editar:hover { background: rgba(255,255,255,0.08); border-color: #333b4d; color: #f0f4f8; }
         .cart-acc-tokko { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.18); color: rgba(220,38,38,0.65); }
-        .cart-acc-kite { background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.18); color: rgba(96,165,250,0.65); }
-        .cart-acc-ambos { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.18); color: rgba(16,185,129,0.65); }
-        .cart-acc-eliminar { background: transparent; border: 1px solid rgba(204,0,0,0.15); color: rgba(204,0,0,0.40); }
-        .cart-acc-eliminar:hover { background: rgba(204,0,0,0.08); border-color: rgba(204,0,0,0.30); color: rgba(204,0,0,0.70); }
-        .cart-acc-red { background: rgba(204,0,0,0.08); border: 1px solid rgba(204,0,0,0.22); color: rgba(204,0,0,0.75); }
-        .cart-acc-red.on { background: rgba(204,0,0,0.16); border-color: rgba(204,0,0,0.45); color: #cc0000; }
+        .cart-acc-kite { background: rgba(74,184,216,0.06); border: 1px solid rgba(74,184,216,0.18); color: rgba(74,184,216,0.65); }
+        .cart-acc-ambos { background: rgba(58,186,182,0.06); border: 1px solid rgba(58,186,182,0.18); color: rgba(58,186,182,0.65); }
+        .cart-acc-eliminar { background: transparent; border: 1px solid rgba(153,0,0,0.15); color: rgba(153,0,0,0.40); }
+        .cart-acc-eliminar:hover { background: rgba(153,0,0,0.08); border-color: rgba(153,0,0,0.30); color: rgba(153,0,0,0.70); }
+        .cart-acc-red { background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.22); color: rgba(153,0,0,0.75); }
+        .cart-acc-red.on { background: rgba(153,0,0,0.16); border-color: rgba(153,0,0,0.45); color: #990000; }
         .cart-estado-select { width: 100%; padding: 4px 5px; background: #0d1017; border: 1px solid #252a35; border-radius: 5px; color: #8892a4; font-size: 9px; font-family: 'Montserrat',sans-serif; outline: none; cursor: pointer; }
         .cart-empty { padding: 60px 20px; text-align: center; color: #4a5568; font-family: 'Inter',sans-serif; font-size: 13px; line-height: 1.8; }
         .cart-empty-ico { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
@@ -1389,16 +1389,16 @@ export default function CarteraPage() {
         .wiz-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; z-index: 300; overflow: hidden; backdrop-filter: blur(4px); }
         .wiz-sidebar { width: 260px; flex-shrink: 0; background: #0c0f14; border-right: 1px solid #252a35; display: flex; flex-direction: column; padding: 24px 0; }
         .wiz-sidebar-title { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 900; color: #f0f4f8; padding: 0 20px 20px; border-bottom: 1px solid #252a35; margin-bottom: 8px; letter-spacing: 0.02em; }
-        .wiz-sidebar-title span { color: #cc0000; }
+        .wiz-sidebar-title span { color: #990000; }
         .wiz-progress-wrap { padding: 0 20px 16px; }
         .wiz-progress-bar-bg { height: 2px; background: #252a35; border-radius: 2px; overflow: hidden; }
-        .wiz-progress-bar { height: 100%; background: linear-gradient(90deg, #cc0000, #e8002d); transition: width 0.3s; box-shadow: 0 0 8px rgba(204,0,0,0.4); }
+        .wiz-progress-bar { height: 100%; background: linear-gradient(90deg, #990000, #b80000); transition: width 0.3s; box-shadow: 0 0 8px rgba(153,0,0,0.4); }
         .wiz-progress-pct { font-size: 9px; color: #4a5568; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; margin-top: 4px; }
         .wiz-step { display: flex; align-items: center; gap: 12px; padding: 10px 20px; cursor: pointer; transition: background 0.12s; }
         .wiz-step:hover { background: rgba(255,255,255,0.02); }
         .wiz-step-n { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; flex-shrink: 0; border: 2px solid #252a35; color: #4a5568; transition: all 0.15s; }
-        .wiz-step-n.activo { background: linear-gradient(135deg, #cc0000, #e8002d); border-color: #cc0000; color: #fff; box-shadow: 0 0 12px rgba(204,0,0,0.30); }
-        .wiz-step-n.hecho { background: rgba(10,61,46,0.40); border-color: rgba(16,185,129,0.35); color: #10b981; }
+        .wiz-step-n.activo { background: linear-gradient(135deg, #990000, #b80000); border-color: #990000; color: #fff; box-shadow: 0 0 12px rgba(153,0,0,0.30); }
+        .wiz-step-n.hecho { background: rgba(10,61,46,0.40); border-color: rgba(58,186,182,0.35); color: #3abab6; }
         .wiz-step-info { flex: 1; min-width: 0; }
         .wiz-step-label { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; color: #4a5568; transition: color 0.12s; }
         .wiz-step-label.activo { color: #f0f4f8; }
@@ -1406,13 +1406,13 @@ export default function CarteraPage() {
 
         /* ── Wizard content ── */
         .wiz-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0d1017; }
-        .wiz-main-header { padding: 20px 28px 16px; border-bottom: 1px solid #252a35; flex-shrink: 0; background: linear-gradient(90deg, rgba(204,0,0,0.05) 0%, transparent 60%); }
-        .wiz-paso-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.20em; text-transform: uppercase; color: rgba(204,0,0,0.7); margin-bottom: 4px; }
+        .wiz-main-header { padding: 20px 28px 16px; border-bottom: 1px solid #252a35; flex-shrink: 0; background: linear-gradient(90deg, rgba(153,0,0,0.05) 0%, transparent 60%); }
+        .wiz-paso-label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.20em; text-transform: uppercase; color: rgba(153,0,0,0.7); margin-bottom: 4px; }
         .wiz-paso-titulo { font-family: 'Montserrat',sans-serif; font-size: 22px; font-weight: 900; color: #f0f4f8; }
         .wiz-paso-sub { font-size: 12px; color: #8892a4; margin-top: 3px; font-family: 'Inter',sans-serif; }
         .wiz-body { flex: 1; overflow-y: auto; padding: 20px 28px; }
         .wiz-body::-webkit-scrollbar { width: 3px; }
-        .wiz-body::-webkit-scrollbar-thumb { background: rgba(204,0,0,0.3); border-radius: 2px; }
+        .wiz-body::-webkit-scrollbar-thumb { background: rgba(153,0,0,0.3); border-radius: 2px; }
         .wiz-footer { padding: 14px 28px; border-top: 1px solid #252a35; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background: #0c0f14; }
 
         /* ── Form elements ── */
@@ -1422,12 +1422,12 @@ export default function CarteraPage() {
         .wiz-field { margin-bottom: 11px; }
         .wiz-label { display: block; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #4a5568; margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
         .wiz-input { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; box-sizing: border-box; transition: border-color 0.15s; }
-        .wiz-input:focus { border-color: rgba(204,0,0,0.45); box-shadow: 0 0 0 3px rgba(204,0,0,0.08); }
+        .wiz-input:focus { border-color: rgba(153,0,0,0.45); box-shadow: 0 0 0 3px rgba(153,0,0,0.08); }
         .wiz-input::placeholder { color: #4a5568; }
         .wiz-select { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.15s; }
-        .wiz-select:focus { border-color: rgba(204,0,0,0.45); }
+        .wiz-select:focus { border-color: rgba(153,0,0,0.45); }
         .wiz-textarea { width: 100%; padding: 9px 12px; background: #111318; border: 1px solid #252a35; border-radius: 6px; color: #f0f4f8; font-size: 12px; font-family: 'Inter',sans-serif; outline: none; resize: none; box-sizing: border-box; transition: border-color 0.15s; }
-        .wiz-textarea:focus { border-color: rgba(204,0,0,0.45); box-shadow: 0 0 0 3px rgba(204,0,0,0.08); }
+        .wiz-textarea:focus { border-color: rgba(153,0,0,0.45); box-shadow: 0 0 0 3px rgba(153,0,0,0.08); }
         .wiz-textarea::placeholder { color: #4a5568; }
         .wiz-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .wiz-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
@@ -1435,15 +1435,15 @@ export default function CarteraPage() {
         .wiz-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
         .wiz-check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 7px 10px; background: rgba(255,255,255,0.018); border: 1px solid #252a35; border-radius: 6px; transition: all 0.12s; }
         .wiz-check-item:hover { background: rgba(255,255,255,0.032); border-color: #333b4d; }
-        .wiz-check-item.on { background: rgba(204,0,0,0.08); border-color: rgba(204,0,0,0.22); }
+        .wiz-check-item.on { background: rgba(153,0,0,0.08); border-color: rgba(153,0,0,0.22); }
         .wiz-check-box { width: 15px; height: 15px; border-radius: 3px; border: 2px solid #252a35; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.12s; }
-        .wiz-check-box.on { background: linear-gradient(135deg, #cc0000, #e8002d); border-color: #cc0000; }
+        .wiz-check-box.on { background: linear-gradient(135deg, #990000, #b80000); border-color: #990000; }
         .wiz-check-label { font-size: 11px; color: #8892a4; font-family: 'Inter',sans-serif; }
         .wiz-check-item.on .wiz-check-label { color: #f0f4f8; }
 
         /* ── Fotos ── */
         .foto-upload-area { border: 2px dashed #252a35; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.15s; position: relative; margin-bottom: 10px; background: rgba(255,255,255,0.012); }
-        .foto-upload-area:hover { border-color: rgba(204,0,0,0.35); background: rgba(204,0,0,0.03); }
+        .foto-upload-area:hover { border-color: rgba(153,0,0,0.35); background: rgba(153,0,0,0.03); }
         .foto-upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
         .foto-upload-txt { font-size: 12px; color: #8892a4; font-family: 'Inter',sans-serif; }
         .foto-upload-sub { font-size: 10px; color: #4a5568; margin-top: 3px; }
@@ -1452,12 +1452,12 @@ export default function CarteraPage() {
         .foto-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .foto-thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background 0.12s; display: flex; align-items: center; justify-content: center; }
         .foto-thumb:hover .foto-thumb-overlay { background: rgba(0,0,0,0.55); }
-        .foto-del-btn { opacity: 0; background: #cc0000; border: none; border-radius: 50%; width: 22px; height: 22px; color: #fff; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.12s; }
+        .foto-del-btn { opacity: 0; background: #990000; border: none; border-radius: 50%; width: 22px; height: 22px; color: #fff; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.12s; }
         .foto-thumb:hover .foto-del-btn { opacity: 1; }
         .foto-orden { position: absolute; bottom: 3px; left: 3px; background: rgba(0,0,0,0.75); color: #8892a4; font-size: 8px; padding: 1px 5px; border-radius: 2px; font-family: 'JetBrains Mono','Courier New',monospace; font-weight: 600; }
-        .foto-nueva-badge { position: absolute; top: 3px; right: 3px; background: #10b981; color: #fff; font-size: 7px; padding: 1px 4px; border-radius: 2px; }
+        .foto-nueva-badge { position: absolute; top: 3px; right: 3px; background: #3abab6; color: #fff; font-size: 7px; padding: 1px 4px; border-radius: 2px; }
         .foto-progress { height: 2px; background: #252a35; border-radius: 2px; overflow: hidden; }
-        .foto-progress-bar { height: 100%; background: linear-gradient(90deg, #cc0000, #e8002d); transition: width 0.3s; box-shadow: 0 0 6px rgba(204,0,0,0.4); }
+        .foto-progress-bar { height: 100%; background: linear-gradient(90deg, #990000, #b80000); transition: width 0.3s; box-shadow: 0 0 6px rgba(153,0,0,0.4); }
 
         /* ── Video ── */
         .video-preview { margin-top: 8px; border-radius: 6px; overflow: hidden; aspect-ratio: 16/9; background: rgba(0,0,0,0.5); }
@@ -1466,19 +1466,19 @@ export default function CarteraPage() {
         /* ── Nav wizard ── */
         .wiz-btn-prev { padding: 8px 20px; background: transparent; border: 1px solid #252a35; border-radius: 6px; color: #8892a4; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
         .wiz-btn-prev:hover { border-color: #333b4d; color: #f0f4f8; }
-        .wiz-btn-next { padding: 8px 24px; background: linear-gradient(135deg, #cc0000 0%, #e8002d 100%); border: none; border-radius: 6px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 12px rgba(204,0,0,0.35); transition: all 0.15s; }
-        .wiz-btn-next:hover:not(:disabled) { box-shadow: 0 4px 20px rgba(204,0,0,0.50); transform: translateY(-1px); }
+        .wiz-btn-next { padding: 8px 24px; background: linear-gradient(135deg, #990000 0%, #b80000 100%); border: none; border-radius: 6px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 12px rgba(153,0,0,0.35); transition: all 0.15s; }
+        .wiz-btn-next:hover:not(:disabled) { box-shadow: 0 4px 20px rgba(153,0,0,0.50); transform: translateY(-1px); }
         .wiz-btn-next:disabled { opacity: 0.40; cursor: not-allowed; transform: none; box-shadow: none; }
         .wiz-btn-cerrar { position: absolute; top: 16px; right: 16px; background: none; border: 1px solid #252a35; border-radius: 6px; color: #4a5568; font-size: 18px; cursor: pointer; z-index: 10; padding: 4px 8px; transition: all 0.15s; }
         .wiz-btn-cerrar:hover { color: #f0f4f8; border-color: #333b4d; }
-        .wiz-mir-info { background: rgba(204,0,0,0.05); border: 1px solid rgba(204,0,0,0.15); border-radius: 6px; padding: 10px 12px; font-size: 11px; color: #8892a4; font-family: 'Inter',sans-serif; line-height: 1.5; margin-bottom: 14px; }
-        .wiz-mir-info strong { color: rgba(204,0,0,0.80); }
+        .wiz-mir-info { background: rgba(153,0,0,0.05); border: 1px solid rgba(153,0,0,0.15); border-radius: 6px; padding: 10px 12px; font-size: 11px; color: #8892a4; font-family: 'Inter',sans-serif; line-height: 1.5; margin-bottom: 14px; }
+        .wiz-mir-info strong { color: rgba(153,0,0,0.80); }
         .cart-spinner { display: inline-block; width: 9px; height: 9px; border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
       {toastGuardado && (
-        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "rgba(10,61,46,0.95)", color: "#10b981", border: "1px solid rgba(16,185,129,0.30)", padding: "12px 24px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, zIndex: 9999, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(16,185,129,0.15)", backdropFilter: "blur(8px)" }}>
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: "rgba(10,61,46,0.95)", color: "#3abab6", border: "1px solid rgba(58,186,182,0.30)", padding: "12px 24px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 13, zIndex: 9999, boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(58,186,182,0.15)", backdropFilter: "blur(8px)" }}>
           {toastGuardado}
         </div>
       )}
@@ -1490,7 +1490,7 @@ export default function CarteraPage() {
           <div className="cart-titulo">Cartera <span>de Propiedades</span></div>
           <div className="cart-stats">
             <div className="cart-stat"><span className="cart-stat-val">{propiedades.length}</span><span className="cart-stat-label">Total</span></div>
-            <div className="cart-stat"><span className="cart-stat-val" style={{color:"#10b981"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
+            <div className="cart-stat"><span className="cart-stat-val" style={{color:"#3abab6"}}>{propiedades.filter(p=>p.estado==="activa").length}</span><span className="cart-stat-label">Activas</span></div>
           </div>
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
             {[
@@ -1536,14 +1536,14 @@ export default function CarteraPage() {
                 padding: "11px 18px", background: "none", border: "none", cursor: "pointer",
                 fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
                 color: fuenteActiva === tab.id ? "#f0f4f8" : "#4a5568",
-                borderBottom: fuenteActiva === tab.id ? "2px solid #cc0000" : "2px solid transparent",
+                borderBottom: fuenteActiva === tab.id ? "2px solid #990000" : "2px solid transparent",
                 marginBottom: -1, transition: "all 0.15s",
-                boxShadow: fuenteActiva === tab.id ? "inset 0 -1px 0 rgba(204,0,0,0.4)" : "none",
+                boxShadow: fuenteActiva === tab.id ? "inset 0 -1px 0 rgba(153,0,0,0.4)" : "none",
               }}
             >
               {tab.label}
               {tab.count !== null && tab.count > 0 && (
-                <span style={{ marginLeft: 6, fontSize: 9, background: fuenteActiva === tab.id ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.05)", borderRadius: 10, padding: "1px 7px", color: fuenteActiva === tab.id ? "#cc0000" : "#4a5568", fontFamily: "'JetBrains Mono','Courier New',monospace" }}>
+                <span style={{ marginLeft: 6, fontSize: 9, background: fuenteActiva === tab.id ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.05)", borderRadius: 10, padding: "1px 7px", color: fuenteActiva === tab.id ? "#990000" : "#4a5568", fontFamily: "'JetBrains Mono','Courier New',monospace" }}>
                   {tab.count.toLocaleString("es-AR")}
                 </span>
               )}
@@ -1593,12 +1593,12 @@ export default function CarteraPage() {
           />
           <button
             onClick={() => setFiltroSoloWeb(v => !v)}
-            style={{padding:"7px 10px",background:filtroSoloWeb?"rgba(59,130,246,0.12)":"rgba(255,255,255,0.04)",border:filtroSoloWeb?"1px solid rgba(59,130,246,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroSoloWeb?"#60a5fa":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
+            style={{padding:"7px 10px",background:filtroSoloWeb?"rgba(59,130,246,0.12)":"rgba(255,255,255,0.04)",border:filtroSoloWeb?"1px solid rgba(59,130,246,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroSoloWeb?"#4ab8d8":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
             title="Mostrar solo propiedades publicadas en el sitio web"
           >🌐 Web</button>
           <button
             onClick={() => setFiltroConLeads(v => !v)}
-            style={{padding:"7px 10px",background:filtroConLeads?"rgba(204,0,0,0.12)":"rgba(255,255,255,0.04)",border:filtroConLeads?"1px solid rgba(204,0,0,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroConLeads?"#cc0000":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
+            style={{padding:"7px 10px",background:filtroConLeads?"rgba(153,0,0,0.12)":"rgba(255,255,255,0.04)",border:filtroConLeads?"1px solid rgba(153,0,0,0.35)":"1px solid rgba(255,255,255,0.09)",borderRadius:4,color:filtroConLeads?"#990000":"rgba(255,255,255,0.35)",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700,cursor:"pointer",letterSpacing:"0.06em"}}
             title="Mostrar solo propiedades que recibieron leads"
           >✉ Con leads</button>
           {(filtroOp || filtroTipo || filtroEstado || busqueda || filtroPrecioMin || filtroPrecioMax || filtroSoloWeb || filtroConLeads || filtroPortal) && (
@@ -1635,7 +1635,7 @@ export default function CarteraPage() {
         {/* Alertas de Autorizaciones de Venta */}
         {!loading && alertasAutorizacion.length > 0 && (
           <div style={{ margin: "10px 0 0", padding: "14px 18px", background: "rgba(234,179,8,0.05)", border: "1px solid rgba(234,179,8,0.2)", borderRadius: 6 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#eab308", marginBottom: 10 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "#d4960c", marginBottom: 10 }}>
               ⚠️ Autorizaciones de Venta próximas a vencer
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -1644,7 +1644,7 @@ export default function CarteraPage() {
                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {p.titulo || p.direccion || "Propiedad sin título"}
                   </span>
-                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: p.diasCI <= 0 ? "#ff4444" : p.diasCI <= 7 ? "#ff8800" : "#eab308", whiteSpace: "nowrap" }}>
+                  <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, color: p.diasCI <= 0 ? "#ff4444" : p.diasCI <= 7 ? "#ff8800" : "#d4960c", whiteSpace: "nowrap" }}>
                     {p.diasCI <= 0 ? `VENCIDA hace ${Math.abs(p.diasCI)} días` : `Vence en ${p.diasCI} días`}
                   </span>
                   <span style={{ fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
@@ -1767,10 +1767,10 @@ export default function CarteraPage() {
                         <span className="cart-card-fecha">🕐 {formatFecha(p.updated_at)}</span>
                         {p.estado === "activa" && <span className="cart-mir-badge">🔄 MIR</span>}
                         {p.compartir_en_red && <span className="cart-mir-badge-red">🌐 Red GFI</span>}
-                        {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:4,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#60a5fa"}}>🌐 WEB</span>}
-                        {p.destacada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.3)",borderRadius:4,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#eab308"}}>⭐ DEST.</span>}
+                        {p.publicada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",borderRadius:4,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#4ab8d8"}}>🌐 WEB</span>}
+                        {p.destacada_web && <span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 8px",background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.3)",borderRadius:4,fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,color:"#d4960c"}}>⭐ DEST.</span>}
                         {(p.vistas ?? 0) > 0 && <span style={{fontSize:9,color:"rgba(255,255,255,0.3)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>👁 {p.vistas}</span>}
-                        {(p.leads_count ?? 0) > 0 && <span style={{fontSize:9,color:"#cc0000",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>✉ {p.leads_count}</span>}
+                        {(p.leads_count ?? 0) > 0 && <span style={{fontSize:9,color:"#990000",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>✉ {p.leads_count}</span>}
                       </div>
                       <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"flex-end"}}>
                         {sync?.tokko_id && <span className="sync-badge sync-badge-tokko">Tokko ✓</span>}
@@ -1782,8 +1782,8 @@ export default function CarteraPage() {
                   <div className="cart-card-acciones">
                     <button className="cart-acc-btn cart-acc-editar" onClick={() => abrirEditar(p)}>Editar</button>
                     <a href={`/crm/cartera/ficha/${p.id}`} target="_blank" rel="noopener noreferrer" className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(255,255,255,0.45)",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}}>📄 Ficha</a>
-                    <button className="cart-acc-btn" title="Copiar link de ficha pública para compartir con clientes" style={{background:"rgba(234,179,8,0.07)",border:"1px solid rgba(234,179,8,0.2)",color:"#eab308"}} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/inmueble/${p.id}`).catch(()=>{}); setToastGuardado("Link público copiado"); setTimeout(()=>setToastGuardado(""),2500); }}>🔗 Pública</button>
-                    <button className="cart-acc-btn" onClick={() => compartirWhatsApp(p)} title="Compartir por WhatsApp" style={{background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.15)",color:"#22c55e"}}>📲 WA</button>
+                    <button className="cart-acc-btn" title="Copiar link de ficha pública para compartir con clientes" style={{background:"rgba(234,179,8,0.07)",border:"1px solid rgba(234,179,8,0.2)",color:"#d4960c"}} onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/inmueble/${p.id}`).catch(()=>{}); setToastGuardado("Link público copiado"); setTimeout(()=>setToastGuardado(""),2500); }}>🔗 Pública</button>
+                    <button className="cart-acc-btn" onClick={() => compartirWhatsApp(p)} title="Compartir por WhatsApp" style={{background:"rgba(34,197,94,0.07)",border:"1px solid rgba(34,197,94,0.15)",color:"#3abab6"}}>📲 WA</button>
                     <button className="cart-acc-btn" onClick={() => generarPostRRSS(p)} disabled={generandoPost === p.id} title="Generar post para Instagram/Facebook con IA" style={{background:"rgba(168,85,247,0.07)",border:"1px solid rgba(168,85,247,0.15)",color:"#a855f7"}}>{generandoPost === p.id ? "..." : "🎯 Post"}</button>
                     <a href={`/crm/difusion?prop=${p.id}&titulo=${encodeURIComponent(p.titulo)}`} className="cart-acc-btn" style={{textAlign:"center",fontSize:10,color:"rgba(59,130,246,0.9)",background:"rgba(59,130,246,0.07)",border:"1px solid rgba(59,130,246,0.15)",borderRadius:4,padding:"5px 0",display:"block",textDecoration:"none",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em",cursor:"pointer"}} title="Difundir a contactos CRM">📢 Difundir</a>
                     <select className="cart-estado-select" value={p.estado} onChange={e => cambiarEstado(p.id, e.target.value)}>
@@ -1794,7 +1794,7 @@ export default function CarteraPage() {
                       onClick={() => togglePublicadaWeb(p)}
                       title={p.publicada_web ? "Quitar del sitio web" : "Publicar en el sitio web"}
                       style={p.publicada_web
-                        ? {background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",color:"#60a5fa"}
+                        ? {background:"rgba(59,130,246,0.12)",border:"1px solid rgba(59,130,246,0.25)",color:"#4ab8d8"}
                         : {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.35)"}}
                     >
                       {p.publicada_web ? "🌐 En Web" : "🌐 Web"}
@@ -1805,7 +1805,7 @@ export default function CarteraPage() {
                         onClick={() => toggleDestacadaWeb(p)}
                         title={p.destacada_web ? "Quitar de destacadas" : "Destacar en el sitio web"}
                         style={p.destacada_web
-                          ? {background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.35)",color:"#eab308"}
+                          ? {background:"rgba(234,179,8,0.12)",border:"1px solid rgba(234,179,8,0.35)",color:"#d4960c"}
                           : {background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.25)"}}
                       >
                         {p.destacada_web ? "⭐ Destacada" : "⭐ Destacar"}
@@ -1841,7 +1841,7 @@ export default function CarteraPage() {
                     {(p.fotos ?? []).some((f: string) => !f.includes("supabase.co")) && (
                       <button className="cart-acc-btn" onClick={() => repararFotos(p.id)} disabled={reparando === p.id}
                         title="Re-subir fotos importadas al storage propio (arregla fotos que no cargan)"
-                        style={{background:"rgba(245,158,11,0.08)",border:"1px solid rgba(245,158,11,0.2)",color:"#f59e0b"}}>
+                        style={{background:"rgba(245,158,11,0.08)",border:"1px solid rgba(245,158,11,0.2)",color:"#d4960c"}}>
                         {reparando === p.id ? "..." : "🔧 Fotos"}
                       </button>
                     )}
@@ -1865,7 +1865,7 @@ export default function CarteraPage() {
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
               <button
                 onClick={() => { setPortalesActivosExt([]); cargarExternas([], 1, filtroOpExt, filtroTipoExt, busquedaExt); }}
-                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: portalesActivosExt.length === 0 ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.04)", color: portalesActivosExt.length === 0 ? "#cc0000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(200,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: portalesActivosExt.length === 0 ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.04)", color: portalesActivosExt.length === 0 ? "#990000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
               >
                 Todos ({Object.values(porPortalExt).reduce((a, b) => a + b, 0).toLocaleString("es-AR")})
               </button>
@@ -1913,7 +1913,7 @@ export default function CarteraPage() {
                     setSincronizandoExt(false);
                   }}
                   disabled={sincronizandoExt}
-                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(200,0,0,0.06)" : "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#cc0000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
+                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(200,0,0,0.06)" : "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#990000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}
                 >
                   {sincronizandoExt ? "⏳ Sincronizando..." : "↻ Sincronizar"}
                 </button>
@@ -1993,14 +1993,14 @@ export default function CarteraPage() {
                 <option value="oficina">Oficina</option>
                 <option value="terreno">Terreno</option>
               </select>
-              {syncResExt && <span style={{ fontSize: 10, color: syncResExt.startsWith("✓") ? "#22c55e" : "#ef4444", alignSelf: "center", fontFamily: "Inter,sans-serif", maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={syncResExt}>{syncResExt}</span>}
+              {syncResExt && <span style={{ fontSize: 10, color: syncResExt.startsWith("✓") ? "#3abab6" : "#b80000", alignSelf: "center", fontFamily: "Inter,sans-serif", maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={syncResExt}>{syncResExt}</span>}
               <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", alignSelf: "center", marginLeft: "auto" }}>{totalExternas.toLocaleString("es-AR")} propiedades</span>
               {ultimaSyncExt && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.18)", alignSelf: "center" }}>Sync: {new Date(ultimaSyncExt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>}
             </div>
             {/* Errores de sync por portal */}
             {syncResultados && Object.entries(syncResultados).some(([, r]: any) => r.error) && (
               <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 6 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", fontFamily: "Montserrat,sans-serif", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#b80000", fontFamily: "Montserrat,sans-serif", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>⚠ Errores en sync</div>
                 {Object.entries(syncResultados).filter(([, r]: any) => r.error).map(([portal, r]: any) => (
                   <div key={portal} style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif", marginBottom: 3 }}>
                     <span style={{ color: "#f87171", fontWeight: 600 }}>{portal}:</span> {r.error}
@@ -2015,7 +2015,7 @@ export default function CarteraPage() {
               <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.18)", fontSize: 13, lineHeight: 2 }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🏙️</div>
                 {totalExternas === 0
-                  ? <>{esAdmin ? <>Sin propiedades sincronizadas.<br/><span style={{ color: "#cc0000", cursor: "pointer", textDecoration: "underline" }} onClick={async () => { setSincronizandoExt(true); const { data: { session } } = await supabase.auth.getSession(); const res = await fetch("/api/propiedades-externas/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ portal: "all" }) }); const json = await res.json(); if (json.ok) { setSyncResExt(`✓ ${json.total} importadas`); cargarExternas([], 1, "", "", ""); } setSincronizandoExt(false); }}>Hacer clic aquí para sincronizar todos los portales ahora</span></> : "Sin propiedades sincronizadas. Pedile al administrador que sincronice los portales."}</>
+                  ? <>{esAdmin ? <>Sin propiedades sincronizadas.<br/><span style={{ color: "#990000", cursor: "pointer", textDecoration: "underline" }} onClick={async () => { setSincronizandoExt(true); const { data: { session } } = await supabase.auth.getSession(); const res = await fetch("/api/propiedades-externas/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` }, body: JSON.stringify({ portal: "all" }) }); const json = await res.json(); if (json.ok) { setSyncResExt(`✓ ${json.total} importadas`); cargarExternas([], 1, "", "", ""); } setSincronizandoExt(false); }}>Hacer clic aquí para sincronizar todos los portales ahora</span></> : "Sin propiedades sincronizadas. Pedile al administrador que sincronice los portales."}</>
                   : "Sin resultados para los filtros aplicados."}
               </div>
             ) : (
@@ -2243,7 +2243,7 @@ export default function CarteraPage() {
                         <div style={{display:"flex",gap:6}}>
                           {OPERACIONES.map(o => (
                             <button key={o} type="button"
-                              style={{padding:"6px 12px",borderRadius:3,border:`1px solid ${form.operacion===o?"#cc0000":"rgba(255,255,255,0.1)"}`,background:form.operacion===o?"rgba(200,0,0,0.1)":"transparent",color:form.operacion===o?"#fff":"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                              style={{padding:"6px 12px",borderRadius:3,border:`1px solid ${form.operacion===o?"#990000":"rgba(255,255,255,0.1)"}`,background:form.operacion===o?"rgba(200,0,0,0.1)":"transparent",color:form.operacion===o?"#fff":"rgba(255,255,255,0.4)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
                               onClick={() => setF("operacion", o)}>{o}</button>
                           ))}
                         </div>
@@ -2362,7 +2362,7 @@ export default function CarteraPage() {
                       type="button"
                       onClick={geocodificar}
                       disabled={geocodificando || (!form.direccion && !form.ciudad)}
-                      style={{ padding: "8px 16px", background: geocodificando ? "rgba(255,255,255,0.05)" : "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 4, color: geocodificando ? "rgba(255,255,255,0.3)" : "#cc0000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                      style={{ padding: "8px 16px", background: geocodificando ? "rgba(255,255,255,0.05)" : "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 4, color: geocodificando ? "rgba(255,255,255,0.3)" : "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
                     >
                       {geocodificando ? "Buscando..." : "📍 Geocodificar desde dirección"}
                     </button>
@@ -2491,11 +2491,11 @@ export default function CarteraPage() {
                     <div className="wiz-section-title"><span className="wiz-section-ico">📝</span>Descripción pública</div>
                     <div className="wiz-field">
                       {/* IA Descripción */}
-                      <div style={{marginBottom:10,padding:"10px 12px",background:"rgba(204,0,0,0.06)",border:"1px solid rgba(204,0,0,0.15)",borderRadius:8}}>
+                      <div style={{marginBottom:10,padding:"10px 12px",background:"rgba(153,0,0,0.06)",border:"1px solid rgba(153,0,0,0.15)",borderRadius:8}}>
                         <div style={{fontSize:11,color:"rgba(255,255,255,0.5)",marginBottom:8,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.06em"}}>🤖 GENERAR CON IA</div>
                         <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
                           {(["profesional","premium","amigable","vendedor"] as const).map(t => (
-                            <button key={t} onClick={() => setTonoDesc(t)} type="button" style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,textTransform:"capitalize",background:tonoDesc===t?"rgba(204,0,0,0.2)":"rgba(255,255,255,0.05)",color:tonoDesc===t?"#ff6666":"rgba(255,255,255,0.4)",outline:tonoDesc===t?"1px solid rgba(204,0,0,0.3)":"none"}}>
+                            <button key={t} onClick={() => setTonoDesc(t)} type="button" style={{padding:"4px 10px",borderRadius:6,border:"none",cursor:"pointer",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,textTransform:"capitalize",background:tonoDesc===t?"rgba(153,0,0,0.2)":"rgba(255,255,255,0.05)",color:tonoDesc===t?"#ff6666":"rgba(255,255,255,0.4)",outline:tonoDesc===t?"1px solid rgba(153,0,0,0.3)":"none"}}>
                               {t}
                             </button>
                           ))}
@@ -2509,7 +2509,7 @@ export default function CarteraPage() {
                             if (descripcion) setF("descripcion", descripcion);
                           } catch {}
                           setGenerandoDesc(false);
-                        }} style={{padding:"6px 14px",background:"#cc0000",color:"#fff",border:"none",borderRadius:6,fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer",opacity:generandoDesc?0.5:1}}>
+                        }} style={{padding:"6px 14px",background:"#990000",color:"#fff",border:"none",borderRadius:6,fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,cursor:"pointer",opacity:generandoDesc?0.5:1}}>
                           {generandoDesc ? "Generando..." : "✨ Generar descripción"}
                         </button>
                       </div>
@@ -2811,7 +2811,7 @@ export default function CarteraPage() {
             <div style={{ display: "flex", gap: 0, borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 22 }}>
               {(["url", "tokko", "csv"] as const).map(t => (
                 <button key={t} onClick={() => { setTabImport(t); setImportError(""); setImportResult(null); }}
-                  style={{ padding: "8px 16px", background: "none", border: "none", borderBottom: `2px solid ${tabImport === t ? "#cc0000" : "transparent"}`, color: tabImport === t ? "#fff" : "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                  style={{ padding: "8px 16px", background: "none", border: "none", borderBottom: `2px solid ${tabImport === t ? "#990000" : "transparent"}`, color: tabImport === t ? "#fff" : "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
                   {t === "url" ? "URL de portal" : t === "tokko" ? "Tokko Broker" : "CSV / Excel"}
                 </button>
               ))}
@@ -2828,7 +2828,7 @@ export default function CarteraPage() {
                     placeholder="https://www.zonaprop.com.ar/..."
                     style={{ flex: 1, padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none" }} />
                   <button onClick={importarDesdeUrl} disabled={importando || !urlImport.trim()}
-                    style={{ padding: "10px 18px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", opacity: importando || !urlImport.trim() ? 0.5 : 1 }}>
+                    style={{ padding: "10px 18px", background: "#990000", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", opacity: importando || !urlImport.trim() ? 0.5 : 1 }}>
                     {importando ? "Importando…" : "Importar"}
                   </button>
                 </div>
@@ -2840,11 +2840,11 @@ export default function CarteraPage() {
             {tabImport === "tokko" && (
               <>
                 <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.6 }}>
-                  Importa <strong style={{color:"rgba(255,255,255,0.7)"}}>todas tus propiedades</strong> desde Tokko Broker de una sola vez. Requiere tu API key configurada en <a href="/crm/portales" style={{color:"#cc0000"}}>Portales</a>. Las ya importadas se saltean automáticamente.
+                  Importa <strong style={{color:"rgba(255,255,255,0.7)"}}>todas tus propiedades</strong> desde Tokko Broker de una sola vez. Requiere tu API key configurada en <a href="/crm/portales" style={{color:"#990000"}}>Portales</a>. Las ya importadas se saltean automáticamente.
                 </p>
                 {importResult ? (
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 16, marginBottom: 16 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#22c55e", marginBottom: 6 }}>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#3abab6", marginBottom: 6 }}>
                       ✓ {importResult.importadas} propiedad{importResult.importadas !== 1 ? "es" : ""} importada{importResult.importadas !== 1 ? "s" : ""}
                     </div>
                     {importResult.saltadas !== undefined && importResult.saltadas > 0 && (
@@ -2856,7 +2856,7 @@ export default function CarteraPage() {
                   </div>
                 ) : (
                   <button onClick={importarDesdeTokko} disabled={importando}
-                    style={{ width: "100%", padding: "12px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", marginBottom: 12, opacity: importando ? 0.6 : 1 }}>
+                    style={{ width: "100%", padding: "12px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", marginBottom: 12, opacity: importando ? 0.6 : 1 }}>
                     {importando ? "Importando desde Tokko…" : "↓ Importar todo desde Tokko"}
                   </button>
                 )}
@@ -2868,7 +2868,7 @@ export default function CarteraPage() {
               <>
                 <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 12, lineHeight: 1.6 }}>
                   Subí un archivo Excel (.xlsx) o CSV exportado desde cualquier CRM.{" "}
-                  <button onClick={descargarPlantillaCSV} style={{ background: "none", border: "none", color: "#cc0000", cursor: "pointer", fontSize: 12, padding: 0, textDecoration: "underline" }}>
+                  <button onClick={descargarPlantillaCSV} style={{ background: "none", border: "none", color: "#990000", cursor: "pointer", fontSize: 12, padding: 0, textDecoration: "underline" }}>
                     Descargar plantilla CSV
                   </button>
                 </p>
@@ -2904,7 +2904,7 @@ export default function CarteraPage() {
                 </details>
                 {importResult ? (
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: 14, marginBottom: 12 }}>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#22c55e" }}>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#3abab6" }}>
                       ✓ {importResult.importadas} propiedad{importResult.importadas !== 1 ? "es" : ""} importada{importResult.importadas !== 1 ? "s" : ""}
                     </div>
                     {importResult.errores && importResult.errores.length > 0 && (
@@ -2918,7 +2918,7 @@ export default function CarteraPage() {
                       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
                         {csvPreviewSel.filter(Boolean).length} de {csvPreview.length} seleccionadas
                       </div>
-                      <button onClick={() => setCsvPreviewSel(s => s.map(() => !s.every(Boolean)))} style={{ background: "none", border: "none", color: "#cc0000", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                      <button onClick={() => setCsvPreviewSel(s => s.map(() => !s.every(Boolean)))} style={{ background: "none", border: "none", color: "#990000", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                         {csvPreviewSel.every(Boolean) ? "Deseleccionar todo" : "Seleccionar todo"}
                       </button>
                     </div>
@@ -2939,7 +2939,7 @@ export default function CarteraPage() {
                             <tr key={i} onClick={() => setCsvPreviewSel(s => { const n=[...s]; n[i]=!n[i]; return n; })}
                               style={{ borderTop: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", background: csvPreviewSel[i] ? "transparent" : "rgba(255,255,255,0.01)", opacity: csvPreviewSel[i] ? 1 : 0.4 }}>
                               <td style={{ padding: "5px 8px" }}>
-                                <div style={{ width: 14, height: 14, borderRadius: 3, border: `1px solid ${csvPreviewSel[i] ? "#cc0000" : "rgba(255,255,255,0.2)"}`, background: csvPreviewSel[i] ? "#cc0000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <div style={{ width: 14, height: 14, borderRadius: 3, border: `1px solid ${csvPreviewSel[i] ? "#990000" : "rgba(255,255,255,0.2)"}`, background: csvPreviewSel[i] ? "#990000" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                   {csvPreviewSel[i] && <span style={{ fontSize: 8, color: "#fff", fontWeight: 900 }}>✓</span>}
                                 </div>
                               </td>
@@ -2958,14 +2958,14 @@ export default function CarteraPage() {
                         ← Volver
                       </button>
                       <button onClick={importarDesdeCSV} disabled={importando || !csvPreviewSel.some(Boolean)}
-                        style={{ flex: 1, padding: "10px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvPreviewSel.some(Boolean) ? 0.5 : 1 }}>
+                        style={{ flex: 1, padding: "10px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: importando || !csvPreviewSel.some(Boolean) ? 0.5 : 1 }}>
                         {importando ? "Importando…" : `Importar ${csvPreviewSel.filter(Boolean).length} propiedad${csvPreviewSel.filter(Boolean).length !== 1 ? "es" : ""}`}
                       </button>
                     </div>
                   </>
                 ) : (
                   <button onClick={previewCSV} disabled={cargandoPreview || !csvTexto.trim()}
-                    style={{ width: "100%", padding: "11px 0", background: "#cc0000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: cargandoPreview || !csvTexto.trim() ? 0.5 : 1 }}>
+                    style={{ width: "100%", padding: "11px 0", background: "#990000", color: "#fff", border: "none", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", opacity: cargandoPreview || !csvTexto.trim() ? 0.5 : 1 }}>
                     {cargandoPreview ? "Analizando…" : xlsxNombre ? `Vista previa de "${xlsxNombre}"` : "Vista previa del CSV"}
                   </button>
                 )}
@@ -3000,7 +3000,7 @@ export default function CarteraPage() {
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                       <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:13,color:"#fff"}}>{m.nombre}</span>
-                      <span style={{background:"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#cc0000",fontFamily:"Montserrat,sans-serif"}}>{m.compatibilidad}%</span>
+                      <span style={{background:"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#990000",fontFamily:"Montserrat,sans-serif"}}>{m.compatibilidad}%</span>
                     </div>
                     <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",lineHeight:1.4}}>{m.razon}</div>
                   </div>

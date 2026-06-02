@@ -70,7 +70,7 @@ function colorHeat(t: number, metrica: Metrica): string {
   if (v < 0.25) return `rgba(59,130,246,${0.3 + v * 0.8})`;     // azul bajo
   if (v < 0.5)  return `rgba(34,197,94,${0.3 + v * 0.8})`;      // verde medio
   if (v < 0.75) return `rgba(234,179,8,${0.3 + v * 0.8})`;      // amarillo alto
-  return `rgba(204,0,0,${0.3 + v * 0.7})`;                       // rojo muy alto
+  return `rgba(153,0,0,${0.3 + v * 0.7})`;                       // rojo muy alto
 }
 
 const METRICAS: { id: Metrica; label: string; fmt: (n: number) => string }[] = [
@@ -155,7 +155,7 @@ export default function MapaZonasPage() {
   const tendenciaIcon = (t: Zona["tendencia"]) =>
     t === "sube" ? "▲" : t === "baja" ? "▼" : "→";
   const tendenciaColor = (t: Zona["tendencia"]) =>
-    t === "sube" ? "#22c55e" : t === "baja" ? "#ef4444" : "#94a3b8";
+    t === "sube" ? "#3abab6" : t === "baja" ? "#b80000" : "#94a3b8";
 
   return (
     <>
@@ -163,7 +163,7 @@ export default function MapaZonasPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .mz-wrap { max-width: 1000px; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter', sans-serif; }
         .mz-titulo { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .mz-titulo span { color: #cc0000; }
+        .mz-titulo span { color: #990000; }
         .mz-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
         /* KPIs */
         .mz-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
@@ -176,7 +176,7 @@ export default function MapaZonasPage() {
         /* Tabs */
         .mz-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .mz-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
-        .mz-tab.on { color: #fff; border-bottom-color: #cc0000; }
+        .mz-tab.on { color: #fff; border-bottom-color: #990000; }
         /* Mapa grilla */
         .mz-grid-wrap { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); background: rgba(8,8,8,0.95); }
         .mz-grid { display: grid; gap: 3px; padding: 12px; }
@@ -218,12 +218,12 @@ export default function MapaZonasPage() {
         /* Filtros */
         .mz-filtros { display: flex; gap: 6px; align-items: center; }
         .mz-filtro-btn { padding: 5px 12px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); transition: all 0.15s; }
-        .mz-filtro-btn.on { background: rgba(204,0,0,0.15); border-color: rgba(204,0,0,0.3); color: #cc0000; }
+        .mz-filtro-btn.on { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.3); color: #990000; }
         /* Ranking */
         .mz-rank-item { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 6px; transition: border-color 0.15s; cursor: pointer; }
         .mz-rank-item:hover { border-color: rgba(255,255,255,0.14); }
         .mz-rank-num { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.15); width: 30px; flex-shrink: 0; text-align: right; }
-        .mz-rank-num.top { color: #cc0000; }
+        .mz-rank-num.top { color: #990000; }
         .mz-rank-nombre { font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; color: #fff; }
         .mz-rank-barrio { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
         .mz-rank-barra-wrap { flex: 1; }
@@ -254,11 +254,11 @@ export default function MapaZonasPage() {
             <div className="mz-kpi-label">Días en mercado prom.</div>
           </div>
           <div className="mz-kpi">
-            <div className="mz-kpi-val" style={{ color: "#22c55e" }}>{kpis.zonasMasActivas}</div>
+            <div className="mz-kpi-val" style={{ color: "#3abab6" }}>{kpis.zonasMasActivas}</div>
             <div className="mz-kpi-label">Zonas muy activas</div>
           </div>
           <div className="mz-kpi">
-            <div className="mz-kpi-val" style={{ color: kpis.variacionPromedio >= 0 ? "#22c55e" : "#ef4444" }}>
+            <div className="mz-kpi-val" style={{ color: kpis.variacionPromedio >= 0 ? "#3abab6" : "#b80000" }}>
               {kpis.variacionPromedio > 0 ? "+" : ""}{kpis.variacionPromedio}%
             </div>
             <div className="mz-kpi-label">Variación 12m promedio</div>
@@ -273,9 +273,9 @@ export default function MapaZonasPage() {
               className="mz-metrica-btn"
               onClick={() => setMetrica(m.id)}
               style={{
-                background: metrica === m.id ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)",
-                borderColor: metrica === m.id ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.1)",
-                color: metrica === m.id ? "#cc0000" : "rgba(255,255,255,0.4)",
+                background: metrica === m.id ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
+                borderColor: metrica === m.id ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.1)",
+                color: metrica === m.id ? "#990000" : "rgba(255,255,255,0.4)",
               }}
             >
               {m.label}
@@ -301,8 +301,8 @@ export default function MapaZonasPage() {
                 <span>Bajo</span>
                 <div className="mz-leyenda-grad" style={{
                   background: metrica === "diasMercado" || metrica === "oferta"
-                    ? "linear-gradient(to right,rgba(204,0,0,0.7),rgba(234,179,8,0.7),rgba(34,197,94,0.7),rgba(59,130,246,0.7))"
-                    : "linear-gradient(to right,rgba(59,130,246,0.7),rgba(34,197,94,0.7),rgba(234,179,8,0.7),rgba(204,0,0,0.7))"
+                    ? "linear-gradient(to right,rgba(153,0,0,0.7),rgba(234,179,8,0.7),rgba(34,197,94,0.7),rgba(59,130,246,0.7))"
+                    : "linear-gradient(to right,rgba(59,130,246,0.7),rgba(34,197,94,0.7),rgba(234,179,8,0.7),rgba(153,0,0,0.7))"
                 }} />
                 <span>Alto</span>
               </div>
@@ -382,7 +382,7 @@ export default function MapaZonasPage() {
                     <div className="mz-detalle-stat">
                       <div
                         className="mz-detalle-stat-val"
-                        style={{ color: zonaSeleccionada.variacion12m >= 0 ? "#22c55e" : "#ef4444" }}
+                        style={{ color: zonaSeleccionada.variacion12m >= 0 ? "#3abab6" : "#b80000" }}
                       >
                         {zonaSeleccionada.variacion12m > 0 ? "+" : ""}{zonaSeleccionada.variacion12m.toFixed(1)}%
                       </div>
@@ -403,18 +403,18 @@ export default function MapaZonasPage() {
                   <div style={{ marginBottom: 10 }}>
                     <div className="mz-barra-row">
                       <div className="mz-barra-label">
-                        <span>Demanda</span><span style={{ color: "#22c55e", fontWeight: 700 }}>{zonaSeleccionada.demanda}%</span>
+                        <span>Demanda</span><span style={{ color: "#3abab6", fontWeight: 700 }}>{zonaSeleccionada.demanda}%</span>
                       </div>
                       <div className="mz-barra-bg">
-                        <div className="mz-barra-fill" style={{ width: `${zonaSeleccionada.demanda}%`, background: "#22c55e" }} />
+                        <div className="mz-barra-fill" style={{ width: `${zonaSeleccionada.demanda}%`, background: "#3abab6" }} />
                       </div>
                     </div>
                     <div className="mz-barra-row">
                       <div className="mz-barra-label">
-                        <span>Oferta disponible</span><span style={{ color: "#60a5fa", fontWeight: 700 }}>{zonaSeleccionada.oferta}%</span>
+                        <span>Oferta disponible</span><span style={{ color: "#4ab8d8", fontWeight: 700 }}>{zonaSeleccionada.oferta}%</span>
                       </div>
                       <div className="mz-barra-bg">
-                        <div className="mz-barra-fill" style={{ width: `${zonaSeleccionada.oferta}%`, background: "#60a5fa" }} />
+                        <div className="mz-barra-fill" style={{ width: `${zonaSeleccionada.oferta}%`, background: "#4ab8d8" }} />
                       </div>
                     </div>
                   </div>
@@ -422,7 +422,7 @@ export default function MapaZonasPage() {
                   {/* Indicador presión */}
                   {(() => {
                     const presion = zonaSeleccionada.demanda - zonaSeleccionada.oferta;
-                    const color = presion > 20 ? "#cc0000" : presion > 5 ? "#eab308" : "#22c55e";
+                    const color = presion > 20 ? "#990000" : presion > 5 ? "#d4960c" : "#3abab6";
                     const label = presion > 20 ? "Alta presión compradora" : presion > 5 ? "Mercado equilibrado" : "Oferta abundante";
                     return (
                       <div style={{ padding: "8px 12px", background: `${color}12`, border: `1px solid ${color}30`, borderRadius: 6, fontSize: 11, color, fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
@@ -480,8 +480,8 @@ export default function MapaZonasPage() {
                       <td>
                         <span style={{
                           padding: "2px 8px", borderRadius: 10, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
-                          background: z.diasMercado < 30 ? "rgba(34,197,94,0.15)" : z.diasMercado < 60 ? "rgba(234,179,8,0.15)" : "rgba(204,0,0,0.15)",
-                          color: z.diasMercado < 30 ? "#22c55e" : z.diasMercado < 60 ? "#eab308" : "#ef4444",
+                          background: z.diasMercado < 30 ? "rgba(34,197,94,0.15)" : z.diasMercado < 60 ? "rgba(234,179,8,0.15)" : "rgba(153,0,0,0.15)",
+                          color: z.diasMercado < 30 ? "#3abab6" : z.diasMercado < 60 ? "#d4960c" : "#b80000",
                         }}>
                           {z.diasMercado}d
                         </span>
@@ -490,22 +490,22 @@ export default function MapaZonasPage() {
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <div style={{ width: 40, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
-                            <div style={{ width: `${z.demanda}%`, height: "100%", background: "#22c55e", borderRadius: 2 }} />
+                            <div style={{ width: `${z.demanda}%`, height: "100%", background: "#3abab6", borderRadius: 2 }} />
                           </div>
-                          <span style={{ fontSize: 11, color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{z.demanda}%</span>
+                          <span style={{ fontSize: 11, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{z.demanda}%</span>
                         </div>
                       </td>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <div style={{ width: 40, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
-                            <div style={{ width: `${z.oferta}%`, height: "100%", background: "#60a5fa", borderRadius: 2 }} />
+                            <div style={{ width: `${z.oferta}%`, height: "100%", background: "#4ab8d8", borderRadius: 2 }} />
                           </div>
-                          <span style={{ fontSize: 11, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{z.oferta}%</span>
+                          <span style={{ fontSize: 11, color: "#4ab8d8", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>{z.oferta}%</span>
                         </div>
                       </td>
                       <td style={{
                         fontFamily: "Montserrat,sans-serif", fontWeight: 700,
-                        color: z.variacion12m >= 0 ? "#22c55e" : "#ef4444",
+                        color: z.variacion12m >= 0 ? "#3abab6" : "#b80000",
                       }}>
                         {z.variacion12m > 0 ? "+" : ""}{z.variacion12m.toFixed(1)}%
                       </td>
@@ -544,8 +544,8 @@ export default function MapaZonasPage() {
               const maxV = Math.max(...ZONAS_DEMO.map(x => x[metrica] as number));
               const pct = (val / maxV) * 100;
               const barColor = metrica === "diasMercado"
-                ? (val < 30 ? "#22c55e" : val < 60 ? "#eab308" : "#ef4444")
-                : "#cc0000";
+                ? (val < 30 ? "#3abab6" : val < 60 ? "#d4960c" : "#b80000")
+                : "#990000";
               return (
                 <div key={z.id} className="mz-rank-item" onClick={() => { setZonaSeleccionada(z); setVista("mapa"); }}>
                   <div className={`mz-rank-num${i < 3 ? " top" : ""}`}>#{i + 1}</div>
@@ -583,8 +583,8 @@ export default function MapaZonasPage() {
             <div className="mz-tooltip-nombre">{zonaHover.nombre}</div>
             <div className="mz-tooltip-row"><span className="mz-tooltip-key">USD/m²</span><span className="mz-tooltip-val">{fmtUSD(zonaHover.precioM2Venta)}</span></div>
             <div className="mz-tooltip-row"><span className="mz-tooltip-key">Días mercado</span><span className="mz-tooltip-val">{zonaHover.diasMercado}d</span></div>
-            <div className="mz-tooltip-row"><span className="mz-tooltip-key">Demanda</span><span className="mz-tooltip-val" style={{ color: "#22c55e" }}>{zonaHover.demanda}%</span></div>
-            <div className="mz-tooltip-row"><span className="mz-tooltip-key">Var. 12m</span><span className="mz-tooltip-val" style={{ color: zonaHover.variacion12m >= 0 ? "#22c55e" : "#ef4444" }}>{zonaHover.variacion12m > 0 ? "+" : ""}{zonaHover.variacion12m.toFixed(1)}%</span></div>
+            <div className="mz-tooltip-row"><span className="mz-tooltip-key">Demanda</span><span className="mz-tooltip-val" style={{ color: "#3abab6" }}>{zonaHover.demanda}%</span></div>
+            <div className="mz-tooltip-row"><span className="mz-tooltip-key">Var. 12m</span><span className="mz-tooltip-val" style={{ color: zonaHover.variacion12m >= 0 ? "#3abab6" : "#b80000" }}>{zonaHover.variacion12m > 0 ? "+" : ""}{zonaHover.variacion12m.toFixed(1)}%</span></div>
           </div>
         )}
       </div>

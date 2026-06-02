@@ -61,9 +61,9 @@ function diasMora(mes: string, diaVenc: number): number {
 
 const estadoColor = (estado: string | undefined) => {
   if (!estado || estado === "pendiente") return "#6b7280";
-  if (estado === "pagado") return "#22c55e";
-  if (estado === "parcial") return "#eab308";
-  if (estado === "moroso") return "#cc0000";
+  if (estado === "pagado") return "#3abab6";
+  if (estado === "parcial") return "#d4960c";
+  if (estado === "moroso") return "#990000";
   return "#6b7280";
 };
 
@@ -237,7 +237,7 @@ export default function CobranzasPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
-              Cobranzas <span style={{ color: "#cc0000" }}>CRM</span>
+              Cobranzas <span style={{ color: "#990000" }}>CRM</span>
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
               Seguimiento de pagos mensuales · {mesLabel(mes)}
@@ -249,7 +249,7 @@ export default function CobranzasPage() {
               onClick={() => setVerFinalizados(v => !v)}>
               {verFinalizados ? "Ver activos" : "Finalizados"}
             </button>
-            <button className="cob-btn" style={{ background: "#cc0000", color: "#fff" }}
+            <button className="cob-btn" style={{ background: "#990000", color: "#fff" }}
               onClick={() => { setForm(FORM_VACIO); setModal(true); }}>
               + Contrato
             </button>
@@ -271,9 +271,9 @@ export default function CobranzasPage() {
           </div>
           <div style={{ marginLeft: "auto", display: "flex", gap: 16 }} className="cob-stats">
             {[
-              { n: stats.pagados,    l: "Pagados",    c: "#22c55e" },
-              { n: stats.pendientes, l: "Pendientes", c: "#f97316" },
-              { n: stats.morosos,    l: "Morosos",    c: "#cc0000" },
+              { n: stats.pagados,    l: "Pagados",    c: "#3abab6" },
+              { n: stats.pendientes, l: "Pendientes", c: "#d4960c" },
+              { n: stats.morosos,    l: "Morosos",    c: "#990000" },
               { n: `${Math.round(stats.totalCobrado / 1000)}k`, l: "Cobrado (k)", c: "#e5e5e5" },
             ].map(s => (
               <div key={s.l} style={{ textAlign: "center" }}>
@@ -288,11 +288,11 @@ export default function CobranzasPage() {
         {stats.totalEsperado > 0 && (
           <div className="cob-card" style={{ padding: "12px 16px" }}>
             <div style={{ background: "#0a0a0a", borderRadius: 6, height: 10, overflow: "hidden", marginBottom: 6 }}>
-              <div style={{ width: `${Math.min((stats.totalCobrado / stats.totalEsperado) * 100, 100)}%`, height: "100%", background: "#22c55e", transition: "width 0.5s" }} />
+              <div style={{ width: `${Math.min((stats.totalCobrado / stats.totalEsperado) * 100, 100)}%`, height: "100%", background: "#3abab6", transition: "width 0.5s" }} />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
               <span>Cobrado: ARS {fmt(Math.round(stats.totalCobrado / 1000))}k</span>
-              <span style={{ color: "#22c55e", fontWeight: 700 }}>{Math.round((stats.totalCobrado / stats.totalEsperado) * 100)}%</span>
+              <span style={{ color: "#3abab6", fontWeight: 700 }}>{Math.round((stats.totalCobrado / stats.totalEsperado) * 100)}%</span>
               <span>Esperado: ARS {fmt(Math.round(stats.totalEsperado / 1000))}k</span>
             </div>
           </div>
@@ -329,7 +329,7 @@ export default function CobranzasPage() {
                       <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 13, color: estadoColor(estado) }}>
                         {estadoLabel(estado)}
                       </div>
-                      {mora > 0 && <div style={{ fontSize: 11, color: "#cc0000", marginTop: 2 }}>{mora} días mora</div>}
+                      {mora > 0 && <div style={{ fontSize: 11, color: "#990000", marginTop: 2 }}>{mora} días mora</div>}
                       {p?.fecha_pago && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>Pagó: {p.fecha_pago}</div>}
                     </div>
                   </div>
@@ -422,7 +422,7 @@ export default function CobranzasPage() {
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
               <button className="cob-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
-              <button className="cob-btn" style={{ background: "#cc0000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardarContrato} disabled={guardando}>
+              <button className="cob-btn" style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardarContrato} disabled={guardando}>
                 {guardando ? "Guardando..." : "Crear contrato"}
               </button>
             </div>

@@ -32,11 +32,11 @@ const ETAPAS_CONFIG: EtapaConfig[] = [
   { value: "contactado",        label: "Contactado",       color: "#3b82f6", prob: 15 },
   { value: "visita_coordinada", label: "Visita coord.",    color: "#8b5cf6", prob: 25 },
   { value: "visita_realizada",  label: "Visita realizada", color: "#a78bfa", prob: 35 },
-  { value: "oferta_enviada",    label: "Oferta enviada",   color: "#f59e0b", prob: 50 },
-  { value: "negociacion",       label: "Negociación",      color: "#f97316", prob: 65 },
+  { value: "oferta_enviada",    label: "Oferta enviada",   color: "#d4960c", prob: 50 },
+  { value: "negociacion",       label: "Negociación",      color: "#d4960c", prob: 65 },
   { value: "reserva",           label: "Reserva",          color: "#06b6d4", prob: 85 },
-  { value: "escritura",         label: "Escritura",        color: "#10b981", prob: 95 },
-  { value: "cerrado",           label: "Cerrado",          color: "#22c55e", prob: 100 },
+  { value: "escritura",         label: "Escritura",        color: "#3abab6", prob: 95 },
+  { value: "cerrado",           label: "Cerrado",          color: "#3abab6", prob: 100 },
 ];
 
 const TIPO_HON_DEFAULTS: Record<string, number> = {
@@ -209,9 +209,9 @@ export default function ForecastPipelinePage() {
               onClick={() => setEditingProb(!editingProb)}
               style={{
                 padding: "8px 16px", borderRadius: 8,
-                border: editingProb ? "1px solid #cc0000" : "1px solid #333",
-                background: editingProb ? "rgba(204,0,0,0.15)" : "#111",
-                color: editingProb ? "#cc0000" : "#888",
+                border: editingProb ? "1px solid #990000" : "1px solid #333",
+                background: editingProb ? "rgba(153,0,0,0.15)" : "#111",
+                color: editingProb ? "#990000" : "#888",
                 fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 12,
                 cursor: "pointer", textTransform: "uppercase",
               }}
@@ -224,7 +224,7 @@ export default function ForecastPipelinePage() {
         {/* Prob editor */}
         {editingProb && (
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#cc0000" }}>
+            <h3 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14, margin: "0 0 16px", color: "#990000" }}>
               Probabilidades de cierre por etapa (%)
             </h3>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
@@ -252,9 +252,9 @@ export default function ForecastPipelinePage() {
             { label: "Negocios activos", value: negocios.length.toString(), color: "#fff" },
             { label: "Hon. bruto total", value: fmtUSD(totalBruto), color: "#fff" },
             { label: "Hon. neto total", value: fmtUSD(totalNeto), color: "#fff" },
-            { label: "Forecast ponderado", value: fmtUSD(totalPonderado), color: "#cc0000" },
+            { label: "Forecast ponderado", value: fmtUSD(totalPonderado), color: "#990000" },
           ].map((k) => (
-            <div key={k.label} style={{ background: "#111", border: k.color === "#cc0000" ? "1px solid rgba(204,0,0,0.4)" : "1px solid #222", borderRadius: 12, padding: "18px 20px" }}>
+            <div key={k.label} style={{ background: "#111", border: k.color === "#990000" ? "1px solid rgba(153,0,0,0.4)" : "1px solid #222", borderRadius: 12, padding: "18px 20px" }}>
               <div style={{ fontSize: 10, color: "#666", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>
                 {k.label}
               </div>
@@ -320,13 +320,13 @@ export default function ForecastPipelinePage() {
                     {/* Optimista (fondo) */}
                     <rect x={x} y={barH - optH} width={36} height={optH} rx={3} fill="rgba(255,255,255,0.06)" />
                     {/* Ponderado */}
-                    <rect x={x + 4} y={barH - pondH} width={28} height={pondH} rx={3} fill="rgba(204,0,0,0.7)" />
+                    <rect x={x + 4} y={barH - pondH} width={28} height={pondH} rx={3} fill="rgba(153,0,0,0.7)" />
                     {/* Label mes */}
                     <text x={x + 18} y={barH + 14} textAnchor="middle" fill="#555" fontSize={8} fontFamily="Montserrat,sans-serif">
                       {m.label}
                     </text>
                     {pondH > 10 && (
-                      <text x={x + 18} y={barH - pondH - 4} textAnchor="middle" fill="#cc0000" fontSize={7} fontFamily="Montserrat,sans-serif">
+                      <text x={x + 18} y={barH - pondH - 4} textAnchor="middle" fill="#990000" fontSize={7} fontFamily="Montserrat,sans-serif">
                         {fmtUSD(m.ponderado).replace("USD ", "")}
                       </text>
                     )}
@@ -340,7 +340,7 @@ export default function ForecastPipelinePage() {
                 <span style={{ fontSize: 10, color: "#666" }}>Optimista (100%)</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <div style={{ width: 12, height: 8, borderRadius: 2, background: "rgba(204,0,0,0.7)" }} />
+                <div style={{ width: 12, height: 8, borderRadius: 2, background: "rgba(153,0,0,0.7)" }} />
                 <span style={{ fontSize: 10, color: "#666" }}>Ponderado por prob.</span>
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function ForecastPipelinePage() {
                         <td style={{ padding: "9px 12px", color: "#fff" }}>
                           {neto > 0 ? fmtUSD(neto) : "—"}
                         </td>
-                        <td style={{ padding: "9px 12px", fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000" }}>
+                        <td style={{ padding: "9px 12px", fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000" }}>
                           {ponderado > 0 ? fmtUSD(ponderado) : "—"}
                         </td>
                         <td style={{ padding: "9px 12px", color: "#666" }}>

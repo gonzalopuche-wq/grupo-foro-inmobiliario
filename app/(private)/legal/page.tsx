@@ -19,8 +19,8 @@ interface Documento {
 const CATEGORIAS = ['Todos', 'Locación', 'Compraventa', 'Mandato', 'Reservas', 'Honorarios', 'Registro', 'Impuestos', 'General']
 const TIPOS: Record<string, { label: string; color: string; icon: string }> = {
   guia:       { label: 'Guía',       color: '#3b82f6', icon: '📖' },
-  modelo:     { label: 'Modelo',     color: '#22c55e', icon: '📄' },
-  normativa:  { label: 'Normativa',  color: '#f59e0b', icon: '⚖️' },
+  modelo:     { label: 'Modelo',     color: '#3abab6', icon: '📄' },
+  normativa:  { label: 'Normativa',  color: '#d4960c', icon: '⚖️' },
   formulario: { label: 'Formulario', color: '#a855f7', icon: '📋' },
 }
 
@@ -116,7 +116,7 @@ export default function LegalPage() {
     const tipo = TIPOS[d.tipo] ?? TIPOS.guia
     const isOpen = abierto === d.id
     return (
-      <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${d.destacado ? 'rgba(204,0,0,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, overflow: 'hidden' }}>
+      <div key={key} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${d.destacado ? 'rgba(153,0,0,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 10, overflow: 'hidden' }}>
         <div
           onClick={() => setAbierto(isOpen ? null : d.id)}
           style={{ padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 12 }}
@@ -124,7 +124,7 @@ export default function LegalPage() {
           <div style={{ fontSize: 24, flexShrink: 0 }}>{tipo.icon}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 4 }}>
-              {d.destacado && <span style={{ fontSize: 9, color: '#cc0000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.1em' }}>★ DESTACADO</span>}
+              {d.destacado && <span style={{ fontSize: 9, color: '#990000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.1em' }}>★ DESTACADO</span>}
               <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{d.titulo}</span>
             </div>
             {d.descripcion && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.4 }}>{d.descripcion}</div>}
@@ -176,7 +176,7 @@ export default function LegalPage() {
       {/* Filtros */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 24, flexWrap: 'wrap' }}>
         {CATEGORIAS.map(c => (
-          <button key={c} onClick={() => setFiltro(c)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === c ? '#cc0000' : 'rgba(255,255,255,0.06)', color: filtro === c ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+          <button key={c} onClick={() => setFiltro(c)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === c ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === c ? '#fff' : 'rgba(255,255,255,0.4)' }}>
             {c}
           </button>
         ))}
@@ -193,7 +193,7 @@ export default function LegalPage() {
         <>
           {destacados.length > 0 && (
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(204,0,0,0.6)', marginBottom: 10 }}>Documentos destacados</div>
+              <div style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(153,0,0,0.6)', marginBottom: 10 }}>Documentos destacados</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {destacados.map(d => renderDoc(d, d.id))}
               </div>

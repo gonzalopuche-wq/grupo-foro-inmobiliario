@@ -72,22 +72,22 @@ const fmtMon = (n: number, m: string) =>
   m === "USD" ? `USD ${n.toLocaleString("es-AR")}` : `$ ${n.toLocaleString("es-AR")}`;
 
 const TIPO_INTERACCION: Record<string, { icon: string; colorClass: string; color: string }> = {
-  llamada:   { icon: "📞", colorClass: "gfi-badge--green",  color: "#10b981" },
-  email:     { icon: "📧", colorClass: "gfi-badge--blue",   color: "#60a5fa" },
-  visita:    { icon: "🏠", colorClass: "gfi-badge--orange", color: "#f97316" },
+  llamada:   { icon: "📞", colorClass: "gfi-badge--green",  color: "#3abab6" },
+  email:     { icon: "📧", colorClass: "gfi-badge--blue",   color: "#4ab8d8" },
+  visita:    { icon: "🏠", colorClass: "gfi-badge--orange", color: "#d4960c" },
   whatsapp:  { icon: "💬", colorClass: "gfi-badge--green",  color: "#25d366" },
   "reunión": { icon: "🤝", colorClass: "gfi-badge--gray",   color: "#a855f7" },
   reunion:   { icon: "🤝", colorClass: "gfi-badge--gray",   color: "#a855f7" },
   nota:      { icon: "📝", colorClass: "gfi-badge--gray",   color: "var(--gfi-text-secondary)" },
-  propuesta: { icon: "📋", colorClass: "gfi-badge--orange", color: "#f97316" },
+  propuesta: { icon: "📋", colorClass: "gfi-badge--orange", color: "#d4960c" },
   otro:      { icon: "⚡", colorClass: "gfi-badge--red",    color: "var(--gfi-red)" },
 };
 
 const ETAPA_COLOR: Record<string, string> = {
-  prospecto: "var(--gfi-text-muted)", contactado: "#60a5fa",
+  prospecto: "var(--gfi-text-muted)", contactado: "#4ab8d8",
   visita_coordinada: "#a78bfa", visita_realizada: "#c084fc",
-  oferta_enviada: "#f97316", negociacion: "#fb923c",
-  reserva: "#22d3ee", escritura: "#10b981", cerrado: "#10b981", perdido: "var(--gfi-red)",
+  oferta_enviada: "#d4960c", negociacion: "#fb923c",
+  reserva: "#22d3ee", escritura: "#3abab6", cerrado: "#3abab6", perdido: "var(--gfi-red)",
 };
 
 const ESTADO_LABEL_MAP: Record<string, string> = {
@@ -255,12 +255,12 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
         }
         .cf-profile::after {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-          background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204,0,0,0.1) 60%, transparent 100%);
+          background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(153,0,0,0.1) 60%, transparent 100%);
         }
         .cf-avatar-wrap {
           width: 74px; height: 74px; border-radius: 50%;
-          background: rgba(204,0,0,0.10);
-          border: 2px solid rgba(204,0,0,0.25);
+          background: rgba(153,0,0,0.10);
+          border: 2px solid rgba(153,0,0,0.25);
           display: flex; align-items: center; justify-content: center;
           margin: 0 auto 14px;
           font-family: var(--font-display); font-size: 26px; font-weight: 900;
@@ -321,7 +321,7 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
         }
         .cf-action-btn:hover { background: var(--gfi-bg-hover); color: var(--gfi-text-primary); border-color: var(--gfi-border-bright); }
         .cf-action-btn.red { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red); }
-        .cf-action-btn.red:hover { background: rgba(204,0,0,0.18); }
+        .cf-action-btn.red:hover { background: rgba(153,0,0,0.18); }
         .cf-action-btn.wa { background: rgba(37,211,102,0.10); border-color: rgba(37,211,102,0.25); color: #25d366; }
         .cf-action-btn.wa:hover { background: rgba(37,211,102,0.17); }
 
@@ -396,7 +396,7 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
           background: var(--gfi-bg-elevated);
         }
         .rec-item.vencido {
-          background: rgba(204,0,0,0.05); border-color: var(--gfi-red-border);
+          background: rgba(153,0,0,0.05); border-color: var(--gfi-red-border);
         }
 
         /* Negocio item */
@@ -449,7 +449,7 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
           font-family: var(--font-body); font-size: 13px; outline: none;
           box-sizing: border-box; transition: var(--gfi-transition);
         }
-        .cf-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.10); }
+        .cf-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(153,0,0,0.10); }
         .cf-modal-footer { display: flex; gap: 10px; margin-top: 6px; }
 
         /* Toast */
@@ -459,7 +459,7 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
           padding: 10px 22px; border-radius: var(--gfi-radius-md);
           font-size: 13px; font-weight: 700; font-family: var(--font-display);
           z-index: 9999; pointer-events: none;
-          border: 1px solid rgba(16,185,129,0.4);
+          border: 1px solid rgba(58,186,182,0.4);
           box-shadow: 0 4px 20px rgba(10,61,46,0.5);
           letter-spacing: 0.04em;
         }
@@ -632,10 +632,10 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
           {/* KPI badges */}
           <div className="cf-kpi-row">
             {[
-              { label: "Interacciones", val: interacciones.length, color: "#60a5fa" },
+              { label: "Interacciones", val: interacciones.length, color: "#4ab8d8" },
               { label: "Negocios activos", val: negociosActivos.length, color: "var(--gfi-red)" },
               { label: "Negocios totales", val: negocios.length, color: "var(--gfi-text-secondary)" },
-              { label: "Recordatorios", val: recordatoriosPendientes.length, color: "#f97316" },
+              { label: "Recordatorios", val: recordatoriosPendientes.length, color: "#d4960c" },
             ].map(({ label, val, color }) => (
               <div key={label} className="cf-kpi">
                 <div className="cf-kpi-n" style={{ color }}>{val}</div>
@@ -759,12 +759,12 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
               ) : (
                 tareas.map(t => {
                   const vencido = t.fecha_vencimiento && new Date(t.fecha_vencimiento) < new Date();
-                  const prioColor = t.prioridad === "alta" ? "var(--gfi-red)" : t.prioridad === "media" ? "#f97316" : "var(--gfi-text-muted)";
+                  const prioColor = t.prioridad === "alta" ? "var(--gfi-red)" : t.prioridad === "media" ? "#d4960c" : "var(--gfi-text-muted)";
                   return (
                     <div key={t.id} className="tarea-item">
                       <div style={{
                         width: 9, height: 9, borderRadius: 2, flexShrink: 0,
-                        background: t.estado === "completada" ? "var(--gfi-green-text)" : vencido ? "var(--gfi-red)" : "#f97316",
+                        background: t.estado === "completada" ? "var(--gfi-green-text)" : vencido ? "var(--gfi-red)" : "#d4960c",
                       }} />
                       <div style={{ flex: 1 }}>
                         <div style={{

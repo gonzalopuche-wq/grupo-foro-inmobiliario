@@ -52,8 +52,8 @@ const ETAPAS_PIPELINE = ["prospecto","contactado","visita_coordinada","visita_re
 
 const COLORES_ETAPA: Record<string, string> = {
   prospecto: "#6b7280", contactado: "#3b82f6", visita_coordinada: "#8b5cf6",
-  visita_realizada: "#a78bfa", oferta_enviada: "#f59e0b", negociacion: "#f97316",
-  reserva: "#22c55e", cerrado: "#22c55e", escriturado: "#22c55e", firmado: "#22c55e",
+  visita_realizada: "#a78bfa", oferta_enviada: "#d4960c", negociacion: "#d4960c",
+  reserva: "#3abab6", cerrado: "#3abab6", escriturado: "#3abab6", firmado: "#3abab6",
 };
 
 // ── Componente ───────────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ export default function PanelComisiones() {
           </select>
           {(["tabla","mensual"] as const).map(v => (
             <button key={v} onClick={() => setVistaMode(v)} style={{
-              background: vistaMode === v ? "#cc0000" : "#1a1a1a", border: "1px solid #333",
+              background: vistaMode === v ? "#990000" : "#1a1a1a", border: "1px solid #333",
               borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 12, cursor: "pointer",
               fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "capitalize",
             }}>{v === "tabla" ? "📋 Tabla" : "📊 Mensual"}</button>
@@ -187,11 +187,11 @@ export default function PanelComisiones() {
         {/* KPIs */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
           {[
-            { label: "Realizadas (total)", val: fmt(kpis.totalRealizado), sub: `${kpis.countRealizado} operaciones`, color: "#22c55e" },
-            { label: "YTD (este año)", val: fmt(kpis.ytd), sub: `${new Date().getFullYear()}`, color: "#22c55e" },
+            { label: "Realizadas (total)", val: fmt(kpis.totalRealizado), sub: `${kpis.countRealizado} operaciones`, color: "#3abab6" },
+            { label: "YTD (este año)", val: fmt(kpis.ytd), sub: `${new Date().getFullYear()}`, color: "#3abab6" },
             { label: "Pipeline (proyectado)", val: fmt(kpis.totalPipeline), sub: `${kpis.countPipeline} negocios`, color: "#3b82f6" },
             { label: "Promedio por op.", val: fmt(kpis.promedio), sub: "Solo realizadas", color: "#a78bfa" },
-            { label: "Total proyectado", val: fmt(kpis.totalRealizado + kpis.totalPipeline), sub: "Realizado + pipeline", color: "#f59e0b" },
+            { label: "Total proyectado", val: fmt(kpis.totalRealizado + kpis.totalPipeline), sub: "Realizado + pipeline", color: "#d4960c" },
           ].map((kpi, i) => (
             <div key={i} style={{
               background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px",
@@ -218,7 +218,7 @@ export default function PanelComisiones() {
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                   <span style={{ fontSize: 12, color: "#ccc", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>{mes.label}</span>
                   <span style={{ fontSize: 12, color: "#888" }}>
-                    {mes.realizadas > 0 && <span style={{ color: "#22c55e" }}>{fmt(mes.realizadas)}</span>}
+                    {mes.realizadas > 0 && <span style={{ color: "#3abab6" }}>{fmt(mes.realizadas)}</span>}
                     {mes.realizadas > 0 && mes.pipeline > 0 && <span style={{ color: "#555" }}> + </span>}
                     {mes.pipeline > 0 && <span style={{ color: "#3b82f6" }}>{fmt(mes.pipeline)}</span>}
                     <span style={{ color: "#555" }}> — {mes.count} neg.</span>
@@ -227,7 +227,7 @@ export default function PanelComisiones() {
                 <div style={{ height: 20, background: "#1a1a1a", borderRadius: 4, overflow: "hidden", display: "flex" }}>
                   {mes.realizadas > 0 && (
                     <div style={{
-                      width: `${(mes.realizadas / maxBarMes) * 100}%`, background: "#22c55e",
+                      width: `${(mes.realizadas / maxBarMes) * 100}%`, background: "#3abab6",
                       minWidth: 2, borderRadius: "4px 0 0 4px",
                     }} />
                   )}
@@ -241,7 +241,7 @@ export default function PanelComisiones() {
               </div>
             ))}
             <div style={{ marginTop: 16, display: "flex", gap: 16 }}>
-              {[{ color: "#22c55e", label: "Realizadas" }, { color: "#3b82f680", label: "Pipeline" }].map(l => (
+              {[{ color: "#3abab6", label: "Realizadas" }, { color: "#3b82f680", label: "Pipeline" }].map(l => (
                 <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "#888" }}>
                   <div style={{ width: 12, height: 12, background: l.color, borderRadius: 2 }} />
                   {l.label}
@@ -281,7 +281,7 @@ export default function PanelComisiones() {
                       {f.moneda === "ARS" ? "$ " : "USD "}{f.valor.toLocaleString("es-AR")}
                     </td>
                     <td style={{ padding: "10px 16px", fontSize: 13, color: "#888" }}>{fmtPct(f.pct)}</td>
-                    <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: 700, color: f.realizada ? "#22c55e" : "#3b82f6" }}>
+                    <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: 700, color: f.realizada ? "#3abab6" : "#3b82f6" }}>
                       {fmt(f.comision)}
                     </td>
                     <td style={{ padding: "10px 16px", fontSize: 12, color: "#666" }}>
@@ -331,7 +331,7 @@ export default function PanelComisiones() {
                     <span style={{ fontSize: 12, color: "#888" }}>{fmt(total)} <span style={{ color: "#555" }}>({count} op.)</span></span>
                   </div>
                   <div style={{ height: 8, background: "#1a1a1a", borderRadius: 4, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${(total / maxTipo) * 100}%`, background: "#cc0000", borderRadius: 4 }} />
+                    <div style={{ height: "100%", width: `${(total / maxTipo) * 100}%`, background: "#990000", borderRadius: 4 }} />
                   </div>
                 </div>
               ))}

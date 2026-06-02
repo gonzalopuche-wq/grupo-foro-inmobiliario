@@ -90,7 +90,7 @@ const ST = {
     cursor: "pointer",
   } as React.CSSProperties,
   btn: {
-    background: "#cc0000",
+    background: "#990000",
     color: "#fff",
     border: "none",
     borderRadius: "8px",
@@ -159,18 +159,18 @@ function chip(color: string, bg: string): React.CSSProperties {
 
 const ESTADO_DOC_META: Record<EstadoDoc, { label: string; color: string; bg: string }> = {
   pendiente: { label: "Pendiente", color: "#9ca3af", bg: "rgba(156,163,175,0.15)" },
-  enviado:   { label: "Enviado",   color: "#60a5fa", bg: "rgba(96,165,250,0.15)"  },
-  recibido:  { label: "Recibido",  color: "#fbbf24", bg: "rgba(251,191,36,0.15)"  },
+  enviado:   { label: "Enviado",   color: "#4ab8d8", bg: "rgba(74,184,216,0.15)"  },
+  recibido:  { label: "Recibido",  color: "#d4960c", bg: "rgba(251,191,36,0.15)"  },
   aprobado:  { label: "Aprobado",  color: "#34d399", bg: "rgba(52,211,153,0.15)"  },
-  rechazado: { label: "Rechazado", color: "#cc0000", bg: "rgba(204,0,0,0.15)"     },
+  rechazado: { label: "Rechazado", color: "#990000", bg: "rgba(153,0,0,0.15)"     },
 };
 
 const ROL_COLORS: Record<string, string> = {
-  comprador:    "#60a5fa",
-  vendedor:     "#fbbf24",
+  comprador:    "#4ab8d8",
+  vendedor:     "#d4960c",
   escribano:    "#a78bfa",
   banco:        "#34d399",
-  garante:      "#f97316",
+  garante:      "#d4960c",
   inmobiliaria: "#ec4899",
   otro:         "#9ca3af",
 };
@@ -441,7 +441,7 @@ export default function ExpedientePage() {
                   style={{
                     background: "none",
                     border: "none",
-                    borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
+                    borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
                     color: tab === t.id ? "#fff" : "rgba(255,255,255,0.45)",
                     padding: "10px 16px",
                     fontSize: "0.88rem",
@@ -532,7 +532,7 @@ function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente 
           style={{
             height: "100%",
             width: `${pct}%`,
-            background: pct === 100 ? "#34d399" : "#cc0000",
+            background: pct === 100 ? "#34d399" : "#990000",
             borderRadius: "999px",
             transition: "width 0.4s ease",
           }}
@@ -542,14 +542,14 @@ function ResumenNegocio({ negocio, exp }: { negocio: NegocioDB; exp: Expediente 
       {(docsVencidos.length > 0 || docsPorVencer.length > 0) && (
         <div style={{ marginTop: "12px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
           {docsVencidos.length > 0 && (
-            <span style={{ ...chip("#cc0000", "rgba(204,0,0,0.15)"), fontSize: "0.8rem", padding: "4px 12px" }}>
+            <span style={{ ...chip("#990000", "rgba(153,0,0,0.15)"), fontSize: "0.8rem", padding: "4px 12px" }}>
               ⚠ {docsVencidos.length} doc{docsVencidos.length > 1 ? "s" : ""} vencido
               {docsVencidos.length > 1 ? "s" : ""}
             </span>
           )}
           {docsPorVencer.length > 0 && (
             <span
-              style={{ ...chip("#fbbf24", "rgba(251,191,36,0.12)"), fontSize: "0.8rem", padding: "4px 12px" }}
+              style={{ ...chip("#d4960c", "rgba(251,191,36,0.12)"), fontSize: "0.8rem", padding: "4px 12px" }}
             >
               ⏰ {docsPorVencer.length} por vencer (7 días)
             </span>
@@ -640,7 +640,7 @@ function TabDocumentos({
       </div>
 
       {showForm && (
-        <div style={{ ...ST.card, marginBottom: "16px", borderColor: "rgba(204,0,0,0.3)" }}>
+        <div style={{ ...ST.card, marginBottom: "16px", borderColor: "rgba(153,0,0,0.3)" }}>
           <p style={{ ...ST.subheading, marginBottom: "14px" }}>Nuevo documento</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
             <div>
@@ -706,7 +706,7 @@ function TabDocumentos({
                   type="checkbox"
                   checked={form.obligatorio}
                   onChange={(e) => setForm({ ...form, obligatorio: e.target.checked })}
-                  style={{ accentColor: "#cc0000" }}
+                  style={{ accentColor: "#990000" }}
                 />
                 Obligatorio
               </label>
@@ -752,7 +752,7 @@ function TabDocumentos({
                   ...ST.card,
                   padding: "12px 16px",
                   borderColor: vencido
-                    ? "rgba(204,0,0,0.4)"
+                    ? "rgba(153,0,0,0.4)"
                     : porVencer
                     ? "rgba(251,191,36,0.3)"
                     : undefined,
@@ -767,13 +767,13 @@ function TabDocumentos({
                   </span>
                   <span style={chip(meta.color, meta.bg)}>{meta.label}</span>
                   {doc.obligatorio && (
-                    <span style={{ fontSize: "0.7rem", color: "#cc0000", fontWeight: 700 }}>OBL</span>
+                    <span style={{ fontSize: "0.7rem", color: "#990000", fontWeight: 700 }}>OBL</span>
                   )}
                   {doc.fechaVencimiento && (
                     <span
                       style={{
                         fontSize: "0.75rem",
-                        color: vencido ? "#cc0000" : porVencer ? "#fbbf24" : "rgba(255,255,255,0.4)",
+                        color: vencido ? "#990000" : porVencer ? "#d4960c" : "rgba(255,255,255,0.4)",
                       }}
                     >
                       {vencido ? "⚠ Vencido" : porVencer ? "⏰" : ""}{" "}
@@ -874,7 +874,7 @@ function TabDocumentos({
                             type="checkbox"
                             checked={doc.obligatorio}
                             onChange={(e) => editarDoc(doc.id, "obligatorio", e.target.checked)}
-                            style={{ accentColor: "#cc0000" }}
+                            style={{ accentColor: "#990000" }}
                           />
                           Obligatorio
                         </label>
@@ -893,8 +893,8 @@ function TabDocumentos({
                       onClick={() => eliminarDoc(doc.id)}
                       style={{
                         ...ST.btnGhost,
-                        color: "#cc0000",
-                        borderColor: "rgba(204,0,0,0.3)",
+                        color: "#990000",
+                        borderColor: "rgba(153,0,0,0.3)",
                         fontSize: "0.8rem",
                       }}
                     >
@@ -960,7 +960,7 @@ function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn
       </div>
 
       {showForm && (
-        <div style={{ ...ST.card, marginBottom: "16px", borderColor: "rgba(204,0,0,0.3)" }}>
+        <div style={{ ...ST.card, marginBottom: "16px", borderColor: "rgba(153,0,0,0.3)" }}>
           <p style={{ ...ST.subheading, marginBottom: "14px" }}>Nueva parte</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
             <div>
@@ -1110,7 +1110,7 @@ function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn
                       <a
                         href={`mailto:${parte.email}`}
                         onClick={(e) => e.stopPropagation()}
-                        style={{ color: "#60a5fa", fontSize: "0.85rem", textDecoration: "none" }}
+                        style={{ color: "#4ab8d8", fontSize: "0.85rem", textDecoration: "none" }}
                       >
                         ✉ {parte.email}
                       </a>
@@ -1159,8 +1159,8 @@ function TabPartes({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn
                       onClick={() => eliminarParte(idx)}
                       style={{
                         ...ST.btnGhost,
-                        color: "#cc0000",
-                        borderColor: "rgba(204,0,0,0.3)",
+                        color: "#990000",
+                        borderColor: "rgba(153,0,0,0.3)",
                         fontSize: "0.8rem",
                         marginTop: "4px",
                       }}
@@ -1220,7 +1220,7 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
       </div>
 
       {showForm && (
-        <div style={{ ...ST.card, marginBottom: "20px", borderColor: "rgba(204,0,0,0.3)" }}>
+        <div style={{ ...ST.card, marginBottom: "20px", borderColor: "rgba(153,0,0,0.3)" }}>
           <p style={{ ...ST.subheading, marginBottom: "14px" }}>Nuevo hito</p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
             <div>
@@ -1326,7 +1326,7 @@ function TabTimeline({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExp
                         style={{
                           fontSize: "0.72rem",
                           fontWeight: 700,
-                          color: "#cc0000",
+                          color: "#990000",
                           textTransform: "uppercase" as const,
                           letterSpacing: "0.06em",
                           fontFamily: "'Inter', sans-serif",
@@ -1411,7 +1411,7 @@ function TabNotas({ exp, updateExp }: { exp: Expediente; updateExp: UpdateExpFn 
         <span
           style={{
             fontSize: "0.78rem",
-            color: guardando ? "#fbbf24" : guardado ? "#34d399" : "rgba(255,255,255,0.25)",
+            color: guardando ? "#d4960c" : guardado ? "#34d399" : "rgba(255,255,255,0.25)",
             fontStyle: "italic",
             transition: "color 0.3s",
           }}

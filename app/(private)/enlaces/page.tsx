@@ -91,7 +91,7 @@ export default function EnlacesPage() {
         .enl-side-item { padding: 9px 14px; cursor: pointer; transition: all 0.15s; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; color: rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: space-between; }
         .enl-side-item:last-child { border-bottom: none; }
         .enl-side-item:hover { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.8); }
-        .enl-side-item.active { background: rgba(200,0,0,0.08); color: #fff; border-left: 2px solid #cc0000; font-weight: 600; }
+        .enl-side-item.active { background: rgba(200,0,0,0.08); color: #fff; border-left: 2px solid #990000; font-weight: 600; }
         .enl-side-count { font-size: 9px; color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 10px; font-family: 'Montserrat',sans-serif; }
         .enl-main { display: flex; flex-direction: column; gap: 16px; }
         .enl-topbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -101,7 +101,7 @@ export default function EnlacesPage() {
         .enl-search input::placeholder { color: rgba(255,255,255,0.2); }
         .enl-search-ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 12px; color: rgba(255,255,255,0.3); }
         .enl-loc-select { padding: 9px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.6); font-size: 12px; outline: none; font-family: 'Inter',sans-serif; cursor: pointer; }
-        .enl-btn-sugerir { padding: 9px 16px; background: transparent; border: 1px solid rgba(200,0,0,0.3); border-radius: 4px; color: #cc0000; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .enl-btn-sugerir { padding: 9px 16px; background: transparent; border: 1px solid rgba(200,0,0,0.3); border-radius: 4px; color: #990000; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .enl-btn-sugerir:hover { background: rgba(200,0,0,0.1); }
         .enl-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
         .enl-seccion-titulo { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); display: flex; align-items: center; gap: 8px; }
@@ -112,21 +112,21 @@ export default function EnlacesPage() {
         .enl-card.dest { border-color: rgba(200,0,0,0.2); background: rgba(200,0,0,0.03); }
         .enl-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
         .enl-card-nombre { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: #fff; line-height: 1.4; flex: 1; }
-        .enl-card-star { font-size: 11px; color: #eab308; flex-shrink: 0; }
+        .enl-card-star { font-size: 11px; color: #d4960c; flex-shrink: 0; }
         .enl-card-desc { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.5; flex: 1; }
         .enl-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
         .enl-cat-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; }
         .enl-loc-badge { font-size: 9px; color: rgba(255,255,255,0.25); }
         .enl-arrow { font-size: 12px; color: rgba(200,0,0,0.4); transition: color 0.15s; }
-        .enl-card:hover .enl-arrow { color: #cc0000; }
+        .enl-card:hover .enl-arrow { color: #990000; }
         .enl-skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: skp 1.5s ease-in-out infinite; display: block; }
         @keyframes skp { 0%,100%{opacity:0.4}50%{opacity:0.8} }
         .enl-empty { padding: 48px 24px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
         .enl-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
         .enl-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 480px; position: relative; }
-        .enl-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
+        .enl-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .enl-modal-title { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-        .enl-modal-title span { color: #cc0000; }
+        .enl-modal-title span { color: #990000; }
         .enl-field { margin-bottom: 12px; }
         .enl-label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.38); margin-bottom: 5px; font-family: 'Montserrat',sans-serif; }
         .enl-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; }
@@ -135,10 +135,10 @@ export default function EnlacesPage() {
         .enl-select { width: 100%; padding: 9px 12px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; }
         .enl-modal-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
         .enl-btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .enl-btn-enviar { padding: 9px 22px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .enl-btn-enviar { padding: 9px 22px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .enl-btn-enviar:hover:not(:disabled) { background: #e60000; }
         .enl-btn-enviar:disabled { opacity: 0.6; cursor: not-allowed; }
-        .enl-enviado { text-align: center; padding: 20px; color: #22c55e; font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; }
+        .enl-enviado { text-align: center; padding: 20px; color: #3abab6; font-family: 'Montserrat',sans-serif; font-size: 13px; font-weight: 700; }
         @media (max-width: 900px) { .enl-layout { grid-template-columns: 1fr; } .enl-side { position: static; flex-direction: row; overflow-x: auto; } .enl-side-box { min-width: 160px; } }
         @media (max-width: 600px) { .enl-grid { grid-template-columns: 1fr; } }
       `}</style>

@@ -103,14 +103,14 @@ export default function BCRALivePage() {
       const res = await fetch(DOLAR_API, { signal: AbortSignal.timeout(6000) });
       const data = await res.json();
       const colores: Record<string, string> = {
-        oficial: "#22c55e", blue: "#3b82f6", bolsa: "#8b5cf6",
-        contadoconliqui: "#f97316", cripto: "#eab308", mayorista: "#06b6d4", tarjeta: "#ec4899",
+        oficial: "#3abab6", blue: "#3b82f6", bolsa: "#8b5cf6",
+        contadoconliqui: "#d4960c", cripto: "#d4960c", mayorista: "#06b6d4", tarjeta: "#ec4899",
       };
       const mapeados: DolarCotiz[] = (Array.isArray(data) ? data : []).map((d: any) => ({
         nombre: d.nombre ?? d.casa ?? d.casa?.nombre ?? "Dólar",
         compra: d.compra ?? null,
         venta: d.venta ?? null,
-        color: colores[d.casa?.toLowerCase() ?? ""] ?? "#cc0000",
+        color: colores[d.casa?.toLowerCase() ?? ""] ?? "#990000",
       })).filter((d: DolarCotiz) => d.venta !== null);
       setDolares(mapeados);
     } catch {
@@ -186,10 +186,10 @@ export default function BCRALivePage() {
   };
 
   const INDICES_INFO = [
-    { id: "ICL" as keyof IndicesMes, nombre: "ICL", desc: "Índice Contratos Locación", color: "#cc0000", fuente: "BCRA" },
+    { id: "ICL" as keyof IndicesMes, nombre: "ICL", desc: "Índice Contratos Locación", color: "#990000", fuente: "BCRA" },
     { id: "IPC" as keyof IndicesMes, nombre: "IPC", desc: "Inflación mensual (INDEC)", color: "#3b82f6", fuente: "INDEC" },
     { id: "CER" as keyof IndicesMes, nombre: "CER", desc: "Coef. Estabilización Referencia", color: "#a78bfa", fuente: "BCRA" },
-    { id: "CAC" as keyof IndicesMes, nombre: "CAC", desc: "Costo de Construcción (CAMARCO)", color: "#f97316", fuente: "CAMARCO" },
+    { id: "CAC" as keyof IndicesMes, nombre: "CAC", desc: "Costo de Construcción (CAMARCO)", color: "#d4960c", fuente: "CAMARCO" },
   ];
 
   return (
@@ -198,17 +198,17 @@ export default function BCRALivePage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .bl-wrap { max-width: 960px; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter', sans-serif; }
         .bl-titulo { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .bl-titulo span { color: #cc0000; }
+        .bl-titulo span { color: #990000; }
         .bl-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px; }
         .bl-status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; flex-wrap: wrap; }
-        .bl-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+        .bl-dot { width: 7px; height: 7px; border-radius: 50%; background: #3abab6; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         .bl-refresh { padding: 5px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; }
         .bl-refresh:hover { background: rgba(255,255,255,0.08); }
         /* Tabs */
         .bl-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .bl-tab { padding: 10px 18px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: all 0.15s; }
-        .bl-tab.on { color: #fff; border-bottom-color: #cc0000; }
+        .bl-tab.on { color: #fff; border-bottom-color: #990000; }
         /* Cards grid */
         .bl-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
         .bl-grid2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
@@ -237,7 +237,7 @@ export default function BCRALivePage() {
         .bl-tasa-val { font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; color: #fff; }
         .bl-tasa-pct { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
         /* Loading */
-        .bl-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+        .bl-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
         /* Tabla historial */
         .bl-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -306,7 +306,7 @@ export default function BCRALivePage() {
                       ? ult.valor > ult.anterior ? "▲" : ult.valor < ult.anterior ? "▼" : "→"
                       : "";
                     const tendColor = ult.anterior !== null
-                      ? ult.valor > ult.anterior ? "#ef4444" : "#22c55e"
+                      ? ult.valor > ult.anterior ? "#b80000" : "#3abab6"
                       : "#94a3b8";
                     return (
                       <div key={ind.id} className="bl-card" style={{ borderColor: `${ind.color}25`, background: `${ind.color}06` }}>
@@ -317,7 +317,7 @@ export default function BCRALivePage() {
                         </div>
                         <div className="bl-card-sub">{nombreMes(ult.mes)} · {ind.desc}</div>
                         {acum !== null && (
-                          <div className="bl-card-acum" style={{ color: "#22c55e" }}>Acum. 12m: +{acum.toFixed(1)}%</div>
+                          <div className="bl-card-acum" style={{ color: "#3abab6" }}>Acum. 12m: +{acum.toFixed(1)}%</div>
                         )}
                         {/* Mini barras históricas */}
                         {indices && (() => {
@@ -401,7 +401,7 @@ export default function BCRALivePage() {
                 </div>
               ) : (
                 <>
-                  <div className="bl-uva-big" style={{ color: "#cc0000" }}>
+                  <div className="bl-uva-big" style={{ color: "#990000" }}>
                     $ {uva.valor.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                   <div className="bl-uva-fecha">
@@ -459,7 +459,7 @@ export default function BCRALivePage() {
                     {d.compra !== null && d.venta !== null && (
                       <div style={{ textAlign: "right" }}>
                         <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", marginBottom: 2 }}>SPREAD</div>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 12, color: "#eab308" }}>
+                        <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 12, color: "#d4960c" }}>
                           {((d.venta - d.compra) / d.compra * 100).toFixed(1)}%
                         </div>
                       </div>
@@ -523,10 +523,10 @@ function UVACalculator({ valorUVA }: { valorUVA: number }) {
             onClick={() => setModo(m)}
             style={{
               flex: 1, padding: "6px 8px",
-              background: modo === m ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${modo === m ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.1)"}`,
+              background: modo === m ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${modo === m ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.1)"}`,
               borderRadius: 4, cursor: "pointer",
-              color: modo === m ? "#cc0000" : "rgba(255,255,255,0.4)",
+              color: modo === m ? "#990000" : "rgba(255,255,255,0.4)",
               fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700,
             }}
           >
@@ -542,9 +542,9 @@ function UVACalculator({ valorUVA }: { valorUVA: number }) {
             style={{ width: "100%", padding: "9px 11px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
           />
           {uvasNum > 0 && (
-            <div style={{ padding: "8px 12px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 5 }}>
+            <div style={{ padding: "8px 12px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5 }}>
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 3 }}>EQUIVALE A</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#cc0000" }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#990000" }}>
                 $ {(uvasNum * valorUVA).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
@@ -558,9 +558,9 @@ function UVACalculator({ valorUVA }: { valorUVA: number }) {
             style={{ width: "100%", padding: "9px 11px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, color: "#fff", fontFamily: "Inter,sans-serif", fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
           />
           {pesosNum > 0 && (
-            <div style={{ padding: "8px 12px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 5 }}>
+            <div style={{ padding: "8px 12px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 5 }}>
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.4)", marginBottom: 3 }}>EQUIVALE A</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#cc0000" }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#990000" }}>
                 {(pesosNum / valorUVA).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} UVA
               </div>
             </div>

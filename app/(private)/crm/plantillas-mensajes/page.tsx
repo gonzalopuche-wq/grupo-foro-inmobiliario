@@ -33,20 +33,20 @@ interface Plantilla {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const CATEGORIAS: Record<Categoria, { label: string; color: string; bg: string }> = {
-  captacion:    { label: "Captación",    color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
-  seguimiento:  { label: "Seguimiento",  color: "#60a5fa", bg: "rgba(96,165,250,0.15)" },
+  captacion:    { label: "Captación",    color: "#d4960c", bg: "rgba(245,158,11,0.15)" },
+  seguimiento:  { label: "Seguimiento",  color: "#4ab8d8", bg: "rgba(74,184,216,0.15)" },
   visita:       { label: "Visita",       color: "#34d399", bg: "rgba(52,211,153,0.15)" },
   oferta:       { label: "Oferta",       color: "#a78bfa", bg: "rgba(167,139,250,0.15)" },
   cierre:       { label: "Cierre",       color: "#fb923c", bg: "rgba(251,146,60,0.15)" },
   postventa:    { label: "Postventa",    color: "#f472b6", bg: "rgba(244,114,182,0.15)" },
-  cumpleanos:   { label: "Cumpleaños",   color: "#facc15", bg: "rgba(250,204,21,0.15)" },
+  cumpleanos:   { label: "Cumpleaños",   color: "#d4960c", bg: "rgba(250,204,21,0.15)" },
   recordatorio: { label: "Recordatorio", color: "#94a3b8", bg: "rgba(148,163,184,0.15)" },
-  custom:       { label: "Custom",       color: "#cc0000", bg: "rgba(204,0,0,0.15)" },
+  custom:       { label: "Custom",       color: "#990000", bg: "rgba(153,0,0,0.15)" },
 };
 
 const CANALES: Record<Canal, { label: string; color: string }> = {
   whatsapp: { label: "WhatsApp", color: "#25d366" },
-  email:    { label: "Email",    color: "#60a5fa" },
+  email:    { label: "Email",    color: "#4ab8d8" },
   sms:      { label: "SMS",      color: "#94a3b8" },
   todos:    { label: "Todos",    color: "#e0e0e0" },
 };
@@ -326,7 +326,7 @@ const S = {
   } as React.CSSProperties,
 
   btnPrimary: {
-    background: "#cc0000",
+    background: "#990000",
     border: "none",
     borderRadius: 7,
     color: "#fff",
@@ -352,9 +352,9 @@ const S = {
 
   btnDanger: {
     background: "transparent",
-    border: "1px solid #cc0000",
+    border: "1px solid #990000",
     borderRadius: 7,
-    color: "#cc0000",
+    color: "#990000",
     fontFamily: "'Inter', sans-serif",
     fontWeight: 500,
     fontSize: 14,
@@ -420,13 +420,13 @@ function FAB({ onClick }: { onClick: () => void }) {
         width: 52,
         height: 52,
         borderRadius: "50%",
-        background: "#cc0000",
+        background: "#990000",
         border: "none",
         color: "#fff",
         fontSize: 26,
         lineHeight: 1,
         cursor: "pointer",
-        boxShadow: "0 4px 16px rgba(204,0,0,0.45)",
+        boxShadow: "0 4px 16px rgba(153,0,0,0.45)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -470,7 +470,7 @@ function PlantillaCard({ p, onToggleFav, onUsar, onEditar, copiadoId, onCopiar }
         <button
           onClick={() => onToggleFav(p.id)}
           title={p.favorita ? "Quitar de favoritas" : "Marcar como favorita"}
-          style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: "2px 4px", color: p.favorita ? "#facc15" : "#444" }}
+          style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: "2px 4px", color: p.favorita ? "#d4960c" : "#444" }}
         >
           {p.favorita ? "★" : "☆"}
         </button>
@@ -590,7 +590,7 @@ function EditModal({ plantilla, onClose, onSave, onDelete }: EditModalProps) {
               <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 5 }}>
                 <span style={{ fontSize: 12, color: "#666" }}>Variables detectadas:</span>
                 {variables.map((v) => (
-                  <span key={v} style={{ fontSize: 11, color: "#60a5fa", background: "rgba(96,165,250,0.1)", borderRadius: 4, padding: "2px 6px" }}>
+                  <span key={v} style={{ fontSize: 11, color: "#4ab8d8", background: "rgba(74,184,216,0.1)", borderRadius: 4, padding: "2px 6px" }}>
                     {"{" + v + "}"}
                   </span>
                 ))}
@@ -612,7 +612,7 @@ function EditModal({ plantilla, onClose, onSave, onDelete }: EditModalProps) {
               )}
               {confirmDelete && (
                 <>
-                  <span style={{ fontSize: 13, color: "#cc0000", alignSelf: "center" }}>¿Confirmar?</span>
+                  <span style={{ fontSize: 13, color: "#990000", alignSelf: "center" }}>¿Confirmar?</span>
                   <button style={S.btnDanger} onClick={() => { onDelete(plantilla!.id); onClose(); }}>Sí, eliminar</button>
                   <button style={S.btnSecondary} onClick={() => setConfirmDelete(false)}>No</button>
                 </>
@@ -687,8 +687,8 @@ function Tab1Biblioteca({ plantillas, onToggleFav, onUsar, onEditar, onNueva, on
               ...S.btnSecondary,
               padding: "5px 12px",
               fontSize: 12,
-              background: catFiltro === "todas" ? "#cc0000" : "transparent",
-              borderColor: catFiltro === "todas" ? "#cc0000" : "#333",
+              background: catFiltro === "todas" ? "#990000" : "transparent",
+              borderColor: catFiltro === "todas" ? "#990000" : "#333",
               color: catFiltro === "todas" ? "#fff" : "#e0e0e0",
             }}
           >
@@ -919,7 +919,7 @@ function Tab2Personalizar({ plantillas, initialPlantilla, onIncrementUso }: Tab2
               💬 Abrir en WhatsApp
             </button>
             <button
-              style={{ ...S.btnSecondary, borderColor: "#60a5fa", color: "#60a5fa" }}
+              style={{ ...S.btnSecondary, borderColor: "#4ab8d8", color: "#4ab8d8" }}
               onClick={handleEmail}
               disabled={!mensajeFinal}
             >
@@ -999,8 +999,8 @@ function Tab3Estadisticas({ plantillas }: Tab3Props) {
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
         {[
-          { label: "Total plantillas", value: totalPlantillas, color: "#60a5fa" },
-          { label: "Favoritas", value: totalFavoritas, color: "#facc15" },
+          { label: "Total plantillas", value: totalPlantillas, color: "#4ab8d8" },
+          { label: "Favoritas", value: totalFavoritas, color: "#d4960c" },
           { label: "Total usos", value: totalUsos, color: "#34d399" },
         ].map(({ label, value, color }) => (
           <div key={label} style={{ ...S.card, textAlign: "center" }}>
@@ -1043,7 +1043,7 @@ function Tab3Estadisticas({ plantillas }: Tab3Props) {
                     </div>
                     <svg width="100%" height="10" style={{ display: "block", borderRadius: 5, overflow: "hidden" }}>
                       <rect x="0" y="0" width="100%" height="10" fill="#1a1a1a" />
-                      <rect x="0" y="0" width={`${barPct}%`} height="10" fill="#cc0000" rx="5" />
+                      <rect x="0" y="0" width={`${barPct}%`} height="10" fill="#990000" rx="5" />
                     </svg>
                   </div>
                 );
@@ -1272,7 +1272,7 @@ export default function PlantillasMensajesPage() {
             style={{
               background: "none",
               border: "none",
-              borderBottom: tab === i ? "2px solid #cc0000" : "2px solid transparent",
+              borderBottom: tab === i ? "2px solid #990000" : "2px solid transparent",
               color: tab === i ? "#e0e0e0" : "#555",
               fontFamily: "'Inter', sans-serif",
               fontWeight: tab === i ? 600 : 400,

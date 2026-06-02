@@ -147,7 +147,7 @@ export default function FirmaDigitalPage() {
   return (
     <div style={{ padding: "24px 20px", maxWidth: 860, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
       )}
 
       <div style={{ marginBottom: 24 }}>
@@ -258,7 +258,7 @@ export default function FirmaDigitalPage() {
                   <div style={{ fontSize: 11, color: "#475569", marginTop: 4 }}>{fmtFecha(f.created_at)}</div>
                   <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
                     <button onClick={() => descargar(f)} style={{ flex: 1, background: "#0f172a", color: "#6366f1", border: "1px solid #6366f144", borderRadius: 6, padding: "5px 0", cursor: "pointer", fontSize: 12 }}>⬇ Descargar</button>
-                    <button onClick={() => eliminar(f.id)} style={{ background: "#0f172a", color: "#ef4444", border: "1px solid #ef444422", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12 }}>✕</button>
+                    <button onClick={() => eliminar(f.id)} style={{ background: "#0f172a", color: "#b80000", border: "1px solid #b8000022", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12 }}>✕</button>
                   </div>
                 </div>
               </div>

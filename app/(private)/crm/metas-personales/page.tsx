@@ -81,7 +81,7 @@ function GaugeCircle({
   unit?: string;
 }) {
   const dash = (pct / 100) * CIRCUMFERENCE;
-  const color = pct >= 80 ? "#22c55e" : pct >= 50 ? "#eab308" : "#cc0000";
+  const color = pct >= 80 ? "#3abab6" : pct >= 50 ? "#d4960c" : "#990000";
 
   return (
     <div
@@ -232,7 +232,7 @@ function BarChart({
               y={y}
               width={barW}
               height={barH}
-              fill="#cc0000"
+              fill="#990000"
               rx={3}
               opacity={0.85}
             />
@@ -299,7 +299,7 @@ function ProgressRow({
   proyeccion: number;
 }) {
   const pct = progresoPct(real, meta);
-  const color = pct >= 80 ? "#22c55e" : pct >= 50 ? "#eab308" : "#cc0000";
+  const color = pct >= 80 ? "#3abab6" : pct >= 50 ? "#d4960c" : "#990000";
 
   return (
     <tr>
@@ -514,10 +514,10 @@ export default function MetasPersonalesPage() {
   const motivacion = useMemo(() => {
     const p = progresoPct(realHonorariosUSD, meta.metaHonorariosUSD);
     if (p >= 80)
-      return { msg: "Vas muy bien — seguí así!", color: "#22c55e" };
+      return { msg: "Vas muy bien — seguí así!", color: "#3abab6" };
     if (p >= 50)
-      return { msg: "En camino — mantené el ritmo", color: "#eab308" };
-    return { msg: "Acelera el ritmo — el objetivo te espera", color: "#cc0000" };
+      return { msg: "En camino — mantené el ritmo", color: "#d4960c" };
+    return { msg: "Acelera el ritmo — el objetivo te espera", color: "#990000" };
   }, [realHonorariosUSD, meta.metaHonorariosUSD]);
 
   // ── Handlers ─────────────────────────────────────────────────────────────
@@ -656,10 +656,10 @@ export default function MetasPersonalesPage() {
                 setEditOpen((v) => !v);
               }}
               style={{
-                background: editOpen ? "rgba(204,0,0,0.2)" : "rgba(255,255,255,0.07)",
-                border: `1px solid ${editOpen ? "#cc0000" : "rgba(255,255,255,0.15)"}`,
+                background: editOpen ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.07)",
+                border: `1px solid ${editOpen ? "#990000" : "rgba(255,255,255,0.15)"}`,
                 borderRadius: 8,
-                color: editOpen ? "#cc0000" : "rgba(255,255,255,0.8)",
+                color: editOpen ? "#990000" : "rgba(255,255,255,0.8)",
                 fontFamily: "Montserrat, sans-serif",
                 fontWeight: 700,
                 fontSize: 13,
@@ -835,7 +835,7 @@ export default function MetasPersonalesPage() {
             <button
               onClick={handleSaveMeta}
               style={{
-                background: "#cc0000",
+                background: "#990000",
                 border: "none",
                 borderRadius: 8,
                 color: "#fff",
@@ -1032,8 +1032,8 @@ export default function MetasPersonalesPage() {
           {meta.notas && (
             <div
               style={{
-                background: "rgba(204,0,0,0.06)",
-                border: "1px solid rgba(204,0,0,0.2)",
+                background: "rgba(153,0,0,0.06)",
+                border: "1px solid rgba(153,0,0,0.2)",
                 borderRadius: 12,
                 padding: "16px 20px",
                 marginBottom: 32,
@@ -1044,7 +1044,7 @@ export default function MetasPersonalesPage() {
                   fontFamily: "Montserrat, sans-serif",
                   fontWeight: 700,
                   fontSize: 12,
-                  color: "#cc0000",
+                  color: "#990000",
                   textTransform: "uppercase",
                   letterSpacing: 0.5,
                   marginBottom: 8,

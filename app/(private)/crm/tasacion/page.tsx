@@ -158,7 +158,7 @@ export default function TasacionRapida() {
     if (!win) return;
     win.document.write(`
       <html><head><title>Tasación Rápida</title>
-      <style>body{font-family:Arial,sans-serif;font-size:13px;max-width:700px;margin:40px auto}h1{color:#cc0000}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}.val{font-size:18px;font-weight:bold;color:#cc0000}</style>
+      <style>body{font-family:Arial,sans-serif;font-size:13px;max-width:700px;margin:40px auto}h1{color:#990000}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}.val{font-size:18px;font-weight:bold;color:#990000}</style>
       </head><body>
       <h1>🏠 Tasación Rápida</h1>
       <h2>Propiedad tasada</h2>
@@ -191,7 +191,7 @@ export default function TasacionRapida() {
           <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Estimación de valor basada en comparables de la cartera activa</p>
         </div>
         <button onClick={exportPDF} disabled={!tasacion} style={{
-          background: tasacion ? "#cc0000" : "#333", color: "#fff", border: "none", borderRadius: 8,
+          background: tasacion ? "#990000" : "#333", color: "#fff", border: "none", borderRadius: 8,
           padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: tasacion ? "pointer" : "not-allowed",
           fontFamily: "Montserrat, sans-serif",
         }}>📄 Informe PDF</button>
@@ -202,7 +202,7 @@ export default function TasacionRapida() {
         {/* Inputs propiedad */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <div style={sectionStyle}>
-            <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000", textTransform: "uppercase" }}>Propiedad a tasar</h2>
+            <h2 style={{ margin: "0 0 16px", fontSize: 13, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", textTransform: "uppercase" }}>Propiedad a tasar</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div>
                 <label style={labelStyle}>Tipo</label>
@@ -264,7 +264,7 @@ export default function TasacionRapida() {
               <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
                 {[{ id: "cochera", label: "Cochera (+8%)", val: cochera, set: setCochera }, { id: "pileta", label: "Pileta (+5%)", val: pileta, set: setPileta }].map(item => (
                   <label key={item.id} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#ccc", cursor: "pointer" }}>
-                    <input type="checkbox" checked={item.val} onChange={e => item.set(e.target.checked)} style={{ width: 16, height: 16, accentColor: "#cc0000" }} />
+                    <input type="checkbox" checked={item.val} onChange={e => item.set(e.target.checked)} style={{ width: 16, height: 16, accentColor: "#990000" }} />
                     {item.label}
                   </label>
                 ))}
@@ -273,8 +273,8 @@ export default function TasacionRapida() {
                 <label style={labelStyle}>Ajuste manual (%)</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input type="range" min={-30} max={30} value={ajusteManual} onChange={e => setAjusteManual(+e.target.value)}
-                    style={{ flex: 1, accentColor: "#cc0000" }} />
-                  <span style={{ minWidth: 40, textAlign: "right", fontSize: 13, color: ajusteManual > 0 ? "#22c55e" : ajusteManual < 0 ? "#ef4444" : "#888" }}>
+                    style={{ flex: 1, accentColor: "#990000" }} />
+                  <span style={{ minWidth: 40, textAlign: "right", fontSize: 13, color: ajusteManual > 0 ? "#3abab6" : ajusteManual < 0 ? "#b80000" : "#888" }}>
                     {ajusteManual > 0 ? "+" : ""}{ajusteManual}%
                   </span>
                 </div>
@@ -290,17 +290,17 @@ export default function TasacionRapida() {
           <>
             {/* KPIs principales */}
             <div style={{
-              background: "#111", border: "2px solid #cc0000", borderRadius: 12, padding: "24px",
+              background: "#111", border: "2px solid #990000", borderRadius: 12, padding: "24px",
               display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
             }}>
-              <div style={{ fontSize: 12, color: "#cc0000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
+              <div style={{ fontSize: 12, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>
                 Valor estimado (basado en {comparables.length} comparable{comparables.length !== 1 ? "s" : ""})
               </div>
               <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", fontFamily: "Montserrat, sans-serif" }}>
                 {fmtUSD(tasacion.valorEstimado)}
               </div>
               <div style={{ fontSize: 16, color: "#888" }}>
-                Rango: <span style={{ color: "#22c55e" }}>{fmtUSD(tasacion.min)}</span> — <span style={{ color: "#f59e0b" }}>{fmtUSD(tasacion.max)}</span>
+                Rango: <span style={{ color: "#3abab6" }}>{fmtUSD(tasacion.min)}</span> — <span style={{ color: "#d4960c" }}>{fmtUSD(tasacion.max)}</span>
               </div>
               <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>
                 {fmtUSD(tasacion.pm2Ajustado)}/m² · Factor ajuste ×{tasacion.factor.toFixed(3)}
@@ -310,10 +310,10 @@ export default function TasacionRapida() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
               {[
                 { label: "Precio/m² promedio comps", val: fmtUSD(tasacion.pm2Ponderado) + "/m²", color: "#3b82f6" },
-                { label: "Precio/m² ajustado", val: fmtUSD(tasacion.pm2Ajustado) + "/m²", color: "#cc0000" },
+                { label: "Precio/m² ajustado", val: fmtUSD(tasacion.pm2Ajustado) + "/m²", color: "#990000" },
                 { label: "Mediana mercado", val: fmtUSD(tasacion.pm2Mediana) + "/m²", color: "#a78bfa" },
-                { label: "Rango comps (mín)", val: fmtUSD(tasacion.pm2Min) + "/m²", color: "#22c55e" },
-                { label: "Rango comps (máx)", val: fmtUSD(tasacion.pm2Max) + "/m²", color: "#f59e0b" },
+                { label: "Rango comps (mín)", val: fmtUSD(tasacion.pm2Min) + "/m²", color: "#3abab6" },
+                { label: "Rango comps (máx)", val: fmtUSD(tasacion.pm2Max) + "/m²", color: "#d4960c" },
               ].map((kpi, i) => (
                 <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "12px 14px" }}>
                   <div style={{ fontSize: 11, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
@@ -346,13 +346,13 @@ export default function TasacionRapida() {
                       </td>
                       <td style={{ padding: "10px 16px", fontSize: 12, color: "#888" }}>{c.tipo ?? "—"}</td>
                       <td style={{ padding: "10px 16px", fontSize: 12, color: "#ccc" }}>{c.superficie_cubierta ? `${c.superficie_cubierta} m²` : "—"}</td>
-                      <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: 600, color: "#22c55e" }}>
+                      <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: 600, color: "#3abab6" }}>
                         {fmtUSD(c.pm2)}/m²
                       </td>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <div style={{ height: 6, width: 80, background: "#1a1a1a", borderRadius: 3, overflow: "hidden" }}>
-                            <div style={{ height: "100%", width: `${c.score}%`, background: c.score >= 70 ? "#22c55e" : c.score >= 40 ? "#f59e0b" : "#888", borderRadius: 3 }} />
+                            <div style={{ height: "100%", width: `${c.score}%`, background: c.score >= 70 ? "#3abab6" : c.score >= 40 ? "#d4960c" : "#888", borderRadius: 3 }} />
                           </div>
                           <span style={{ fontSize: 11, color: "#666" }}>{c.score.toFixed(0)}</span>
                         </div>

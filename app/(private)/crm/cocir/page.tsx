@@ -73,9 +73,9 @@ interface PhoneStatusResponse {
 function estadoColor(estado: string | null) {
   if (!estado) return "#94a3b8";
   const e = estado.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-  if (e.includes("activ") || e.includes("habili") || e.includes("vigente")) return "#22c55e";
-  if (e.includes("suspen") || e.includes("inhab")) return "#ef4444";
-  return "#eab308";
+  if (e.includes("activ") || e.includes("habili") || e.includes("vigente")) return "#3abab6";
+  if (e.includes("suspen") || e.includes("inhab")) return "#b80000";
+  return "#d4960c";
 }
 
 // ── Componente ────────────────────────────────────────────────────────────────
@@ -329,7 +329,7 @@ export default function COCIRPage() {
         .cc-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.1s; }
         .cc-tabla tbody tr:nth-child(even) { background: rgba(255,255,255,0.012); }
         .cc-tabla td { padding: 10px 12px; border-bottom: 1px solid var(--gfi-border-subtle); vertical-align: middle; color: var(--gfi-text-secondary); }
-        .cc-tabla tbody tr:hover { background: rgba(204,0,0,0.04); }
+        .cc-tabla tbody tr:hover { background: rgba(153,0,0,0.04); }
         .cc-tabla tbody tr:hover td { color: var(--gfi-text-primary); }
         /* Badge */
         .cc-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.06em; }
@@ -354,12 +354,12 @@ export default function COCIRPage() {
         .cc-phone-pill { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: var(--gfi-transition); }
         .cc-phone-pill:hover { background: var(--gfi-bg-hover); color: var(--gfi-text-primary); border-color: var(--gfi-border-bright); }
         .cc-phone-pill.on { background: var(--gfi-red-soft); border-color: var(--gfi-red-border); color: var(--gfi-red); }
-        .cc-phone-pill.ok.on { background: rgba(10,61,46,0.4); border-color: rgba(16,185,129,0.3); color: var(--gfi-green-text); }
-        .cc-phone-pill.diferente.on { background: rgba(196,74,0,0.12); border-color: var(--gfi-orange-border); color: #f97316; }
+        .cc-phone-pill.ok.on { background: rgba(10,61,46,0.4); border-color: rgba(58,186,182,0.3); color: var(--gfi-green-text); }
+        .cc-phone-pill.diferente.on { background: rgba(196,74,0,0.12); border-color: var(--gfi-orange-border); color: #d4960c; }
         .cc-phone-pill.sin-padron.on { background: rgba(255,255,255,0.05); border-color: var(--gfi-border-bright); color: var(--gfi-text-secondary); }
         /* Phone rows */
         .cc-phone-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.1s; }
-        .cc-phone-row:hover { background: rgba(204,0,0,0.03); }
+        .cc-phone-row:hover { background: rgba(153,0,0,0.03); }
         .cc-phone-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); flex-shrink: 0; }
         .cc-phone-name { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--gfi-text-primary); }
         .cc-phone-mat { font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--gfi-red); letter-spacing: 0.04em; }
@@ -368,10 +368,10 @@ export default function COCIRPage() {
         .cc-phone-missing { font-size: 11px; color: var(--gfi-text-muted); font-style: italic; font-family: var(--font-body); }
         .cc-phone-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-family: var(--font-display); font-size: 9px; font-weight: 700; }
         /* Sync action buttons */
-        .cc-sync-btn { padding: 5px 13px; border-radius: var(--gfi-radius-md); background: rgba(10,61,46,0.4); border: 1px solid rgba(16,185,129,0.3); color: var(--gfi-green-text); font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; transition: var(--gfi-transition); white-space: nowrap; }
-        .cc-sync-btn:hover { background: rgba(10,61,46,0.6); border-color: rgba(16,185,129,0.5); }
+        .cc-sync-btn { padding: 5px 13px; border-radius: var(--gfi-radius-md); background: rgba(10,61,46,0.4); border: 1px solid rgba(58,186,182,0.3); color: var(--gfi-green-text); font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; transition: var(--gfi-transition); white-space: nowrap; }
+        .cc-sync-btn:hover { background: rgba(10,61,46,0.6); border-color: rgba(58,186,182,0.5); }
         .cc-sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .cc-sync-done { padding: 5px 13px; border-radius: var(--gfi-radius-md); background: rgba(10,61,46,0.2); border: 1px solid rgba(16,185,129,0.2); color: rgba(16,185,129,0.5); font-family: var(--font-display); font-size: 10px; font-weight: 700; }
+        .cc-sync-done { padding: 5px 13px; border-radius: var(--gfi-radius-md); background: rgba(10,61,46,0.2); border: 1px solid rgba(58,186,182,0.2); color: rgba(58,186,182,0.5); font-family: var(--font-display); font-size: 10px; font-weight: 700; }
         .cc-phone-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
         @media (max-width: 700px) {
           .cc-kpis { grid-template-columns: repeat(3,1fr); }
@@ -398,7 +398,7 @@ export default function COCIRPage() {
               <div className="cc-kpi-label">Total matriculados</div>
             </div>
             <div className="cc-kpi">
-              <div className="cc-kpi-val" style={{ color: "#22c55e" }}>{stats.activos.toLocaleString("es-AR")}</div>
+              <div className="cc-kpi-val" style={{ color: "#3abab6" }}>{stats.activos.toLocaleString("es-AR")}</div>
               <div className="cc-kpi-label">Activos / habilitados</div>
             </div>
             <div className="cc-kpi">
@@ -414,7 +414,7 @@ export default function COCIRPage() {
               <div className="cc-kpi-label">Con email</div>
             </div>
             <div className="cc-kpi">
-              <div className="cc-kpi-val" style={{ fontSize: 13, color: stats.ultimaSync ? "#eab308" : "rgba(255,255,255,0.3)" }}>
+              <div className="cc-kpi-val" style={{ fontSize: 13, color: stats.ultimaSync ? "#d4960c" : "rgba(255,255,255,0.3)" }}>
                 {stats.ultimaSync
                   ? new Date(stats.ultimaSync).toLocaleDateString("es-AR", { day: "numeric", month: "short" })
                   : "—"}
@@ -548,16 +548,16 @@ export default function COCIRPage() {
             {/* KPIs de estado */}
             {phoneData?.totales && (
               <div className="cc-phone-kpis">
-                <div className="cc-kpi" style={{ borderColor: "rgba(204,0,0,0.2)" }}>
+                <div className="cc-kpi" style={{ borderColor: "rgba(153,0,0,0.2)" }}>
                   <div className="cc-kpi-val" style={{ color: "#ff4444" }}>{phoneData.totales.sin_telefono_gfi}</div>
                   <div className="cc-kpi-label">Sin teléfono en GFI</div>
                 </div>
                 <div className="cc-kpi" style={{ borderColor: "rgba(234,179,8,0.2)" }}>
-                  <div className="cc-kpi-val" style={{ color: "#eab308" }}>{phoneData.totales.diferente}</div>
+                  <div className="cc-kpi-val" style={{ color: "#d4960c" }}>{phoneData.totales.diferente}</div>
                   <div className="cc-kpi-label">Número diferente</div>
                 </div>
                 <div className="cc-kpi" style={{ borderColor: "rgba(34,197,94,0.2)" }}>
-                  <div className="cc-kpi-val" style={{ color: "#22c55e" }}>{phoneData.totales.ok}</div>
+                  <div className="cc-kpi-val" style={{ color: "#3abab6" }}>{phoneData.totales.ok}</div>
                   <div className="cc-kpi-label">Coinciden / OK</div>
                 </div>
                 <div className="cc-kpi">
@@ -614,9 +614,9 @@ export default function COCIRPage() {
                 const telGFI = entry.telefono_gfi ?? entry.celular_oficina_gfi;
 
                 const statusColors: Record<PhoneStatus, string> = {
-                  ok: "#22c55e",
+                  ok: "#3abab6",
                   sin_telefono_gfi: "#ff4444",
-                  diferente: "#eab308",
+                  diferente: "#d4960c",
                   sin_padron: "#64748b",
                 };
                 const statusLabels: Record<PhoneStatus, string> = {
@@ -744,7 +744,7 @@ export default function COCIRPage() {
               <label className="cc-cb-row" style={{ marginBottom: 16, borderColor: syncForzar ? "rgba(234,179,8,0.3)" : undefined, background: syncForzar ? "rgba(234,179,8,0.05)" : undefined }}>
                 <input type="checkbox" checked={syncForzar} onChange={e => setSyncForzar(e.target.checked)} />
                 <div>
-                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: syncForzar ? "#eab308" : "rgba(255,255,255,0.5)" }}>
+                  <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: syncForzar ? "#d4960c" : "rgba(255,255,255,0.5)" }}>
                     ⚠ Forzar sobreescritura
                   </div>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>Actualiza aunque el perfil ya tenga el dato cargado</div>
@@ -752,7 +752,7 @@ export default function COCIRPage() {
               </label>
 
               {syncError && (
-                <div style={{ padding: "10px 14px", background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 6, fontSize: 12, color: "rgba(255,100,100,0.9)", marginBottom: 12 }}>
+                <div style={{ padding: "10px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, fontSize: 12, color: "rgba(255,100,100,0.9)", marginBottom: 12 }}>
                   ⚠ {syncError}
                 </div>
               )}
@@ -774,7 +774,7 @@ export default function COCIRPage() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: 16 }}>
                   <div className="cc-sync-stat">
-                    <div className="cc-sync-stat-val" style={{ color: "#22c55e" }}>{syncResultado.actualizados}</div>
+                    <div className="cc-sync-stat-val" style={{ color: "#3abab6" }}>{syncResultado.actualizados}</div>
                     <div className="cc-sync-stat-label">Actualizados</div>
                   </div>
                   <div className="cc-sync-stat">
@@ -782,7 +782,7 @@ export default function COCIRPage() {
                     <div className="cc-sync-stat-label">Omitidos</div>
                   </div>
                   <div className="cc-sync-stat">
-                    <div className="cc-sync-stat-val" style={{ color: syncResultado.errores > 0 ? "#ef4444" : "rgba(255,255,255,0.4)" }}>{syncResultado.errores}</div>
+                    <div className="cc-sync-stat-val" style={{ color: syncResultado.errores > 0 ? "#b80000" : "rgba(255,255,255,0.4)" }}>{syncResultado.errores}</div>
                     <div className="cc-sync-stat-label">Errores</div>
                   </div>
                   <div className="cc-sync-stat">
@@ -799,10 +799,10 @@ export default function COCIRPage() {
                     <div style={{ maxHeight: 250, overflowY: "auto" }}>
                       {syncResultado.detalle.map(d => (
                         <div key={d.id} style={{ padding: "7px 10px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 12, alignItems: "flex-start" }}>
-                          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#cc0000", flexShrink: 0 }}>#{d.matricula}</span>
+                          <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 800, color: "#990000", flexShrink: 0 }}>#{d.matricula}</span>
                           <div style={{ flex: 1 }}>
                             {Object.entries(d.cambios).map(([campo, valor]) => (
-                              <span key={campo} style={{ fontSize: 11, color: "#22c55e", fontFamily: "Montserrat,sans-serif", marginRight: 10 }}>
+                              <span key={campo} style={{ fontSize: 11, color: "#3abab6", fontFamily: "Montserrat,sans-serif", marginRight: 10 }}>
                                 {campo}: <strong>{valor}</strong>
                               </span>
                             ))}

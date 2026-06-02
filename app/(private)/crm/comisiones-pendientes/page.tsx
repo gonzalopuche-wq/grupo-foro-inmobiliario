@@ -168,7 +168,7 @@ export default function ComisionesPendientesPage() {
     setNuevoCobro({ monto: 0, fecha: new Date().toISOString().split("T")[0], nota: "" });
   };
 
-  const estadoColor = (e: string) => e === "cobrado" ? "#22c55e" : e === "parcial" ? "#f97316" : "#cc0000";
+  const estadoColor = (e: string) => e === "cobrado" ? "#3abab6" : e === "parcial" ? "#d4960c" : "#990000";
   const estadoLabel = (e: string) => e === "cobrado" ? "Cobrado" : e === "parcial" ? "Parcial" : "Pendiente";
 
   const itemModal = items.find(i => i.negocio.id === negocioModal);
@@ -189,8 +189,8 @@ export default function ComisionesPendientesPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
           {[
             { label: "Total devengado", value: `USD ${fmt(Math.round(totales.totalComisionesMeUSD))}`, color: "#e5e5e5" },
-            { label: "Cobrado", value: `USD ${fmt(Math.round(totales.totalCobradoUSD))}`, color: "#22c55e" },
-            { label: "Pendiente de cobro", value: `USD ${fmt(Math.round(totales.totalPendienteUSD))}`, color: "#cc0000" },
+            { label: "Cobrado", value: `USD ${fmt(Math.round(totales.totalCobradoUSD))}`, color: "#3abab6" },
+            { label: "Pendiente de cobro", value: `USD ${fmt(Math.round(totales.totalPendienteUSD))}`, color: "#990000" },
             { label: "Pendiente en ARS", value: `ARS ${fmt(Math.round(totales.totalPendienteUSD * tc / 1000))}k`, color: "#3b82f6" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
@@ -208,8 +208,8 @@ export default function ComisionesPendientesPage() {
               <span>Pendiente: {((totales.totalPendienteUSD / totales.totalComisionesMeUSD) * 100).toFixed(1)}%</span>
             </div>
             <div style={{ background: "#0a0a0a", borderRadius: 4, height: 10, overflow: "hidden", display: "flex" }}>
-              <div style={{ width: `${(totales.totalCobradoUSD / totales.totalComisionesMeUSD) * 100}%`, height: "100%", background: "#22c55e", transition: "width 0.5s" }} />
-              <div style={{ flex: 1, background: "#cc000033" }} />
+              <div style={{ width: `${(totales.totalCobradoUSD / totales.totalComisionesMeUSD) * 100}%`, height: "100%", background: "#3abab6", transition: "width 0.5s" }} />
+              <div style={{ flex: 1, background: "#99000033" }} />
             </div>
           </div>
         )}
@@ -243,7 +243,7 @@ export default function ComisionesPendientesPage() {
         ) : items.length === 0 ? (
           <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>💳</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#22c55e" }}>Sin comisiones pendientes</div>
+            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>Sin comisiones pendientes</div>
             <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>Los negocios en etapa de reserva, escritura o cierre aparecen aquí</div>
           </div>
         ) : (
@@ -278,14 +278,14 @@ export default function ComisionesPendientesPage() {
                     </div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 20, color: item.pendienteUSD > 0 ? "#cc0000" : "#22c55e" }}>
+                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 20, color: item.pendienteUSD > 0 ? "#990000" : "#3abab6" }}>
                       {item.pendienteUSD > 0 ? `USD ${fmt(Math.round(item.pendienteUSD))}` : "✓"}
                     </div>
                     {item.pendienteUSD > 0 && (
                       <div style={{ fontSize: 11, color: "#3b82f6" }}>ARS {fmt(Math.round(item.pendienteUSD * tc / 1000))}k</div>
                     )}
                     <button onClick={() => setNegocioModal(item.negocio.id)}
-                      style={{ background: "#cc0000", border: "none", borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                      style={{ background: "#990000", border: "none", borderRadius: 6, color: "#fff", padding: "6px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
                       {item.estado === "cobrado" ? "Ver cobros" : "Registrar cobro"}
                     </button>
                   </div>
@@ -296,7 +296,7 @@ export default function ComisionesPendientesPage() {
                     {(cobros[item.negocio.id] ?? []).map((c, i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#6b7280", padding: "2px 0" }}>
                         <span>{new Date(c.fechaCobro + "T12:00:00").toLocaleDateString("es-AR")} {c.nota && `— ${c.nota}`}</span>
-                        <span style={{ color: "#22c55e", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>+USD {fmt(c.montoCobrado)}</span>
+                        <span style={{ color: "#3abab6", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>+USD {fmt(c.montoCobrado)}</span>
                       </div>
                     ))}
                   </div>
@@ -335,7 +335,7 @@ export default function ComisionesPendientesPage() {
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={registrarCobro}
-                  style={{ flex: 1, background: "#22c55e", border: "none", borderRadius: 8, color: "#000", padding: "10px", fontSize: 13, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>
+                  style={{ flex: 1, background: "#3abab6", border: "none", borderRadius: 8, color: "#000", padding: "10px", fontSize: 13, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 800 }}>
                   Confirmar cobro
                 </button>
                 <button onClick={() => setNegocioModal(null)}

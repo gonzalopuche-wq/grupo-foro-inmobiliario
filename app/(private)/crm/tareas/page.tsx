@@ -27,8 +27,8 @@ interface Negocio  { id: string; titulo: string; }
 const PRIORIDADES = [
   { value: "baja",    label: "Baja",    color: "#6b7280" },
   { value: "normal",  label: "Normal",  color: "#3b82f6" },
-  { value: "alta",    label: "Alta",    color: "#f97316" },
-  { value: "urgente", label: "Urgente", color: "#ef4444" },
+  { value: "alta",    label: "Alta",    color: "#d4960c" },
+  { value: "urgente", label: "Urgente", color: "#b80000" },
 ];
 
 const TIPOS = [
@@ -193,7 +193,7 @@ export default function CrmTareasPage() {
         .t-card.completada { opacity: 0.5; }
         .t-card.vencida { border-color: rgba(239,68,68,0.3); }
         .t-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-        .t-check.done { background: #22c55e; border-color: #22c55e; }
+        .t-check.done { background: #3abab6; border-color: #3abab6; }
         .t-input { width: 100%; padding: 9px 11px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; box-sizing: border-box; }
         .t-input:focus { border-color: rgba(200,0,0,0.5); }
         .t-select { width: 100%; padding: 9px 11px; background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; }
@@ -211,13 +211,13 @@ export default function CrmTareasPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#fff" }}>
-              Tareas <span style={{ color: "#cc0000" }}>CRM</span>
+              Tareas <span style={{ color: "#990000" }}>CRM</span>
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
               Gestioná seguimientos, llamadas y pendientes
             </div>
           </div>
-          <button className="t-btn" style={{ background: "#cc0000", color: "#fff" }} onClick={abrirNueva}>
+          <button className="t-btn" style={{ background: "#990000", color: "#fff" }} onClick={abrirNueva}>
             + Nueva tarea
           </button>
         </div>
@@ -226,9 +226,9 @@ export default function CrmTareasPage() {
         <div className="t-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
           {[
             { n: stats.pendientes, l: "Pendientes", c: "#3b82f6" },
-            { n: stats.enProgreso, l: "En progreso", c: "#f97316" },
-            { n: stats.completadas, l: "Completadas", c: "#22c55e" },
-            { n: stats.vencidas,   l: "Vencidas", c: "#ef4444" },
+            { n: stats.enProgreso, l: "En progreso", c: "#d4960c" },
+            { n: stats.completadas, l: "Completadas", c: "#3abab6" },
+            { n: stats.vencidas,   l: "Vencidas", c: "#b80000" },
           ].map(s => (
             <div key={s.l} className="t-stat">
               <div className="t-stat-n" style={{ color: s.c }}>{s.n}</div>
@@ -280,13 +280,13 @@ export default function CrmTareasPage() {
                       <span className="t-badge" style={{ background: `${prio.color}20`, color: prio.color, border: `1px solid ${prio.color}40` }}>
                         {prio.label}
                       </span>
-                      {vencida && <span className="t-badge" style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.3)" }}>Vencida</span>}
-                      {t.estado === "en_progreso" && <span className="t-badge" style={{ background: "rgba(249,115,22,0.15)", color: "#f97316", border: "1px solid rgba(249,115,22,0.3)" }}>En progreso</span>}
+                      {vencida && <span className="t-badge" style={{ background: "rgba(239,68,68,0.15)", color: "#b80000", border: "1px solid rgba(239,68,68,0.3)" }}>Vencida</span>}
+                      {t.estado === "en_progreso" && <span className="t-badge" style={{ background: "rgba(249,115,22,0.15)", color: "#d4960c", border: "1px solid rgba(249,115,22,0.3)" }}>En progreso</span>}
                     </div>
                     {t.descripcion && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 4, fontFamily: "Inter,sans-serif" }}>{t.descripcion}</div>}
                     <div style={{ display: "flex", gap: 12, marginTop: 6, flexWrap: "wrap" }}>
                       {t.fecha_vencimiento && (
-                        <span style={{ fontSize: 11, color: vencida ? "#ef4444" : "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                        <span style={{ fontSize: 11, color: vencida ? "#b80000" : "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
                           📅 {fmtFecha(t.fecha_vencimiento)}
                         </span>
                       )}
@@ -301,7 +301,7 @@ export default function CrmTareasPage() {
                   {/* Acciones */}
                   <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                     {t.estado !== "completada" && t.estado !== "en_progreso" && (
-                      <button className="t-btn" style={{ background: "rgba(249,115,22,0.15)", color: "#f97316", border: "1px solid rgba(249,115,22,0.3)", padding: "5px 10px", fontSize: 10 }}
+                      <button className="t-btn" style={{ background: "rgba(249,115,22,0.15)", color: "#d4960c", border: "1px solid rgba(249,115,22,0.3)", padding: "5px 10px", fontSize: 10 }}
                         onClick={async () => {
                           await supabase.from("crm_tareas").update({ estado: "en_progreso", updated_at: new Date().toISOString() }).eq("id", t.id);
                           setTareas(prev => prev.map(x => x.id === t.id ? { ...x, estado: "en_progreso" } : x));
@@ -311,7 +311,7 @@ export default function CrmTareasPage() {
                     )}
                     <button className="t-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.1)", padding: "5px 10px", fontSize: 10 }}
                       onClick={() => abrirEditar(t)}>Editar</button>
-                    <button className="t-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.25)", padding: "5px 10px", fontSize: 10 }}
+                    <button className="t-btn" style={{ background: "rgba(239,68,68,0.1)", color: "#b80000", border: "1px solid rgba(239,68,68,0.25)", padding: "5px 10px", fontSize: 10 }}
                       onClick={() => eliminar(t.id)}>×</button>
                   </div>
                 </div>
@@ -383,7 +383,7 @@ export default function CrmTareasPage() {
 
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
               <button className="t-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.12)" }} onClick={() => setModal(false)}>Cancelar</button>
-              <button className="t-btn" style={{ background: "#cc0000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
+              <button className="t-btn" style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }} onClick={guardar} disabled={guardando}>
                 {guardando ? "Guardando..." : editId ? "Actualizar" : "Crear tarea"}
               </button>
             </div>

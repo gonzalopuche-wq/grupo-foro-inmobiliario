@@ -47,7 +47,7 @@ interface DonutSlice {
 const MESES_ABREV = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 
 const TIPO_PROP_COLORES: Record<string, string> = {
-  departamento: "#cc0000",
+  departamento: "#990000",
   casa:         "#e63333",
   local:        "#ff6666",
   oficina:      "#ff9999",
@@ -56,15 +56,15 @@ const TIPO_PROP_COLORES: Record<string, string> = {
 };
 
 const TIPO_OP_COLORES: Record<string, string> = {
-  venta:             "#cc0000",
+  venta:             "#990000",
   alquiler:          "#e63333",
   alquiler_temporal: "#ff6666",
   otro:              "#555555",
 };
 
 const ESTADO_COLORES: Record<string, string> = {
-  disponible: "#22c55e",
-  vendido:    "#60a5fa",
+  disponible: "#3abab6",
+  vendido:    "#4ab8d8",
   alquilado:  "#a78bfa",
   retirado:   "#6b7280",
 };
@@ -229,7 +229,7 @@ function BarChart({ data }: { data: MesData[] }) {
         const y = padT + innerH - barH;
         return (
           <g key={d.key}>
-            <rect x={x} y={y} width={barW} height={barH} fill="#cc0000" rx={3} />
+            <rect x={x} y={y} width={barW} height={barH} fill="#990000" rx={3} />
             {d.count > 0 && (
               <text x={x + barW / 2} y={y - 6} textAnchor="middle" fill="#e0e0e0" fontSize="11" fontFamily="Inter, sans-serif">{d.count}</text>
             )}
@@ -279,20 +279,20 @@ function LineChart({ data }: { data: MesData[] }) {
       {points.length > 1 && (
         <path
           d={`${pathD} L ${points[points.length - 1].x} ${padT + innerH} L ${points[0].x} ${padT + innerH} Z`}
-          fill="#cc0000"
+          fill="#990000"
           fillOpacity={0.15}
         />
       )}
 
       {/* Line */}
       {points.length > 1 && (
-        <path d={pathD} fill="none" stroke="#cc0000" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+        <path d={pathD} fill="none" stroke="#990000" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
       )}
 
       {/* Dots + labels */}
       {points.map((p, i) => (
         <g key={i}>
-          <circle cx={p.x} cy={p.y} r={4} fill="#cc0000" stroke="#0a0a0a" strokeWidth={2} />
+          <circle cx={p.x} cy={p.y} r={4} fill="#990000" stroke="#0a0a0a" strokeWidth={2} />
           <text x={p.x} y={H - padB + 16} textAnchor="middle" fill="#888" fontSize="10" fontFamily="Inter, sans-serif">{p.d.label}</text>
         </g>
       ))}
@@ -311,7 +311,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub?: st
       padding: "20px 24px",
     }}>
       <div style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#888", marginBottom: 8 }}>{label}</div>
-      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#cc0000" }}>{value}</div>
+      <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 28, color: "#990000" }}>{value}</div>
       {sub && <div style={{ fontFamily: "Inter, sans-serif", fontSize: 12, color: "#555", marginTop: 6 }}>{sub}</div>}
     </div>
   );
@@ -517,7 +517,7 @@ export default function EstadisticasCaptacionPage() {
   const tabBtnStyle = (active: boolean): React.CSSProperties => ({
     background: "transparent",
     border: "none",
-    borderBottom: active ? "2px solid #cc0000" : "2px solid transparent",
+    borderBottom: active ? "2px solid #990000" : "2px solid transparent",
     color: active ? "#e0e0e0" : "#666",
     fontFamily: "Montserrat, sans-serif",
     fontWeight: 700,
@@ -657,7 +657,7 @@ export default function EstadisticasCaptacionPage() {
                   {barrioRows.map((row, i) => (
                     <tr key={i}>
                       <td style={tdStyle}>{row.zona}</td>
-                      <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600, color: "#cc0000" }}>{row.cantidad}</td>
+                      <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600, color: "#990000" }}>{row.cantidad}</td>
                       <td style={{ ...tdStyle, textAlign: "right" }}>{formatPrecio(row.precioPromedio)}</td>
                       <td style={{ ...tdStyle, textAlign: "right" }}>{row.diasPromedio} d</td>
                     </tr>
@@ -676,7 +676,7 @@ export default function EstadisticasCaptacionPage() {
           {captacionBaja && (
             <div style={{
               background: "rgba(251, 146, 60, 0.12)",
-              border: "1px solid #f97316",
+              border: "1px solid #d4960c",
               borderRadius: 10,
               padding: "14px 20px",
               marginBottom: 24,
@@ -721,7 +721,7 @@ export default function EstadisticasCaptacionPage() {
                         {row.estado.replace(/_/g, " ")}
                       </td>
                       <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{row.cantidad}</td>
-                      <td style={{ ...tdStyle, textAlign: "right", color: "#cc0000" }}>{row.porcentaje.toFixed(1)}%</td>
+                      <td style={{ ...tdStyle, textAlign: "right", color: "#990000" }}>{row.porcentaje.toFixed(1)}%</td>
                       <td style={{ ...tdStyle, textAlign: "right" }}>{formatPrecio(row.precioPromedio)}</td>
                     </tr>
                   ))}

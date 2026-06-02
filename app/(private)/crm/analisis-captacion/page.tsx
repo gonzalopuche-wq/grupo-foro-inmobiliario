@@ -38,11 +38,11 @@ const ORIGEN_LABELS: Record<string, string> = {
 };
 const ORIGEN_COLORES: Record<string, string> = {
   portal_inmobiliario: "#3b82f6",
-  referido: "#22c55e",
+  referido: "#3abab6",
   redes_sociales: "#a78bfa",
-  web_propia: "#f59e0b",
+  web_propia: "#d4960c",
   whatsapp_directo: "#06b6d4",
-  cartel: "#f97316",
+  cartel: "#d4960c",
   otro: "#6b7280",
 };
 
@@ -152,8 +152,8 @@ export default function AnalisisCaptacion() {
   const embudoPasos = useMemo(() => [
     { label: "Contactos captados", val: totalContactos, color: "#3b82f6" },
     { label: "Con negocio abierto", val: contactosConNegocio, color: "#a78bfa" },
-    { label: "En reserva/escritura", val: negocios.filter(n => ["reserva","escritura","escriturado"].includes(n.etapa) && contactosFiltrados.some(c => c.id === n.contacto_id)).length, color: "#f59e0b" },
-    { label: "Operación cerrada", val: contactosCerrados, color: "#22c55e" },
+    { label: "En reserva/escritura", val: negocios.filter(n => ["reserva","escritura","escriturado"].includes(n.etapa) && contactosFiltrados.some(c => c.id === n.contacto_id)).length, color: "#d4960c" },
+    { label: "Operación cerrada", val: contactosCerrados, color: "#3abab6" },
   ], [totalContactos, contactosConNegocio, contactosCerrados, negocios, contactosFiltrados]);
 
   const inputStyle: React.CSSProperties = {
@@ -190,9 +190,9 @@ export default function AnalisisCaptacion() {
               {[
                 { label: "Nuevos contactos", val: totalContactos.toString(), sub: `Últimos ${mesesVer} meses`, color: "#3b82f6" },
                 { label: "Con negocio abierto", val: `${contactosConNegocio} (${totalContactos > 0 ? (contactosConNegocio/totalContactos*100).toFixed(0) : 0}%)`, sub: "Conversión a negocio", color: "#a78bfa" },
-                { label: "Cerraron operación", val: `${contactosCerrados} (${totalContactos > 0 ? (contactosCerrados/totalContactos*100).toFixed(0) : 0}%)`, sub: "De captados totales", color: "#22c55e" },
-                { label: "Días captac. → negocio", val: tiempoCaptNeg !== null ? `${tiempoCaptNeg.toFixed(0)}d` : "—", sub: "Promedio", color: "#f59e0b" },
-                { label: "Fuentes", val: porOrigen.length.toString(), sub: "Orígenes distintos", color: "#f97316" },
+                { label: "Cerraron operación", val: `${contactosCerrados} (${totalContactos > 0 ? (contactosCerrados/totalContactos*100).toFixed(0) : 0}%)`, sub: "De captados totales", color: "#3abab6" },
+                { label: "Días captac. → negocio", val: tiempoCaptNeg !== null ? `${tiempoCaptNeg.toFixed(0)}d` : "—", sub: "Promedio", color: "#d4960c" },
+                { label: "Fuentes", val: porOrigen.length.toString(), sub: "Orígenes distintos", color: "#d4960c" },
               ].map((kpi, i) => (
                 <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "14px 16px" }}>
                   <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
@@ -271,7 +271,7 @@ export default function AnalisisCaptacion() {
                           <td style={{ padding: "8px", fontSize: 11, color: "#ccc" }}>{ORIGEN_LABELS[row.origen] ?? row.origen}</td>
                           <td style={{ padding: "8px", fontSize: 12, color: "#888" }}>{row.total}</td>
                           <td style={{ padding: "8px", fontSize: 12, color: "#888" }}>{row.conNeg}</td>
-                          <td style={{ padding: "8px", fontSize: 13, fontWeight: 700, color: row.tasa >= 0.3 ? "#22c55e" : row.tasa >= 0.1 ? "#f59e0b" : "#888" }}>
+                          <td style={{ padding: "8px", fontSize: 13, fontWeight: 700, color: row.tasa >= 0.3 ? "#3abab6" : row.tasa >= 0.1 ? "#d4960c" : "#888" }}>
                             {(row.tasa * 100).toFixed(0)}%
                           </td>
                         </tr>

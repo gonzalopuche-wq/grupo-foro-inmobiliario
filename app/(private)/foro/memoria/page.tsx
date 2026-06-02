@@ -178,7 +178,7 @@ export default function MemoriaColectivaPage() {
                 {e.rol === "user" ? (
                   <div style={{
                     maxWidth: 480,
-                    background: "#cc0000",
+                    background: "#990000",
                     borderRadius: "16px 16px 4px 16px",
                     padding: "10px 16px",
                     fontSize: 13,
@@ -245,7 +245,7 @@ export default function MemoriaColectivaPage() {
                             }}
                           >
                             <span style={{
-                              color: "rgba(204,0,0,0.7)",
+                              color: "rgba(153,0,0,0.7)",
                               fontWeight: 600,
                               flexShrink: 0,
                             }}>
@@ -336,14 +336,14 @@ export default function MemoriaColectivaPage() {
               fontFamily: "Inter, sans-serif",
               lineHeight: 1.5,
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = "rgba(204,0,0,0.5)")}
+            onFocus={e => (e.currentTarget.style.borderColor = "rgba(153,0,0,0.5)")}
             onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
           />
           <button
             onClick={() => consultar()}
             disabled={!consulta.trim() || cargando}
             style={{
-              background: !consulta.trim() || cargando ? "rgba(204,0,0,0.3)" : "#cc0000",
+              background: !consulta.trim() || cargando ? "rgba(153,0,0,0.3)" : "#990000",
               border: "none",
               borderRadius: 10,
               color: "#fff",

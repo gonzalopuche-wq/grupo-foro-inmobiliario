@@ -43,9 +43,9 @@ const ETAPA_LABELS: Record<string, string> = {
 const ETAPA_COLORS: Record<string, string> = {
   prospecto: "#6b7280", contactado: "#3b82f6",
   visita_coordinada: "#8b5cf6", visita_realizada: "#a78bfa",
-  oferta_enviada: "#f59e0b", negociacion: "#f97316",
-  reserva: "#06b6d4", escritura: "#10b981",
-  cerrado: "#22c55e", perdido: "#ef4444",
+  oferta_enviada: "#d4960c", negociacion: "#d4960c",
+  reserva: "#06b6d4", escritura: "#3abab6",
+  cerrado: "#3abab6", perdido: "#b80000",
 };
 
 const formatMoneda = (v: number, m = "USD") =>
@@ -255,7 +255,7 @@ export default function EstadisticasMercadoPage() {
             <button key={p} onClick={() => setPeriodo(p)} style={{
               padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600,
               border: "1px solid",
-              borderColor: periodo === p ? "#cc0000" : "rgba(255,255,255,0.1)",
+              borderColor: periodo === p ? "#990000" : "rgba(255,255,255,0.1)",
               background: periodo === p ? "rgba(200,0,0,0.15)" : "transparent",
               color: periodo === p ? "#fff" : "rgba(255,255,255,0.45)",
               cursor: "pointer", fontFamily: "Montserrat,sans-serif",
@@ -275,9 +275,9 @@ export default function EstadisticasMercadoPage() {
             <StatCard label="Negocios activos" value={String(totalNegocios)} sub={`${negociosCerrados} cerrados`} />
             <StatCard label="Propiedades cartera" value={String(totalPropiedades)} />
             <StatCard label="Contactos CRM" value={String(totalContactos)} />
-            <StatCard label="Hon. proyectados" value={formatMoneda(honorarios.proyectados_usd)} color="#f59e0b" sub="Negocios activos USD" />
-            <StatCard label="Hon. realizados" value={formatMoneda(honorarios.realizados_usd)} color="#22c55e" sub="Negocios cerrados USD" />
-            <StatCard label="Hon. cobrados" value={formatMoneda(honorarios.cobrados_usd)} color="#60a5fa"
+            <StatCard label="Hon. proyectados" value={formatMoneda(honorarios.proyectados_usd)} color="#d4960c" sub="Negocios activos USD" />
+            <StatCard label="Hon. realizados" value={formatMoneda(honorarios.realizados_usd)} color="#3abab6" sub="Negocios cerrados USD" />
+            <StatCard label="Hon. cobrados" value={formatMoneda(honorarios.cobrados_usd)} color="#4ab8d8"
               sub={honorarios.cobrados_ars > 0 ? `+ ARS ${formatNum(honorarios.cobrados_ars)}` : "Registrados en sistema"} />
           </div>
 
@@ -374,7 +374,7 @@ export default function EstadisticasMercadoPage() {
                       </td>
                       <td style={{ padding: "8px 10px", color: "rgba(255,255,255,0.6)" }}>{e.cantidad}</td>
                       <td style={{ padding: "8px 10px", color: "#fff" }}>{formatMoneda(e.valor_total)}</td>
-                      <td style={{ padding: "8px 10px", color: "#f59e0b", fontWeight: 600 }}>
+                      <td style={{ padding: "8px 10px", color: "#d4960c", fontWeight: 600 }}>
                         {e.honorarios_total > 0 ? formatMoneda(e.honorarios_total) : "—"}
                       </td>
                     </tr>

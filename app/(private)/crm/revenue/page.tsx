@@ -29,13 +29,13 @@ const TIPO_LABEL: Record<string, string> = {
 };
 
 const TIPO_COLOR: Record<string, string> = {
-  venta: "#cc0000",
+  venta: "#990000",
   alquiler: "#3b82f6",
-  alquiler_temporal: "#f59e0b",
+  alquiler_temporal: "#d4960c",
 };
 
 const TIPO_COLOR_FILL: Record<string, string> = {
-  venta: "rgba(204,0,0,0.85)",
+  venta: "rgba(153,0,0,0.85)",
   alquiler: "rgba(59,130,246,0.85)",
   alquiler_temporal: "rgba(245,158,11,0.85)",
 };
@@ -245,7 +245,7 @@ export default function RevenuePage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
         .rev-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; color: #fff; padding: 8px 12px; font-size: 13px; font-family: Inter,sans-serif; outline: none; }
-        .rev-input:focus { border-color: rgba(204,0,0,0.45); }
+        .rev-input:focus { border-color: rgba(153,0,0,0.45); }
         .rev-select { background: #111; border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; color: #fff; padding: 8px 12px; font-size: 13px; font-family: Inter,sans-serif; outline: none; cursor: pointer; }
         .rev-tab { padding: 8px 18px; border-radius: 7px; font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; border: 1px solid transparent; transition: background 0.15s, color 0.15s; }
         .rev-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px; }
@@ -268,7 +268,7 @@ export default function RevenuePage() {
             CRM — Ingresos
           </div>
           <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 24, fontWeight: 800, color: "#fff", margin: 0, lineHeight: 1.1 }}>
-            Revenue <span style={{ color: "#cc0000" }}>Dashboard</span>
+            Revenue <span style={{ color: "#990000" }}>Dashboard</span>
           </h1>
           <p style={{ fontSize: 12, color: "rgba(255,255,255,0.32)", marginTop: 5, marginBottom: 0 }}>
             Honorarios netos de operaciones cerradas
@@ -329,7 +329,7 @@ export default function RevenuePage() {
               label: "Mejor mes",
               valor: metricas.mejorMesValor > 0 ? fmtUSD(metricas.mejorMesValor) : "—",
               sub: metricas.mejorMesValor > 0 ? MESES_CORTOS[metricas.mejorMesIdx] : "Sin datos",
-              color: "#cc0000",
+              color: "#990000",
             },
             {
               label: "Ticket promedio",
@@ -341,7 +341,7 @@ export default function RevenuePage() {
               label: "Ops. cerradas",
               valor: String(metricas.opsCerradas),
               sub: `en ${anio}`,
-              color: "#f59e0b",
+              color: "#d4960c",
             },
           ].map(card => (
             <div key={card.label} className="rev-card">
@@ -370,9 +370,9 @@ export default function RevenuePage() {
             key={t.key}
             className="rev-tab"
             style={{
-              background: tab === t.key ? "#cc0000" : "rgba(255,255,255,0.05)",
+              background: tab === t.key ? "#990000" : "rgba(255,255,255,0.05)",
               color: tab === t.key ? "#fff" : "rgba(255,255,255,0.4)",
-              border: tab === t.key ? "1px solid #cc0000" : "1px solid rgba(255,255,255,0.08)",
+              border: tab === t.key ? "1px solid #990000" : "1px solid rgba(255,255,255,0.08)",
             }}
             onClick={() => setTab(t.key)}
           >
@@ -390,7 +390,7 @@ export default function RevenuePage() {
       ) : error ? (
         <div className="rev-card" style={{ textAlign: "center", padding: "48px 24px" }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>!</div>
-          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#cc0000", marginBottom: 6 }}>
+          <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#990000", marginBottom: 6 }}>
             Error al cargar datos
           </div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>{error}</div>
@@ -461,7 +461,7 @@ export default function RevenuePage() {
                               y={y}
                               width={barWidth}
                               height={barH}
-                              fill="#cc0000"
+                              fill="#990000"
                               rx={4}
                               onMouseEnter={(e) => {
                                 const svg = (e.currentTarget as SVGRectElement).ownerSVGElement;
@@ -522,7 +522,7 @@ export default function RevenuePage() {
                       top: tooltip.y - 48,
                       transform: "translateX(-50%)",
                       background: "#1a1a1a",
-                      border: "1px solid rgba(204,0,0,0.4)",
+                      border: "1px solid rgba(153,0,0,0.4)",
                       borderRadius: 8,
                       padding: "7px 12px",
                       pointerEvents: "none",
@@ -533,7 +533,7 @@ export default function RevenuePage() {
                     <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>
                       {tooltip.label} {anio}
                     </div>
-                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 13, color: "#cc0000" }}>
+                    <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 13, color: "#990000" }}>
                       {tooltip.valor}
                     </div>
                   </div>
@@ -570,11 +570,11 @@ export default function RevenuePage() {
                         return (
                           <tr
                             key={i}
-                            style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", background: esMejor ? "rgba(204,0,0,0.04)" : "transparent" }}
+                            style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", background: esMejor ? "rgba(153,0,0,0.04)" : "transparent" }}
                           >
-                            <td style={{ padding: "9px 12px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: esMejor ? "#cc0000" : "#fff", display: "flex", alignItems: "center", gap: 6 }}>
+                            <td style={{ padding: "9px 12px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: esMejor ? "#990000" : "#fff", display: "flex", alignItems: "center", gap: 6 }}>
                               {MESES_CORTOS[i]}
-                              {esMejor && <span style={{ fontSize: 8, background: "rgba(204,0,0,0.15)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 4, padding: "1px 5px", color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}>TOP</span>}
+                              {esMejor && <span style={{ fontSize: 8, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 4, padding: "1px 5px", color: "#990000", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}>TOP</span>}
                             </td>
                             <td style={{ padding: "9px 12px", textAlign: "right", color: opsDelMes.length > 0 ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.2)" }}>
                               {opsDelMes.length}
@@ -600,7 +600,7 @@ export default function RevenuePage() {
                         <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "rgba(255,255,255,0.6)" }}>
                           {fmtUSDFull(operaciones.filter(op => op.fecha_cierre && mesAnioKey(op.fecha_cierre).anio === anio).reduce((s, op) => s + honorariosBrutoUSD(op, tc), 0))}
                         </td>
-                        <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#cc0000" }}>
+                        <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000" }}>
                           {fmtUSDFull(metricas.totalYTD)}
                         </td>
                         <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>
@@ -786,7 +786,7 @@ export default function RevenuePage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
               {/* Info card */}
-              <div style={{ background: "rgba(204,0,0,0.06)", border: "1px solid rgba(204,0,0,0.15)", borderRadius: 10, padding: "12px 18px", fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif", lineHeight: 1.6 }}>
+              <div style={{ background: "rgba(153,0,0,0.06)", border: "1px solid rgba(153,0,0,0.15)", borderRadius: 10, padding: "12px 18px", fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: "Inter,sans-serif", lineHeight: 1.6 }}>
                 Proyección calculada sobre el promedio de honorarios netos de los <strong style={{ color: "rgba(255,255,255,0.7)" }}>últimos 3 meses</strong> con datos reales.
                 Las barras punteadas muestran la proyección de los próximos 3 meses.
               </div>
@@ -797,7 +797,7 @@ export default function RevenuePage() {
                   <span>Histórico + Proyección (15 meses)</span>
                   <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                      <div style={{ width: 12, height: 8, background: "#cc0000", borderRadius: 2 }} />
+                      <div style={{ width: 12, height: 8, background: "#990000", borderRadius: 2 }} />
                       <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>Real</span>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -909,7 +909,7 @@ export default function RevenuePage() {
                               y={y}
                               width={barWidth}
                               height={barH}
-                              fill="#cc0000"
+                              fill="#990000"
                               fillOpacity={0.8}
                               rx={3}
                             />
@@ -975,7 +975,7 @@ export default function RevenuePage() {
                       label: "Tendencia reciente",
                       valor: tendencia > 0 ? `+${tendencia.toFixed(1)}%` : tendencia < 0 ? `${tendencia.toFixed(1)}%` : "—",
                       sub: "vs. 3 meses anteriores",
-                      color: tendencia > 0 ? "#22c55e" : tendencia < 0 ? "#ef4444" : "rgba(255,255,255,0.4)",
+                      color: tendencia > 0 ? "#3abab6" : tendencia < 0 ? "#b80000" : "rgba(255,255,255,0.4)",
                     },
                   ].map(card => (
                     <div key={card.label} className="rev-card">
@@ -1021,7 +1021,7 @@ export default function RevenuePage() {
                                 PROYECTADO
                               </span>
                             ) : (
-                              <span style={{ fontSize: 10, background: "rgba(204,0,0,0.08)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 4, padding: "2px 7px", color: "rgba(204,0,0,0.8)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
+                              <span style={{ fontSize: 10, background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 4, padding: "2px 7px", color: "rgba(153,0,0,0.8)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                                 REAL
                               </span>
                             )}

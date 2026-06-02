@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
           <tr>
             <td style="background:#0d0d0d;padding:24px 32px;border-bottom:1px solid rgba(200,0,0,0.2);">
               <span style="font-family:'Montserrat',Arial,sans-serif;font-size:18px;font-weight:800;color:#fff;">
-                GFI<span style="color:#cc0000;">®</span>
+                GFI<span style="color:#990000;">®</span>
               </span>
               <span style="display:block;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px;">
                 Grupo Foro Inmobiliario
@@ -171,7 +171,7 @@ export async function GET(req: NextRequest) {
             <td style="padding:0;">
               <div style="background:rgba(200,0,0,0.08);border-bottom:1px solid rgba(200,0,0,0.2);padding:16px 32px;display:flex;align-items:center;gap:10px;">
                 <span style="font-size:24px;">⚠️</span>
-                <span style="font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;color:#cc0000;letter-spacing:0.05em;">
+                <span style="font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;color:#990000;letter-spacing:0.05em;">
                   TU ACCESO FUE SUSPENDIDO
                 </span>
               </div>
@@ -229,7 +229,7 @@ export async function GET(req: NextRequest) {
                 <tr>
                   <td align="center">
                     <a href="https://foroinmobiliario.com.ar/suscripcion"
-                       style="display:inline-block;background:#cc0000;color:#fff;font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                       style="display:inline-block;background:#990000;color:#fff;font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:6px;">
                       Avisar que pagué →
                     </a>
                   </td>

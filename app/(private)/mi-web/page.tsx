@@ -8,7 +8,7 @@ import { supabase } from "../../lib/supabase";
 
 const PLANTILLAS = [
   { id: "rosario-classic", nombre: "Rosario Classic", estilo: "Oscuro · Rojo · Elegante", 
-    preview: { bg: "#0a0a0a", accent: "#cc0000", text: "#fff" } },
+    preview: { bg: "#0a0a0a", accent: "#990000", text: "#fff" } },
   { id: "blanco-moderno", nombre: "Blanco Moderno", estilo: "Minimalista · Limpio",
     preview: { bg: "#fff", accent: "#111", text: "#111" } },
   { id: "grand-estate", nombre: "Grand Estate", estilo: "Lujo · Negro · Dorado",
@@ -20,9 +20,9 @@ const PLANTILLAS = [
   { id: "coral", nombre: "Coral", estilo: "Cálido · Coral · Vibrante",
     preview: { bg: "#fff8f5", accent: "#e05c3a", text: "#1a1a1a" } },
   { id: "noche-portena", nombre: "Noche Porteña", estilo: "Dark · Azul Marino · Sofisticado",
-    preview: { bg: "#0f1923", accent: "#60a5fa", text: "#fff" } },
+    preview: { bg: "#0f1923", accent: "#4ab8d8", text: "#fff" } },
   { id: "sol-norte", nombre: "Sol Norte", estilo: "Cálido · Naranja · Enérgico",
-    preview: { bg: "#fffbf0", accent: "#f97316", text: "#1a1a1a" } },
+    preview: { bg: "#fffbf0", accent: "#d4960c", text: "#1a1a1a" } },
   { id: "plata", nombre: "Plata", estilo: "Premium · Plateado · Elegante",
     preview: { bg: "#f8f9fa", accent: "#6b7280", text: "#111" } },
   { id: "brick", nombre: "Brick", estilo: "Industrial · Ladrillo · Urbano",
@@ -82,7 +82,7 @@ interface Config {
 const CONFIG_VACIA: Config = {
   slug: "", dominio_propio: "", plantilla: "rosario-classic", activa: false,
   logo_url: "", cover_url: "", foto_sobre_mi_url: "",
-  color_primario: "#cc0000", color_secundario: "#111111",
+  color_primario: "#990000", color_secundario: "#111111",
   color_texto: "#222222", color_fondo: "#ffffff",
   titulo_sitio: "", subtitulo: "", descripcion_profesional: "", anos_experiencia: "",
   mostrar_formulario_contacto: true, mostrar_formulario_tasacion: true,
@@ -100,7 +100,7 @@ const Toggle = ({ label, value, onChange, desc }: { label: string; value: boolea
       <div style={{ fontSize: 13, color: "#fff", fontFamily: "Inter,sans-serif" }}>{label}</div>
       {desc && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{desc}</div>}
     </div>
-    <div style={{ width: 44, height: 24, borderRadius: 12, background: value ? "#cc0000" : "rgba(255,255,255,0.1)", position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s" }} onClick={() => onChange(!value)}>
+    <div style={{ width: 44, height: 24, borderRadius: 12, background: value ? "#990000" : "rgba(255,255,255,0.1)", position: "relative", cursor: "pointer", flexShrink: 0, transition: "background 0.2s" }} onClick={() => onChange(!value)}>
       <div style={{ position: "absolute", top: 3, left: value ? 23 : 3, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
     </div>
   </div>
@@ -152,7 +152,7 @@ export default function MiWebPage() {
           logo_url: cfg.logo_url ?? "",
           cover_url: cfg.cover_url ?? "",
           foto_sobre_mi_url: cfg.foto_sobre_mi_url ?? "",
-          color_primario: cfg.color_primario ?? "#cc0000",
+          color_primario: cfg.color_primario ?? "#990000",
           color_secundario: cfg.color_secundario ?? "#111111",
           color_texto: cfg.color_texto ?? "#222222",
           color_fondo: cfg.color_fondo ?? "#ffffff",
@@ -265,17 +265,17 @@ export default function MiWebPage() {
         .mw-wrap { display: flex; gap: 0; min-height: calc(100vh - 70px); }
         .mw-sidebar { width: 280px; flex-shrink: 0; background: rgba(8,8,8,0.95); border-right: 1px solid rgba(255,255,255,0.07); padding: 24px 0; display: flex; flex-direction: column; }
         .mw-sidebar-titulo { padding: 0 22px 20px; font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 800; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 8px; }
-        .mw-sidebar-titulo span { color: #cc0000; }
+        .mw-sidebar-titulo span { color: #990000; }
         .mw-sidebar-progress { padding: 12px 22px; margin-bottom: 8px; }
         .mw-progress-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-        .mw-progress-fill { height: 100%; background: #cc0000; border-radius: 2px; transition: width 0.3s; }
+        .mw-progress-fill { height: 100%; background: #990000; border-radius: 2px; transition: width 0.3s; }
         .mw-progress-txt { font-size: 10px; color: rgba(255,255,255,0.3); font-family: 'Montserrat',sans-serif; margin-top: 6px; }
         .mw-paso-item { display: flex; align-items: center; gap: 14px; padding: 12px 22px; cursor: pointer; transition: background 0.15s; position: relative; }
         .mw-paso-item:hover { background: rgba(255,255,255,0.03); }
-        .mw-paso-item.activo { background: rgba(200,0,0,0.06); border-left: 2px solid #cc0000; }
+        .mw-paso-item.activo { background: rgba(200,0,0,0.06); border-left: 2px solid #990000; }
         .mw-paso-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800; flex-shrink: 0; transition: all 0.2s; }
-        .mw-paso-num.completado { background: #22c55e; color: #fff; }
-        .mw-paso-num.activo { background: #cc0000; color: #fff; }
+        .mw-paso-num.completado { background: #3abab6; color: #fff; }
+        .mw-paso-num.activo { background: #990000; color: #fff; }
         .mw-paso-num.pendiente { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
         .mw-paso-info {}
         .mw-paso-label { font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); }
@@ -286,7 +286,7 @@ export default function MiWebPage() {
         .mw-estado.activa { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); }
         .mw-estado.inactiva { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
         .mw-content { flex: 1; padding: 32px 40px; overflow-y: auto; }
-        .mw-paso-titulo { font-size: 10px; color: #cc0000; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
+        .mw-paso-titulo { font-size: 10px; color: #990000; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
         .mw-paso-h1 { font-family: 'Montserrat',sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
         .mw-paso-desc { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
         .mw-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 22px 24px; margin-bottom: 16px; }
@@ -305,16 +305,16 @@ export default function MiWebPage() {
         .mw-hint { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 5px; line-height: 1.5; }
         .mw-url-preview { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(200,0,0,0.06); border: 1px solid rgba(200,0,0,0.15); border-radius: 6px; margin-top: 10px; }
         .mw-url-txt { font-size: 12px; color: rgba(255,255,255,0.6); font-family: 'Inter',sans-serif; }
-        .mw-url-link { font-size: 12px; color: "#cc0000"; font-family: 'Inter',sans-serif; word-break: break-all; }
+        .mw-url-link { font-size: 12px; color: "#990000"; font-family: 'Inter',sans-serif; word-break: break-all; }
         /* Plantillas */
         .mw-plantillas { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         .mw-plantilla { border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
         .mw-plantilla:hover { transform: translateY(-2px); }
-        .mw-plantilla.activa { border-color: #cc0000; }
+        .mw-plantilla.activa { border-color: #990000; }
         .mw-plantilla-preview { height: 100px; display: flex; flex-direction: column; padding: 10px; position: relative; overflow: hidden; }
         .mw-plantilla-nombre { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; padding: 8px 10px; letter-spacing: 0.05em; text-transform: uppercase; }
         .mw-plantilla-estilo { font-size: 9px; color: rgba(255,255,255,0.5); padding: 0 10px 8px; font-family: 'Inter',sans-serif; }
-        .mw-check-activa { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: #cc0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; }
+        .mw-check-activa { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; background: #990000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; }
         /* Color picker */
         .mw-colores { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .mw-color-item { display: flex; align-items: center; gap: 10px; }
@@ -324,9 +324,9 @@ export default function MiWebPage() {
         /* Botones nav */
         .mw-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); }
         .mw-btn-prev { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .mw-btn-next { padding: 10px 24px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .mw-btn-next { padding: 10px 24px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .mw-btn-next:hover { background: #e60000; }
-        .mw-btn-guardar { padding: 10px 24px; background: #22c55e; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .mw-btn-guardar { padding: 10px 24px; background: #3abab6; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .mw-spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .mw-img-upload { display: flex; align-items: center; gap: 12px; }
@@ -370,9 +370,9 @@ export default function MiWebPage() {
 
           {/* Estado web */}
           <div className={`mw-estado ${config.activa ? "activa" : "inactiva"}`}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: config.activa ? "#22c55e" : "rgba(255,255,255,0.2)", flexShrink: 0 }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: config.activa ? "#3abab6" : "rgba(255,255,255,0.2)", flexShrink: 0 }} />
             <div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: config.activa ? "#22c55e" : "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, color: config.activa ? "#3abab6" : "rgba(255,255,255,0.4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 {config.activa ? "Web activa" : "Web inactiva"}
               </div>
               {urlWeb && (
@@ -457,7 +457,7 @@ export default function MiWebPage() {
                     <span style={{ fontSize: 14 }}>🌐</span>
                     <div>
                       <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 2 }}>Tu web quedará en</div>
-                      <span style={{ fontSize: 12, color: "#cc0000", fontFamily: "Inter,sans-serif" }}>
+                      <span style={{ fontSize: 12, color: "#990000", fontFamily: "Inter,sans-serif" }}>
                         {config.dominio_propio || `https://${config.slug || `mat${matricula}`}.foroinmobiliario.com.ar`}
                       </span>
                     </div>
@@ -482,7 +482,7 @@ export default function MiWebPage() {
                     <div
                       key={p.id}
                       className={`mw-plantilla${config.plantilla === p.id ? " activa" : ""}`}
-                      style={{ border: `2px solid ${config.plantilla === p.id ? "#cc0000" : "rgba(255,255,255,0.08)"}` }}
+                      style={{ border: `2px solid ${config.plantilla === p.id ? "#990000" : "rgba(255,255,255,0.08)"}` }}
                       onClick={() => set("plantilla", p.id)}
                     >
                       {/* Preview visual */}
@@ -725,7 +725,7 @@ export default function MiWebPage() {
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {[3, 4, 6, 8, 9, 12].map(n => (
                       <button key={n} type="button"
-                        style={{ padding: "7px 14px", borderRadius: 4, border: `1px solid ${parseInt(config.limite_propiedades_home) === n ? "#cc0000" : "rgba(255,255,255,0.1)"}`, background: parseInt(config.limite_propiedades_home) === n ? "rgba(200,0,0,0.1)" : "transparent", color: parseInt(config.limite_propiedades_home) === n ? "#fff" : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                        style={{ padding: "7px 14px", borderRadius: 4, border: `1px solid ${parseInt(config.limite_propiedades_home) === n ? "#990000" : "rgba(255,255,255,0.1)"}`, background: parseInt(config.limite_propiedades_home) === n ? "rgba(200,0,0,0.1)" : "transparent", color: parseInt(config.limite_propiedades_home) === n ? "#fff" : "rgba(255,255,255,0.4)", fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
                         onClick={() => set("limite_propiedades_home", n.toString())}>
                         {n}
                       </button>
@@ -764,7 +764,7 @@ export default function MiWebPage() {
               ← Anterior
             </button>
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              {guardadoOk && <span style={{ fontSize: 12, color: "#22c55e", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>✓ Guardado</span>}
+              {guardadoOk && <span style={{ fontSize: 12, color: "#3abab6", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>✓ Guardado</span>}
               <button className="mw-btn-guardar" onClick={guardar} disabled={guardando}>
                 {guardando ? <><span className="mw-spinner" />Guardando...</> : "💾 Guardar cambios"}
               </button>

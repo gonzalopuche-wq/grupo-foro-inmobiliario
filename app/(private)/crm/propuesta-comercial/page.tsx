@@ -222,7 +222,7 @@ function generarPDF(propuesta: Propuesta): void {
     .map(
       (d) =>
         `<li style="margin:6px 0; display:flex; align-items:center; gap:8px;">
-          <span style="width:18px;height:18px;background:#cc0000;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;flex-shrink:0;">✓</span>
+          <span style="width:18px;height:18px;background:#990000;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;flex-shrink:0;">✓</span>
           <span>${d}</span>
         </li>`
     )
@@ -239,7 +239,7 @@ function generarPDF(propuesta: Propuesta): void {
     .map(
       (v) =>
         `<li style="margin:8px 0; padding-left:22px; position:relative;">
-          <span style="position:absolute;left:0;color:#cc0000;font-weight:700;">›</span>${v}
+          <span style="position:absolute;left:0;color:#990000;font-weight:700;">›</span>${v}
         </li>`
     )
     .join("");
@@ -274,14 +274,14 @@ function generarPDF(propuesta: Propuesta): void {
     align-items: center;
     gap: 20px;
     padding-bottom: 24px;
-    border-bottom: 3px solid #cc0000;
+    border-bottom: 3px solid #990000;
     margin-bottom: 28px;
   }
   .logo-circle {
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: #cc0000;
+    background: #990000;
     color: #fff;
     display: flex;
     align-items: center;
@@ -306,7 +306,7 @@ function generarPDF(propuesta: Propuesta): void {
   }
   .titulo-propuesta h1 {
     font-size: 28px;
-    color: #cc0000;
+    color: #990000;
     margin-bottom: 4px;
   }
   .titulo-propuesta .subtitulo {
@@ -323,7 +323,7 @@ function generarPDF(propuesta: Propuesta): void {
   .seccion {
     background: #fafafa;
     border: 1px solid #ebebeb;
-    border-left: 4px solid #cc0000;
+    border-left: 4px solid #990000;
     border-radius: 8px;
     padding: 20px 22px;
     margin-bottom: 18px;
@@ -333,7 +333,7 @@ function generarPDF(propuesta: Propuesta): void {
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #cc0000;
+    color: #990000;
     margin-bottom: 12px;
   }
   .grid-2 {
@@ -361,7 +361,7 @@ function generarPDF(propuesta: Propuesta): void {
     font-family: 'Montserrat', Arial, sans-serif;
     font-weight: 800;
     font-size: 26px;
-    color: #cc0000;
+    color: #990000;
     margin: 8px 0;
   }
   .comparables-note {
@@ -371,7 +371,7 @@ function generarPDF(propuesta: Propuesta): void {
   }
   .honorarios-badge {
     display: inline-block;
-    background: #cc0000;
+    background: #990000;
     color: #fff;
     padding: 6px 18px;
     border-radius: 20px;
@@ -391,7 +391,7 @@ function generarPDF(propuesta: Propuesta): void {
     margin-top: 10px;
   }
   .exclusiva-box .check {
-    color: #cc0000;
+    color: #990000;
     font-weight: 700;
     font-size: 16px;
   }
@@ -421,7 +421,7 @@ function generarPDF(propuesta: Propuesta): void {
     font-family: 'Montserrat', Arial, sans-serif;
     font-weight: 800;
     font-size: 24px;
-    color: #cc0000;
+    color: #990000;
   }
   .stat-box .desc {
     font-size: 11px;
@@ -659,11 +659,11 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
   const iniciales = inicialesAgencia(agencia.nombreAgencia || "GFI");
   const titulo = `Propuesta de ${tituloOperacion(operacion.tipoOperacion)}`;
 
-  const accentStyle: React.CSSProperties = { color: "#cc0000" };
+  const accentStyle: React.CSSProperties = { color: "#990000" };
   const secStyle: React.CSSProperties = {
     background: "#fff",
     border: "1px solid #e5e5e5",
-    borderLeft: "4px solid #cc0000",
+    borderLeft: "4px solid #990000",
     borderRadius: 8,
     padding: "16px 18px",
     marginBottom: 14,
@@ -674,7 +674,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
     fontSize: 11,
     textTransform: "uppercase" as const,
     letterSpacing: "1px",
-    color: "#cc0000",
+    color: "#990000",
     marginBottom: 10,
   };
 
@@ -698,7 +698,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
           alignItems: "center",
           gap: 16,
           paddingBottom: 18,
-          borderBottom: "3px solid #cc0000",
+          borderBottom: "3px solid #990000",
           marginBottom: 20,
         }}
       >
@@ -707,7 +707,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
             width: 60,
             height: 60,
             borderRadius: "50%",
-            background: "#cc0000",
+            background: "#990000",
             color: "#fff",
             display: "flex",
             alignItems: "center",
@@ -826,7 +826,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
                 fontFamily: "Montserrat, sans-serif",
                 fontWeight: 800,
                 fontSize: 24,
-                color: "#cc0000",
+                color: "#990000",
                 margin: "4px 0",
               }}
             >
@@ -852,7 +852,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
             <div
               style={{
                 display: "inline-block",
-                background: "#cc0000",
+                background: "#990000",
                 color: "#fff",
                 padding: "5px 16px",
                 borderRadius: 20,
@@ -880,7 +880,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
                   padding: "5px 12px",
                 }}
               >
-                <span style={{ color: "#cc0000", fontWeight: 700 }}>★</span>
+                <span style={{ color: "#990000", fontWeight: 700 }}>★</span>
                 <span style={{ fontSize: 13, fontWeight: 600 }}>
                   Exclusiva {operacion.plazoExclusiva} {operacion.plazoExclusiva === 1 ? "mes" : "meses"}
                 </span>
@@ -908,7 +908,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
                     width: 16,
                     height: 16,
                     borderRadius: "50%",
-                    background: "#cc0000",
+                    background: "#990000",
                     color: "#fff",
                     display: "inline-flex",
                     alignItems: "center",
@@ -933,7 +933,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
             {agencia.ventajasCompetitivas.map((v, i) => (
               <li key={i} style={{ display: "flex", gap: 8, marginBottom: 6, fontSize: 12 }}>
-                <span style={{ color: "#cc0000", fontWeight: 700, flexShrink: 0 }}>›</span>
+                <span style={{ color: "#990000", fontWeight: 700, flexShrink: 0 }}>›</span>
                 {v}
               </li>
             ))}
@@ -960,7 +960,7 @@ function PropuestaPreview({ propietario, inmueble, operacion, agencia }: Preview
                     fontFamily: "Montserrat, sans-serif",
                     fontWeight: 800,
                     fontSize: 18,
-                    color: "#cc0000",
+                    color: "#990000",
                   }}
                 >
                   {num}
@@ -1408,9 +1408,9 @@ export default function PropuestaComercialPage() {
                   key={c}
                   onClick={() => toggleCaracteristica(c)}
                   style={{
-                    background: sel ? "#cc0000" : "rgba(255,255,255,0.06)",
+                    background: sel ? "#990000" : "rgba(255,255,255,0.06)",
                     color: sel ? "#fff" : "rgba(255,255,255,0.6)",
-                    border: sel ? "1px solid #cc0000" : "1px solid rgba(255,255,255,0.12)",
+                    border: sel ? "1px solid #990000" : "1px solid rgba(255,255,255,0.12)",
                     borderRadius: 20,
                     padding: "5px 12px",
                     fontSize: 12,
@@ -1446,10 +1446,10 @@ export default function PropuestaComercialPage() {
                     borderRadius: 8,
                     border:
                       operacion.tipoOperacion === op
-                        ? "1px solid #cc0000"
+                        ? "1px solid #990000"
                         : "1px solid rgba(255,255,255,0.12)",
                     background:
-                      operacion.tipoOperacion === op ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)",
+                      operacion.tipoOperacion === op ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
                     color: operacion.tipoOperacion === op ? "#fff" : "rgba(255,255,255,0.5)",
                     fontWeight: operacion.tipoOperacion === op ? 700 : 400,
                     cursor: "pointer",
@@ -1528,10 +1528,10 @@ export default function PropuestaComercialPage() {
                     borderRadius: 8,
                     border:
                       operacion.exclusiva === v
-                        ? "1px solid #cc0000"
+                        ? "1px solid #990000"
                         : "1px solid rgba(255,255,255,0.12)",
                     background:
-                      operacion.exclusiva === v ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)",
+                      operacion.exclusiva === v ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
                     color: operacion.exclusiva === v ? "#fff" : "rgba(255,255,255,0.5)",
                     fontWeight: operacion.exclusiva === v ? 700 : 400,
                     cursor: "pointer",
@@ -1572,8 +1572,8 @@ export default function PropuestaComercialPage() {
         <div
           style={{
             marginTop: 14,
-            background: "rgba(204,0,0,0.08)",
-            border: "1px solid rgba(204,0,0,0.2)",
+            background: "rgba(153,0,0,0.08)",
+            border: "1px solid rgba(153,0,0,0.2)",
             borderRadius: 8,
             padding: "12px 16px",
           }}
@@ -1586,7 +1586,7 @@ export default function PropuestaComercialPage() {
               fontFamily: "Montserrat, sans-serif",
               fontWeight: 800,
               fontSize: 20,
-              color: "#cc0000",
+              color: "#990000",
             }}
           >
             {fmtMoneda(
@@ -1627,8 +1627,8 @@ export default function PropuestaComercialPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                background: sel ? "rgba(204,0,0,0.08)" : "rgba(255,255,255,0.03)",
-                border: sel ? "1px solid rgba(204,0,0,0.3)" : "1px solid rgba(255,255,255,0.08)",
+                background: sel ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
+                border: sel ? "1px solid rgba(153,0,0,0.3)" : "1px solid rgba(255,255,255,0.08)",
                 borderRadius: 8,
                 padding: "10px 14px",
                 cursor: "pointer",
@@ -1641,7 +1641,7 @@ export default function PropuestaComercialPage() {
                   height: 18,
                   borderRadius: 4,
                   border: sel ? "none" : "1px solid rgba(255,255,255,0.2)",
-                  background: sel ? "#cc0000" : "transparent",
+                  background: sel ? "#990000" : "transparent",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1823,7 +1823,7 @@ export default function PropuestaComercialPage() {
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              <span style={{ color: "#cc0000", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
+              <span style={{ color: "#990000", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
                 ›
               </span>
               <span style={{ flex: 1, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>{v}</span>
@@ -1855,7 +1855,7 @@ export default function PropuestaComercialPage() {
           <button
             onClick={agregarVentaja}
             style={{
-              background: "#cc0000",
+              background: "#990000",
               color: "#fff",
               border: "none",
               borderRadius: 8,
@@ -1919,7 +1919,7 @@ export default function PropuestaComercialPage() {
             position: "fixed",
             bottom: 24,
             right: 24,
-            background: toast.tipo === "ok" ? "#16a34a" : "#cc0000",
+            background: toast.tipo === "ok" ? "#22807c" : "#990000",
             color: "#fff",
             padding: "12px 20px",
             borderRadius: 10,
@@ -1976,14 +1976,14 @@ export default function PropuestaComercialPage() {
                       style={{
                         flex: 1,
                         background: activo
-                          ? "#cc0000"
+                          ? "#990000"
                           : completo
-                          ? "rgba(204,0,0,0.3)"
+                          ? "rgba(153,0,0,0.3)"
                           : "rgba(255,255,255,0.06)",
                         border: activo
-                          ? "1px solid #cc0000"
+                          ? "1px solid #990000"
                           : completo
-                          ? "1px solid rgba(204,0,0,0.4)"
+                          ? "1px solid rgba(153,0,0,0.4)"
                           : "1px solid rgba(255,255,255,0.08)",
                         borderRadius: 8,
                         padding: "8px 4px",
@@ -2022,7 +2022,7 @@ export default function PropuestaComercialPage() {
                   style={{
                     height: "100%",
                     width: `${((paso - 1) / (PASOS.length - 1)) * 100}%`,
-                    background: "#cc0000",
+                    background: "#990000",
                     borderRadius: 2,
                     transition: "width 0.3s ease",
                   }}
@@ -2060,7 +2060,7 @@ export default function PropuestaComercialPage() {
                   onClick={() => setPaso((p) => p + 1)}
                   style={{
                     flex: 1,
-                    background: "#cc0000",
+                    background: "#990000",
                     border: "none",
                     color: "#fff",
                     borderRadius: 8,
@@ -2078,7 +2078,7 @@ export default function PropuestaComercialPage() {
                   onClick={guardarPropuesta}
                   style={{
                     flex: 1,
-                    background: "#cc0000",
+                    background: "#990000",
                     border: "none",
                     color: "#fff",
                     borderRadius: 8,
@@ -2160,9 +2160,9 @@ export default function PropuestaComercialPage() {
                       <div
                         key={p.id}
                         style={{
-                          background: sel ? "rgba(204,0,0,0.08)" : "rgba(255,255,255,0.03)",
+                          background: sel ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
                           border: sel
-                            ? "1px solid rgba(204,0,0,0.3)"
+                            ? "1px solid rgba(153,0,0,0.3)"
                             : "1px solid rgba(255,255,255,0.08)",
                           borderRadius: 8,
                           padding: "10px 12px",
@@ -2206,8 +2206,8 @@ export default function PropuestaComercialPage() {
                             title="Eliminar"
                             style={{
                               background: "transparent",
-                              border: "1px solid rgba(204,0,0,0.2)",
-                              color: "rgba(204,0,0,0.6)",
+                              border: "1px solid rgba(153,0,0,0.2)",
+                              color: "rgba(153,0,0,0.6)",
                               borderRadius: 6,
                               padding: "4px 8px",
                               cursor: "pointer",
@@ -2239,7 +2239,7 @@ export default function PropuestaComercialPage() {
                 onClick={() => generarPDF(propuestaActual)}
                 style={{
                   flex: 1,
-                  background: "#cc0000",
+                  background: "#990000",
                   border: "none",
                   color: "#fff",
                   borderRadius: 8,

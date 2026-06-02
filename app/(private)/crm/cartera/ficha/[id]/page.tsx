@@ -164,7 +164,7 @@ export default async function FichaPage({ params }: Props) {
         }
         .ficha-precio-ars {
           font-family: var(--font-mono); font-size: 32px; font-weight: 700;
-          color: #f97316; line-height: 1; letter-spacing: -0.01em;
+          color: #d4960c; line-height: 1; letter-spacing: -0.01em;
           font-variant-numeric: tabular-nums;
         }
         .ficha-precio-consultar {
@@ -235,13 +235,13 @@ export default async function FichaPage({ params }: Props) {
 
         /* Portal links */
         .portal-link {
-          padding: 6px 14px; background: rgba(96,165,250,0.08);
-          border: 1px solid rgba(96,165,250,0.22); border-radius: var(--gfi-radius-md);
-          font-size: 11px; font-weight: 700; color: #60a5fa;
+          padding: 6px 14px; background: rgba(74,184,216,0.08);
+          border: 1px solid rgba(74,184,216,0.22); border-radius: var(--gfi-radius-md);
+          font-size: 11px; font-weight: 700; color: #4ab8d8;
           font-family: var(--font-display); text-decoration: none;
           transition: var(--gfi-transition);
         }
-        .portal-link:hover { background: rgba(96,165,250,0.14); }
+        .portal-link:hover { background: rgba(74,184,216,0.14); }
 
         /* Map */
         .ficha-mapa {
@@ -282,7 +282,7 @@ export default async function FichaPage({ params }: Props) {
         .hist-table tr:last-child td { border-bottom: none; }
         .hist-table tbody tr:hover { background: rgba(255,255,255,0.02); }
         .hist-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; }
-        .hist-badge-reduccion { background: rgba(16,185,129,0.12); color: var(--gfi-green-text); border: 1px solid rgba(16,185,129,0.25); }
+        .hist-badge-reduccion { background: rgba(58,186,182,0.12); color: var(--gfi-green-text); border: 1px solid rgba(58,186,182,0.25); }
         .hist-badge-aumento   { background: var(--gfi-red-soft); color: var(--gfi-red); border: 1px solid var(--gfi-red-border); }
         .hist-badge-inicial   { background: rgba(255,255,255,0.05); color: var(--gfi-text-muted); border: 1px solid var(--gfi-border); }
         .hist-badge-actualizacion { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.25); }
@@ -303,11 +303,11 @@ export default async function FichaPage({ params }: Props) {
         }
         .ficha-corredor::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-          background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204,0,0,0.1) 60%, transparent 100%);
+          background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(153,0,0,0.1) 60%, transparent 100%);
         }
         .ficha-corredor-avatar {
           width: 56px; height: 56px; border-radius: var(--gfi-radius-md);
-          background: rgba(204,0,0,0.10); border: 1px solid var(--gfi-red-border);
+          background: rgba(153,0,0,0.10); border: 1px solid var(--gfi-red-border);
           flex-shrink: 0; display: flex; align-items: center; justify-content: center;
           font-family: var(--font-display); font-size: 16px; font-weight: 900;
           color: var(--gfi-red); overflow: hidden;
@@ -630,8 +630,8 @@ export default async function FichaPage({ params }: Props) {
                           : ((h.precio - minP) / rango) * (W - pad * 2 - 80) + 40;
                         const y = 20 + i * (barH + 6);
                         const isLast = i === historialEfectivo.length - 1;
-                        const color = h.tipo === "reduccion" ? "#10b981"
-                          : h.tipo === "aumento" ? "#cc0000"
+                        const color = h.tipo === "reduccion" ? "#3abab6"
+                          : h.tipo === "aumento" ? "#990000"
                           : h.tipo === "inicial" ? "#4a5568"
                           : "#a78bfa";
                         const label = h.moneda === "USD"
@@ -640,9 +640,9 @@ export default async function FichaPage({ params }: Props) {
                         return (
                           <g key={h.id}>
                             <rect x={pad} y={y} width={Math.max(barW, 4)} height={barH} rx={4}
-                              fill={isLast ? "#cc0000" : color} opacity={isLast ? 1 : 0.55} />
+                              fill={isLast ? "#990000" : color} opacity={isLast ? 1 : 0.55} />
                             <text x={pad + Math.max(barW, 4) + 8} y={y + barH / 2 + 4}
-                              fontSize={11} fill={isLast ? "#cc0000" : "#8892a4"}
+                              fontSize={11} fill={isLast ? "#990000" : "#8892a4"}
                               fontFamily="JetBrains Mono, monospace" fontWeight={isLast ? "700" : "500"}>
                               {label}
                             </text>

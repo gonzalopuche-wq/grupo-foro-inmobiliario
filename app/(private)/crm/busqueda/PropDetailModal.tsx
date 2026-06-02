@@ -75,10 +75,10 @@ const FUENTE_LABEL: Record<string, string> = {
   propia: 'Propia', propia_red: 'Propia Red', gfi_red: 'Red GFI', gfi_portal: 'Portal GFI',
 }
 const FUENTE_COLOR: Record<string, string> = {
-  gfi: '#cc0000', gfi_red: '#cc0000', gfi_portal: '#cc0000',
+  gfi: '#990000', gfi_red: '#990000', gfi_portal: '#990000',
   zonaprop: '#e60000', argenprop: '#f5a623',
   mercadolibre: '#ffe600', kiteprop: '#3b82f6', tokko: '#8b5cf6',
-  propia: '#10b981', propia_red: '#10b981',
+  propia: '#3abab6', propia_red: '#3abab6',
 }
 
 interface Props {
@@ -136,7 +136,7 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler)
   }, [onClose, prop])
 
-  const color = FUENTE_COLOR[fuente] ?? '#cc0000'
+  const color = FUENTE_COLOR[fuente] ?? '#990000'
   const label = FUENTE_LABEL[fuente] ?? fuente
   const fotos = prop?.imagenes?.filter((_, i) => !imgError.has(i)) ?? []
 
@@ -450,12 +450,12 @@ export default function PropDetailModal({ propId, fuente, onClose }: Props) {
                       </div>
                     )}
                     {prop.agente_telefono && (
-                      <a href={`tel:${prop.agente_telefono}`} style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#22c55e', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>
+                      <a href={`tel:${prop.agente_telefono}`} style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#3abab6', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>
                         <Phone style={{ width: 14, height: 14 }} /> {prop.agente_telefono}
                       </a>
                     )}
                     {prop.agente_email && (
-                      <a href={`mailto:${prop.agente_email}`} style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#60a5fa', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>
+                      <a href={`mailto:${prop.agente_email}`} style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#4ab8d8', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>
                         <Mail style={{ width: 14, height: 14 }} /> {prop.agente_email}
                       </a>
                     )}

@@ -288,9 +288,9 @@ export default function DMPage() {
   const porFecha: { fecha: string; msgs: Mensaje[] }[] = [];
   filtrados.forEach(m => { const f = fmtFecha(m.created_at); const u = porFecha[porFecha.length - 1]; if (u && u.fecha === f) u.msgs.push(m); else porFecha.push({ fecha: f, msgs: [m] }); });
 
-  const renderTxt = (t: string) => t.split(/(https?:\/\/\S+)/g).map((p, i) => p.match(/^https?:\/\//) ? <a key={i} href={p} target="_blank" rel="noopener noreferrer" style={{ color: "#60a5fa", textDecoration: "underline", wordBreak: "break-all" }} onClick={e => e.stopPropagation()}>{p}</a> : <span key={i}>{p}</span>);
+  const renderTxt = (t: string) => t.split(/(https?:\/\/\S+)/g).map((p, i) => p.match(/^https?:\/\//) ? <a key={i} href={p} target="_blank" rel="noopener noreferrer" style={{ color: "#4ab8d8", textDecoration: "underline", wordBreak: "break-all" }} onClick={e => e.stopPropagation()}>{p}</a> : <span key={i}>{p}</span>);
 
-  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}><div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
+  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}><div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
 
   return (
     <>
@@ -300,12 +300,12 @@ export default function DMPage() {
         .dc-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.07);background:#0f0f0f;flex-shrink:0;}
         .dc-back{background:none;border:none;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;padding:4px 8px;}
         .dc-back:hover{color:#fff;}
-        .dc-av{width:38px;height:38px;border-radius:50%;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#cc0000;flex-shrink:0;overflow:hidden;}
+        .dc-av{width:38px;height:38px;border-radius:50%;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;color:#990000;flex-shrink:0;overflow:hidden;}
         .dc-av img{width:100%;height:100%;object-fit:cover;}
         .dc-hn{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;color:#fff;}
         .dc-hs{font-size:10px;color:rgba(255,255,255,0.3);margin-top:1px;}
         .dc-sb{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:rgba(255,255,255,0.4);cursor:pointer;font-size:14px;padding:6px 10px;transition:all 0.15s;}
-        .dc-sb.on{background:rgba(200,0,0,0.1);border-color:rgba(200,0,0,0.3);color:#cc0000;}
+        .dc-sb.on{background:rgba(200,0,0,0.1);border-color:rgba(200,0,0,0.3);color:#990000;}
         .dc-si{padding:10px 16px;background:rgba(255,255,255,0.03);border:none;border-bottom:1px solid rgba(255,255,255,0.07);color:#fff;font-size:13px;outline:none;font-family:'Inter',sans-serif;width:100%;box-sizing:border-box;}
         .dc-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:2px;}
         .dc-msgs::-webkit-scrollbar{width:3px;}
@@ -314,7 +314,7 @@ export default function DMPage() {
         .dc-day span{font-size:10px;font-family:'Montserrat',sans-serif;font-weight:700;color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:3px 12px;display:inline-block;}
         .dc-m{display:flex;gap:8px;padding:3px 0;position:relative;}
         .dc-m.me{flex-direction:row-reverse;}
-        .dc-mav{width:30px;height:30px;border-radius:8px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.15);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;color:#cc0000;flex-shrink:0;overflow:hidden;align-self:flex-end;}
+        .dc-mav{width:30px;height:30px;border-radius:8px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.15);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;color:#990000;flex-shrink:0;overflow:hidden;align-self:flex-end;}
         .dc-mav img{width:100%;height:100%;object-fit:cover;}
         .dc-bw{max-width:74%;display:flex;flex-direction:column;}
         .dc-m.me .dc-bw{align-items:flex-end;}
@@ -330,7 +330,7 @@ export default function DMPage() {
         .dc-meta{display:flex;align-items:center;gap:6px;margin-top:3px;}
         .dc-m.me .dc-meta{justify-content:flex-end;}
         .dc-hora{font-size:9px;color:rgba(255,255,255,0.2);font-family:'Inter',sans-serif;}
-        .dc-leido{font-size:10px;color:#60a5fa;}
+        .dc-leido{font-size:10px;color:#4ab8d8;}
         .dc-edit-badge{font-size:9px;color:rgba(255,255,255,0.18);font-style:italic;}
         .dc-reacs{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
         .dc-reac{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:2px 7px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;}
@@ -347,11 +347,11 @@ export default function DMPage() {
         .dc-rb{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.15);border-radius:5px;}
         .dc-rb-t{flex:1;font-size:11px;color:rgba(255,255,255,0.4);font-family:'Inter',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .dc-adb{width:34px;height:34px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:6px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
-        .dc-adb:hover{border-color:rgba(200,0,0,0.35);color:#cc0000;}
+        .dc-adb:hover{border-color:rgba(200,0,0,0.35);color:#990000;}
         .dc-ta{flex:1;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:'Inter',sans-serif;resize:none;line-height:1.5;max-height:120px;overflow-y:auto;}
         .dc-ta:focus{border-color:rgba(200,0,0,0.35);}
         .dc-ta::placeholder{color:rgba(255,255,255,0.2);}
-        .dc-send{padding:9px 16px;background:#cc0000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+        .dc-send{padding:9px 16px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;}
         .dc-send:hover{background:#e60000;}
         .dc-send:disabled{opacity:0.45;cursor:not-allowed;}
         .dc-thumbs{display:flex;gap:6px;flex-wrap:wrap;}
@@ -361,7 +361,7 @@ export default function DMPage() {
         .dc-a-audio{display:flex;align-items:center;gap:8px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.15);border-radius:8px;padding:8px 10px;margin-top:4px;}
         .dc-a-doc{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:6px;padding:7px 10px;margin-top:4px;text-decoration:none;}
         .dc-edit-i{width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(200,0,0,0.3);border-radius:4px;color:#fff;font-size:12px;font-family:'Inter',sans-serif;outline:none;resize:none;box-sizing:border-box;}
-        .dc-adot{width:10px;height:10px;border-radius:50%;background:#cc0000;animation:pdot 1s ease-in-out infinite;flex-shrink:0;}
+        .dc-adot{width:10px;height:10px;border-radius:50%;background:#990000;animation:pdot 1s ease-in-out infinite;flex-shrink:0;}
         @keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
         @keyframes spin{to{transform:rotate(360deg);}}
       `}</style>
@@ -421,7 +421,7 @@ export default function DMPage() {
                               <textarea ref={editRef} className="dc-edit-i" value={editText} onChange={e => setEditText(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); editar(m.id); } if (e.key === "Escape") setEditandoId(null); }} rows={2} autoFocus />
                               <div style={{ display: "flex", gap: 6, marginTop: 5, justifyContent: "flex-end" }}>
                                 <button onClick={() => setEditandoId(null)} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "rgba(255,255,255,0.4)", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Cancelar</button>
-                                <button onClick={() => editar(m.id)} style={{ fontSize: 10, background: "#cc0000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
+                                <button onClick={() => editar(m.id)} style={{ fontSize: 10, background: "#990000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Guardar</button>
                               </div>
                             </div>
                           ) : (
@@ -436,7 +436,7 @@ export default function DMPage() {
                               {pvData && pvData !== "loading" && pvData !== "error" && (pvData.title || pvData.image) && (
                                 <a href={pUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 10, marginTop: 6, borderRadius: 6, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(0,0,0,0.35)", textDecoration: "none", minHeight: 60 }}>
                                   {pvData.image && <div style={{ width: 60, minWidth: 60, background: "#000" }}><img src={pvData.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /></div>}
-                                  <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0 }}>{pvData.siteName && <div style={{ fontSize: 9, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>{pvData.siteName}</div>}{pvData.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pvData.title}</div>}</div>
+                                  <div style={{ flex: 1, padding: "6px 8px 6px 0", minWidth: 0 }}>{pvData.siteName && <div style={{ fontSize: 9, color: "#4ab8d8", fontFamily: "Montserrat,sans-serif", fontWeight: 700, marginBottom: 2 }}>{pvData.siteName}</div>}{pvData.title && <div style={{ fontSize: 11, color: "#fff", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pvData.title}</div>}</div>
                                 </a>
                               )}
                             </>
@@ -469,7 +469,7 @@ export default function DMPage() {
                 <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Grabando... {fmtSeg(audioSeg)}</span>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={detenerGrab} style={{ flex: 1, padding: "12px", background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>⏹ Detener y revisar</button>
+                <button onClick={detenerGrab} style={{ flex: 1, padding: "12px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>⏹ Detener y revisar</button>
                 <button onClick={cancelarAudio} style={{ padding: "12px 16px", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>✕</button>
               </div>
             </div>
@@ -481,7 +481,7 @@ export default function DMPage() {
                 <audio src={audioUrl} controls style={{ flex: 1, height: 36, minWidth: 0 }} />
               </div>
               <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={enviarAudio} disabled={subiendoAudio} style={{ flex: 1, padding: "12px", background: "#cc0000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{subiendoAudio ? "Enviando..." : "➤ Enviar audio"}</button>
+                <button onClick={enviarAudio} disabled={subiendoAudio} style={{ flex: 1, padding: "12px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{subiendoAudio ? "Enviando..." : "➤ Enviar audio"}</button>
                 <button onClick={cancelarAudio} style={{ padding: "12px 16px", background: "transparent", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, color: "rgba(200,0,0,0.6)", fontSize: 16, cursor: "pointer" }}>✕</button>
               </div>
             </div>
@@ -526,7 +526,7 @@ export default function DMPage() {
               <button onClick={() => setModalMic(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer" }}>×</button>
             </div>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 16, lineHeight: 1.6 }}>El micrófono fue bloqueado para este sitio. Habilitalo desde la configuración del navegador y recargá la página.</p>
-            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+            <button onClick={() => { setModalMic(false); window.location.reload(); }} style={{ width: "100%", padding: "13px", background: "#990000", color: "#fff", border: "none", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
               Recargar página
             </button>
           </div>

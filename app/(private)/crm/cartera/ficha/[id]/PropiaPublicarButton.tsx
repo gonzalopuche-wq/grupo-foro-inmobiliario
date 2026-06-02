@@ -100,9 +100,9 @@ export function PropiaPublicarButton({
           fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700,
           letterSpacing: "0.1em", textTransform: "uppercase",
           display: "flex", alignItems: "center", gap: 6,
-          background: estaPublicada ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.06)",
-          border: estaPublicada ? "1px solid rgba(204,0,0,0.45)" : "1px solid rgba(255,255,255,0.15)",
-          color: estaPublicada ? "#cc0000" : "rgba(255,255,255,0.7)",
+          background: estaPublicada ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.06)",
+          border: estaPublicada ? "1px solid rgba(153,0,0,0.45)" : "1px solid rgba(255,255,255,0.15)",
+          color: estaPublicada ? "#990000" : "rgba(255,255,255,0.7)",
         }}
       >
         🏛️ {estaPublicada ? "Propia ✓" : "Publicar en Propia"}
@@ -122,7 +122,7 @@ export function PropiaPublicarButton({
             </div>
 
             {estaPublicada && (
-              <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, fontSize: 12, color: "#22c55e", fontFamily: "Inter,sans-serif" }}>
+              <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "12px 16px", marginBottom: 16, fontSize: 12, color: "#3abab6", fontFamily: "Inter,sans-serif" }}>
                 ✓ Publicada en Propia MLS · ID: <strong>{propiaIdLocal}</strong>
                 {syncAtLocal && <span style={{ color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>· Última sync: {syncAtLocal}</span>}
               </div>
@@ -135,7 +135,7 @@ export function PropiaPublicarButton({
                 {[direccion, zona, ciudad].filter(Boolean).join(", ")}
               </div>
               {precio && (
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#cc0000", fontFamily: "Montserrat,sans-serif", marginTop: 6 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#990000", fontFamily: "Montserrat,sans-serif", marginTop: 6 }}>
                   {moneda === "USD" ? "USD " : "$ "}{precio.toLocaleString("es-AR")}
                 </div>
               )}
@@ -146,7 +146,7 @@ export function PropiaPublicarButton({
               disabled={publicando}
               style={{
                 width: "100%", padding: "12px", borderRadius: 6, border: "none",
-                background: publicando ? "rgba(204,0,0,0.4)" : "#cc0000",
+                background: publicando ? "rgba(153,0,0,0.4)" : "#990000",
                 color: "#fff", cursor: publicando ? "not-allowed" : "pointer",
                 fontFamily: "Montserrat,sans-serif", fontSize: 11, fontWeight: 700,
                 letterSpacing: "0.12em", textTransform: "uppercase",
@@ -160,7 +160,7 @@ export function PropiaPublicarButton({
                 marginTop: 14, padding: "10px 14px", borderRadius: 7, fontSize: 12, fontFamily: "Inter,sans-serif",
                 background: msg.tipo === "ok" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
                 border: `1px solid ${msg.tipo === "ok" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
-                color: msg.tipo === "ok" ? "#22c55e" : "#ef4444",
+                color: msg.tipo === "ok" ? "#3abab6" : "#b80000",
               }}>
                 {msg.tipo === "ok" ? "✓ " : "✕ "}{msg.texto}
               </div>

@@ -51,9 +51,9 @@ interface ResumenHonorario {
 
 const ESTADO_META: Record<EstadoCobro, { label: string; color: string; bg: string }> = {
   pendiente:   { label: "Pendiente",    color: "#9ca3af", bg: "rgba(156,163,175,0.12)" },
-  parcial:     { label: "Parcial",      color: "#f59e0b", bg: "rgba(245,158,11,0.12)" },
-  cobrado:     { label: "Cobrado",      color: "#22c55e", bg: "rgba(34,197,94,0.12)"   },
-  vencido:     { label: "Vencido",      color: "#cc0000", bg: "rgba(204,0,0,0.12)"     },
+  parcial:     { label: "Parcial",      color: "#d4960c", bg: "rgba(245,158,11,0.12)" },
+  cobrado:     { label: "Cobrado",      color: "#3abab6", bg: "rgba(34,197,94,0.12)"   },
+  vencido:     { label: "Vencido",      color: "#990000", bg: "rgba(153,0,0,0.12)"     },
   incobrable:  { label: "Incobrable",   color: "#7f1d1d", bg: "rgba(127,29,29,0.18)"   },
 };
 
@@ -347,9 +347,9 @@ export default function GestionHonorariosPage() {
     }
     const circumference = 2 * Math.PI * r;
     const segments: Array<{ value: number; color: string; label: string }> = [
-      { value: kpis.cobrado,  color: "#22c55e", label: "Cobrado"  },
-      { value: kpis.pendiente, color: "#f59e0b", label: "Pendiente" },
-      { value: kpis.vencido,  color: "#cc0000", label: "Vencido"  },
+      { value: kpis.cobrado,  color: "#3abab6", label: "Cobrado"  },
+      { value: kpis.pendiente, color: "#d4960c", label: "Pendiente" },
+      { value: kpis.vencido,  color: "#990000", label: "Vencido"  },
     ].filter(s => s.value > 0);
 
     let offset = 0;
@@ -443,7 +443,7 @@ export default function GestionHonorariosPage() {
           const montoTotal = entries.reduce((s, e) => s + e.monto, 0);
           const esCobrado = entries.every(e => e.cobrado);
           const esVencido = fecha < todayStr;
-          const color = esCobrado ? "#22c55e" : esVencido ? "#cc0000" : "#f59e0b";
+          const color = esCobrado ? "#3abab6" : esVencido ? "#990000" : "#d4960c";
 
           const ts = new Date(fecha + "T12:00").getTime();
           let xPos: number;
@@ -487,7 +487,7 @@ export default function GestionHonorariosPage() {
     fontFamily: "Montserrat,sans-serif",
     fontSize: 12,
     fontWeight: 700,
-    background: active ? "#cc0000" : "rgba(255,255,255,0.06)",
+    background: active ? "#990000" : "rgba(255,255,255,0.06)",
     color: active ? "#fff" : "rgba(255,255,255,0.45)",
     transition: "background 0.2s",
   });
@@ -514,13 +514,13 @@ export default function GestionHonorariosPage() {
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 0 80px", fontFamily: "Inter,sans-serif", color: "#fff" }}>
       <style>{`
         .gh-input { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; padding:7px 10px; font-size:12px; font-family:Inter,sans-serif; outline:none; }
-        .gh-input:focus { border-color:rgba(204,0,0,0.4); }
+        .gh-input:focus { border-color:rgba(153,0,0,0.4); }
         .gh-table { width:100%; border-collapse:collapse; }
         .gh-table th { padding:10px 12px; text-align:left; font-size:10px; font-family:Montserrat,sans-serif; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,255,255,0.3); border-bottom:1px solid rgba(255,255,255,0.07); }
         .gh-table td { padding:10px 12px; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
         .gh-table tr:last-child td { border-bottom:none; }
         .gh-table tr:hover td { background:rgba(255,255,255,0.02); }
-        .gh-check { width:16px; height:16px; accent-color:#22c55e; cursor:pointer; }
+        .gh-check { width:16px; height:16px; accent-color:#3abab6; cursor:pointer; }
       `}</style>
 
       {/* Toast */}
@@ -529,9 +529,9 @@ export default function GestionHonorariosPage() {
           position: "fixed", bottom: 24, right: 24, padding: "10px 20px",
           borderRadius: 8, fontSize: 13, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
           zIndex: 9999,
-          background: toast.tipo === "err" ? "rgba(204,0,0,0.15)" : "rgba(34,197,94,0.15)",
-          border: `1px solid ${toast.tipo === "err" ? "rgba(204,0,0,0.4)" : "rgba(34,197,94,0.4)"}`,
-          color: toast.tipo === "err" ? "#cc0000" : "#22c55e",
+          background: toast.tipo === "err" ? "rgba(153,0,0,0.15)" : "rgba(34,197,94,0.15)",
+          border: `1px solid ${toast.tipo === "err" ? "rgba(153,0,0,0.4)" : "rgba(34,197,94,0.4)"}`,
+          color: toast.tipo === "err" ? "#990000" : "#3abab6",
         }}>
           {toast.msg}
         </div>
@@ -588,9 +588,9 @@ export default function GestionHonorariosPage() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(190px,1fr))", gap: 12, marginBottom: 28 }}>
                 {[
                   { label: "Total Honorarios Facturados", valor: fmtARS(kpis.total), color: "#fff" },
-                  { label: "Cobrado", valor: fmtARS(kpis.cobrado), color: "#22c55e" },
-                  { label: "Pendiente", valor: fmtARS(kpis.pendiente), color: "#f59e0b" },
-                  { label: "Vencido", valor: fmtARS(kpis.vencido), color: "#cc0000" },
+                  { label: "Cobrado", valor: fmtARS(kpis.cobrado), color: "#3abab6" },
+                  { label: "Pendiente", valor: fmtARS(kpis.pendiente), color: "#d4960c" },
+                  { label: "Vencido", valor: fmtARS(kpis.vencido), color: "#990000" },
                 ].map(k => (
                   <div key={k.label} style={cardStyle}>
                     <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 8 }}>
@@ -610,9 +610,9 @@ export default function GestionHonorariosPage() {
                   <DonutChart />
                   <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8, width: "100%" }}>
                     {[
-                      { label: "Cobrado",   color: "#22c55e", val: kpis.cobrado   },
-                      { label: "Pendiente", color: "#f59e0b", val: kpis.pendiente },
-                      { label: "Vencido",   color: "#cc0000", val: kpis.vencido   },
+                      { label: "Cobrado",   color: "#3abab6", val: kpis.cobrado   },
+                      { label: "Pendiente", color: "#d4960c", val: kpis.pendiente },
+                      { label: "Vencido",   color: "#990000", val: kpis.vencido   },
                     ].map(l => (
                       <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
                         <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color, flexShrink: 0 }} />
@@ -651,9 +651,9 @@ export default function GestionHonorariosPage() {
                             </td>
                             <td style={{ color: "rgba(255,255,255,0.5)", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.contacto}</td>
                             <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#fff" }}>{fmtARS(r.honorariosTotal)}</td>
-                            <td style={{ color: "#22c55e" }}>{fmtARS(r.cobrado)}</td>
-                            <td style={{ color: "#f59e0b" }}>{fmtARS(r.pendiente)}</td>
-                            <td style={{ color: "#cc0000" }}>{r.vencido > 0 ? fmtARS(r.vencido) : "—"}</td>
+                            <td style={{ color: "#3abab6" }}>{fmtARS(r.cobrado)}</td>
+                            <td style={{ color: "#d4960c" }}>{fmtARS(r.pendiente)}</td>
+                            <td style={{ color: "#990000" }}>{r.vencido > 0 ? fmtARS(r.vencido) : "—"}</td>
                             <td>
                               <span style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, padding: "3px 10px", borderRadius: 10, background: meta.bg, color: meta.color }}>
                                 {meta.label}
@@ -662,7 +662,7 @@ export default function GestionHonorariosPage() {
                             <td>
                               <button
                                 onClick={() => { setNegocioSelId(r.negocio_id); setTab("detalle"); }}
-                                style={{ padding: "5px 12px", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 6, color: "#cc0000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                                style={{ padding: "5px 12px", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 6, color: "#990000", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
                               >
                                 Gestionar
                               </button>
@@ -737,7 +737,7 @@ export default function GestionHonorariosPage() {
                           {cuotasSel.map((cuota, idx) => {
                             const esVencida = !cuota.cobrado && cuota.fechaVencimiento < hoy();
                             return (
-                              <tr key={idx} style={{ background: cuota.cobrado ? "rgba(34,197,94,0.04)" : esVencida ? "rgba(204,0,0,0.04)" : "transparent" }}>
+                              <tr key={idx} style={{ background: cuota.cobrado ? "rgba(34,197,94,0.04)" : esVencida ? "rgba(153,0,0,0.04)" : "transparent" }}>
                                 <td style={{ color: "rgba(255,255,255,0.5)" }}>{cuota.numero}</td>
                                 <td>
                                   <input
@@ -754,7 +754,7 @@ export default function GestionHonorariosPage() {
                                     className="gh-input"
                                     value={cuota.fechaVencimiento}
                                     onChange={e => actualizarCuota(idx, "fechaVencimiento", e.target.value)}
-                                    style={{ color: esVencida && !cuota.cobrado ? "#cc0000" : "#fff" }}
+                                    style={{ color: esVencida && !cuota.cobrado ? "#990000" : "#fff" }}
                                   />
                                 </td>
                                 <td>
@@ -781,7 +781,7 @@ export default function GestionHonorariosPage() {
                                   {!cuota.cobrado && (
                                     <button
                                       onClick={() => marcarCobrado(idx, true)}
-                                      style={{ padding: "4px 10px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 6, color: "#22c55e", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                                      style={{ padding: "4px 10px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 6, color: "#3abab6", fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
                                     >
                                       Cobrar
                                     </button>
@@ -826,7 +826,7 @@ export default function GestionHonorariosPage() {
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
                       <button
                         onClick={marcarIncobrable}
-                        style={{ padding: "9px 20px", background: "rgba(127,29,29,0.18)", border: "1px solid rgba(127,29,29,0.4)", borderRadius: 8, color: "#ef4444", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
+                        style={{ padding: "9px 20px", background: "rgba(127,29,29,0.18)", border: "1px solid rgba(127,29,29,0.4)", borderRadius: 8, color: "#b80000", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, cursor: "pointer" }}
                       >
                         Marcar incobrable
                       </button>
@@ -847,9 +847,9 @@ export default function GestionHonorariosPage() {
                 </div>
                 <div style={{ display: "flex", gap: 16, marginBottom: 14 }}>
                   {[
-                    { color: "#22c55e", label: "Cobrado"  },
-                    { color: "#f59e0b", label: "Pendiente" },
-                    { color: "#cc0000", label: "Vencido"  },
+                    { color: "#3abab6", label: "Cobrado"  },
+                    { color: "#d4960c", label: "Pendiente" },
+                    { color: "#990000", label: "Vencido"  },
                   ].map(l => (
                     <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
                       <div style={{ width: 10, height: 10, borderRadius: 2, background: l.color }} />
@@ -880,7 +880,7 @@ export default function GestionHonorariosPage() {
                       </tr>
                     ) : timelineItems.map((item, idx) => {
                       const esVencida = !item.cuota.cobrado && item.cuota.fechaVencimiento < hoy();
-                      const color = item.cuota.cobrado ? "#22c55e" : esVencida ? "#cc0000" : "#f59e0b";
+                      const color = item.cuota.cobrado ? "#3abab6" : esVencida ? "#990000" : "#d4960c";
                       const label = item.cuota.cobrado ? "Cobrado" : esVencida ? "Vencido" : "Pendiente";
                       return (
                         <tr key={`${item.negocioId}-${idx}`}>

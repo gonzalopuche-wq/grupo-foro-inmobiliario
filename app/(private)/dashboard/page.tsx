@@ -322,7 +322,7 @@ export default function DashboardPage() {
   const hoy = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const formatPeso = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
   const climaDesc = clima?.desc ? clima.desc.charAt(0).toUpperCase() + clima.desc.slice(1) : "";
-  const colorAcum = (n: number | null) => n !== null ? (n > 0 ? "#f87171" : "#22c55e") : "rgba(255,255,255,0.3)";
+  const colorAcum = (n: number | null) => n !== null ? (n > 0 ? "#f87171" : "#3abab6") : "rgba(255,255,255,0.3)";
 
   // Weather helpers
   const windDirStr = (deg: number) => { const dirs = ["N","NE","E","SE","S","SO","O","NO"]; return dirs[Math.round(deg / 45) % 8]; };
@@ -335,19 +335,19 @@ export default function DashboardPage() {
     return "linear-gradient(135deg, #4a0900 0%, #7a0f00 100%)";
   };
   const climaTempColor = (t: number) => {
-    if (t < 5)  return "#60a5fa";
+    if (t < 5)  return "#4ab8d8";
     if (t < 15) return "#22d3ee";
     if (t < 22) return "#34d399";
-    if (t < 28) return "#fbbf24";
-    if (t < 33) return "#f97316";
-    return "#ef4444";
+    if (t < 28) return "#d4960c";
+    if (t < 33) return "#d4960c";
+    return "#b80000";
   };
   const climaCalidad = (c: Clima) => {
     const malo = c.precipitacion > 0 || c.viento > 50 || [200,201,202,210,211,212,221,230,231,232,300,301,302,310,311,312,313,314,321,500,501,502,503,504,511,520,521,522,531,600,601,602,611,612,613,615,616,620,621,622,701,711,721,731,741,751,761,762,771,781].includes(c.codIcono);
     const regular = c.viento > 30 || c.visibilidad < 5 || c.humedad > 85 || c.nubes > 80;
-    if (malo) return { label: "⛈ No ideal para visitas", color: "#ef4444", bg: "rgba(239,68,68,0.12)" };
-    if (regular) return { label: "⛅ Condiciones regulares", color: "#f59e0b", bg: "rgba(245,158,11,0.12)" };
-    return { label: "✓ Buen día para mostrar", color: "#22c55e", bg: "rgba(34,197,94,0.12)" };
+    if (malo) return { label: "⛈ No ideal para visitas", color: "#b80000", bg: "rgba(239,68,68,0.12)" };
+    if (regular) return { label: "⛅ Condiciones regulares", color: "#d4960c", bg: "rgba(245,158,11,0.12)" };
+    return { label: "✓ Buen día para mostrar", color: "#3abab6", bg: "rgba(34,197,94,0.12)" };
   };
   const climaEmoji = (cod: number, icon: string): string => {
     const night = icon?.endsWith("n");
@@ -402,11 +402,11 @@ export default function DashboardPage() {
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
           .colab-header { margin-bottom: 24px; }
           .colab-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 3px; }
-          .colab-titulo span { color: #cc0000; }
+          .colab-titulo span { color: #990000; }
           .colab-sub { font-size: 12px; color: rgba(255,255,255,0.28); font-family: 'Inter',sans-serif; text-transform: capitalize; }
           .colab-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
           .colab-stat { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 16px 18px; }
-          .colab-stat-val { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #cc0000; line-height: 1; }
+          .colab-stat-val { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #990000; line-height: 1; }
           .colab-stat-label { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 5px; font-family: 'Montserrat',sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
           .colab-seccion { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 12px; }
           .colab-accesos { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
@@ -465,10 +465,10 @@ export default function DashboardPage() {
           --db-s2:        rgba(255,255,255,0.035);
           --db-bd:        #252a35;
           --db-bd2:       #333b4d;
-          --db-red:       #cc0000;
-          --db-red-g:     linear-gradient(135deg, #cc0000 0%, #e8002d 100%);
-          --db-red-soft:  rgba(204,0,0,0.09);
-          --db-red-bd:    rgba(204,0,0,0.28);
+          --db-red:       #990000;
+          --db-red-g:     linear-gradient(135deg, #990000 0%, #b80000 100%);
+          --db-red-soft:  rgba(153,0,0,0.09);
+          --db-red-bd:    rgba(153,0,0,0.28);
           --db-txt:       #f0f4f8;
           --db-txt2:      #8892a4;
           --db-txt3:      #4a5568;
@@ -499,7 +499,7 @@ export default function DashboardPage() {
         .db-panel.red-top::after {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 1px;
-          background: linear-gradient(90deg, var(--db-red) 0%, rgba(204,0,0,0.12) 60%, transparent 100%);
+          background: linear-gradient(90deg, var(--db-red) 0%, rgba(153,0,0,0.12) 60%, transparent 100%);
         }
 
         /* ── Section title ── */
@@ -547,11 +547,11 @@ export default function DashboardPage() {
         .db-clima-stat:last-child { border-right: none; }
         .db-clima-stat-val { font-family: var(--db-mono); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
         .db-clima-stat-label { font-size: 7px; color: var(--db-txt3); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,0.04); color: rgba(204,0,0,0.45); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 7px 18px; width: 100%; transition: color 0.15s; }
+        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,0.04); color: rgba(153,0,0,0.45); font-size: 10px; cursor: pointer; font-family: 'Inter', sans-serif; text-align: center; padding: 7px 18px; width: 100%; transition: color 0.15s; }
         .db-clima-ciudad-btn:hover { color: var(--db-red); }
         .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,0.05); }
         .db-ciudad-input { flex: 1; padding: 7px 10px; background: #0d1017; border: 1px solid var(--db-bd); border-radius: 6px; color: var(--db-txt); font-size: 12px; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.15s; }
-        .db-ciudad-input:focus { border-color: var(--db-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.10); }
+        .db-ciudad-input:focus { border-color: var(--db-red); box-shadow: 0 0 0 3px rgba(153,0,0,0.10); }
         .db-ciudad-input::placeholder { color: var(--db-txt3); }
         .db-ciudad-btn { padding: 7px 12px; background: var(--db-red-g); border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; font-weight: 700; }
         .db-clima-forecast { display: flex; overflow-x: auto; gap: 0; border-top: 1px solid rgba(255,255,255,0.05); scrollbar-width: none; }
@@ -573,9 +573,9 @@ export default function DashboardPage() {
           transition: all 0.16s; position: relative; overflow: hidden;
         }
         .db-acceso::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.014) 0%, transparent 100%); pointer-events: none; }
-        .db-acceso:hover { border-color: var(--db-red-bd); background: var(--db-red-soft); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(204,0,0,0.10); }
+        .db-acceso:hover { border-color: var(--db-red-bd); background: var(--db-red-soft); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(153,0,0,0.10); }
         .db-acceso.primary { border-color: var(--db-red-bd); background: var(--db-red-soft); }
-        .db-acceso.primary:hover { background: rgba(204,0,0,0.13); border-color: var(--db-red); box-shadow: 0 8px 24px rgba(204,0,0,0.18); }
+        .db-acceso.primary:hover { background: rgba(153,0,0,0.13); border-color: var(--db-red); box-shadow: 0 8px 24px rgba(153,0,0,0.18); }
         .db-acceso-icon { font-size: 20px; }
         .db-acceso-label { font-size: 8px; color: var(--db-txt2); font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.05em; line-height: 1.4; text-transform: uppercase; }
         .db-acceso.primary .db-acceso-label { color: var(--db-txt); }
@@ -591,7 +591,7 @@ export default function DashboardPage() {
         .db-ind::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.06) 0%, transparent 100%); }
         .db-ind-label { font-size: 8px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--db-txt3); font-family: 'Montserrat', sans-serif; margin-bottom: 10px; }
         .db-ind-valor { font-family: var(--db-mono); font-size: 22px; font-weight: 700; color: var(--db-txt); line-height: 1; font-variant-numeric: tabular-nums; }
-        .db-ind-valor.verde { color: #10b981; }
+        .db-ind-valor.verde { color: #3abab6; }
         .db-ind-sub { font-size: 10px; color: var(--db-txt3); margin-top: 5px; font-family: 'Inter',sans-serif; }
         .db-ind-cv { font-size: 11px; color: var(--db-txt2); margin-top: 3px; font-family: var(--db-mono); }
         .db-ind-cv b { color: var(--db-txt); font-weight: 600; }
@@ -616,7 +616,7 @@ export default function DashboardPage() {
           font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
           transition: background 0.15s;
         }
-        .db-link-badge:hover { background: rgba(204,0,0,0.16); }
+        .db-link-badge:hover { background: rgba(153,0,0,0.16); }
         .db-empty { font-size: 12px; color: var(--db-txt3); text-align: center; padding: 28px 0; font-family: 'Inter',sans-serif; }
 
         /* ── Skeleton ── */
@@ -674,11 +674,11 @@ export default function DashboardPage() {
               <div style={{ fontSize: 9, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", marginBottom: 10 }}>MOSTRAR WIDGETS</div>
               {Object.entries(WIDGET_LABELS).map(([key, label]) => (
                 <label key={key} style={{ display: "flex", alignItems: "center", gap: 9, padding: "5px 0", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                  <input type="checkbox" checked={widgetsActivos[key]} onChange={() => toggleWidget(key)} style={{ accentColor: "#cc0000", width: 14, height: 14, cursor: "pointer" }} />
+                  <input type="checkbox" checked={widgetsActivos[key]} onChange={() => toggleWidget(key)} style={{ accentColor: "#990000", width: 14, height: 14, cursor: "pointer" }} />
                   <span style={{ fontSize: 12, color: widgetsActivos[key] ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif", userSelect: "none" }}>{label}</span>
                 </label>
               ))}
-              <button onClick={() => setMostrarPersonalizar(false)} style={{ marginTop: 10, width: "100%", padding: "5px 0", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.25)", borderRadius: 5, color: "#cc0000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>LISTO</button>
+              <button onClick={() => setMostrarPersonalizar(false)} style={{ marginTop: 10, width: "100%", padding: "5px 0", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 5, color: "#990000", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 700, cursor: "pointer", letterSpacing: "0.08em" }}>LISTO</button>
             </div>
           )}
         </div>
@@ -694,7 +694,7 @@ export default function DashboardPage() {
         <a href="/padron-gfi" style={{ display:"flex", alignItems:"center", gap:12, background:"rgba(249,115,22,0.08)", border:"1px solid rgba(249,115,22,0.25)", borderRadius:8, padding:"10px 16px", marginBottom:16, textDecoration:"none" }}>
           <span style={{ fontSize:18 }}>⚠️</span>
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:12, fontWeight:700, color:"#f97316", fontFamily:"'Montserrat',sans-serif", letterSpacing:"0.06em" }}>
+            <div style={{ fontSize:12, fontWeight:700, color:"#d4960c", fontFamily:"'Montserrat',sans-serif", letterSpacing:"0.06em" }}>
               {cocirEstado === "suspendido" ? "Matrícula suspendida en COCIR" : cocirEstado === "no_encontrado" ? "Matrícula no encontrada en COCIR" : "Validación COCIR en curso"}
             </div>
             <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginTop:2 }}>
@@ -710,10 +710,10 @@ export default function DashboardPage() {
         <div className="db-sec-titulo">Mi panel</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12}}>
           {[
-            { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/crm/cartera", color: "#cc0000" },
+            { n: miStats.loadingMi ? "…" : miStats.cartera.toString(), l: "Propiedades activas", ic: "🏘️", href: "/crm/cartera", color: "#990000" },
             { n: miStats.loadingMi ? "…" : miStats.crm.toString(), l: "Contactos CRM", ic: "👥", href: "/crm", color: "#3b82f6" },
-            { n: miStats.loadingMi ? "…" : miStats.negocios.toString(), l: "Negocios activos", ic: "🤝", href: "/crm/negocios", color: miStats.negocios > 0 ? "#10b981" : "rgba(255,255,255,0.35)" },
-            { n: miStats.loadingMi ? "…" : miStats.tareas.toString(), l: "Tareas pendientes", ic: "📋", href: "/crm/tareas", color: miStats.tareas > 0 ? "#f97316" : "rgba(255,255,255,0.35)" },
+            { n: miStats.loadingMi ? "…" : miStats.negocios.toString(), l: "Negocios activos", ic: "🤝", href: "/crm/negocios", color: miStats.negocios > 0 ? "#3abab6" : "rgba(255,255,255,0.35)" },
+            { n: miStats.loadingMi ? "…" : miStats.tareas.toString(), l: "Tareas pendientes", ic: "📋", href: "/crm/tareas", color: miStats.tareas > 0 ? "#d4960c" : "rgba(255,255,255,0.35)" },
             { n: miStats.loadingMi ? "…" : miStats.leads.toString(), l: "Leads sin leer", ic: "📬", href: "/mi-web/leads", color: miStats.leads > 0 ? "#e879f9" : "rgba(255,255,255,0.35)" },
             { n: miStats.loadingMi ? "…" : miStats.vistas.toString(), l: "Vistas web", ic: "👁", href: "/crm/estadisticas", color: miStats.vistas > 0 ? "#a78bfa" : "rgba(255,255,255,0.35)" },
           ].map(({ n, l, ic, href, color }) => (
@@ -737,7 +737,7 @@ export default function DashboardPage() {
       {widgetsActivos.agenda && (() => {
         const totalAgenda = agendaHoy.tareas.length + agendaHoy.visitas.length + agendaHoy.recordatorios.length;
         if (!agendaHoy.loading && totalAgenda === 0) return null;
-        const prioColor: Record<string, string> = { urgente: "#ef4444", alta: "#f97316", normal: "#3b82f6", baja: "#6b7280" };
+        const prioColor: Record<string, string> = { urgente: "#b80000", alta: "#d4960c", normal: "#3b82f6", baja: "#6b7280" };
         const tipoIcon: Record<string, string> = { llamar: "📞", whatsapp: "💬", email: "✉️", visita: "🏠", documentacion: "📄", tasacion: "🏷️", publicar: "📢", seguimiento: "🔄", general: "✓" };
         return (
           <div style={{ marginBottom: 16 }}>
@@ -801,7 +801,7 @@ export default function DashboardPage() {
         display:"flex",alignItems:"stretch",
         background:"#111318",
         border:"1px solid #252a35",
-        borderTop:"1px solid rgba(204,0,0,0.35)",
+        borderTop:"1px solid rgba(153,0,0,0.35)",
         borderRadius:10,overflow:"hidden",marginBottom:16,
         flexWrap:"wrap",
         boxShadow:"0 0 0 1px rgba(255,255,255,0.02) inset",
@@ -814,7 +814,7 @@ export default function DashboardPage() {
           <div key={i} style={{flex:1,minWidth:120,padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderRight:"1px solid #1c2030"}}>
             <span style={{fontSize:20,flexShrink:0,opacity:0.85}}>{ic}</span>
             <div>
-              <div style={{fontFamily:"'JetBrains Mono','Courier New',monospace",fontSize:24,fontWeight:700,color:"#cc0000",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{n}</div>
+              <div style={{fontFamily:"'JetBrains Mono','Courier New',monospace",fontSize:24,fontWeight:700,color:"#990000",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{n}</div>
               <div style={{fontSize:9,color:"#4a5568",marginTop:4,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em",fontWeight:700,textTransform:"uppercase"}}>{l}</div>
             </div>
           </div>
@@ -823,11 +823,11 @@ export default function DashboardPage() {
         <div style={{flex:1,minWidth:120,padding:"14px 20px",display:"flex",alignItems:"center",gap:12,borderRight:"1px solid #1c2030"}}>
           <span style={{fontSize:20,flexShrink:0,opacity:0.85}}>👥</span>
           <div>
-            <div style={{fontFamily:"'JetBrains Mono','Courier New',monospace",fontSize:24,fontWeight:700,color:"#cc0000",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{stats.miembros}</div>
+            <div style={{fontFamily:"'JetBrains Mono','Courier New',monospace",fontSize:24,fontWeight:700,color:"#990000",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{stats.miembros}</div>
             <div style={{fontSize:9,color:"#4a5568",marginTop:4,fontFamily:"'Montserrat',sans-serif",letterSpacing:"0.08em",fontWeight:700,textTransform:"uppercase"}}>Miembros activos</div>
             <div style={{display:"flex",alignItems:"center",gap:4,marginTop:5}}>
-              <span style={{width:5,height:5,borderRadius:"50%",background:"#10b981",flexShrink:0,boxShadow:"0 0 5px #10b981"}} />
-              <span style={{fontFamily:"'JetBrains Mono','Courier New',monospace",fontSize:10,fontWeight:600,color:"#10b981"}}>{stats.enLinea} en línea</span>
+              <span style={{width:5,height:5,borderRadius:"50%",background:"#3abab6",flexShrink:0,boxShadow:"0 0 5px #3abab6"}} />
+              <span style={{fontFamily:"'JetBrains Mono','Courier New',monospace",fontSize:10,fontWeight:600,color:"#3abab6"}}>{stats.enLinea} en línea</span>
             </div>
           </div>
         </div>
@@ -845,10 +845,10 @@ export default function DashboardPage() {
           <div style={{fontSize:9,fontFamily:"'Montserrat',sans-serif",fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.25)",marginBottom:14}}>Acciones rápidas</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
             {[
-              {label:"Nueva propiedad",href:"/crm/cartera",color:"#cc0000"},
+              {label:"Nueva propiedad",href:"/crm/cartera",color:"#990000"},
               {label:"Nuevo contacto",href:"/crm",color:"#3b82f6"},
-              {label:"Nueva tarea",href:"/crm/tareas",color:"#f59e0b"},
-              {label:"Nuevo negocio",href:"/crm/negocios",color:"#22c55e"},
+              {label:"Nueva tarea",href:"/crm/tareas",color:"#d4960c"},
+              {label:"Nuevo negocio",href:"/crm/negocios",color:"#3abab6"},
               {label:"Publicar en MIR",href:"/mir?nuevo=ofrecido",color:"rgba(255,255,255,0.3)"},
               {label:"Nueva búsqueda MIR",href:"/mir?nuevo=busqueda",color:"rgba(255,255,255,0.3)"},
             ].map(a => (
@@ -897,7 +897,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="db-clima-stats">
                   <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#60a5fa"}}>{clima.humedad}%</span>
+                    <span className="db-clima-stat-val" style={{color:"#4ab8d8"}}>{clima.humedad}%</span>
                     <span className="db-clima-stat-label">💧 Humedad</span>
                   </div>
                   <div className="db-clima-stat">
@@ -948,7 +948,7 @@ export default function DashboardPage() {
               <span className="db-acceso-icon">{a.icon}</span>
               <span className="db-acceso-label">{a.label}</span>
               {(a.badge ?? 0) > 0 && (
-                <span style={{position:"absolute",top:8,right:8,background:"#f59e0b",color:"#000",fontSize:9,fontWeight:800,padding:"1px 5px",borderRadius:10,fontFamily:"'Montserrat',sans-serif"}}>
+                <span style={{position:"absolute",top:8,right:8,background:"#d4960c",color:"#000",fontSize:9,fontWeight:800,padding:"1px 5px",borderRadius:10,fontFamily:"'Montserrat',sans-serif"}}>
                   {a.badge}
                 </span>
               )}
@@ -1047,7 +1047,7 @@ export default function DashboardPage() {
           {proximosEventos.length === 0
             ? <div className="db-empty">No hay eventos programados</div>
             : proximosEventos.map((e, i) => {
-              const TIPO_COLOR: Record<string,string> = { gfi:"#cc0000", cocir:"#f97316", cir:"#818cf8", comercial:"#eab308" };
+              const TIPO_COLOR: Record<string,string> = { gfi:"#990000", cocir:"#d4960c", cir:"#818cf8", comercial:"#d4960c" };
               return (
                 <a key={e.id} href="/eventos" style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom: i < proximosEventos.length-1 ? "1px solid rgba(255,255,255,0.05)" : "none", textDecoration:"none" }}>
                   <div style={{ width:6, height:6, borderRadius:"50%", background: TIPO_COLOR[e.tipo] ?? "rgba(255,255,255,0.3)", flexShrink:0 }} />
@@ -1079,8 +1079,8 @@ export default function DashboardPage() {
             <div style={{display:"flex",flexDirection:"column",gap:0}}>
               {socialPostsRecientes.map((sp, i) => {
                 const RED_ICONS: Record<string, string> = { facebook: "FB", instagram: "IG", linkedin: "LK", twitter: "X", todas: "ALL" };
-                const RED_COLORS: Record<string, string> = { facebook: "#1877f2", instagram: "#e1306c", linkedin: "#0077b5", twitter: "#1da1f2", todas: "#cc0000" };
-                const color = RED_COLORS[sp.red] ?? "#cc0000";
+                const RED_COLORS: Record<string, string> = { facebook: "#1877f2", instagram: "#e1306c", linkedin: "#0077b5", twitter: "#1da1f2", todas: "#990000" };
+                const color = RED_COLORS[sp.red] ?? "#990000";
                 return (
                   <div key={sp.id} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 0",borderBottom:i < socialPostsRecientes.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none"}}>
                     <span style={{width:28,height:28,borderRadius:6,background:`${color}18`,border:`1px solid ${color}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color,fontFamily:"'Montserrat',sans-serif",flexShrink:0}}>

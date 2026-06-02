@@ -21,16 +21,16 @@ interface Stats {
 }
 
 const ESTADO_COLOR: Record<string, string> = {
-  activa: "#22c55e",
-  reservada: "#eab308",
-  vendida: "#60a5fa",
+  activa: "#3abab6",
+  reservada: "#d4960c",
+  vendida: "#4ab8d8",
   pausada: "#6b7280",
 };
 
 const OP_COLOR: Record<string, string> = {
-  Venta: "#22c55e",
-  Alquiler: "#60a5fa",
-  "Alquiler temporal": "#eab308",
+  Venta: "#3abab6",
+  Alquiler: "#4ab8d8",
+  "Alquiler temporal": "#d4960c",
 };
 
 function formatMoney(n: number, moneda = "USD") {
@@ -203,10 +203,10 @@ export default function EstadisticasPage() {
               {/* KPIs */}
               <div className="est-grid">
                 {card("Total propiedades", stats.total)}
-                {card("Activas", stats.porEstado.activa ?? 0, "disponibles para cerrar", "#22c55e")}
-                {card("Reservadas", stats.porEstado.reservada ?? 0, "en proceso", "#eab308")}
-                {card("Vendidas", stats.porEstado.vendida ?? 0, "cerradas", "#60a5fa")}
-                {card("En sitio web", stats.publicadasWeb, "publicadas online", "#60a5fa")}
+                {card("Activas", stats.porEstado.activa ?? 0, "disponibles para cerrar", "#3abab6")}
+                {card("Reservadas", stats.porEstado.reservada ?? 0, "en proceso", "#d4960c")}
+                {card("Vendidas", stats.porEstado.vendida ?? 0, "cerradas", "#4ab8d8")}
+                {card("En sitio web", stats.publicadasWeb, "publicadas online", "#4ab8d8")}
                 {card("Vistas web", stats.totalVistas, "visitas al sitio", "#a78bfa")}
               </div>
 
@@ -218,7 +218,7 @@ export default function EstadisticasPage() {
                     {Object.entries(stats.valorTotal).map(([moneda, total]) => (
                       <div key={moneda}>
                         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>{moneda}</div>
-                        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#22c55e" }}>{formatMoney(total, moneda)}</div>
+                        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#3abab6" }}>{formatMoney(total, moneda)}</div>
                       </div>
                     ))}
                   </div>
@@ -238,7 +238,7 @@ export default function EstadisticasPage() {
                   <div className="est-panel">
                     <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Por tipo</div>
                     {Object.entries(stats.porTipo).sort(([, a], [, b]) => b - a).map(([tipo, n]) => (
-                      <StatBar key={tipo} label={tipo} count={n} total={stats.total} color="rgba(204,0,0,0.8)" />
+                      <StatBar key={tipo} label={tipo} count={n} total={stats.total} color="rgba(153,0,0,0.8)" />
                     ))}
                   </div>
                 </div>
@@ -251,21 +251,21 @@ export default function EstadisticasPage() {
                   <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Tokko Broker</div>
-                      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: stats.syncStatus.tokko > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>
+                      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: stats.syncStatus.tokko > 0 ? "#3abab6" : "rgba(255,255,255,0.3)" }}>
                         {stats.syncStatus.tokko}
                       </div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>sincronizadas</div>
                     </div>
                     <div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>KiteProp</div>
-                      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: stats.syncStatus.kiteprop > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>
+                      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: stats.syncStatus.kiteprop > 0 ? "#3abab6" : "rgba(255,255,255,0.3)" }}>
                         {stats.syncStatus.kiteprop}
                       </div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>sincronizadas</div>
                     </div>
                     <div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Sin sincronizar</div>
-                      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: stats.syncStatus.sinSync > 0 ? "#eab308" : "#22c55e" }}>
+                      <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: stats.syncStatus.sinSync > 0 ? "#d4960c" : "#3abab6" }}>
                         {stats.syncStatus.sinSync}
                       </div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>solo en GFI</div>
@@ -281,14 +281,14 @@ export default function EstadisticasPage() {
                   <div className="est-panel-2col">
                     <div className="est-panel">
                       <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Por estado</div>
-                      {[["nuevo","#f59e0b"],["contactado","#60a5fa"],["en_seguimiento","#a855f7"],["visita_coordinada","#22c55e"],["cerrado","#6b7280"],["descartado","#6b7280"]].map(([est, color]) => stats.leads.porEstado[est] ? (
+                      {[["nuevo","#d4960c"],["contactado","#4ab8d8"],["en_seguimiento","#a855f7"],["visita_coordinada","#3abab6"],["cerrado","#6b7280"],["descartado","#6b7280"]].map(([est, color]) => stats.leads.porEstado[est] ? (
                         <StatBar key={est} label={est.replace(/_/g," ")} count={stats.leads.porEstado[est]} total={stats.leads.total} color={color} />
                       ) : null)}
                     </div>
                     <div className="est-panel">
                       <div style={{ fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Por origen</div>
                       {Object.entries(stats.leads.porOrigen).sort(([,a],[,b]) => b-a).map(([origen, n]) => (
-                        <StatBar key={origen} label={origen} count={n} total={stats.leads.total} color="rgba(204,0,0,0.8)" />
+                        <StatBar key={origen} label={origen} count={n} total={stats.leads.total} color="rgba(153,0,0,0.8)" />
                       ))}
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export default function EstadisticasPage() {
                     {Object.entries(stats.visitas.porEstado).map(([est, n]) => (
                       <div key={est}>
                         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{est.replace(/_/g," ")}</div>
-                        <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: est === "realizada" ? "#22c55e" : est === "cancelada" ? "#6b7280" : "#fff" }}>{n}</div>
+                        <div style={{ fontSize: 24, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: est === "realizada" ? "#3abab6" : est === "cancelada" ? "#6b7280" : "#fff" }}>{n}</div>
                       </div>
                     ))}
                   </div>
@@ -321,8 +321,8 @@ export default function EstadisticasPage() {
                       <div style={{ fontSize:10, fontFamily:"Montserrat,sans-serif", fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.25)", textAlign:"right" }}>Visitas</div>
                       {agentStats.map(a => (<>
                         <div key={a.nombre} style={{ fontSize:13, color:"rgba(255,255,255,0.8)", paddingTop:6, borderTop:"1px solid rgba(255,255,255,0.05)" }}>{a.nombre}</div>
-                        <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.leads > 0 ? "#60a5fa" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.leads}</div>
-                        <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.visitas > 0 ? "#22c55e" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.visitas}</div>
+                        <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.leads > 0 ? "#4ab8d8" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.leads}</div>
+                        <div style={{ fontSize:18, fontWeight:800, fontFamily:"Montserrat,sans-serif", color: a.visitas > 0 ? "#3abab6" : "rgba(255,255,255,0.2)", textAlign:"right", borderTop:"1px solid rgba(255,255,255,0.05)", paddingTop:6 }}>{a.visitas}</div>
                       </>))}
                     </div>
                   </div>
@@ -336,9 +336,9 @@ export default function EstadisticasPage() {
                   <div className="est-panel">
                     {stats.topVistas.map((p, i) => (
                       <div key={p.id} className="est-reciente">
-                        <div style={{ width: 20, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: i === 0 ? "#f59e0b" : "rgba(255,255,255,0.3)", flexShrink: 0 }}>#{i + 1}</div>
+                        <div style={{ width: 20, fontSize: 11, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: i === 0 ? "#d4960c" : "rgba(255,255,255,0.3)", flexShrink: 0 }}>#{i + 1}</div>
                         <div style={{ flex: 1, fontSize: 13, color: "rgba(255,255,255,0.8)" }}>{p.titulo}</div>
-                        {p.publicada_web && <span style={{ fontSize: 10, color: "#22c55e", marginRight: 8 }}>🌐</span>}
+                        {p.publicada_web && <span style={{ fontSize: 10, color: "#3abab6", marginRight: 8 }}>🌐</span>}
                         <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "Montserrat,sans-serif", color: "#a78bfa", minWidth: 48, textAlign: "right" }}>
                           👁 {p.vistas}
                         </div>
@@ -360,19 +360,19 @@ export default function EstadisticasPage() {
                       </div>
                       <div>
                         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Este mes</div>
-                        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#22c55e" }}>{stats.webLeads.esteMes}</div>
+                        <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#3abab6" }}>{stats.webLeads.esteMes}</div>
                       </div>
                       {stats.webLeads.noLeidos > 0 && (
                         <div>
                           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>Sin leer</div>
-                          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#ef4444" }}>{stats.webLeads.noLeidos}</div>
+                          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#b80000" }}>{stats.webLeads.noLeidos}</div>
                         </div>
                       )}
                     </div>
                     <StatBar label="Consultas de propiedades" count={stats.webLeads.contacto} total={stats.webLeads.total} color="#3b82f6" />
-                    <StatBar label="Solicitudes de tasación" count={stats.webLeads.tasacion} total={stats.webLeads.total} color="#f59e0b" />
+                    <StatBar label="Solicitudes de tasación" count={stats.webLeads.tasacion} total={stats.webLeads.total} color="#d4960c" />
                     <div style={{ marginTop: 14 }}>
-                      <Link href="/mi-web/leads" style={{ fontSize: 11, color: "#60a5fa", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
+                      <Link href="/mi-web/leads" style={{ fontSize: 11, color: "#4ab8d8", fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
                         Ver todos los leads →
                       </Link>
                     </div>

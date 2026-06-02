@@ -13,17 +13,17 @@ interface EventoProximo {
 }
 
 const HEATMAP_DOTS = [
-  {x:52,y:44,r:22,op:0.55,c:"#cc0000"},{x:54,y:46,r:14,op:0.7,c:"#ff3333"},
+  {x:52,y:44,r:22,op:0.55,c:"#990000"},{x:54,y:46,r:14,op:0.7,c:"#ff3333"},
   {x:50,y:43,r:8,op:0.9,c:"#fff"},{x:53,y:45,r:6,op:0.85,c:"#fff"},
-  {x:38,y:30,r:16,op:0.35,c:"#cc0000"},{x:40,y:28,r:9,op:0.5,c:"#cc0000"},
+  {x:38,y:30,r:16,op:0.35,c:"#990000"},{x:40,y:28,r:9,op:0.5,c:"#990000"},
   {x:42,y:32,r:6,op:0.45,c:"#ff6666"},
-  {x:55,y:62,r:14,op:0.4,c:"#cc0000"},{x:57,y:64,r:8,op:0.55,c:"#ff6666"},
-  {x:35,y:48,r:12,op:0.3,c:"#cc0000"},{x:33,y:46,r:7,op:0.4,c:"#cc0000"},
-  {x:58,y:36,r:18,op:0.45,c:"#990000"},{x:60,y:34,r:10,op:0.65,c:"#cc0000"},
+  {x:55,y:62,r:14,op:0.4,c:"#990000"},{x:57,y:64,r:8,op:0.55,c:"#ff6666"},
+  {x:35,y:48,r:12,op:0.3,c:"#990000"},{x:33,y:46,r:7,op:0.4,c:"#990000"},
+  {x:58,y:36,r:18,op:0.45,c:"#990000"},{x:60,y:34,r:10,op:0.65,c:"#990000"},
   {x:59,y:37,r:5,op:0.8,c:"#ff4444"},
-  {x:47,y:55,r:10,op:0.38,c:"#cc0000"},{x:49,y:57,r:6,op:0.5,c:"#ff6666"},
-  {x:44,y:40,r:5,op:0.3,c:"#cc0000"},{x:62,y:50,r:8,op:0.28,c:"#cc0000"},
-  {x:36,y:58,r:6,op:0.22,c:"#cc0000"},{x:64,y:42,r:5,op:0.25,c:"#990000"},
+  {x:47,y:55,r:10,op:0.38,c:"#990000"},{x:49,y:57,r:6,op:0.5,c:"#ff6666"},
+  {x:44,y:40,r:5,op:0.3,c:"#990000"},{x:62,y:50,r:8,op:0.28,c:"#990000"},
+  {x:36,y:58,r:6,op:0.22,c:"#990000"},{x:64,y:42,r:5,op:0.25,c:"#990000"},
   {x:48,y:38,r:4,op:0.35,c:"#fff"},{x:56,y:52,r:4,op:0.4,c:"#ff6666"},
 ];
 
@@ -163,8 +163,8 @@ export default function LandingPage() {
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:wght@300;400;500&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{
-          --red:#cc0000;--red2:#990000;--red3:#ff3333;
-          --red-glow:rgba(204,0,0,0.12);--red-bd:rgba(204,0,0,0.22);
+          --red:#990000;--red2:#990000;--red3:#ff3333;
+          --red-glow:rgba(153,0,0,0.12);--red-bd:rgba(153,0,0,0.22);
           --bg:#000;--s1:#080808;--s2:#0e0e0e;--s3:#141414;
           --bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.1);
           --t1:#FAFAFA;--t2:rgba(250,250,250,0.55);--t3:rgba(250,250,250,0.28);--t4:rgba(250,250,250,0.12);
@@ -175,7 +175,7 @@ export default function LandingPage() {
 
         /* CURSOR */
         .cursor-dot{position:fixed;width:8px;height:8px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .08s,background .2s}
-        .cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(204,0,0,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
+        .cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(153,0,0,0.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
         body:hover .cursor-dot{transform:translate(-50%,-50%) scale(1)}
         a:hover ~ .cursor-dot, button:hover ~ .cursor-dot{transform:translate(-50%,-50%) scale(2)}
 
@@ -201,12 +201,12 @@ export default function LandingPage() {
         .grid-svg{position:absolute;inset:0;width:100%;height:100%;opacity:.15}
         .hero-fade{position:absolute;inset:0;background:linear-gradient(100deg,#000 28%,rgba(0,0,0,.85) 45%,rgba(0,0,0,.3) 70%,rgba(0,0,0,.05) 100%);pointer-events:none;z-index:2}
         .hero-fade-b{position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,#000,transparent);pointer-events:none;z-index:3}
-        .glow-red{position:absolute;top:20%;right:22%;width:500px;height:500px;background:radial-gradient(circle,rgba(204,0,0,.08) 0%,transparent 70%);pointer-events:none;z-index:1}
-        .glow-red2{position:absolute;top:5%;right:45%;width:340px;height:340px;background:radial-gradient(circle,rgba(204,0,0,.04) 0%,transparent 70%);pointer-events:none;z-index:1}
+        .glow-red{position:absolute;top:20%;right:22%;width:500px;height:500px;background:radial-gradient(circle,rgba(153,0,0,.08) 0%,transparent 70%);pointer-events:none;z-index:1}
+        .glow-red2{position:absolute;top:5%;right:45%;width:340px;height:340px;background:radial-gradient(circle,rgba(153,0,0,.04) 0%,transparent 70%);pointer-events:none;z-index:1}
         .hero-body{position:relative;z-index:10;padding:140px 52px 100px;max-width:680px}
         .hero-tag{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;opacity:0;animation:slideUp .8s .1s forwards}
         .hero-tag-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulseRed 2s infinite}
-        @keyframes pulseRed{0%,100%{box-shadow:0 0 0 0 rgba(204,0,0,.5)}50%{box-shadow:0 0 0 10px rgba(204,0,0,0)}}
+        @keyframes pulseRed{0%,100%{box-shadow:0 0 0 0 rgba(153,0,0,.5)}50%{box-shadow:0 0 0 10px rgba(153,0,0,0)}}
         .hero-tag-txt{font-size:10px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--red)}
         h1.hero-title{font-family:'Syne',sans-serif;font-size:clamp(42px,5.8vw,78px);font-weight:800;line-height:.94;letter-spacing:-.03em;color:#fff;text-transform:uppercase;margin-bottom:30px;opacity:0;animation:slideUp .9s .2s forwards}
         h1.hero-title em{font-style:normal;color:var(--red)}
@@ -215,7 +215,7 @@ export default function LandingPage() {
         .hero-sub{font-size:14px;font-weight:300;line-height:1.8;color:var(--t2);margin-bottom:48px;max-width:420px;opacity:0;animation:slideUp .9s .32s forwards}
         .hero-btns{display:flex;gap:12px;flex-wrap:wrap;opacity:0;animation:slideUp .9s .44s forwards}
         .btn-primary{display:inline-flex;flex-direction:column;gap:2px;padding:14px 32px;background:var(--red);color:#fff;border-radius:1px;transition:all .22s;cursor:none}
-        .btn-primary:hover{background:#fff;color:#000;transform:translateY(-2px);box-shadow:0 16px 40px rgba(204,0,0,.25)}
+        .btn-primary:hover{background:#fff;color:#000;transform:translateY(-2px);box-shadow:0 16px 40px rgba(153,0,0,.25)}
         .btn-primary .bm{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
         .btn-primary .bs{font-size:10px;font-weight:400;opacity:.65;letter-spacing:.06em}
         .btn-secondary{display:inline-flex;flex-direction:column;gap:2px;padding:14px 32px;background:transparent;border:1px solid var(--bd2);color:var(--t1);border-radius:1px;transition:all .22s;cursor:none}
@@ -296,7 +296,7 @@ export default function LandingPage() {
         .pauta-num{font-family:'Syne Mono',monospace;font-size:34px;font-weight:400;color:var(--t4);line-height:1;letter-spacing:-.02em}
         .pauta-t{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin-bottom:6px}
         .pauta-d{font-size:12px;font-weight:300;line-height:1.75;color:var(--t2)}
-        .pauta-alert{margin-top:22px;padding:16px 20px;background:rgba(204,0,0,.07);border:1px solid var(--red-bd);border-radius:2px;font-size:11px;font-weight:500;color:#ff8a80;letter-spacing:.04em;line-height:1.65}
+        .pauta-alert{margin-top:22px;padding:16px 20px;background:rgba(153,0,0,.07);border:1px solid var(--red-bd);border-radius:2px;font-size:11px;font-weight:500;color:#ff8a80;letter-spacing:.04em;line-height:1.65}
         .pauta-alert strong{font-weight:700;color:var(--red)}
 
         /* MÓDULOS */
@@ -309,15 +309,15 @@ export default function LandingPage() {
         .mod-card-d{font-size:12px;font-weight:300;line-height:1.72;color:var(--t2);margin-bottom:18px}
         .mod-tag{display:inline-block;padding:3px 10px;border-radius:1px;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
         .mod-tag.t{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80}
-        .mod-tag.r{background:rgba(204,0,0,.08);border:1px solid var(--red-bd);color:#ff8a80}
+        .mod-tag.r{background:rgba(153,0,0,.08);border:1px solid var(--red-bd);color:#ff8a80}
 
         /* GRUPOS */
-        .grupos-banner{background:linear-gradient(135deg,rgba(204,0,0,.08) 0%,rgba(0,0,0,0) 60%);border:1px solid var(--red-bd);border-radius:2px;padding:40px 48px;margin-bottom:40px;position:relative;overflow:hidden}
+        .grupos-banner{background:linear-gradient(135deg,rgba(153,0,0,.08) 0%,rgba(0,0,0,0) 60%);border:1px solid var(--red-bd);border-radius:2px;padding:40px 48px;margin-bottom:40px;position:relative;overflow:hidden}
         .grupos-banner::before{content:'';position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),transparent)}
         .grupos-banner-title{font-family:'Syne',sans-serif;font-size:clamp(20px,2.5vw,32px);font-weight:800;text-transform:uppercase;color:#fff;margin-bottom:10px;letter-spacing:-.02em}
         .grupos-banner-sub{font-size:13px;font-weight:300;color:var(--t2);margin-bottom:28px;max-width:520px;line-height:1.7}
         .grupos-cta{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border-radius:1px;transition:all .22s;cursor:none}
-        .grupos-cta:hover{background:#fff;color:#000;transform:translateY(-2px);box-shadow:0 12px 32px rgba(204,0,0,.3)}
+        .grupos-cta:hover{background:#fff;color:#000;transform:translateY(-2px);box-shadow:0 12px 32px rgba(153,0,0,.3)}
         .grupos-outer{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:1100px}
         .platform-block{}
         .platform-hd{display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--bd);margin-bottom:18px}
@@ -340,7 +340,7 @@ export default function LandingPage() {
         .novedad-card{background:var(--s2);border:1px solid var(--bd);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
         .novedad-card:hover{border-color:var(--red-bd);transform:translateY(-2px)}
         .novedad-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:rgba(255,255,255,0.04)}
-        .novedad-img-placeholder{aspect-ratio:16/9;background:rgba(204,0,0,0.06);border-bottom:1px solid rgba(204,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:32px}
+        .novedad-img-placeholder{aspect-ratio:16/9;background:rgba(153,0,0,0.06);border-bottom:1px solid rgba(153,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:32px}
         .novedad-body{padding:14px 16px;flex:1;display:flex;flex-direction:column}
         .novedad-fuente{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px}
         .novedad-titulo{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
@@ -353,7 +353,7 @@ export default function LandingPage() {
         .evento-prox-card{background:var(--s2);border:1px solid var(--bd);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
         .evento-prox-card:hover{border-color:var(--red-bd);transform:translateY(-2px)}
         .evento-prox-img{width:100%;aspect-ratio:16/9;object-fit:cover;background:rgba(255,255,255,0.04)}
-        .evento-prox-img-placeholder{aspect-ratio:16/9;background:rgba(204,0,0,0.06);border-bottom:1px solid rgba(204,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:32px}
+        .evento-prox-img-placeholder{aspect-ratio:16/9;background:rgba(153,0,0,0.06);border-bottom:1px solid rgba(153,0,0,0.12);display:flex;align-items:center;justify-content:center;font-size:32px}
         .evento-prox-body{padding:14px 16px;flex:1;display:flex;flex-direction:column}
         .evento-prox-fecha{font-size:9px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px}
         .evento-prox-titulo{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:6px}
@@ -365,7 +365,7 @@ export default function LandingPage() {
         .redes-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:1100px;margin-top:48px}
         .red-card{display:flex;flex-direction:column;align-items:center;padding:24px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:2px;text-decoration:none;transition:all .22s;position:relative;overflow:hidden;cursor:none}
         .red-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--red);opacity:0;transition:opacity .3s}
-        .red-card:hover{border-color:var(--red-bd);background:var(--s3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(204,0,0,.1)}
+        .red-card:hover{border-color:var(--red-bd);background:var(--s3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(153,0,0,.1)}
         .red-card:hover::after{opacity:1}
         .red-badge{font-family:'Syne Mono',monospace;font-size:11px;color:var(--red);margin-bottom:10px;letter-spacing:.06em}
         .red-nm{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:3px}
@@ -380,7 +380,7 @@ export default function LandingPage() {
         .p-card{background:var(--s1);border:1px solid var(--bd);border-radius:2px;padding:44px 36px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
         .p-card:hover{border-color:var(--bd2);transform:translateY(-4px)}
         .p-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
-        .p-card.featured{border-color:var(--red-bd);background:linear-gradient(150deg,rgba(204,0,0,.06) 0%,var(--s1) 60%)}
+        .p-card.featured{border-color:var(--red-bd);background:linear-gradient(150deg,rgba(153,0,0,.06) 0%,var(--s1) 60%)}
         .p-card.featured::after{content:'RECOMENDADO';position:absolute;top:0;right:28px;background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:.2em;padding:4px 12px;border-radius:0 0 2px 2px}
         .p-name{font-size:9px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--t4);margin-bottom:18px}
         .p-price{font-family:'Syne',sans-serif;font-size:62px;font-weight:800;color:#fff;line-height:1;letter-spacing:-.04em}
@@ -397,7 +397,7 @@ export default function LandingPage() {
 
         /* CTA */
         .cta-sec{padding:130px 52px;text-align:center;position:relative;overflow:hidden;background:var(--s1);border-top:1px solid var(--bd)}
-        .cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(204,0,0,.08) 0%,transparent 65%);pointer-events:none;animation:glowPulse 4s ease-in-out infinite}
+        .cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(153,0,0,.08) 0%,transparent 65%);pointer-events:none;animation:glowPulse 4s ease-in-out infinite}
         @keyframes glowPulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
         .cta-title{font-family:'Syne',sans-serif;font-size:clamp(36px,5.5vw,68px);font-weight:800;text-transform:uppercase;line-height:.93;letter-spacing:-.03em;color:#fff;margin-bottom:22px;position:relative;z-index:1}
         .cta-title em{font-style:normal;color:var(--red)}
@@ -464,14 +464,14 @@ export default function LandingPage() {
               <g mask="url(#fadeMask)">
                 {Array.from({length:24}).map((_,i)=>(
                   <line key={`h${i}`} x1="0" y1={40+i*36} x2="800" y2={40+i*36}
-                    stroke="rgba(204,0,0,0.06)" strokeWidth={i%4===0?"1.2":"0.5"}/>
+                    stroke="rgba(153,0,0,0.06)" strokeWidth={i%4===0?"1.2":"0.5"}/>
                 ))}
                 {Array.from({length:20}).map((_,i)=>(
                   <line key={`v${i}`} x1={20+i*40} y1="0" x2={20+i*40} y2="900"
-                    stroke="rgba(204,0,0,0.04)" strokeWidth={i%5===0?"1":"0.4"}/>
+                    stroke="rgba(153,0,0,0.04)" strokeWidth={i%5===0?"1":"0.4"}/>
                 ))}
-                <line x1="180" y1="0" x2="580" y2="900" stroke="rgba(204,0,0,0.1)" strokeWidth="1.5"/>
-                <line x1="220" y1="0" x2="620" y2="900" stroke="rgba(204,0,0,0.05)" strokeWidth="0.7"/>
+                <line x1="180" y1="0" x2="580" y2="900" stroke="rgba(153,0,0,0.1)" strokeWidth="1.5"/>
+                <line x1="220" y1="0" x2="620" y2="900" stroke="rgba(153,0,0,0.05)" strokeWidth="0.7"/>
               </g>
             </svg>
 
@@ -487,14 +487,14 @@ export default function LandingPage() {
               {HEATMAP_DOTS.map((d,i)=>(
                 <circle key={i} cx={d.x} cy={d.y} r={d.r} fill={`url(#hg${i})`}/>
               ))}
-              <circle cx="52" cy="44" r="2.2" fill="rgba(204,0,0,0.9)"/>
+              <circle cx="52" cy="44" r="2.2" fill="rgba(153,0,0,0.9)"/>
               <circle cx="58" cy="36" r="1.8" fill="rgba(255,82,82,0.85)"/>
-              <circle cx="40" cy="30" r="1.2" fill="rgba(204,0,0,0.6)"/>
-              <circle cx="55" cy="62" r="1.4" fill="rgba(204,0,0,0.6)"/>
+              <circle cx="40" cy="30" r="1.2" fill="rgba(153,0,0,0.6)"/>
+              <circle cx="55" cy="62" r="1.4" fill="rgba(153,0,0,0.6)"/>
             </svg>
 
             <div style={{position:'absolute',top:'43%',left:'53%',display:'flex',alignItems:'center',gap:8,zIndex:5,pointerEvents:'none'}}>
-              <div style={{width:10,height:10,borderRadius:'50%',background:'#cc0000',boxShadow:'0 0 0 4px rgba(204,0,0,.2),0 0 0 8px rgba(204,0,0,.08)'}}/>
+              <div style={{width:10,height:10,borderRadius:'50%',background:'#990000',boxShadow:'0 0 0 4px rgba(153,0,0,.2),0 0 0 8px rgba(153,0,0,.08)'}}/>
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:'0.22em',textTransform:'uppercase',color:'rgba(255,255,255,0.65)'}}>2da Circ.</span>
             </div>
           </div>
@@ -620,13 +620,13 @@ export default function LandingPage() {
       </RevealSection>
 
       {/* PROPIEDADES PÚBLICAS */}
-      <div style={{background:"rgba(204,0,0,0.06)",border:"1px solid rgba(204,0,0,0.15)",borderRadius:12,margin:"0 auto 48px",maxWidth:1100,padding:"28px 36px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:24,flexWrap:"wrap"}}>
+      <div style={{background:"rgba(153,0,0,0.06)",border:"1px solid rgba(153,0,0,0.15)",borderRadius:12,margin:"0 auto 48px",maxWidth:1100,padding:"28px 36px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:24,flexWrap:"wrap"}}>
         <div>
-          <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(204,0,0,0.8)",marginBottom:6}}>Portal de propiedades</div>
+          <div style={{fontFamily:"Montserrat,sans-serif",fontSize:11,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(153,0,0,0.8)",marginBottom:6}}>Portal de propiedades</div>
           <div style={{fontFamily:"Montserrat,sans-serif",fontSize:20,fontWeight:800,color:"#fff",marginBottom:6}}>Departamentos, casas y más en venta y alquiler</div>
           <div style={{fontSize:13,color:"rgba(255,255,255,0.45)"}}>Buscá entre todas las propiedades publicadas por corredores matriculados en GFI®</div>
         </div>
-        <a href="/propiedades" style={{padding:"12px 28px",background:"#cc0000",border:"none",borderRadius:7,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:12,fontWeight:700,letterSpacing:"0.1em",textDecoration:"none",whiteSpace:"nowrap",flexShrink:0}}>
+        <a href="/propiedades" style={{padding:"12px 28px",background:"#990000",border:"none",borderRadius:7,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:12,fontWeight:700,letterSpacing:"0.1em",textDecoration:"none",whiteSpace:"nowrap",flexShrink:0}}>
           Ver propiedades →
         </a>
       </div>
@@ -657,11 +657,11 @@ export default function LandingPage() {
                 <div style={{fontSize:9,fontWeight:600,letterSpacing:".24em",textTransform:"uppercase",color:"var(--t4)",marginBottom:8}}>{cat}</div>
                 {items.map(({ic,n})=>(
                   <div key={n} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,marginBottom:3,transition:"border-color .2s"}}
-                    onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(204,0,0,0.3)')}
+                    onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(153,0,0,0.3)')}
                     onMouseLeave={e=>(e.currentTarget.style.borderColor='rgba(255,255,255,0.06)')}>
                     <span style={{fontSize:16,flexShrink:0}}>{ic}</span>
                     <span style={{fontSize:12,color:"var(--t1)",flex:1}}>{n}</span>
-                    <span style={{fontSize:10,color:"rgba(204,0,0,0.4)"}}>🔒</span>
+                    <span style={{fontSize:10,color:"rgba(153,0,0,0.4)"}}>🔒</span>
                   </div>
                 ))}
               </div>
@@ -695,7 +695,7 @@ export default function LandingPage() {
                 {ic:"🔔",t:"Alertas y notificaciones",d:"Push, mail y WhatsApp por módulo. Configurables"},
               ].map(({ic,t,d})=>(
                 <div key={t} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"11px 14px",background:"var(--s2)",border:"1px solid var(--bd)",borderRadius:1,transition:"border-color .2s,background .2s"}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(204,0,0,0.25)';e.currentTarget.style.background='var(--s3)'}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(153,0,0,0.25)';e.currentTarget.style.background='var(--s3)'}}
                   onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.06)';e.currentTarget.style.background='var(--s2)'}}>
                   <span style={{fontSize:17,flexShrink:0,marginTop:1}}>{ic}</span>
                   <div style={{flex:1,minWidth:0}}>
@@ -726,8 +726,8 @@ export default function LandingPage() {
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:14}}>
               {eventosProximos.map(ev => {
                 const TIPOS: Record<string,{label:string;color:string}> = {
-                  gfi:{label:"GFI®",color:"#cc0000"},cocir:{label:"COCIR",color:"#f97316"},
-                  cir:{label:"CIR",color:"#818cf8"},comercial:{label:"Comercial",color:"#eab308"},
+                  gfi:{label:"GFI®",color:"#990000"},cocir:{label:"COCIR",color:"#d4960c"},
+                  cir:{label:"CIR",color:"#818cf8"},comercial:{label:"Comercial",color:"#d4960c"},
                   privado:{label:"Privado",color:"#94a3b8"},externo:{label:"Externo",color:"#64748b"},
                 };
                 const tipo = TIPOS[ev.tipo] ?? TIPOS.externo;
@@ -740,9 +740,9 @@ export default function LandingPage() {
                     <div style={{padding:"14px 16px"}}>
                       <div style={{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}}>
                         <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:`1px solid ${tipo.color}40`,color:tipo.color,background:`${tipo.color}15`,fontFamily:"Montserrat,sans-serif"}}>{tipo.label}</span>
-                        <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:`1px solid ${ev.gratuito?"rgba(34,197,94,0.3)":"rgba(234,179,8,0.3)"}`,color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",fontFamily:"Montserrat,sans-serif"}}>{ev.gratuito?"Gratuito":"Con entrada"}</span>
+                        <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:`1px solid ${ev.gratuito?"rgba(34,197,94,0.3)":"rgba(234,179,8,0.3)"}`,color:ev.gratuito?"#3abab6":"#d4960c",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",fontFamily:"Montserrat,sans-serif"}}>{ev.gratuito?"Gratuito":"Con entrada"}</span>
                         {ev.plataforma && ev.plataforma !== "presencial" && (
-                          <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:"1px solid rgba(96,165,250,0.3)",color:"#60a5fa",background:"rgba(96,165,250,0.08)",fontFamily:"Montserrat,sans-serif"}}>Online</span>
+                          <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",padding:"2px 7px",borderRadius:10,border:"1px solid rgba(74,184,216,0.3)",color:"#4ab8d8",background:"rgba(74,184,216,0.08)",fontFamily:"Montserrat,sans-serif"}}>Online</span>
                         )}
                       </div>
                       <div style={{fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:700,color:"#fff",lineHeight:1.4,marginBottom:8}}>{ev.titulo}</div>
@@ -788,7 +788,7 @@ export default function LandingPage() {
             <div className="sec-label" style={{marginBottom:16}}>Próximos eventos GFI</div>
             <div className="eventos-grid">
               {eventosProximos.map(ev => {
-                const TIPO_COLOR: Record<string,string> = { gfi:"#cc0000", cocir:"#f97316", cir:"#818cf8", comercial:"#eab308", externo:"#64748b" };
+                const TIPO_COLOR: Record<string,string> = { gfi:"#990000", cocir:"#d4960c", cir:"#818cf8", comercial:"#d4960c", externo:"#64748b" };
                 const fechaStr = new Date(ev.fecha).toLocaleDateString("es-AR", { weekday:"long", day:"numeric", month:"long" });
                 return (
                   <a key={ev.id} href="/eventos" className="evento-prox-card">
@@ -797,7 +797,7 @@ export default function LandingPage() {
                       : <div className="evento-prox-img-placeholder">📅</div>
                     }
                     <div className="evento-prox-body">
-                      <div className="evento-prox-fecha" style={{color: TIPO_COLOR[ev.tipo] ?? "#cc0000"}}>{fechaStr}</div>
+                      <div className="evento-prox-fecha" style={{color: TIPO_COLOR[ev.tipo] ?? "#990000"}}>{fechaStr}</div>
                       <div className="evento-prox-titulo">{ev.titulo}</div>
                       <div className="evento-prox-lugar">
                         {ev.gratuito ? "Gratuito" : `${ev.moneda ?? "ARS"} ${ev.precio_entrada?.toLocaleString("es-AR") ?? ""}`}

@@ -56,7 +56,7 @@ function fmt(n: number) {
 }
 
 function tipoColor(t: ClienteVIP["tipoVIP"]) {
-  return t === "platinum" ? "#e5e7eb" : t === "gold" ? "#f59e0b" : t === "silver" ? "#9ca3af" : "rgba(255,255,255,0.3)";
+  return t === "platinum" ? "#e5e7eb" : t === "gold" ? "#d4960c" : t === "silver" ? "#9ca3af" : "rgba(255,255,255,0.3)";
 }
 
 function tipoIcon(t: ClienteVIP["tipoVIP"]) {
@@ -179,9 +179,9 @@ export default function ClientesVIP() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 24 }}>
           {[
             { label: "💎 Platinum", val: stats.platinum, color: "#e5e7eb" },
-            { label: "🥇 Gold", val: stats.gold, color: "#f59e0b" },
+            { label: "🥇 Gold", val: stats.gold, color: "#d4960c" },
             { label: "🥈 Silver", val: stats.silver, color: "#9ca3af" },
-            { label: "Hon. generados", val: `USD ${fmt(stats.totalHonorarios)}`, color: "#cc0000" },
+            { label: "Hon. generados", val: `USD ${fmt(stats.totalHonorarios)}`, color: "#990000" },
             { label: "Valor gestionado", val: `USD ${fmt(stats.totalValor)}`, color: "#3b82f6" },
           ].map(kpi => (
             <div key={kpi.label} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "14px 16px" }}>
@@ -196,7 +196,7 @@ export default function ClientesVIP() {
           <input type="text" placeholder="Buscar cliente..." value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{ flex: 1, minWidth: 160, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", padding: "7px 12px", fontFamily: "'Inter',sans-serif", fontSize: 12 }} />
           <div style={{ display: "flex", gap: 6 }}>
             {(["todos","platinum","gold","silver"] as const).map(t => (
-              <button key={t} onClick={() => setFiltroTipo(t)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${filtroTipo === t ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: filtroTipo === t ? "rgba(204,0,0,0.12)" : "transparent", color: filtroTipo === t ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "capitalize" }}>
+              <button key={t} onClick={() => setFiltroTipo(t)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${filtroTipo === t ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: filtroTipo === t ? "rgba(153,0,0,0.12)" : "transparent", color: filtroTipo === t ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer", textTransform: "capitalize" }}>
                 {t === "todos" ? "Todos" : t === "platinum" ? "💎 Platinum" : t === "gold" ? "🥇 Gold" : "🥈 Silver"}
               </button>
             ))}
@@ -218,7 +218,7 @@ export default function ClientesVIP() {
                 {filtrados.length === 0 ? (
                   <tr><td colSpan={8} style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Sin clientes VIP aún</td></tr>
                 ) : filtrados.map((c, idx) => (
-                  <tr key={c.id} onClick={() => setSeleccionado(seleccionado?.id === c.id ? null : c)} style={{ cursor: "pointer", background: seleccionado?.id === c.id ? "rgba(204,0,0,0.06)" : idx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)", borderLeft: seleccionado?.id === c.id ? "2px solid #cc0000" : "2px solid transparent" }}>
+                  <tr key={c.id} onClick={() => setSeleccionado(seleccionado?.id === c.id ? null : c)} style={{ cursor: "pointer", background: seleccionado?.id === c.id ? "rgba(153,0,0,0.06)" : idx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)", borderLeft: seleccionado?.id === c.id ? "2px solid #990000" : "2px solid transparent" }}>
                     <td style={{ padding: "10px 14px" }}>
                       <span style={{ fontSize: 18 }}>{tipoIcon(c.tipoVIP)}</span>
                     </td>
@@ -233,14 +233,14 @@ export default function ClientesVIP() {
                     <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 12, fontWeight: 700, color: "#3b82f6" }}>
                       {c.valorTotalUSD > 0 ? `USD ${fmt(c.valorTotalUSD)}` : "—"}
                     </td>
-                    <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 12, fontWeight: 700, color: "#cc0000" }}>
+                    <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 12, fontWeight: 700, color: "#990000" }}>
                       {c.honorariosEstimados > 0 ? `USD ${fmt(c.honorariosEstimados)}` : "—"}
                     </td>
                     <td style={{ padding: "10px 14px", textAlign: "center", fontSize: 12 }}>{c.interacciones}</td>
                     <td style={{ padding: "10px 14px", textAlign: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "center" }}>
                         <div style={{ width: 32, height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: `${c.probabilidadReferido}%`, background: c.probabilidadReferido >= 60 ? "#22c55e" : "#f97316", borderRadius: 2 }} />
+                          <div style={{ height: "100%", width: `${c.probabilidadReferido}%`, background: c.probabilidadReferido >= 60 ? "#3abab6" : "#d4960c", borderRadius: 2 }} />
                         </div>
                         <span style={{ fontSize: 10 }}>{c.probabilidadReferido.toFixed(0)}%</span>
                       </div>
@@ -256,7 +256,7 @@ export default function ClientesVIP() {
 
           {/* Panel detalle */}
           {seleccionado && (
-            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(204,0,0,0.2)", borderRadius: 12, padding: 20, alignSelf: "start" }}>
+            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 12, padding: 20, alignSelf: "start" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
                 <div>
                   <div style={{ fontSize: 22, marginBottom: 4 }}>{tipoIcon(seleccionado.tipoVIP)}</div>
@@ -268,7 +268,7 @@ export default function ClientesVIP() {
 
               {seleccionado.email && <p style={{ margin: "0 0 4px 0", fontSize: 11, color: "rgba(255,255,255,0.4)" }}>✉ {seleccionado.email}</p>}
               {seleccionado.telefono && (
-                <a href={`https://wa.me/${seleccionado.telefono.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 11, color: "#22c55e", textDecoration: "none", marginBottom: 4 }}>
+                <a href={`https://wa.me/${seleccionado.telefono.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 11, color: "#3abab6", textDecoration: "none", marginBottom: 4 }}>
                   💬 {seleccionado.telefono}
                 </a>
               )}
@@ -299,7 +299,7 @@ export default function ClientesVIP() {
 
               {seleccionado.probabilidadReferido >= 60 && (
                 <div style={{ marginTop: 14, padding: 10, borderRadius: 8, background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
-                  <p style={{ margin: 0, fontSize: 11, color: "#22c55e", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                  <p style={{ margin: 0, fontSize: 11, color: "#3abab6", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
                     🎯 Alto potencial de referido — considerar programa de beneficios
                   </p>
                 </div>

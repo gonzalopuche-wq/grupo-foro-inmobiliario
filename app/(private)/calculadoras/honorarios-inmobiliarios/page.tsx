@@ -28,13 +28,13 @@ type QuienPaga = "propietario" | "inquilino" | "50-50" | "custom";
 
 const C = {
   bg: "#0a0a0a",
-  red: "#cc0000",
+  red: "#990000",
   text: "#e0e0e0",
   card: "#111111",
   border: "#222222",
   muted: "#888888",
-  green: "#22c55e",
-  yellow: "#eab308",
+  green: "#3abab6",
+  yellow: "#d4960c",
 };
 
 const inputStyle: React.CSSProperties = {

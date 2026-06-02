@@ -18,8 +18,8 @@ function formatFechaPost(iso: string) {
 
 function EstadoBadge({ estado }: { estado: string }) {
   const estilos: Record<string, { bg: string; border: string; color: string; label: string }> = {
-    programado: { bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)", color: "#60a5fa", label: "Programado" },
-    publicado:  { bg: "rgba(34,197,94,0.12)",  border: "rgba(34,197,94,0.3)",  color: "#22c55e", label: "Publicado" },
+    programado: { bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)", color: "#4ab8d8", label: "Programado" },
+    publicado:  { bg: "rgba(34,197,94,0.12)",  border: "rgba(34,197,94,0.3)",  color: "#3abab6", label: "Publicado" },
     cancelado:  { bg: "rgba(100,100,100,0.12)", border: "rgba(100,100,100,0.3)", color: "#888",   label: "Cancelado" },
   };
   const s = estilos[estado] ?? estilos.cancelado;
@@ -176,9 +176,9 @@ export default function InstagramPage() {
         .ig-wrap { display: flex; flex-direction: column; gap: 20px; }
         .ig-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .ig-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .ig-titulo span { color: #cc0000; }
+        .ig-titulo span { color: #990000; }
         .ig-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
-        .ig-btn-nuevo { padding: 10px 20px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+        .ig-btn-nuevo { padding: 10px 20px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
         .ig-btn-nuevo:hover { background: #e60000; }
         .ig-chips { display: flex; gap: 8px; flex-wrap: wrap; }
         .ig-chip { padding: 7px 16px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); transition: all 0.2s; }
@@ -195,7 +195,7 @@ export default function InstagramPage() {
         .ig-card-fecha { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Montserrat',sans-serif; font-weight: 700; }
         .ig-card-actions { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-shrink: 0; }
         .ig-btn-sm { padding: 6px 12px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid; transition: all 0.15s; }
-        .ig-btn-pub { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); color: #22c55e; }
+        .ig-btn-pub { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); color: #3abab6; }
         .ig-btn-pub:hover { background: rgba(34,197,94,0.18); }
         .ig-btn-edit { background: transparent; border-color: rgba(255,255,255,0.14); color: rgba(255,255,255,0.4); }
         .ig-btn-edit:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
@@ -203,15 +203,15 @@ export default function InstagramPage() {
         .ig-btn-del:hover { background: rgba(200,0,0,0.1); border-color: #ff4444; color: #ff4444; }
         .ig-empty { padding: 60px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; }
         .ig-spinner { display: flex; align-items: center; justify-content: center; padding: 60px; }
-        .ig-spin { width: 26px; height: 26px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .ig-spin { width: 26px; height: 26px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Modal */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
         .modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 540px; position: relative; max-height: 92vh; overflow-y: auto; }
-        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,#cc0000,transparent); border-radius: 6px 6px 0 0; }
+        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,transparent,#990000,transparent); border-radius: 6px 6px 0 0; }
         .modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-        .modal-titulo span { color: #cc0000; }
+        .modal-titulo span { color: #990000; }
         .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
         .field label { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
         .field input, .field select, .field textarea { padding: 9px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; width: 100%; box-sizing: border-box; }
@@ -221,11 +221,11 @@ export default function InstagramPage() {
         .field textarea { resize: vertical; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 6px; }
         .btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 4px; color: rgba(255,255,255,0.45); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .btn-save { padding: 9px 22px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .btn-save { padding: 9px 22px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .btn-save:hover:not(:disabled) { background: #e60000; }
         .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
+        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         input[type="datetime-local"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }

@@ -31,7 +31,7 @@ interface Zona {
 const ROSARIO: [number, number] = [-32.9442, -60.6505]
 
 function makeZonaIcon(count: number, activos: number) {
-  const color = activos > 0 ? '#cc0000' : '#555'
+  const color = activos > 0 ? '#990000' : '#555'
   const html = `
     <div style="
       background:${color};
@@ -66,7 +66,7 @@ function ZonaMarker({ zona, onSelect }: { zona: Zona; onSelect: (z: Zona) => voi
           </div>
           <button
             onClick={() => onSelect(zona)}
-            style={{ marginTop: 8, background: '#cc0000', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 700 }}
+            style={{ marginTop: 8, background: '#990000', color: '#fff', border: 'none', borderRadius: 4, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontWeight: 700 }}
           >
             Ver lista →
           </button>
@@ -220,12 +220,12 @@ export default function MapaPadron() {
             <button
               onClick={triggearGeocodificacion}
               disabled={geocodificando}
-              style={{ background: 'rgba(204,0,0,0.15)', border: '1px solid rgba(204,0,0,0.3)', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}
+              style={{ background: 'rgba(153,0,0,0.15)', border: '1px solid rgba(153,0,0,0.3)', color: '#fff', padding: '6px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}
             >
               {geocodificando ? 'Geocodificando…' : `Geocodificar lote (${pendientes} pendientes)`}
             </button>
           )}
-          {geoMsg && <span style={{ fontSize: 11, color: '#22c55e' }}>{geoMsg}</span>}
+          {geoMsg && <span style={{ fontSize: 11, color: '#3abab6' }}>{geoMsg}</span>}
         </div>
       </div>
 
@@ -258,12 +258,12 @@ export default function MapaPadron() {
           {zonasFiltradas.slice(0, 20).map(z => (
             <div
               key={z.localidad}
-              style={{ ...s.zonaCard, cursor: 'pointer', borderColor: zonaSeleccionada?.localidad === z.localidad ? 'rgba(204,0,0,0.4)' : 'rgba(255,255,255,0.07)' }}
+              style={{ ...s.zonaCard, cursor: 'pointer', borderColor: zonaSeleccionada?.localidad === z.localidad ? 'rgba(153,0,0,0.4)' : 'rgba(255,255,255,0.07)' }}
               onClick={() => setZonaSeleccionada(zonaSeleccionada?.localidad === z.localidad ? null : z)}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 700, fontSize: 13 }}>{z.localidad}</span>
-                <span style={{ background: 'rgba(204,0,0,0.15)', border: '1px solid rgba(204,0,0,0.25)', borderRadius: 12, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: '#cc0000', fontFamily: 'Montserrat,sans-serif' }}>
+                <span style={{ background: 'rgba(153,0,0,0.15)', border: '1px solid rgba(153,0,0,0.25)', borderRadius: 12, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: '#990000', fontFamily: 'Montserrat,sans-serif' }}>
                   {z.corredores.length}
                 </span>
               </div>
@@ -302,7 +302,7 @@ export default function MapaPadron() {
                       background: c.estado?.toLowerCase().includes('habilitado') || c.estado?.toLowerCase().includes('activo')
                         ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)',
                       color: c.estado?.toLowerCase().includes('habilitado') || c.estado?.toLowerCase().includes('activo')
-                        ? '#22c55e' : 'rgba(255,255,255,0.3)',
+                        ? '#3abab6' : 'rgba(255,255,255,0.3)',
                     }}>
                       {c.estado ?? 'Sin estado'}
                     </span>

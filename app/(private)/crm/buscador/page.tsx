@@ -63,8 +63,8 @@ const MAX_RECIENTES = 10;
 
 const TIPO_CONFIG: Record<TipoResultado, { badge: string; color: string }> = {
   contacto:  { badge: "Contacto",  color: "#3b82f6" },
-  negocio:   { badge: "Negocio",   color: "#f59e0b" },
-  propiedad: { badge: "Propiedad", color: "#22c55e" },
+  negocio:   { badge: "Negocio",   color: "#d4960c" },
+  propiedad: { badge: "Propiedad", color: "#3abab6" },
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ function TextoHighlight({ texto, query }: { texto: string; query: string }) {
       {texto.slice(0, idx)}
       <mark
         style={{
-          background: "#cc0000",
+          background: "#990000",
           color: "#fff",
           borderRadius: 2,
           padding: "0 1px",
@@ -224,8 +224,8 @@ function Spinner() {
         style={{
           width: 32,
           height: 32,
-          border: "3px solid rgba(204,0,0,0.2)",
-          borderTopColor: "#cc0000",
+          border: "3px solid rgba(153,0,0,0.2)",
+          borderTopColor: "#990000",
           borderRadius: "50%",
           animation: "spin 0.8s linear infinite",
           margin: "40px auto",
@@ -564,7 +564,7 @@ export default function BuscadorCRMPage() {
               width: "100%",
               padding: "16px 20px 16px 52px",
               background: "#111",
-              border: `2px solid ${inputFocused ? "#cc0000" : "#333"}`,
+              border: `2px solid ${inputFocused ? "#990000" : "#333"}`,
               borderRadius: 12,
               color: "#fff",
               fontSize: 18,
@@ -585,8 +585,8 @@ export default function BuscadorCRMPage() {
                 transform: "translateY(-50%)",
                 width: 20,
                 height: 20,
-                border: "2px solid rgba(204,0,0,0.2)",
-                borderTopColor: "#cc0000",
+                border: "2px solid rgba(153,0,0,0.2)",
+                borderTopColor: "#990000",
                 borderRadius: "50%",
                 animation: "spin 0.8s linear infinite",
               }}

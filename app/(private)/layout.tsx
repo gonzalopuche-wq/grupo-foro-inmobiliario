@@ -343,7 +343,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   if (isVentana) {
     if (loading) return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -359,7 +359,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#080a0c", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
-      <div style={{ width: 36, height: 36, border: "2px solid rgba(204,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite", boxShadow: "0 0 20px rgba(204,0,0,0.15)" }} />
+      <div style={{ width: 36, height: 36, border: "2px solid rgba(153,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite", boxShadow: "0 0 20px rgba(153,0,0,0.15)" }} />
       <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "#4a5568" }}>GFI® Cargando</div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
@@ -372,7 +372,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
         <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", minWidth: 80 }}>{label}</span>
         <span style={{ fontSize: 13, color: "#fff", fontFamily: "'Inter',sans-serif", fontWeight: 500 }}>{valor}</span>
-        <button onClick={() => copiarBloq(valor, key)} style={{ background: copiadoBloq === key ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, color: copiadoBloq === key ? "#22c55e" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "3px 10px", cursor: "pointer", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>
+        <button onClick={() => copiarBloq(valor, key)} style={{ background: copiadoBloq === key ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 4, color: copiadoBloq === key ? "#3abab6" : "rgba(255,255,255,0.4)", fontSize: 11, padding: "3px 10px", cursor: "pointer", fontFamily: "'Inter',sans-serif", flexShrink: 0 }}>
           {copiadoBloq === key ? "✓" : "Copiar"}
         </button>
       </div>
@@ -398,7 +398,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           {/* Monto — solo CI paga */}
           {tipoUsuario === "colaborador" ? (
             <div style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, padding: "16px 18px", marginBottom: 16, textAlign: "center" }}>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#f59e0b", marginBottom: 6 }}>Tu acceso es gestionado por tu corredor</div>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, color: "#d4960c", marginBottom: 6 }}>Tu acceso es gestionado por tu corredor</div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>El pago de tu suscripción lo realiza el corredor al que estás vinculado. Contactalo para regularizar el acceso.</div>
             </div>
           ) : (
@@ -454,7 +454,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               <button
                 onClick={declararPago}
                 disabled={pagoEnviando}
-                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(200,0,0,0.4)" : "#cc0000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
+                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(200,0,0,0.4)" : "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
               >
                 {pagoEnviando ? "Enviando..." : "Registrar pago"}
               </button>
@@ -462,7 +462,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           ) : (
             <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, padding: "24px 20px", textAlign: "center" }}>
               <div style={{ fontSize: 28, marginBottom: 10 }}>✅</div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 14, color: "#22c55e", marginBottom: 8 }}>Pago registrado</div>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontWeight: 800, fontSize: 14, color: "#3abab6", marginBottom: 8 }}>Pago registrado</div>
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>El equipo GFI confirmará dentro de las 24hs hábiles. Recibirás acceso completo una vez aprobado.</div>
             </div>
           )}
@@ -503,16 +503,16 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         }
         .sidebar-logo-separator {
           width: calc(100% - 36px); height: 1px; margin: 12px 18px 0;
-          background: linear-gradient(90deg, #cc0000 0%, rgba(204,0,0,0.2) 50%, transparent 100%);
+          background: linear-gradient(90deg, #990000 0%, rgba(153,0,0,0.2) 50%, transparent 100%);
         }
         .sidebar-logo-txt { font-family: 'Montserrat',sans-serif; font-size: 14px; font-weight: 900; color: #f0f4f8; letter-spacing: 0.06em; }
-        .sidebar-logo-txt span { color: #cc0000; }
+        .sidebar-logo-txt span { color: #990000; }
         .sidebar-logo-sub { font-size: 8px; color: #4a5568; margin-top: 1px; font-family: 'Montserrat',sans-serif; letter-spacing: 0.18em; text-transform: uppercase; }
 
         /* Nav */
         .sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0 4px; }
         .sidebar-nav::-webkit-scrollbar { width: 2px; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(204,0,0,0.3); border-radius: 1px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(153,0,0,0.3); border-radius: 1px; }
         .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
 
         .sidebar-section-label {
@@ -541,10 +541,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         .nav-item:hover .nav-item-text { transform: translateX(2px); }
         .nav-item.active {
           color: #f0f4f8;
-          background: rgba(204,0,0,0.10);
-          border-left-color: #cc0000;
+          background: rgba(153,0,0,0.10);
+          border-left-color: #990000;
           font-weight: 600;
-          box-shadow: inset 4px 0 12px rgba(204,0,0,0.08);
+          box-shadow: inset 4px 0 12px rgba(153,0,0,0.08);
         }
         .nav-item-icon {
           display: flex; align-items: center; justify-content: center;
@@ -555,8 +555,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           transition: all 0.15s;
         }
         .nav-item.active .nav-item-icon {
-          background: rgba(204,0,0,0.15);
-          border-color: rgba(204,0,0,0.30);
+          background: rgba(153,0,0,0.15);
+          border-color: rgba(153,0,0,0.30);
         }
         .nav-item:hover .nav-item-icon { background: rgba(255,255,255,0.07); }
         .nav-item-text { transition: transform 0.15s; }
@@ -580,11 +580,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         }
         .sidebar-avatar {
           width: 34px; height: 34px; border-radius: 8px;
-          background: rgba(204,0,0,0.12); border: 2px solid rgba(204,0,0,0.30);
+          background: rgba(153,0,0,0.12); border: 2px solid rgba(153,0,0,0.30);
           display: flex; align-items: center; justify-content: center;
           font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 800;
-          color: #cc0000; flex-shrink: 0; overflow: hidden;
-          box-shadow: 0 0 12px rgba(204,0,0,0.15);
+          color: #990000; flex-shrink: 0; overflow: hidden;
+          box-shadow: 0 0 12px rgba(153,0,0,0.15);
         }
         .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .sidebar-perfil-info { flex: 1; min-width: 0; }
@@ -595,7 +595,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           border-radius: 6px; color: #4a5568; cursor: pointer; font-size: 14px;
           transition: all 0.15s; flex-shrink: 0;
         }
-        .sidebar-logout:hover { color: #cc0000; border-color: rgba(204,0,0,0.3); background: rgba(204,0,0,0.08); }
+        .sidebar-logout:hover { color: #990000; border-color: rgba(153,0,0,0.3); background: rgba(153,0,0,0.08); }
 
         /* Main content */
         .main-content { margin-left: 240px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 44px; }
@@ -613,20 +613,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         .topbar::after {
           content: '';
           position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
-          background: linear-gradient(90deg, #cc0000 0%, transparent 40%);
+          background: linear-gradient(90deg, #990000 0%, transparent 40%);
         }
         .topbar-logo {
           font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 900;
           color: #f0f4f8; flex: 1; text-align: center; letter-spacing: 0.05em;
-          text-shadow: 0 0 20px rgba(204,0,0,0.3);
+          text-shadow: 0 0 20px rgba(153,0,0,0.3);
         }
-        .topbar-logo span { color: #cc0000; }
+        .topbar-logo span { color: #990000; }
         .topbar-menu-btn {
           background: none; border: 1px solid #252a35; border-radius: 7px;
           color: #8892a4; font-size: 18px; cursor: pointer; padding: 5px 9px;
           line-height: 1; flex-shrink: 0; transition: all 0.15s;
         }
-        .topbar-menu-btn:hover { border-color: #cc0000; color: #f0f4f8; }
+        .topbar-menu-btn:hover { border-color: #990000; color: #f0f4f8; }
 
         /* Page content */
         .page-content { flex: 1; padding: 24px 28px; }
@@ -665,21 +665,21 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           transition: all 0.15s; position: relative;
           -webkit-tap-highlight-color: transparent; padding: 0; min-height: 44px;
         }
-        .bnav-item.active { color: #cc0000; }
+        .bnav-item.active { color: #990000; }
         .bnav-item.active::after {
           content: '';
           position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-          width: 20px; height: 2px; border-radius: 2px; background: #cc0000;
-          box-shadow: 0 0 8px rgba(204,0,0,0.6);
+          width: 20px; height: 2px; border-radius: 2px; background: #990000;
+          box-shadow: 0 0 8px rgba(153,0,0,0.6);
         }
         .bnav-icon { font-size: 20px; line-height: 1; display: block; }
         .bnav-badge {
           position: absolute; top: 8px; right: calc(50% - 18px);
-          background: #cc0000; color: #fff; font-size: 7px; font-weight: 800;
+          background: #990000; color: #fff; font-size: 7px; font-weight: 800;
           min-width: 14px; height: 14px; border-radius: 7px;
           display: flex; align-items: center; justify-content: center;
           padding: 0 3px; font-family: 'Inter',sans-serif;
-          box-shadow: 0 2px 6px rgba(204,0,0,0.4);
+          box-shadow: 0 2px 6px rgba(153,0,0,0.4);
         }
 
         /* Topbar bell */
@@ -691,10 +691,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           flex-shrink: 0; -webkit-tap-highlight-color: transparent;
           transition: all 0.15s;
         }
-        .topbar-bell:hover { border-color: rgba(204,0,0,0.4); color: #f0f4f8; }
+        .topbar-bell:hover { border-color: rgba(153,0,0,0.4); color: #f0f4f8; }
         .topbar-bell-badge {
           position: absolute; top: 2px; right: 2px;
-          background: #cc0000; color: #fff; font-size: 7px; font-weight: 800;
+          background: #990000; color: #fff; font-size: 7px; font-weight: 800;
           min-width: 13px; height: 13px; border-radius: 7px;
           display: flex; align-items: center; justify-content: center;
           padding: 0 2px; font-family: 'Inter',sans-serif;
@@ -706,7 +706,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           font-size: 8px; font-weight: 800; font-family: 'Inter',sans-serif;
           line-height: 16px; min-width: 16px; text-align: center; flex-shrink: 0;
         }
-        .nav-badge--red { background: #cc0000; color: #fff; box-shadow: 0 1px 4px rgba(204,0,0,0.4); }
+        .nav-badge--red { background: #990000; color: #fff; box-shadow: 0 1px 4px rgba(153,0,0,0.4); }
         .nav-badge--orange { background: rgba(196,74,0,0.85); color: #fff; }
 
         @media (max-width: 900px) {
@@ -843,7 +843,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           </div>
           {suscripcionWarning === "gracia" && (
             <div style={{ background: "rgba(196,74,0,0.08)", borderBottom: "1px solid rgba(196,74,0,0.20)", padding: "10px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontSize: 12, color: "#f97316", fontFamily: "'Inter',sans-serif" }}>
+              <span style={{ fontSize: 12, color: "#d4960c", fontFamily: "'Inter',sans-serif" }}>
                 Tu suscripción venció. Período de gracia activo — realizá el pago para mantener el acceso.
               </span>
               <a href="/suscripcion" style={{ flexShrink: 0, background: "rgba(196,74,0,0.85)", color: "#fff", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: "0.10em", textTransform: "uppercase", padding: "5px 14px", borderRadius: 5, textDecoration: "none" }}>Pagar ahora</a>
@@ -851,7 +851,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           )}
           {suscripcionWarning === "pendiente" && (
             <div style={{ background: "rgba(10,37,64,0.60)", borderBottom: "1px solid rgba(30,74,122,0.30)", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 12, color: "#60a5fa", fontFamily: "'Inter',sans-serif" }}>
+              <span style={{ fontSize: 12, color: "#4ab8d8", fontFamily: "'Inter',sans-serif" }}>
                 Tu pago está siendo verificado. El acceso se mantiene mientras el equipo GFI confirma la transferencia.
               </span>
             </div>

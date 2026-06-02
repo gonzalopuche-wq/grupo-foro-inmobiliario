@@ -637,10 +637,10 @@ function IntegracionesInner() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .int-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 20px; }
         .int-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 9px 12px; font-family: 'Inter',sans-serif; font-size: 13px; width: 100%; outline: none; }
-        .int-input:focus { border-color: rgba(204,0,0,0.5); }
+        .int-input:focus { border-color: rgba(153,0,0,0.5); }
         .int-btn { padding: 8px 18px; border-radius: 7px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; border: none; transition: opacity 0.15s; }
         .int-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .int-btn-red { background: #cc0000; color: #fff; }
+        .int-btn-red { background: #990000; color: #fff; }
         .int-btn-red:hover:not(:disabled) { background: #aa0000; }
         .int-btn-outline { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.15); }
         .int-btn-outline:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
@@ -650,17 +650,17 @@ function IntegracionesInner() {
         .int-table { width: 100%; border-collapse: collapse; font-family: 'Inter',sans-serif; font-size: 12px; }
         .int-table th { color: rgba(255,255,255,0.35); font-weight: 600; text-align: left; padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .int-table td { color: rgba(255,255,255,0.7); padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .int-msg-ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 7px; padding: 10px 14px; color: #22c55e; font-family: 'Inter',sans-serif; font-size: 12px; }
-        .int-msg-err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 7px; padding: 10px 14px; color: #ef4444; font-family: 'Inter',sans-serif; font-size: 12px; }
+        .int-msg-ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 7px; padding: 10px 14px; color: #3abab6; font-family: 'Inter',sans-serif; font-size: 12px; }
+        .int-msg-err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 7px; padding: 10px 14px; color: #b80000; font-family: 'Inter',sans-serif; font-size: 12px; }
         .int-file-zone { border: 2px dashed rgba(255,255,255,0.12); border-radius: 10px; padding: 30px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
-        .int-file-zone:hover { border-color: rgba(204,0,0,0.4); }
+        .int-file-zone:hover { border-color: rgba(153,0,0,0.4); }
       `}</style>
 
       <div style={{ maxWidth: 860, display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Header */}
         <div>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
-            Integraciones <span style={{ color: "#cc0000" }}>CRM</span>
+            Integraciones <span style={{ color: "#990000" }}>CRM</span>
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
             Conectá con Tokko Broker, importá desde CSV/Excel y exportá tus datos
@@ -671,9 +671,9 @@ function IntegracionesInner() {
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} className="int-btn" style={{
-              background: tab === t.id ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)",
-              color: tab === t.id ? "#cc0000" : "rgba(255,255,255,0.5)",
-              border: `1px solid ${tab === t.id ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
+              background: tab === t.id ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
+              color: tab === t.id ? "#990000" : "rgba(255,255,255,0.5)",
+              border: `1px solid ${tab === t.id ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
               padding: "8px 16px",
             }}>
               {t.icon} {t.label}
@@ -692,7 +692,7 @@ function IntegracionesInner() {
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Sincronizá propiedades y contactos desde tu cuenta Tokko</div>
                 </div>
                 {tokkoConfig && (
-                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#3abab6", marginLeft: "auto" }}>CONECTADO</span>
                 )}
               </div>
 
@@ -765,7 +765,7 @@ function IntegracionesInner() {
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Sincronizá propiedades y contactos desde tu cuenta Kiteprop</div>
                 </div>
                 {kitepropConfig && (
-                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#3abab6", marginLeft: "auto" }}>CONECTADO</span>
                 )}
               </div>
 
@@ -826,15 +826,15 @@ function IntegracionesInner() {
                 </div>
                 {kitepropSyncFromRes && (
                   <div style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.5)" }}>
-                    Última importación KP→GFI: <strong style={{ color: "#22c55e" }}>{kitepropSyncFromRes.importados}</strong> nuevas ·{" "}
-                    <strong style={{ color: "#60a5fa" }}>{kitepropSyncFromRes.actualizados}</strong> actualizadas ·{" "}
+                    Última importación KP→GFI: <strong style={{ color: "#3abab6" }}>{kitepropSyncFromRes.importados}</strong> nuevas ·{" "}
+                    <strong style={{ color: "#4ab8d8" }}>{kitepropSyncFromRes.actualizados}</strong> actualizadas ·{" "}
                     <strong style={{ color: kitepropSyncFromRes.errores > 0 ? "#f87171" : "rgba(255,255,255,0.3)" }}>{kitepropSyncFromRes.errores}</strong> errores
                   </div>
                 )}
                 {kitepropSyncToRes && (
                   <div style={{ fontSize: 11, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.5)" }}>
-                    Última exportación GFI→KP: <strong style={{ color: "#22c55e" }}>{kitepropSyncToRes.publicadas}</strong> publicadas ·{" "}
-                    <strong style={{ color: "#60a5fa" }}>{kitepropSyncToRes.actualizadas}</strong> actualizadas ·{" "}
+                    Última exportación GFI→KP: <strong style={{ color: "#3abab6" }}>{kitepropSyncToRes.publicadas}</strong> publicadas ·{" "}
+                    <strong style={{ color: "#4ab8d8" }}>{kitepropSyncToRes.actualizadas}</strong> actualizadas ·{" "}
                     <strong style={{ color: kitepropSyncToRes.errores > 0 ? "#f87171" : "rgba(255,255,255,0.3)" }}>{kitepropSyncToRes.errores}</strong> errores
                   </div>
                 )}
@@ -910,13 +910,13 @@ function IntegracionesInner() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div className="int-card">
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(204,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🏛️</div>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(153,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🏛️</div>
                 <div>
                   <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#fff" }}>Propia MLS</div>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Red MLS del colegio de corredores. Importá el feed de propiedades publicadas.</div>
                 </div>
                 {propiaKey && (
-                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#3abab6", marginLeft: "auto" }}>CONECTADO</span>
                 )}
               </div>
 
@@ -1013,7 +1013,7 @@ function IntegracionesInner() {
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Publicá propiedades en ML Inmuebles con OAuth</div>
                 </div>
                 {mlConectado
-                  ? <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  ? <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#3abab6", marginLeft: "auto" }}>CONECTADO</span>
                   : <span className="int-badge" style={{ background: "rgba(234,179,8,0.1)", color: "#fde047", marginLeft: "auto" }}>SIN CONECTAR</span>
                 }
               </div>
@@ -1065,7 +1065,7 @@ function IntegracionesInner() {
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Sincronizá visitas con Google Calendar automáticamente</div>
                 </div>
                 {googleConectado
-                  ? <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", marginLeft: "auto" }}>CONECTADO</span>
+                  ? <span className="int-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#3abab6", marginLeft: "auto" }}>CONECTADO</span>
                   : <span className="int-badge" style={{ background: "rgba(234,179,8,0.1)", color: "#fde047", marginLeft: "auto" }}>SIN CONECTAR</span>
                 }
               </div>
@@ -1080,7 +1080,7 @@ function IntegracionesInner() {
                 Necesitás habilitar la API de Google Calendar en <strong style={{ color: "rgba(255,255,255,0.6)" }}>console.cloud.google.com</strong> y configurar <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>GOOGLE_CLIENT_ID</code> + <code style={{ background: "rgba(255,255,255,0.06)", padding: "1px 5px", borderRadius: 3 }}>GOOGLE_CLIENT_SECRET</code> en las variables de Vercel.
               </div>
 
-              <button className="int-btn" onClick={() => { if (userId) window.location.href = `/api/google-auth?perfil_id=${userId}`; }} disabled={!userId} style={{ background: "rgba(66,133,244,0.12)", border: "1px solid rgba(66,133,244,0.25)", color: "#60a5fa" }}>
+              <button className="int-btn" onClick={() => { if (userId) window.location.href = `/api/google-auth?perfil_id=${userId}`; }} disabled={!userId} style={{ background: "rgba(66,133,244,0.12)", border: "1px solid rgba(66,133,244,0.25)", color: "#4ab8d8" }}>
                 {googleConectado ? "Reconectar Google Calendar →" : "Conectar con Google Calendar →"}
               </button>
             </div>
@@ -1095,9 +1095,9 @@ function IntegracionesInner() {
               <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
                 {(["contactos", "propiedades"] as ImportTipo[]).map(t => (
                   <button key={t} className="int-btn" onClick={() => { setImportTipo(t); setImportHeaders([]); setImportRows([]); setImportMsg(null); if (fileRef.current) fileRef.current.value = ""; }} style={{
-                    background: importTipo === t ? "rgba(204,0,0,0.15)" : "rgba(255,255,255,0.04)",
-                    color: importTipo === t ? "#cc0000" : "rgba(255,255,255,0.5)",
-                    border: `1px solid ${importTipo === t ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
+                    background: importTipo === t ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.04)",
+                    color: importTipo === t ? "#990000" : "rgba(255,255,255,0.5)",
+                    border: `1px solid ${importTipo === t ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
                   }}>
                     {t === "contactos" ? "👥 Contactos" : "🏠 Propiedades"}
                   </button>
@@ -1190,7 +1190,7 @@ function IntegracionesInner() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#cc0000", marginBottom: 6, fontFamily: "Montserrat,sans-serif" }}>Contactos</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#990000", marginBottom: 6, fontFamily: "Montserrat,sans-serif" }}>Contactos</div>
                   {["nombre / first_name", "apellido / last_name", "email / correo", "telefono / phone / celular", "notas / observaciones"].map(c => (
                     <div key={c} style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", padding: "3px 0", fontFamily: "Inter,sans-serif" }}>• {c}</div>
                   ))}
@@ -1210,9 +1210,9 @@ function IntegracionesInner() {
         {tab === "exportar" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {([
-              { id: "contactos", label: "Contactos CRM", desc: "Nombre, email, teléfono, estado, zona, presupuesto, notas", icon: "👥", color: "#cc0000" },
+              { id: "contactos", label: "Contactos CRM", desc: "Nombre, email, teléfono, estado, zona, presupuesto, notas", icon: "👥", color: "#990000" },
               { id: "propiedades", label: "Cartera de Propiedades", desc: "Código, dirección, tipo, precio, moneda, superficies, estado", icon: "🏠", color: "#3b82f6" },
-              { id: "negocios", label: "Negocios / Pipeline", desc: "Título, etapa, monto, honorarios, fecha estimada", icon: "🤝", color: "#f97316" },
+              { id: "negocios", label: "Negocios / Pipeline", desc: "Título, etapa, monto, honorarios, fecha estimada", icon: "🤝", color: "#d4960c" },
             ] as const).map(item => (
               <div key={item.id} className="int-card" style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{ width: 42, height: 42, borderRadius: 9, background: `${item.color}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
@@ -1258,11 +1258,11 @@ function IntegracionesInner() {
                       <td>
                         <span className="int-badge" style={{
                           background: log.estado === "completado" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
-                          color: log.estado === "completado" ? "#22c55e" : "#ef4444",
+                          color: log.estado === "completado" ? "#3abab6" : "#b80000",
                         }}>{log.estado}</span>
                       </td>
-                      <td style={{ textAlign: "right", color: "#22c55e" }}>{log.filas_importadas}</td>
-                      <td style={{ textAlign: "right", color: log.filas_error > 0 ? "#ef4444" : "rgba(255,255,255,0.3)" }}>{log.filas_error}</td>
+                      <td style={{ textAlign: "right", color: "#3abab6" }}>{log.filas_importadas}</td>
+                      <td style={{ textAlign: "right", color: log.filas_error > 0 ? "#b80000" : "rgba(255,255,255,0.3)" }}>{log.filas_error}</td>
                       <td style={{ color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>{formatFecha(log.created_at)}</td>
                     </tr>
                   ))}

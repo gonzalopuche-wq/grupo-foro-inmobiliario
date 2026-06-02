@@ -74,7 +74,7 @@ export default function RolGuard({
           .rol-guard-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 12px; }
           .rol-guard-icono { font-size: 40px; }
           .rol-guard-titulo { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; }
-          .rol-guard-titulo span { color: #cc0000; }
+          .rol-guard-titulo span { color: #990000; }
           .rol-guard-desc { font-size: 13px; color: rgba(255,255,255,0.3); font-family: 'Inter',sans-serif; text-align: center; max-width: 320px; }
           .rol-guard-rol { font-size: 10px; color: rgba(255,255,255,0.15); font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 8px; }
         `}</style>

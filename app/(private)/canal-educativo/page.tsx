@@ -243,7 +243,7 @@ export default function CanalEducativoPage() {
         .ce-btn-live:hover { background: #ff2222; }
         .ce-btn-plat { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.1); }
         .ce-btn-plat:hover { background: rgba(255,255,255,0.1); }
-        .ce-btn-primary { background: #cc0000; color: #fff; }
+        .ce-btn-primary { background: #990000; color: #fff; }
         .ce-btn-primary:hover { background: #aa0000; }
         .ce-btn-ghost { background: transparent; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
         .ce-btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
@@ -255,8 +255,8 @@ export default function CanalEducativoPage() {
         .ce-consulta-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #818cf8; flex-shrink: 0; }
         .ce-consulta-nombre { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
         .ce-consulta-texto { font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5; }
-        .ce-consulta-destacada { border-left: 2px solid #f59e0b; padding-left: 12px; }
-        .ce-tag-destacada { font-size: 10px; font-weight: 700; color: #f59e0b; letter-spacing: 0.05em; text-transform: uppercase; margin-left: 8px; }
+        .ce-consulta-destacada { border-left: 2px solid #d4960c; padding-left: 12px; }
+        .ce-tag-destacada { font-size: 10px; font-weight: 700; color: #d4960c; letter-spacing: 0.05em; text-transform: uppercase; margin-left: 8px; }
         .ce-archivo-item { padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; margin-bottom: 10px; display: flex; gap: 16px; align-items: center; }
         .ce-archivo-fecha { min-width: 56px; text-align: center; background: rgba(255,255,255,0.05); border-radius: 8px; padding: 8px 6px; }
         .ce-archivo-fecha-dia { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
@@ -266,14 +266,14 @@ export default function CanalEducativoPage() {
         .ce-archivo-mentor { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 3px; }
         .ce-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
         .ce-tab { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.45); transition: all 0.15s; }
-        .ce-tab.active { background: rgba(204,0,0,0.15); border-color: rgba(204,0,0,0.4); color: #ff6666; }
+        .ce-tab.active { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.4); color: #ff6666; }
         .ce-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
         .ce-modal { background: #141414; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
         .ce-modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
         .ce-field { margin-bottom: 14px; }
         .ce-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 6px; display: block; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
         .ce-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
-        .ce-input:focus { outline: none; border-color: rgba(204,0,0,0.4); }
+        .ce-input:focus { outline: none; border-color: rgba(153,0,0,0.4); }
         .ce-select { width: 100%; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
         .ce-row { display: flex; gap: 12px; }
         .ce-row .ce-field { flex: 1; }
@@ -482,7 +482,7 @@ export default function CanalEducativoPage() {
                               {esAdmin && (
                                 <button
                                   onClick={() => toggleDestacada(c)}
-                                  style={{ background: "none", border: "none", cursor: "pointer", color: c.destacada ? "#f59e0b" : "rgba(255,255,255,0.2)", fontSize: 16, padding: "4px 6px" }}
+                                  style={{ background: "none", border: "none", cursor: "pointer", color: c.destacada ? "#d4960c" : "rgba(255,255,255,0.2)", fontSize: 16, padding: "4px 6px" }}
                                   title={c.destacada ? "Quitar destacada" : "Destacar"}
                                 >
                                   ★

@@ -53,19 +53,19 @@ const CATEGORIA_EMOJI: Record<CategoriaObjetivo, string> = {
 };
 
 const COLORES_DISPONIBLES: { label: string; value: string }[] = [
-  { label: "Rojo", value: "#cc0000" },
-  { label: "Verde", value: "#22c55e" },
+  { label: "Rojo", value: "#990000" },
+  { label: "Verde", value: "#3abab6" },
   { label: "Azul", value: "#3b82f6" },
-  { label: "Naranja", value: "#f97316" },
-  { label: "Amarillo", value: "#eab308" },
+  { label: "Naranja", value: "#d4960c" },
+  { label: "Amarillo", value: "#d4960c" },
 ];
 
 const OBJETIVOS_DEFAULT: Objetivo[] = [
-  { id: "1", categoria: "captaciones", nombre: "Captaciones nuevas", meta: 4, real: 2, unidad: "propiedades", color: "#cc0000" },
-  { id: "2", categoria: "ventas", nombre: "Ventas cerradas", meta: 2, real: 1, unidad: "operaciones", color: "#22c55e" },
+  { id: "1", categoria: "captaciones", nombre: "Captaciones nuevas", meta: 4, real: 2, unidad: "propiedades", color: "#990000" },
+  { id: "2", categoria: "ventas", nombre: "Ventas cerradas", meta: 2, real: 1, unidad: "operaciones", color: "#3abab6" },
   { id: "3", categoria: "contactos", nombre: "Nuevos contactos", meta: 20, real: 12, unidad: "contactos", color: "#3b82f6" },
-  { id: "4", categoria: "visitas", nombre: "Visitas realizadas", meta: 15, real: 8, unidad: "visitas", color: "#f97316" },
-  { id: "5", categoria: "honorarios", nombre: "Honorarios cobrados (USD)", meta: 5000, real: 2800, unidad: "USD", color: "#eab308" },
+  { id: "4", categoria: "visitas", nombre: "Visitas realizadas", meta: 15, real: 8, unidad: "visitas", color: "#d4960c" },
+  { id: "5", categoria: "honorarios", nombre: "Honorarios cobrados (USD)", meta: 5000, real: 2800, unidad: "USD", color: "#d4960c" },
   { id: "6", categoria: "custom", nombre: "Publicaciones actualizadas", meta: 10, real: 7, unidad: "propiedades", color: "#3b82f6" },
 ];
 
@@ -109,9 +109,9 @@ function proyectado(real: number, meta: number, anio: number, mes: number): numb
 }
 
 function colorScore(score: number): string {
-  if (score >= 80) return "#22c55e";
-  if (score >= 50) return "#eab308";
-  return "#cc0000";
+  if (score >= 80) return "#3abab6";
+  if (score >= 50) return "#d4960c";
+  return "#990000";
 }
 
 // ─── SVG Gauge ───────────────────────────────────────────────────────────────
@@ -210,8 +210,8 @@ function BarChart({ datos }: { datos: MesHistorico[] }) {
         );
       })}
       {/* 80% target line */}
-      <line x1={padLeft} y1={y80} x2={W - 20} y2={y80} stroke="#eab308" strokeWidth={1.5} strokeDasharray="6 3" />
-      <text x={W - 18} y={y80 - 4} fill="#eab308" fontSize={9} textAnchor="end">objetivo 80%</text>
+      <line x1={padLeft} y1={y80} x2={W - 20} y2={y80} stroke="#d4960c" strokeWidth={1.5} strokeDasharray="6 3" />
+      <text x={W - 18} y={y80 - 4} fill="#d4960c" fontSize={9} textAnchor="end">objetivo 80%</text>
       {/* Bars */}
       {datos.map((d, i) => {
         const x = padLeft + i * gap + Math.floor((gap - barW) / 2);
@@ -219,7 +219,7 @@ function BarChart({ datos }: { datos: MesHistorico[] }) {
         const yBar = padTop + chartH - barH;
         return (
           <g key={i}>
-            <rect x={x} y={yBar} width={barW} height={barH} fill="#cc0000" rx={3} />
+            <rect x={x} y={yBar} width={barW} height={barH} fill="#990000" rx={3} />
             <text x={x + barW / 2} y={yBar - 6} fill="#e0e0e0" fontSize={11} textAnchor="middle">{d.score}%</text>
             <text x={x + barW / 2} y={H - padBottom + 18} fill="#888" fontSize={11} textAnchor="middle">{d.label}</text>
           </g>
@@ -252,7 +252,7 @@ function ModalEdicion({ objetivos, onGuardar, onCerrar }: ModalEdicionProps) {
       meta: 10,
       real: 0,
       unidad: "unidades",
-      color: "#cc0000",
+      color: "#990000",
     };
     setLista((prev) => [...prev, nuevo]);
   };
@@ -340,7 +340,7 @@ function ModalEdicion({ objetivos, onGuardar, onCerrar }: ModalEdicionProps) {
           <button
             onClick={() => onGuardar(lista)}
             style={{
-              background: "#cc0000", border: "none", borderRadius: 8,
+              background: "#990000", border: "none", borderRadius: 8,
               color: "#fff", padding: "10px 24px", cursor: "pointer", fontSize: 14,
               fontFamily: "Inter,sans-serif", fontWeight: 700, marginLeft: "auto",
             }}
@@ -580,7 +580,7 @@ export default function ObjetivosMensualesPage() {
             <div key={obj.id} style={{
               background: "#111111", border: `1px solid ${logrado ? "#1a3a1a" : "#222222"}`,
               borderRadius: 10, padding: "18px 20px",
-              boxShadow: logrado ? "0 0 0 1px #22c55e22" : "none",
+              boxShadow: logrado ? "0 0 0 1px #3abab622" : "none",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                 <div>
@@ -590,12 +590,12 @@ export default function ObjetivosMensualesPage() {
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   {superado && (
-                    <span style={{ fontSize: 12, color: "#22c55e", fontWeight: 700, fontFamily: "Inter,sans-serif" }}>🚀 Superado</span>
+                    <span style={{ fontSize: 12, color: "#3abab6", fontWeight: 700, fontFamily: "Inter,sans-serif" }}>🚀 Superado</span>
                   )}
                   {logrado && !superado && (
                     <span style={{
-                      background: "#0d2b0d", border: "1px solid #22c55e",
-                      color: "#22c55e", fontSize: 11, fontWeight: 700,
+                      background: "#0d2b0d", border: "1px solid #3abab6",
+                      color: "#3abab6", fontSize: 11, fontWeight: 700,
                       fontFamily: "Inter,sans-serif", padding: "2px 8px", borderRadius: 6,
                     }}>LOGRADO</span>
                   )}
@@ -606,7 +606,7 @@ export default function ObjetivosMensualesPage() {
               <div style={{ height: 8, background: "#222222", borderRadius: 4, marginBottom: 10, overflow: "hidden" }}>
                 <div style={{
                   width: `${barPct}%`, height: "100%", borderRadius: 4,
-                  background: logrado ? "#22c55e" : obj.color,
+                  background: logrado ? "#3abab6" : obj.color,
                   transition: "width 0.4s ease",
                 }} />
               </div>
@@ -630,7 +630,7 @@ export default function ObjetivosMensualesPage() {
                         if (e.key === "Escape") setEditandoReal(null);
                       }}
                       style={{
-                        background: "#1a1a1a", border: "1px solid #cc0000", borderRadius: 4,
+                        background: "#1a1a1a", border: "1px solid #990000", borderRadius: 4,
                         color: "#e0e0e0", padding: "2px 6px", fontSize: 13, width: 80,
                         fontFamily: "Inter,sans-serif", outline: "none",
                       }}
@@ -647,7 +647,7 @@ export default function ObjetivosMensualesPage() {
                 </span>
                 <span style={{
                   marginLeft: "auto", fontFamily: "Montserrat,sans-serif", fontWeight: 800,
-                  fontSize: 16, color: logrado ? "#22c55e" : colorScore(p),
+                  fontSize: 16, color: logrado ? "#3abab6" : colorScore(p),
                 }}>
                   {p}%
                 </span>
@@ -698,14 +698,14 @@ export default function ObjetivosMensualesPage() {
               <tr key={i} style={{
                 borderBottom: "1px solid #1a1a1a",
                 background: d.esMejor ? "rgba(234,179,8,0.06)" : "transparent",
-                outline: d.esMejor ? "2px solid #eab308" : "none",
+                outline: d.esMejor ? "2px solid #d4960c" : "none",
               }}>
                 <td style={{ padding: "12px 16px", color: "#e0e0e0", fontWeight: d.esMejor ? 700 : 400 }}>
-                  {d.label} {d.esMejor && <span style={{ fontSize: 11, color: "#eab308", marginLeft: 6 }}>⭐ mejor mes</span>}
+                  {d.label} {d.esMejor && <span style={{ fontSize: 11, color: "#d4960c", marginLeft: 6 }}>⭐ mejor mes</span>}
                 </td>
                 <td style={{ padding: "12px 16px", color: colorScore(d.score), fontWeight: 700 }}>{d.score}%</td>
-                <td style={{ padding: "12px 16px", color: "#22c55e" }}>{d.logrados}</td>
-                <td style={{ padding: "12px 16px", color: d.fallidos > 0 ? "#cc0000" : "#555" }}>{d.fallidos}</td>
+                <td style={{ padding: "12px 16px", color: "#3abab6" }}>{d.logrados}</td>
+                <td style={{ padding: "12px 16px", color: d.fallidos > 0 ? "#990000" : "#555" }}>{d.fallidos}</td>
               </tr>
             ))}
           </tbody>
@@ -736,10 +736,10 @@ export default function ObjetivosMensualesPage() {
         {/* Alerta en riesgo */}
         {enRiesgo.length > 0 && (
           <div style={{
-            background: "#1a0a0a", border: "1px solid #cc0000", borderRadius: 10,
+            background: "#1a0a0a", border: "1px solid #990000", borderRadius: 10,
             padding: "16px 20px", marginBottom: 24,
           }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#cc0000", marginBottom: 8 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 15, color: "#990000", marginBottom: 8 }}>
               ⚠️ Objetivos en riesgo
             </div>
             <ul style={{ margin: 0, padding: "0 0 0 18px", color: "#e0e0e0", fontFamily: "Inter,sans-serif", fontSize: 13 }}>
@@ -763,7 +763,7 @@ export default function ObjetivosMensualesPage() {
                 <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 14, color: "#e0e0e0", marginBottom: 6 }}>
                   {CATEGORIA_EMOJI[obj.categoria]} {obj.nombre}
                 </div>
-                <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: alcanza ? "#22c55e" : "#cc0000" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: alcanza ? "#3abab6" : "#990000" }}>
                   {proy.toLocaleString("es-AR")} <span style={{ fontSize: 12 }}>{obj.unidad}</span>
                 </div>
                 <div style={{ fontSize: 11, color: "#888", marginTop: 4, fontFamily: "Inter,sans-serif" }}>
@@ -772,10 +772,10 @@ export default function ObjetivosMensualesPage() {
                 <div style={{ marginTop: 8 }}>
                   <span style={{
                     fontSize: 12, fontWeight: 700, fontFamily: "Inter,sans-serif",
-                    color: alcanza ? "#22c55e" : "#cc0000",
+                    color: alcanza ? "#3abab6" : "#990000",
                     background: alcanza ? "#0d2b0d" : "#1a0a0a",
                     padding: "3px 8px", borderRadius: 6,
-                    border: `1px solid ${alcanza ? "#22c55e55" : "#cc000055"}`,
+                    border: `1px solid ${alcanza ? "#3abab655" : "#99000055"}`,
                   }}>
                     {alcanza ? "En camino ✓" : "En riesgo ✗"}
                   </span>
@@ -802,15 +802,15 @@ export default function ObjetivosMensualesPage() {
                 const alcanza = proy >= obj.meta;
                 let estado: string;
                 let estadoColor: string;
-                if (logrado) { estado = "Logrado"; estadoColor = "#22c55e"; }
-                else if (alcanza) { estado = "En camino"; estadoColor = "#22c55e"; }
-                else { estado = "En riesgo"; estadoColor = "#cc0000"; }
+                if (logrado) { estado = "Logrado"; estadoColor = "#3abab6"; }
+                else if (alcanza) { estado = "En camino"; estadoColor = "#3abab6"; }
+                else { estado = "En riesgo"; estadoColor = "#990000"; }
                 return (
                   <tr key={obj.id} style={{ borderBottom: "1px solid #1a1a1a" }}>
                     <td style={{ padding: "11px 14px", color: "#e0e0e0" }}>{CATEGORIA_EMOJI[obj.categoria]} {obj.nombre}</td>
                     <td style={{ padding: "11px 14px", color: "#888" }}>{obj.meta.toLocaleString("es-AR")} {obj.unidad}</td>
                     <td style={{ padding: "11px 14px", color: obj.color, fontWeight: 700 }}>{obj.real.toLocaleString("es-AR")}</td>
-                    <td style={{ padding: "11px 14px", color: alcanza || logrado ? "#22c55e" : "#cc4444" }}>{proy.toLocaleString("es-AR")}</td>
+                    <td style={{ padding: "11px 14px", color: alcanza || logrado ? "#3abab6" : "#cc4444" }}>{proy.toLocaleString("es-AR")}</td>
                     <td style={{ padding: "11px 14px", color: estadoColor, fontWeight: 700 }}>{estado}</td>
                   </tr>
                 );
@@ -853,7 +853,7 @@ export default function ObjetivosMensualesPage() {
               fontFamily: "Montserrat,sans-serif", fontWeight: tab === id ? 800 : 600,
               fontSize: 14, color: tab === id ? "#e0e0e0" : "#555",
               padding: "10px 18px",
-              borderBottom: tab === id ? "2px solid #cc0000" : "2px solid transparent",
+              borderBottom: tab === id ? "2px solid #990000" : "2px solid transparent",
               marginBottom: -1,
               transition: "color 0.15s",
             }}

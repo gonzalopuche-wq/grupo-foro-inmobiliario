@@ -160,7 +160,7 @@ export default function Forecast() {
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>HORIZONTE:</span>
             {[3, 6, 9, 12].map(m => (
-              <button key={m} onClick={() => setVistaHorizonteMeses(m)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${vistaHorizonteMeses === m ? "rgba(204,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: vistaHorizonteMeses === m ? "rgba(204,0,0,0.12)" : "transparent", color: vistaHorizonteMeses === m ? "#cc0000" : "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
+              <button key={m} onClick={() => setVistaHorizonteMeses(m)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${vistaHorizonteMeses === m ? "rgba(153,0,0,0.5)" : "rgba(255,255,255,0.1)"}`, background: vistaHorizonteMeses === m ? "rgba(153,0,0,0.12)" : "transparent", color: vistaHorizonteMeses === m ? "#990000" : "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>
                 {m}m
               </button>
             ))}
@@ -185,9 +185,9 @@ export default function Forecast() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
           {[
             { label: "Honorarios Potenciales", val: `USD ${fmt(analisis.totalBruto)}`, sub: `${vistaHorizonteMeses} meses`, color: "rgba(255,255,255,0.7)" },
-            { label: "Honorarios Ponderados", val: `USD ${fmt(analisis.totalPonderado)}`, sub: `Ajustado por probabilidad`, color: "#cc0000" },
+            { label: "Honorarios Ponderados", val: `USD ${fmt(analisis.totalPonderado)}`, sub: `Ajustado por probabilidad`, color: "#990000" },
             { label: "Valor en Pipeline", val: `USD ${fmt(analisis.totalValorUSD)}`, sub: "Propiedades", color: "#3b82f6" },
-            { label: "Deals en Horizonte", val: analisis.procesados.length.toString(), sub: "Negocios activos", color: "#f97316" },
+            { label: "Deals en Horizonte", val: analisis.procesados.length.toString(), sub: "Negocios activos", color: "#d4960c" },
           ].map(kpi => (
             <div key={kpi.label} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "16px 20px" }}>
               <p style={{ margin: "0 0 8px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>{kpi.label}</p>
@@ -215,8 +215,8 @@ export default function Forecast() {
                       <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>USD {fmt(m.ponderado)}</span>
                       <div style={{ width: "100%", position: "relative", height: hBruto, display: "flex", alignItems: "flex-end" }}>
                         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: hBruto, background: "rgba(255,255,255,0.06)", borderRadius: "4px 4px 0 0" }} />
-                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: hPond, background: "rgba(204,0,0,0.5)", borderRadius: "4px 4px 0 0", border: "1px solid rgba(204,0,0,0.3)" }} />
-                        <div style={{ position: "absolute", bottom: hPond, left: 0, right: 0, height: 2, background: "#cc0000", borderRadius: 1 }} />
+                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: hPond, background: "rgba(153,0,0,0.5)", borderRadius: "4px 4px 0 0", border: "1px solid rgba(153,0,0,0.3)" }} />
+                        <div style={{ position: "absolute", bottom: hPond, left: 0, right: 0, height: 2, background: "#990000", borderRadius: 1 }} />
                       </div>
                       <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>{m.label}</span>
                       <span style={{ fontSize: 8, color: "rgba(255,255,255,0.2)" }}>{m.cantidad} deal{m.cantidad !== 1 ? "s" : ""}</span>
@@ -231,7 +231,7 @@ export default function Forecast() {
                 <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Potencial bruto</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 10, height: 10, background: "rgba(204,0,0,0.5)", borderRadius: 2 }} />
+                <div style={{ width: 10, height: 10, background: "rgba(153,0,0,0.5)", borderRadius: 2 }} />
                 <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>Ponderado por prob.</span>
               </div>
             </div>
@@ -247,11 +247,11 @@ export default function Forecast() {
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{data.cantidad} deal{data.cantidad !== 1 ? "s" : ""}</span>
                 </div>
                 <div style={{ height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${(PROB_ETAPA[etapa] ?? 10)}%`, background: PROB_ETAPA[etapa] >= 80 ? "#22c55e" : PROB_ETAPA[etapa] >= 50 ? "#f97316" : "#3b82f6", borderRadius: 3 }} />
+                  <div style={{ height: "100%", width: `${(PROB_ETAPA[etapa] ?? 10)}%`, background: PROB_ETAPA[etapa] >= 80 ? "#3abab6" : PROB_ETAPA[etapa] >= 50 ? "#d4960c" : "#3b82f6", borderRadius: 3 }} />
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
                   <span style={{ fontSize: 9, color: "rgba(255,255,255,0.2)" }}>Prob. {PROB_ETAPA[etapa] ?? 10}%</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#cc0000" }}>USD {fmt(data.valorPonderado)}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#990000" }}>USD {fmt(data.valorPonderado)}</span>
                 </div>
               </div>
             ))}
@@ -276,14 +276,14 @@ export default function Forecast() {
                 <tr key={n.id} style={{ background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}>
                   <td style={{ padding: "9px 14px", fontSize: 13 }}>{n.titulo}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right" }}>
-                    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: n.prob >= 80 ? "rgba(34,197,94,0.12)" : n.prob >= 50 ? "rgba(249,115,22,0.12)" : "rgba(59,130,246,0.12)", color: n.prob >= 80 ? "#22c55e" : n.prob >= 50 ? "#f97316" : "#3b82f6", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
+                    <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: n.prob >= 80 ? "rgba(34,197,94,0.12)" : n.prob >= 50 ? "rgba(249,115,22,0.12)" : "rgba(59,130,246,0.12)", color: n.prob >= 80 ? "#3abab6" : n.prob >= 50 ? "#d4960c" : "#3b82f6", fontFamily: "'Montserrat',sans-serif", fontWeight: 700 }}>
                       {ETAPA_LABEL[n.etapa] ?? n.etapa}
                     </span>
                   </td>
-                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, fontWeight: 700, color: n.prob >= 80 ? "#22c55e" : "rgba(255,255,255,0.6)" }}>{n.prob.toFixed(0)}%</td>
+                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, fontWeight: 700, color: n.prob >= 80 ? "#3abab6" : "rgba(255,255,255,0.6)" }}>{n.prob.toFixed(0)}%</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12 }}>USD {fmt(n.valorUSD)}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 12, color: "rgba(255,255,255,0.6)" }}>USD {fmt(n.honorarios)}</td>
-                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 13, fontWeight: 700, color: "#cc0000" }}>USD {fmt(n.honorariosPonderado)}</td>
+                  <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 13, fontWeight: 700, color: "#990000" }}>USD {fmt(n.honorariosPonderado)}</td>
                   <td style={{ padding: "9px 14px", textAlign: "right", fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
                     {n.fecha_cierre ? mesLabel(n.fecha_cierre) : "—"}
                   </td>

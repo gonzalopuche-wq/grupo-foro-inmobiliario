@@ -51,10 +51,10 @@ function mediana(arr: number[]): number {
 }
 
 function velocidadMercado(prom: number): { label: string; color: string } {
-  if (prom < 30) return { label: "Mercado rápido", color: "#22c55e" };
-  if (prom < 60) return { label: "Normal", color: "#f59e0b" };
-  if (prom < 90) return { label: "Lento", color: "#f97316" };
-  return { label: "Muy lento", color: "#cc0000" };
+  if (prom < 30) return { label: "Mercado rápido", color: "#3abab6" };
+  if (prom < 60) return { label: "Normal", color: "#d4960c" };
+  if (prom < 90) return { label: "Lento", color: "#d4960c" };
+  return { label: "Muy lento", color: "#990000" };
 }
 
 function rangoLabel(precio: number): string {
@@ -440,7 +440,7 @@ export default function TiempoVenta() {
         {data.map((d, i) => {
           const barW = Math.max(2, (d.value / maxVal) * rightW);
           const y = i * rowH + 10;
-          const col = d.color ?? "#cc0000";
+          const col = d.color ?? "#990000";
           return (
             <g key={d.label}>
               <text x={leftW - 6} y={y + rowH / 2 + 4} textAnchor="end" fontSize={10} fill="rgba(255,255,255,0.6)" fontFamily="Inter,sans-serif">
@@ -487,13 +487,13 @@ export default function TiempoVenta() {
           );
         })}
         {/* Area */}
-        <path d={areaD} fill="rgba(204,0,0,0.12)" />
+        <path d={areaD} fill="rgba(153,0,0,0.12)" />
         {/* Line */}
-        <path d={pathD} fill="none" stroke="#cc0000" strokeWidth={2} />
+        <path d={pathD} fill="none" stroke="#990000" strokeWidth={2} />
         {/* Dots + labels */}
         {pts.map((p, i) => (
           <g key={i}>
-            <circle cx={p.x} cy={p.y} r={3} fill="#cc0000" />
+            <circle cx={p.x} cy={p.y} r={3} fill="#990000" />
             <text x={p.x} y={padT + innerH + 18} textAnchor="middle" fontSize={8} fill="rgba(255,255,255,0.4)" fontFamily="Inter,sans-serif" transform={`rotate(-30,${p.x},${padT + innerH + 18})`}>
               {p.d.label}
             </text>
@@ -543,7 +543,7 @@ export default function TiempoVenta() {
         {data.map((d, i) => {
           const cx = padL + (d.precio / maxPrecio) * innerW;
           const cy = padT + innerH - (d.dias / maxDias) * innerH;
-          return <circle key={i} cx={cx} cy={cy} r={3} fill="rgba(204,0,0,0.55)" stroke="rgba(204,0,0,0.2)" strokeWidth={0.5} />;
+          return <circle key={i} cx={cx} cy={cy} r={3} fill="rgba(153,0,0,0.55)" stroke="rgba(153,0,0,0.2)" strokeWidth={0.5} />;
         })}
         {/* Axis labels */}
         <text x={padL + innerW / 2} y={height - 2} textAnchor="middle" fontSize={9} fill="rgba(255,255,255,0.3)" fontFamily="Inter,sans-serif">Precio USD</text>
@@ -554,7 +554,7 @@ export default function TiempoVenta() {
 
   // ── Color para fondo de fila por tiempo ─────────────────────────────────────
   function bgPorDias(dias: number): string {
-    if (dias > 90) return "rgba(204,0,0,0.12)";
+    if (dias > 90) return "rgba(153,0,0,0.12)";
     if (dias > 60) return "rgba(249,115,22,0.08)";
     if (dias > 30) return "rgba(245,158,11,0.06)";
     return "transparent";
@@ -562,10 +562,10 @@ export default function TiempoVenta() {
 
   // ── Barra de color para tiempo (verde=rápido, rojo=lento) ──────────────────
   function colorPorDias(dias: number): string {
-    if (dias < 30) return "#22c55e";
-    if (dias < 60) return "#f59e0b";
-    if (dias < 90) return "#f97316";
-    return "#cc0000";
+    if (dias < 30) return "#3abab6";
+    if (dias < 60) return "#d4960c";
+    if (dias < 90) return "#d4960c";
+    return "#990000";
   }
 
   // ── Loading ──────────────────────────────────────────────────────────────────
@@ -590,7 +590,7 @@ export default function TiempoVenta() {
         <Link href="/crm" style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none", fontSize: 13 }}>← CRM</Link>
         <span style={{ color: "rgba(255,255,255,0.15)" }}>|</span>
         <h1 style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, margin: 0 }}>Tiempo en Mercado</h1>
-        <span style={{ background: "#cc0000", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
+        <span style={{ background: "#990000", color: "#fff", fontSize: 9, fontWeight: 700, fontFamily: "Montserrat,sans-serif", padding: "2px 8px", borderRadius: 4, letterSpacing: "0.1em" }}>ANÁLISIS</span>
       </div>
       <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginBottom: 22 }}>
         ¿Cuánto tardan las propiedades en venderse o alquilarse? — {filtradas.length} propiedades analizadas
@@ -643,7 +643,7 @@ export default function TiempoVenta() {
             label: "Vendidas < 30 días",
             val: cerradas.length > 0 ? `${pctMenos30}%` : "—",
             sub: "Cierres rápidos",
-            color: pctMenos30 > 50 ? "#22c55e" : pctMenos30 > 25 ? "#f59e0b" : "#cc0000",
+            color: pctMenos30 > 50 ? "#3abab6" : pctMenos30 > 25 ? "#d4960c" : "#990000",
           },
           {
             label: "Activas en mercado",
@@ -683,7 +683,7 @@ export default function TiempoVenta() {
             style={{
               background: "transparent",
               border: "none",
-              borderBottom: tab === t.id ? "2px solid #cc0000" : "2px solid transparent",
+              borderBottom: tab === t.id ? "2px solid #990000" : "2px solid transparent",
               color: tab === t.id ? "#fff" : "rgba(255,255,255,0.4)",
               fontFamily: "Montserrat,sans-serif",
               fontSize: 11,
@@ -959,7 +959,7 @@ export default function TiempoVenta() {
           <div style={{ ...labelStyle }}>Detalle de propiedades — {tablaDetalle.length} registros</div>
           <div style={{ display: "flex", gap: 8, fontSize: 10, color: "rgba(255,255,255,0.3)" }}>
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <div style={{ width: 10, height: 10, background: "rgba(204,0,0,0.3)", borderRadius: 2 }} /> &gt;90 días
+              <div style={{ width: 10, height: 10, background: "rgba(153,0,0,0.3)", borderRadius: 2 }} /> &gt;90 días
             </span>
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <div style={{ width: 10, height: 10, background: "rgba(249,115,22,0.2)", borderRadius: 2 }} /> 60–90
@@ -998,7 +998,7 @@ export default function TiempoVenta() {
                   <td style={tdStyle}>
                     <span style={{
                       background: p.estado === "vendido" || p.estado === "alquilado" ? "rgba(34,197,94,0.15)" : "rgba(59,130,246,0.15)",
-                      color: p.estado === "vendido" || p.estado === "alquilado" ? "#22c55e" : "#3b82f6",
+                      color: p.estado === "vendido" || p.estado === "alquilado" ? "#3abab6" : "#3b82f6",
                       fontSize: 9,
                       fontFamily: "Montserrat,sans-serif",
                       fontWeight: 700,

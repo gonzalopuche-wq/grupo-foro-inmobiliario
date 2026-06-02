@@ -49,7 +49,7 @@ const ESTADO_CONFIG: Record<EstadoTasacion, { label: string; bg: string; color: 
   programada:    { label: "Programada",    bg: "rgba(99,102,241,0.15)",  color: "#818cf8" },
   realizada:     { label: "Realizada",     bg: "rgba(34,197,94,0.15)",   color: "#4ade80" },
   cancelada:     { label: "Cancelada",     bg: "rgba(239,68,68,0.15)",   color: "#f87171" },
-  sin_respuesta: { label: "Sin respuesta", bg: "rgba(245,158,11,0.15)",  color: "#fbbf24" },
+  sin_respuesta: { label: "Sin respuesta", bg: "rgba(245,158,11,0.15)",  color: "#d4960c" },
 };
 
 const TIPOS_PROPIEDAD: TipoPropiedad[] = [
@@ -518,9 +518,9 @@ export default function AgendaTasacionesPage() {
       fontSize: 11,
       fontWeight: 700,
       cursor: "pointer",
-      background: active ? "rgba(204,0,0,0.2)" : "rgba(255,255,255,0.04)",
-      color: active ? "#cc0000" : "rgba(255,255,255,0.55)",
-      borderColor: active ? "rgba(204,0,0,0.4)" : "rgba(255,255,255,0.1)",
+      background: active ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.04)",
+      color: active ? "#990000" : "rgba(255,255,255,0.55)",
+      borderColor: active ? "rgba(153,0,0,0.4)" : "rgba(255,255,255,0.1)",
     }),
     card: {
       background: "#0d0d0d",
@@ -566,7 +566,7 @@ export default function AgendaTasacionesPage() {
                 margin: 0,
                 color: "#fff",
               }}>
-                Agenda de <span style={{ color: "#cc0000" }}>Tasaciones</span>
+                Agenda de <span style={{ color: "#990000" }}>Tasaciones</span>
               </h1>
               <p style={{ margin: "4px 0 0", fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
                 Gestioná tasaciones programadas y realizadas
@@ -588,7 +588,7 @@ export default function AgendaTasacionesPage() {
               onClick={mostrarForm && editandoId === null ? () => setMostrarForm(false) : abrirNuevo}
               style={{
                 padding: "8px 16px",
-                background: "#cc0000",
+                background: "#990000",
                 color: "#fff",
                 border: "none",
                 borderRadius: 5,
@@ -656,7 +656,7 @@ export default function AgendaTasacionesPage() {
             <div style={{
               ...s.card,
               marginBottom: 20,
-              border: "1px solid rgba(204,0,0,0.25)",
+              border: "1px solid rgba(153,0,0,0.25)",
             }}>
               <div style={{
                 fontFamily: "Montserrat,sans-serif",
@@ -816,7 +816,7 @@ export default function AgendaTasacionesPage() {
                   onClick={guardarForm}
                   style={{
                     padding: "8px 20px",
-                    background: "#cc0000",
+                    background: "#990000",
                     color: "#fff",
                     border: "none",
                     borderRadius: 5,
@@ -884,8 +884,8 @@ export default function AgendaTasacionesPage() {
                     <div
                       key={diaStr}
                       style={{
-                        background: esHoy ? "rgba(204,0,0,0.05)" : "#0d0d0d",
-                        border: `1px solid ${esHoy ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.07)"}`,
+                        background: esHoy ? "rgba(153,0,0,0.05)" : "#0d0d0d",
+                        border: `1px solid ${esHoy ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.07)"}`,
                         borderRadius: 8,
                         padding: "10px 8px",
                         minHeight: 180,
@@ -899,7 +899,7 @@ export default function AgendaTasacionesPage() {
                           fontWeight: 700,
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
-                          color: esHoy ? "#cc0000" : "rgba(255,255,255,0.3)",
+                          color: esHoy ? "#990000" : "rgba(255,255,255,0.3)",
                           marginBottom: 2,
                         }}>
                           {DIAS_SEMANA_SHORT[idx]}
@@ -908,7 +908,7 @@ export default function AgendaTasacionesPage() {
                           fontFamily: "Montserrat,sans-serif",
                           fontSize: 18,
                           fontWeight: 800,
-                          color: esHoy ? "#cc0000" : esPasado ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.8)",
+                          color: esHoy ? "#990000" : esPasado ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.8)",
                           lineHeight: 1,
                         }}>
                           {dia.getDate()}
@@ -917,7 +917,7 @@ export default function AgendaTasacionesPage() {
                           <div style={{
                             marginTop: 4,
                             display: "inline-block",
-                            background: "#cc0000",
+                            background: "#990000",
                             color: "#fff",
                             fontSize: 8,
                             fontFamily: "Montserrat,sans-serif",
@@ -1191,7 +1191,7 @@ export default function AgendaTasacionesPage() {
                 <KpiCard
                   valor={kpis.promedioValor > 0 ? fmtValor(Math.round(kpis.promedioValor)) : "—"}
                   label="Valor promedio tasado"
-                  color="#fbbf24"
+                  color="#d4960c"
                 />
                 <KpiCard
                   valor={String(kpis.pendientesSem)}

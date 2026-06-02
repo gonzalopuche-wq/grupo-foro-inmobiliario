@@ -116,8 +116,8 @@ function proximoCumpleAnios(fechaNacimiento: string): Date {
 }
 
 function prioridadColor(p: PrioridadRecordatorio): string {
-  if (p === "alta") return "#cc0000";
-  if (p === "media") return "#eab308";
+  if (p === "alta") return "#990000";
+  if (p === "media") return "#d4960c";
   return "#3b82f6";
 }
 
@@ -135,8 +135,8 @@ function tipoLabel(t: TipoRecordatorio): string {
 function tipoColor(t: TipoRecordatorio): string {
   if (t === "auto_inactividad") return "#3b82f6";
   if (t === "auto_cumpleanos") return "#a855f7";
-  if (t === "auto_seguimiento_tasacion") return "#cc0000";
-  if (t === "auto_vencimiento_contrato") return "#f97316";
+  if (t === "auto_seguimiento_tasacion") return "#990000";
+  if (t === "auto_vencimiento_contrato") return "#d4960c";
   return "#6b7280";
 }
 
@@ -586,7 +586,7 @@ export default function RecordatoriosPage() {
     fontWeight: 700,
     letterSpacing: "0.08em",
     cursor: "pointer",
-    background: active ? "#cc0000" : "rgba(255,255,255,0.06)",
+    background: active ? "#990000" : "rgba(255,255,255,0.06)",
     color: active ? "#fff" : "rgba(255,255,255,0.45)",
     transition: "all 0.15s",
   });
@@ -636,7 +636,7 @@ export default function RecordatoriosPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
-        .rec-input:focus { border-color: rgba(204,0,0,0.5) !important; }
+        .rec-input:focus { border-color: rgba(153,0,0,0.5) !important; }
         .rec-card:hover { border-color: rgba(255,255,255,0.14) !important; }
         @media (max-width: 600px) {
           .rec-grid-2 { grid-template-columns: 1fr !important; }
@@ -687,7 +687,7 @@ export default function RecordatoriosPage() {
             </div>
           </div>
           <button
-            style={btnStyle("#cc0000", "#fff")}
+            style={btnStyle("#990000", "#fff")}
             onClick={() => {
               setForm(FORM_VACIO);
               setEditId(null);
@@ -709,7 +709,7 @@ export default function RecordatoriosPage() {
               <span
                 style={{
                   marginLeft: 6,
-                  background: tab === "pendientes" ? "rgba(255,255,255,0.25)" : "#cc0000",
+                  background: tab === "pendientes" ? "rgba(255,255,255,0.25)" : "#990000",
                   color: "#fff",
                   borderRadius: 10,
                   padding: "1px 7px",
@@ -783,8 +783,8 @@ export default function RecordatoriosPage() {
                       <span
                         style={{
                           marginLeft: 8,
-                          background: "#cc000033",
-                          color: "#cc0000",
+                          background: "#99000033",
+                          color: "#990000",
                           borderRadius: 10,
                           padding: "1px 8px",
                           fontSize: 11,
@@ -998,7 +998,7 @@ export default function RecordatoriosPage() {
                             <button
                               style={btnStyle(
                                 "rgba(34,197,94,0.12)",
-                                "#22c55e",
+                                "#3abab6",
                                 "1px solid rgba(34,197,94,0.3)"
                               )}
                               onClick={() => completarManual(r.id)}
@@ -1017,9 +1017,9 @@ export default function RecordatoriosPage() {
                             </button>
                             <button
                               style={btnStyle(
-                                "rgba(204,0,0,0.1)",
-                                "#cc0000",
-                                "1px solid rgba(204,0,0,0.25)"
+                                "rgba(153,0,0,0.1)",
+                                "#990000",
+                                "1px solid rgba(153,0,0,0.25)"
                               )}
                               onClick={() => eliminarManual(r.id)}
                             >
@@ -1098,9 +1098,9 @@ export default function RecordatoriosPage() {
                             </button>
                             <button
                               style={btnStyle(
-                                "rgba(204,0,0,0.08)",
-                                "#cc0000",
-                                "1px solid rgba(204,0,0,0.2)"
+                                "rgba(153,0,0,0.08)",
+                                "#990000",
+                                "1px solid rgba(153,0,0,0.2)"
                               )}
                               onClick={() => eliminarManual(r.id)}
                             >
@@ -1251,7 +1251,7 @@ export default function RecordatoriosPage() {
               </button>
               <button
                 style={{
-                  ...btnStyle("#cc0000", "#fff"),
+                  ...btnStyle("#990000", "#fff"),
                   opacity: !form.titulo.trim() ? 0.5 : 1,
                   cursor: !form.titulo.trim() ? "not-allowed" : "pointer",
                 }}
@@ -1280,9 +1280,9 @@ export default function RecordatoriosPage() {
               {historial.length > 0 && (
                 <button
                   style={btnStyle(
-                    "rgba(204,0,0,0.1)",
-                    "#cc0000",
-                    "1px solid rgba(204,0,0,0.25)"
+                    "rgba(153,0,0,0.1)",
+                    "#990000",
+                    "1px solid rgba(153,0,0,0.25)"
                   )}
                   onClick={vaciarHistorial}
                 >
@@ -1379,7 +1379,7 @@ export default function RecordatoriosPage() {
                     </span>
                     <span
                       style={badgeStyle(
-                        r.estado === "completado" ? "#22c55e" : "#6b7280"
+                        r.estado === "completado" ? "#3abab6" : "#6b7280"
                       )}
                     >
                       {r.estado === "completado" ? "Completado" : "Ignorado"}

@@ -177,10 +177,10 @@ export default function AnalisisZona() {
                 {[
                   { label: "Propiedades analizadas", val: globalStats.total.toString(), color: "#3b82f6" },
                   { label: "Zonas / Barrios", val: globalStats.zonas.toString(), color: "#a78bfa" },
-                  { label: "Precio/m² promedio", val: fmtUSD(globalStats.pm2Promedio) + "/m²", color: "#22c55e" },
-                  { label: "Precio/m² mediana", val: fmtUSD(globalStats.pm2Mediana) + "/m²", color: "#f59e0b" },
+                  { label: "Precio/m² promedio", val: fmtUSD(globalStats.pm2Promedio) + "/m²", color: "#3abab6" },
+                  { label: "Precio/m² mediana", val: fmtUSD(globalStats.pm2Mediana) + "/m²", color: "#d4960c" },
                   { label: "Rango (mín)", val: fmtUSD(globalStats.pm2Min) + "/m²", color: "#888" },
-                  { label: "Rango (máx)", val: fmtUSD(globalStats.pm2Max) + "/m²", color: "#cc0000" },
+                  { label: "Rango (máx)", val: fmtUSD(globalStats.pm2Max) + "/m²", color: "#990000" },
                 ].map((kpi, i) => (
                   <div key={i} style={{ background: "#111", border: `1px solid ${kpi.color}33`, borderRadius: 10, padding: "12px 16px" }}>
                     <div style={{ fontSize: 10, color: "#888", fontFamily: "Montserrat, sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{kpi.label}</div>
@@ -210,8 +210,8 @@ export default function AnalisisZona() {
                         onClick={() => setZonaSeleccionada(isSelected ? null : zona.zona)}
                         style={{
                           marginBottom: 10, cursor: "pointer", padding: "8px 10px", borderRadius: 6,
-                          background: isSelected ? "#cc000015" : "transparent",
-                          border: `1px solid ${isSelected ? "#cc0000" : "transparent"}`,
+                          background: isSelected ? "#99000015" : "transparent",
+                          border: `1px solid ${isSelected ? "#990000" : "transparent"}`,
                           transition: "all 0.15s",
                         }}
                       >
@@ -222,14 +222,14 @@ export default function AnalisisZona() {
                             <span style={{ fontSize: 10, color: "#555" }}>({zona.count} prop.)</span>
                           </div>
                           <div style={{ textAlign: "right" }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: i < 3 ? "#f59e0b" : "#22c55e" }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: i < 3 ? "#d4960c" : "#3abab6" }}>
                               {fmtUSD(zona.pm2Mediana)}/m²
                             </span>
                           </div>
                         </div>
                         <div style={{ height: 8, background: "#1a1a1a", borderRadius: 4, overflow: "hidden", display: "flex", gap: 1 }}>
                           {/* Barra de mediana */}
-                          <div style={{ width: `${pct}%`, background: i < 3 ? "#f59e0b" : "#cc0000", borderRadius: 4, position: "relative" }}>
+                          <div style={{ width: `${pct}%`, background: i < 3 ? "#d4960c" : "#990000", borderRadius: 4, position: "relative" }}>
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 12, marginTop: 3 }}>
@@ -244,9 +244,9 @@ export default function AnalisisZona() {
 
                 {/* Panel detalle zona */}
                 {zonaDetalle && (
-                  <div style={{ background: "#111", border: "1px solid #cc0000", borderRadius: 10, padding: "20px", alignSelf: "start", position: "sticky", top: 16 }}>
+                  <div style={{ background: "#111", border: "1px solid #990000", borderRadius: 10, padding: "20px", alignSelf: "start", position: "sticky", top: 16 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                      <h2 style={{ margin: 0, fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000" }}>
+                      <h2 style={{ margin: 0, fontSize: 14, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000" }}>
                         📍 {zonaDetalle.zona}
                       </h2>
                       <button onClick={() => setZonaSeleccionada(null)} style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: 18 }}>×</button>
@@ -254,8 +254,8 @@ export default function AnalisisZona() {
 
                     {[
                       { label: "Propiedades", val: zonaDetalle.count.toString() },
-                      { label: "Precio mediano/m²", val: fmtUSD(zonaDetalle.pm2Mediana) + "/m²", color: "#f59e0b" },
-                      { label: "Precio promedio/m²", val: fmtUSD(zonaDetalle.pm2Promedio) + "/m²", color: "#22c55e" },
+                      { label: "Precio mediano/m²", val: fmtUSD(zonaDetalle.pm2Mediana) + "/m²", color: "#d4960c" },
+                      { label: "Precio promedio/m²", val: fmtUSD(zonaDetalle.pm2Promedio) + "/m²", color: "#3abab6" },
                       { label: "Rango m²", val: `${fmtUSD(zonaDetalle.pm2Min)} — ${fmtUSD(zonaDetalle.pm2Max)}` },
                       { label: "Precio promedio", val: fmtUSD(zonaDetalle.precioPromedio) },
                       { label: "Sup. promedio", val: `${zonaDetalle.supPromedio.toFixed(0)} m²` },
@@ -276,7 +276,7 @@ export default function AnalisisZona() {
                           <span style={{ fontSize: 12, color: "#ccc" }}>{tipo}</span>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <div style={{ height: 6, width: 60, background: "#1a1a1a", borderRadius: 3, overflow: "hidden" }}>
-                              <div style={{ height: "100%", width: `${(count / zonaDetalle.count) * 100}%`, background: "#cc0000", borderRadius: 3 }} />
+                              <div style={{ height: "100%", width: `${(count / zonaDetalle.count) * 100}%`, background: "#990000", borderRadius: 3 }} />
                             </div>
                             <span style={{ fontSize: 11, color: "#666", minWidth: 20 }}>{count}</span>
                           </div>

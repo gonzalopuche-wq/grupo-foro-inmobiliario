@@ -19,10 +19,10 @@ interface Idea {
 const CATEGORIAS = ['Plataforma', 'CRM', 'Capacitación', 'Comunidad', 'Legal', 'Otro']
 const ESTADOS: Record<string, { label: string; color: string }> = {
   pendiente:    { label: 'Pendiente',    color: 'rgba(255,255,255,0.3)' },
-  evaluando:    { label: 'Evaluando',    color: '#f59e0b' },
-  aprobada:     { label: 'Aprobada',     color: '#22c55e' },
+  evaluando:    { label: 'Evaluando',    color: '#d4960c' },
+  aprobada:     { label: 'Aprobada',     color: '#3abab6' },
   implementada: { label: 'Implementada', color: '#3b82f6' },
-  descartada:   { label: 'Descartada',   color: '#ef4444' },
+  descartada:   { label: 'Descartada',   color: '#b80000' },
 }
 
 const FORM_VACIO = { titulo: '', descripcion: '', categoria: 'Plataforma' }
@@ -120,20 +120,20 @@ export default function IdeasPage() {
             Proponé mejoras · votá las mejores · ganá reputación
           </p>
         </div>
-        <button onClick={() => setModal(true)} style={{ padding: '10px 20px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+        <button onClick={() => setModal(true)} style={{ padding: '10px 20px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           + Nueva idea
         </button>
       </div>
 
       {/* Banner recompensa */}
       <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
-        <strong style={{ color: '#22c55e' }}>IDEAS QUE SUMAN</strong> — Las ideas con más de 10 votos son evaluadas por el equipo GFI. Si tu idea se implementa, recibís <strong style={{ color: '#fff' }}>+50 puntos de reputación</strong> y una mención especial en la plataforma.
+        <strong style={{ color: '#3abab6' }}>IDEAS QUE SUMAN</strong> — Las ideas con más de 10 votos son evaluadas por el equipo GFI. Si tu idea se implementa, recibís <strong style={{ color: '#fff' }}>+50 puntos de reputación</strong> y una mención especial en la plataforma.
       </div>
 
       {/* Filtros */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         {['todas', 'pendiente', 'evaluando', 'aprobada', 'implementada'].map(f => (
-          <button key={f} onClick={() => setFiltro(f)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === f ? '#cc0000' : 'rgba(255,255,255,0.06)', color: filtro === f ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+          <button key={f} onClick={() => setFiltro(f)} style={{ padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === f ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === f ? '#fff' : 'rgba(255,255,255,0.4)' }}>
             {f === 'todas' ? 'Todas' : ESTADOS[f]?.label}
             {f !== 'todas' && (
               <span style={{ marginLeft: 6, opacity: 0.7 }}>
@@ -165,11 +165,11 @@ export default function IdeasPage() {
                   <button
                     onClick={() => votar(idea)}
                     disabled={votando === idea.id}
-                    style={{ width: 40, height: 40, borderRadius: 8, border: `1px solid ${idea.ya_vote ? '#cc0000' : 'rgba(255,255,255,0.1)'}`, background: idea.ya_vote ? 'rgba(204,0,0,0.12)' : 'rgba(255,255,255,0.04)', color: idea.ya_vote ? '#cc0000' : 'rgba(255,255,255,0.4)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ width: 40, height: 40, borderRadius: 8, border: `1px solid ${idea.ya_vote ? '#990000' : 'rgba(255,255,255,0.1)'}`, background: idea.ya_vote ? 'rgba(153,0,0,0.12)' : 'rgba(255,255,255,0.04)', color: idea.ya_vote ? '#990000' : 'rgba(255,255,255,0.4)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
                     ▲
                   </button>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: idea.ya_vote ? '#cc0000' : '#fff', fontFamily: 'Montserrat,sans-serif' }}>{idea.votos}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: idea.ya_vote ? '#990000' : '#fff', fontFamily: 'Montserrat,sans-serif' }}>{idea.votos}</div>
                 </div>
 
                 {/* Contenido */}
@@ -224,7 +224,7 @@ export default function IdeasPage() {
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
-              <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.descripcion.trim()} style={{ padding: '10px 24px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.titulo.trim() || !form.descripcion.trim() ? 0.5 : 1 }}>
+              <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.descripcion.trim()} style={{ padding: '10px 24px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.titulo.trim() || !form.descripcion.trim() ? 0.5 : 1 }}>
                 {guardando ? 'Enviando...' : '💡 Enviar idea'}
               </button>
             </div>

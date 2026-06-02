@@ -130,7 +130,7 @@ export default function EncuestasPage() {
   return (
     <div style={{ padding: "24px 20px", maxWidth: 800, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
       )}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
@@ -182,7 +182,7 @@ export default function EncuestasPage() {
                     </div>
                   </div>
                   {enc.creador_id === userId && (
-                    <button onClick={() => cerrar(enc.id)} style={{ background: "#2d1b1b", color: "#ef4444", border: "none", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 }}>Cerrar</button>
+                    <button onClick={() => cerrar(enc.id)} style={{ background: "#2d1b1b", color: "#b80000", border: "none", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 }}>Cerrar</button>
                   )}
                 </div>
 
@@ -244,7 +244,7 @@ export default function EncuestasPage() {
                 <input value={op} onChange={e => setOpcion(i, e.target.value)} placeholder={`Opción ${i + 1}`}
                   style={{ flex: 1, background: "#1e293b", color: "#f8fafc", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", fontSize: 14, boxSizing: "border-box" }} />
                 {form.opciones.length > 2 && (
-                  <button onClick={() => quitarOpcion(i)} style={{ background: "#2d1b1b", color: "#ef4444", border: "none", borderRadius: 6, padding: "6px 10px", cursor: "pointer" }}>✕</button>
+                  <button onClick={() => quitarOpcion(i)} style={{ background: "#2d1b1b", color: "#b80000", border: "none", borderRadius: 6, padding: "6px 10px", cursor: "pointer" }}>✕</button>
                 )}
               </div>
             ))}

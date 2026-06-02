@@ -140,7 +140,7 @@ function LoginInner() {
         .login-root::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,0,0,0.15) 0%, transparent 70%); pointer-events: none; }
         .login-card { position: relative; z-index: 1; width: 100%; max-width: 440px; background: rgba(14,14,14,0.95); border: 1px solid rgba(180,0,0,0.22); border-radius: 4px; padding: 44px 40px 40px; box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 60px rgba(160,0,0,0.1); animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
         @keyframes cardIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .login-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, #e60000, #cc0000, transparent); border-radius: 4px 4px 0 0; }
+        .login-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, #e60000, #990000, transparent); border-radius: 4px 4px 0 0; }
         .login-logo { display: flex; justify-content: center; margin-bottom: 28px; }
         .login-logo img { width: 160px; height: auto; }
         .login-titulo { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-align: center; margin-bottom: 28px; }
@@ -151,7 +151,7 @@ function LoginInner() {
         .login-input:focus { border-color: rgba(200,0,0,0.6); box-shadow: 0 0 0 3px rgba(200,0,0,0.1); }
         .login-input:-webkit-autofill, .login-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #141414 inset; -webkit-text-fill-color: #ffffff; }
         .login-error { font-size: 12px; color: #ff4444; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 14px; }
-        .login-btn { width: 100%; padding: 14px; margin-top: 8px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+        .login-btn { width: 100%; padding: 14px; margin-top: 8px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, transform 0.15s; }
         .login-btn:hover:not(:disabled) { background: #e60000; transform: translateY(-1px); }
         .login-btn:disabled { opacity: 0.65; cursor: not-allowed; }
         .login-spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle; }
@@ -161,7 +161,7 @@ function LoginInner() {
         .login-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 16px; }
         .login-footer { text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); }
         .login-footer a { color: rgba(200,0,0,0.7); text-decoration: none; font-weight: 500; }
-        .login-footer a:hover { color: #cc0000; }
+        .login-footer a:hover { color: #990000; }
         .login-brand { text-align: center; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.12); margin-top: 16px; }
       `}</style>
 
@@ -174,7 +174,7 @@ function LoginInner() {
           <p className="login-titulo">Acceso a la plataforma</p>
 
           {motivoParam === "inactividad" && (
-            <div style={{ fontSize: 12, color: "#eab308", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 3, padding: "10px 14px", marginBottom: 14 }}>
+            <div style={{ fontSize: 12, color: "#d4960c", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 3, padding: "10px 14px", marginBottom: 14 }}>
               ⏱ Sesión cerrada por inactividad. Volvé a ingresar.
             </div>
           )}

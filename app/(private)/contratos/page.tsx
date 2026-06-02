@@ -311,14 +311,14 @@ export default function ContratosPage() {
           .contrato-texto { background: #fff !important; color: #000 !important; border: none !important; padding: 40px !important; font-size: 13px !important; }
         }
         .ci { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
-        .ci:focus { outline: none; border-color: rgba(204,0,0,0.4); }
+        .ci:focus { outline: none; border-color: rgba(153,0,0,0.4); }
         .cs { width: 100%; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
         .cl { font-size: 11px; color: rgba(255,255,255,0.4); font-family: Montserrat,sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px; }
         .cf { margin-bottom: 14px; }
         .cr { display: flex; gap: 10px; }
         .cr .cf { flex: 1; }
         .cta { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: #fff; padding: 10px 12px; font-size: 13px; font-family: inherit; box-sizing: border-box; resize: vertical; }
-        .cta:focus { outline: none; border-color: rgba(204,0,0,0.4); }
+        .cta:focus { outline: none; border-color: rgba(153,0,0,0.4); }
         .sh { font-size: 11px; font-family: Montserrat,sans-serif; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 14px; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
@@ -339,7 +339,7 @@ export default function ContratosPage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            style={{ padding: '10px 20px', background: 'none', border: 'none', borderBottom: `2px solid ${tab === t.key ? '#cc0000' : 'transparent'}`, color: tab === t.key ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer', marginBottom: -1 }}
+            style={{ padding: '10px 20px', background: 'none', border: 'none', borderBottom: `2px solid ${tab === t.key ? '#990000' : 'transparent'}`, color: tab === t.key ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer', marginBottom: -1 }}
           >{t.label}</button>
         ))}
       </div>
@@ -356,7 +356,7 @@ export default function ContratosPage() {
               <div className="sh">1 — Tipo de contrato</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {TIPOS.map(t => (
-                  <button key={t.key} onClick={() => setTipo(t.key)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', textAlign: 'left', background: tipo === t.key ? 'rgba(204,0,0,0.12)' : 'rgba(255,255,255,0.03)', outline: tipo === t.key ? '1px solid rgba(204,0,0,0.3)' : 'none' }}>
+                  <button key={t.key} onClick={() => setTipo(t.key)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', textAlign: 'left', background: tipo === t.key ? 'rgba(153,0,0,0.12)' : 'rgba(255,255,255,0.03)', outline: tipo === t.key ? '1px solid rgba(153,0,0,0.3)' : 'none' }}>
                     <span style={{ fontSize: 18 }}>{t.icon}</span>
                     <span style={{ fontSize: 13, fontWeight: tipo === t.key ? 600 : 400, color: tipo === t.key ? '#fff' : 'rgba(255,255,255,0.5)' }}>{t.label}</span>
                   </button>
@@ -463,7 +463,7 @@ export default function ContratosPage() {
 
               <div className="cf">
                 <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={expensasIncluidas} onChange={e => setExpensasIncluidas(e.target.checked)} style={{ accentColor: '#cc0000', width: 16, height: 16 }} />
+                  <input type="checkbox" checked={expensasIncluidas} onChange={e => setExpensasIncluidas(e.target.checked)} style={{ accentColor: '#990000', width: 16, height: 16 }} />
                   <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>Expensas incluidas en el precio</span>
                 </label>
               </div>
@@ -476,7 +476,7 @@ export default function ContratosPage() {
               <button
                 onClick={generar}
                 disabled={generando}
-                style={{ width: '100%', padding: 12, background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: generando ? 0.6 : 1 }}
+                style={{ width: '100%', padding: 12, background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: generando ? 0.6 : 1 }}
               >
                 {generando ? '⏳ Generando contrato...' : '✨ Generar contrato con IA'}
               </button>
@@ -494,7 +494,7 @@ export default function ContratosPage() {
             )}
             {generando && (
               <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '56px 32px', textAlign: 'center' }}>
-                <div style={{ width: 40, height: 40, border: '3px solid rgba(204,0,0,0.2)', borderTopColor: '#cc0000', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+                <div style={{ width: 40, height: 40, border: '3px solid rgba(153,0,0,0.2)', borderTopColor: '#990000', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
                 <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>Redactando contrato con IA...</div>
                 <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, marginTop: 8 }}>Usando Claude Sonnet — puede tardar 15-30 segundos</div>
               </div>
@@ -503,7 +503,7 @@ export default function ContratosPage() {
               <div>
                 <div className="no-print" style={{ display: 'flex', gap: 8, marginBottom: 12, justifyContent: 'flex-end' }}>
                   <button onClick={() => copiar(contrato)} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, cursor: 'pointer' }}>📋 Copiar</button>
-                  <button onClick={imprimir} style={{ padding: '8px 16px', background: '#cc0000', border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}>🖨 Imprimir / PDF</button>
+                  <button onClick={imprimir} style={{ padding: '8px 16px', background: '#990000', border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}>🖨 Imprimir / PDF</button>
                   <button onClick={generar} style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, cursor: 'pointer' }}>🔄 Regenerar</button>
                 </div>
                 <div className="contrato-texto" ref={contratoRef} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 32, fontFamily: "'Georgia', serif", fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
@@ -534,7 +534,7 @@ export default function ContratosPage() {
                 <button
                   key={t.key}
                   onClick={() => setPlantillaTab(t.key)}
-                  style={{ flex: 1, padding: '9px 10px', background: plantillaTab === t.key ? 'rgba(204,0,0,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${plantillaTab === t.key ? 'rgba(204,0,0,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: plantillaTab === t.key ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ flex: 1, padding: '9px 10px', background: plantillaTab === t.key ? 'rgba(153,0,0,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${plantillaTab === t.key ? 'rgba(153,0,0,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 8, color: plantillaTab === t.key ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}
                 >{t.label}</button>
               ))}
             </div>
@@ -546,12 +546,12 @@ export default function ContratosPage() {
                   <div style={{ textAlign: 'center', padding: '32px 16px', color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
                     <div style={{ fontSize: 32, marginBottom: 10 }}>📭</div>
                     Todavía no tenés plantillas.<br />
-                    <button onClick={() => setPlantillaTab('nueva')} style={{ marginTop: 12, padding: '8px 16px', background: '#cc0000', border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}>Crear mi primera plantilla</button>
+                    <button onClick={() => setPlantillaTab('nueva')} style={{ marginTop: 12, padding: '8px 16px', background: '#990000', border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}>Crear mi primera plantilla</button>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {plantillas.map(p => (
-                      <div key={p.id} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${plantillaSelId === p.id ? 'rgba(204,0,0,0.35)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 8, padding: '12px 14px' }}>
+                      <div key={p.id} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${plantillaSelId === p.id ? 'rgba(153,0,0,0.35)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 8, padding: '12px 14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.nombre}</div>
@@ -561,7 +561,7 @@ export default function ContratosPage() {
                         </div>
                         <button
                           onClick={() => previsualizarPlantilla(p)}
-                          style={{ marginTop: 10, width: '100%', padding: '8px', background: plantillaSelId === p.id ? '#cc0000' : 'rgba(204,0,0,0.12)', border: `1px solid rgba(204,0,0,${plantillaSelId === p.id ? 0 : 0.2})`, borderRadius: 6, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}
+                          style={{ marginTop: 10, width: '100%', padding: '8px', background: plantillaSelId === p.id ? '#990000' : 'rgba(153,0,0,0.12)', border: `1px solid rgba(153,0,0,${plantillaSelId === p.id ? 0 : 0.2})`, borderRadius: 6, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}
                         >
                           {plantillaSelId === p.id ? '✓ Seleccionada' : 'Completar con datos →'}
                         </button>
@@ -594,10 +594,10 @@ export default function ContratosPage() {
                         onClick={analizarConIA}
                         disabled={analizando}
                         title="La IA detecta los datos variables y coloca las {{VARIABLES}} automáticamente"
-                        style={{ padding: '5px 12px', background: analizando ? 'rgba(204,0,0,0.08)' : 'rgba(204,0,0,0.15)', border: '1px solid rgba(204,0,0,0.3)', borderRadius: 6, color: analizando ? 'rgba(255,255,255,0.4)' : '#fff', fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: analizando ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
+                        style={{ padding: '5px 12px', background: analizando ? 'rgba(153,0,0,0.08)' : 'rgba(153,0,0,0.15)', border: '1px solid rgba(153,0,0,0.3)', borderRadius: 6, color: analizando ? 'rgba(255,255,255,0.4)' : '#fff', fontSize: 11, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: analizando ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
                       >
                         {analizando
-                          ? <><span style={{ width: 10, height: 10, border: '2px solid rgba(204,0,0,0.2)', borderTopColor: '#cc0000', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} /> Detectando...</>
+                          ? <><span style={{ width: 10, height: 10, border: '2px solid rgba(153,0,0,0.2)', borderTopColor: '#990000', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} /> Detectando...</>
                           : '✨ Detectar variables con IA'}
                       </button>
                     )}
@@ -616,7 +616,7 @@ export default function ContratosPage() {
                 <button
                   onClick={guardarPlantilla}
                   disabled={guardando || !plantillaNombre.trim() || !plantillaContenido.trim()}
-                  style={{ width: '100%', padding: 11, background: '#cc0000', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer', opacity: guardando || !plantillaNombre.trim() || !plantillaContenido.trim() ? 0.5 : 1 }}
+                  style={{ width: '100%', padding: 11, background: '#990000', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer', opacity: guardando || !plantillaNombre.trim() || !plantillaContenido.trim() ? 0.5 : 1 }}
                 >
                   {guardando ? '⏳ Guardando...' : '💾 Guardar plantilla'}
                 </button>
@@ -632,7 +632,7 @@ export default function ContratosPage() {
                     key={v}
                     onClick={() => navigator.clipboard.writeText(v)}
                     title="Clic para copiar"
-                    style={{ fontSize: 10, fontFamily: 'monospace', background: 'rgba(204,0,0,0.08)', border: '1px solid rgba(204,0,0,0.15)', borderRadius: 4, padding: '2px 6px', color: 'rgba(255,120,120,0.85)', cursor: 'pointer', userSelect: 'none' }}
+                    style={{ fontSize: 10, fontFamily: 'monospace', background: 'rgba(153,0,0,0.08)', border: '1px solid rgba(153,0,0,0.15)', borderRadius: 4, padding: '2px 6px', color: 'rgba(255,120,120,0.85)', cursor: 'pointer', userSelect: 'none' }}
                   >{v}</span>
                 ))}
               </div>
@@ -707,14 +707,14 @@ export default function ContratosPage() {
                 </div>
               </div>
               <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: 14 }}>
-                <input type="checkbox" checked={expensasIncluidas} onChange={e => setExpensasIncluidas(e.target.checked)} style={{ accentColor: '#cc0000', width: 16, height: 16 }} />
+                <input type="checkbox" checked={expensasIncluidas} onChange={e => setExpensasIncluidas(e.target.checked)} style={{ accentColor: '#990000', width: 16, height: 16 }} />
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>Expensas incluidas en el precio</span>
               </label>
 
               {plantillaSelId ? (
                 <button
                   onClick={actualizarPreview}
-                  style={{ width: '100%', padding: 10, background: '#cc0000', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ width: '100%', padding: 10, background: '#990000', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}
                 >
                   🔄 Actualizar vista previa
                 </button>
@@ -730,7 +730,7 @@ export default function ContratosPage() {
               <div>
                 <div style={{ display: 'flex', gap: 8, marginBottom: 12, justifyContent: 'flex-end' }}>
                   <button onClick={() => copiar(plantillaPreview)} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, color: 'rgba(255,255,255,0.7)', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 600, cursor: 'pointer' }}>📋 Copiar</button>
-                  <button onClick={imprimir} style={{ padding: '8px 16px', background: '#cc0000', border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}>🖨 Imprimir / PDF</button>
+                  <button onClick={imprimir} style={{ padding: '8px 16px', background: '#990000', border: 'none', borderRadius: 7, color: '#fff', fontSize: 12, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, cursor: 'pointer' }}>🖨 Imprimir / PDF</button>
                 </div>
                 <div className="contrato-texto" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 32, fontFamily: "'Georgia', serif", fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                   {plantillaPreview}

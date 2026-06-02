@@ -141,14 +141,14 @@ export async function GET(req: NextRequest) {
                 <tr>
                   <td>
                     <span style="font-family:'Montserrat',Arial,sans-serif;font-size:18px;font-weight:800;color:#fff;letter-spacing:0.02em;">
-                      GFI<span style="color:#cc0000;">®</span>
+                      GFI<span style="color:#990000;">®</span>
                     </span>
                     <span style="display:block;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px;">
                       Grupo Foro Inmobiliario
                     </span>
                   </td>
                   <td align="right">
-                    <span style="background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.25);color:#cc0000;font-size:10px;font-family:'Montserrat',Arial,sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;">
+                    <span style="background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.25);color:#990000;font-size:10px;font-family:'Montserrat',Arial,sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;">
                       Suscripción
                     </span>
                   </td>
@@ -208,7 +208,7 @@ export async function GET(req: NextRequest) {
                 <tr>
                   <td align="center">
                     <a href="https://foroinmobiliario.com.ar/suscripcion"
-                       style="display:inline-block;background:#cc0000;color:#fff;font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:6px;">
+                       style="display:inline-block;background:#990000;color:#fff;font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:6px;">
                       Avisar que pagué →
                     </a>
                   </td>

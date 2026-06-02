@@ -148,7 +148,7 @@ export default function SmartProspectingPage() {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ fontSize: 12, color: "#60a5fa", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 8, padding: "10px 14px" }}>
+          <div style={{ fontSize: 12, color: "#4ab8d8", background: "rgba(74,184,216,0.08)", border: "1px solid rgba(74,184,216,0.2)", borderRadius: 8, padding: "10px 14px" }}>
             💡 {matches.length} contacto{matches.length > 1 ? "s" : ""} con propiedades que coinciden con su búsqueda. ¡Contactalos ahora!
           </div>
 
@@ -163,7 +163,7 @@ export default function SmartProspectingPage() {
                   style={{ width: "100%", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>
+                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>
                       👤
                     </div>
                     <div>
@@ -176,7 +176,7 @@ export default function SmartProspectingPage() {
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#cc0000", background: "rgba(204,0,0,0.12)", padding: "3px 10px", borderRadius: 20, border: "1px solid rgba(204,0,0,0.25)" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#990000", background: "rgba(153,0,0,0.12)", padding: "3px 10px", borderRadius: 20, border: "1px solid rgba(153,0,0,0.25)" }}>
                       {propiedades.length} propiedad{propiedades.length > 1 ? "es" : ""}
                     </span>
                     <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 14 }}>{abierto ? "▲" : "▼"}</span>
@@ -215,7 +215,7 @@ export default function SmartProspectingPage() {
                                 {prop.superficie_cubierta && ` · ${prop.superficie_cubierta}m²`}
                               </div>
                               {prop.precio && (
-                                <div style={{ fontSize: 13, fontWeight: 700, color: "#f59e0b", marginTop: 2 }}>{fmt(prop.precio, prop.moneda)}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: "#d4960c", marginTop: 2 }}>{fmt(prop.precio, prop.moneda)}</div>
                               )}
                             </div>
                             <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
@@ -232,7 +232,7 @@ export default function SmartProspectingPage() {
                               <a
                                 href={`/crm/cartera/ficha/${prop.id}`}
                                 target="_blank"
-                                style={{ fontSize: 11, padding: "5px 10px", background: "rgba(204,0,0,0.1)", color: "#cc0000", borderRadius: 4, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap", border: "1px solid rgba(204,0,0,0.25)" }}
+                                style={{ fontSize: 11, padding: "5px 10px", background: "rgba(153,0,0,0.1)", color: "#990000", borderRadius: 4, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap", border: "1px solid rgba(153,0,0,0.25)" }}
                               >
                                 Ver ficha
                               </a>

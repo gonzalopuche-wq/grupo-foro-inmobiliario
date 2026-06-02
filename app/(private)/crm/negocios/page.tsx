@@ -34,10 +34,10 @@ interface Contacto { id: string; nombre: string; apellido: string; }
 
 const ETAPAS = [
   { value: "prospecto",        label: "Prospecto",        color: "var(--gfi-text-muted)",   badgeClass: "gfi-badge--gray"   },
-  { value: "contactado",       label: "Contactado",       color: "#60a5fa",                 badgeClass: "gfi-badge--blue"   },
+  { value: "contactado",       label: "Contactado",       color: "#4ab8d8",                 badgeClass: "gfi-badge--blue"   },
   { value: "visita_coordinada",label: "Visita coord.",    color: "#a78bfa",                 badgeClass: "gfi-badge--gray"   },
   { value: "visita_realizada", label: "Visita realizada", color: "#c084fc",                 badgeClass: "gfi-badge--gray"   },
-  { value: "oferta_enviada",   label: "Oferta enviada",   color: "#f97316",                 badgeClass: "gfi-badge--orange" },
+  { value: "oferta_enviada",   label: "Oferta enviada",   color: "#d4960c",                 badgeClass: "gfi-badge--orange" },
   { value: "negociacion",      label: "Negociación",      color: "#fb923c",                 badgeClass: "gfi-badge--orange" },
   { value: "reserva",          label: "Reserva",          color: "#22d3ee",                 badgeClass: "gfi-badge--blue"   },
   { value: "escritura",        label: "Escritura",        color: "var(--gfi-green-text)",   badgeClass: "gfi-badge--green"  },
@@ -278,7 +278,7 @@ export default function CrmNegociosPage() {
           font-size: 13px; font-family: var(--font-body); outline: none;
           box-sizing: border-box; transition: var(--gfi-transition);
         }
-        .neg-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(204,0,0,0.10); }
+        .neg-input:focus { border-color: var(--gfi-red); box-shadow: 0 0 0 3px rgba(153,0,0,0.10); }
         .neg-input::placeholder { color: var(--gfi-text-muted); }
         .neg-label {
           display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
@@ -347,7 +347,7 @@ export default function CrmNegociosPage() {
         <div className="neg-stats">
           {[
             { n: stats.total,    l: "Total",         c: "var(--gfi-text-primary)", size: 26 },
-            { n: stats.activos,  l: "Activos",       c: "#60a5fa",                 size: 26 },
+            { n: stats.activos,  l: "Activos",       c: "#4ab8d8",                 size: 26 },
             { n: stats.cerrados, l: "Cerrados",      c: "var(--gfi-green-text)",   size: 26 },
             { n: `USD ${stats.valor.toLocaleString("es-AR")}`, l: "Valor pipeline", c: "var(--gfi-green-text)", size: 14 },
           ].map(s => (

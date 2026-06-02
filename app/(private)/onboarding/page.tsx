@@ -26,7 +26,7 @@ export default function OnboardingPage() {
       descripcion: "Añadí foto, bio, zona de trabajo, especialidades e inmobiliaria para generar confianza en la red.",
       href: "/perfil",
       icon: "👤",
-      color: "#cc0000",
+      color: "#990000",
       verificar: async () => {
         if (!perfil) return false;
         return !!(perfil.foto_url && perfil.bio && perfil.zona_trabajo && (perfil.especialidades?.length ?? 0) > 0 && perfil.inmobiliaria);
@@ -52,7 +52,7 @@ export default function OnboardingPage() {
       descripcion: "Registrá tu primer cliente, comprador o inquilino en el CRM para empezar a gestionar tus relaciones.",
       href: "/crm",
       icon: "👥",
-      color: "#22c55e",
+      color: "#3abab6",
       verificar: async () => {
         const { data: uid } = await supabase.auth.getUser();
         if (!uid.user) return false;
@@ -83,7 +83,7 @@ export default function OnboardingPage() {
       descripcion: "Publicá un tema o respondé a una consulta en el Foro GFI®. Tu participación bonifica tu suscripción.",
       href: "/foro",
       icon: "💬",
-      color: "#f97316",
+      color: "#d4960c",
       verificar: async () => {
         const { data: uid } = await supabase.auth.getUser();
         if (!uid.user) return false;
@@ -97,7 +97,7 @@ export default function OnboardingPage() {
       descripcion: "Ingresá datos de una operación de venta real para alimentar el tasador inteligente y la red GFI®.",
       href: "/comparables",
       icon: "📊",
-      color: "#eab308",
+      color: "#d4960c",
       verificar: async () => {
         const { data: uid } = await supabase.auth.getUser();
         if (!uid.user) return false;
@@ -125,7 +125,7 @@ export default function OnboardingPage() {
       descripcion: "Compartí un modelo de contrato, formulario o guía con la comunidad. Bonifica tu suscripción.",
       href: "/biblioteca",
       icon: "📚",
-      color: "#10b981",
+      color: "#3abab6",
       verificar: async () => {
         const { data: uid } = await supabase.auth.getUser();
         if (!uid.user) return false;
@@ -168,14 +168,14 @@ export default function OnboardingPage() {
         .ob-card:hover { border-color: rgba(255,255,255,0.12); }
         .ob-card.done { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
         .ob-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
-        .ob-check.done { border-color: #22c55e; background: rgba(34,197,94,0.15); }
+        .ob-check.done { border-color: #3abab6; background: rgba(34,197,94,0.15); }
       `}</style>
 
       <div style={{ maxWidth: 720, display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Header */}
         <div>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", marginBottom: 4 }}>
-            Checklist de <span style={{ color: "#cc0000" }}>Onboarding</span>
+            Checklist de <span style={{ color: "#990000" }}>Onboarding</span>
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>
             {perfil ? `Hola, ${perfil.nombre}. ` : ""}Completá estos pasos para aprovechar al máximo la plataforma GFI®.
@@ -188,12 +188,12 @@ export default function OnboardingPage() {
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>
               Tu progreso
             </div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: porcentaje === 100 ? "#22c55e" : "#cc0000" }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: porcentaje === 100 ? "#3abab6" : "#990000" }}>
               {cargando ? "…" : `${porcentaje}%`}
             </div>
           </div>
           <div style={{ height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: cargando ? "0%" : `${porcentaje}%`, background: porcentaje === 100 ? "#22c55e" : "#cc0000", borderRadius: 4, transition: "width 0.5s ease" }} />
+            <div style={{ height: "100%", width: cargando ? "0%" : `${porcentaje}%`, background: porcentaje === 100 ? "#3abab6" : "#990000", borderRadius: 4, transition: "width 0.5s ease" }} />
           </div>
           <div style={{ marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>
             {cargando ? "Verificando…" : `${totalCompletados} de ${PASOS.length} pasos completados`}
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
         {porcentaje === 100 && !cargando && (
           <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 10, padding: "16px 20px", textAlign: "center" }}>
             <div style={{ fontSize: 28, marginBottom: 6 }}>🎉</div>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#22c55e", marginBottom: 4 }}>¡Onboarding completo!</div>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 16, fontWeight: 800, color: "#3abab6", marginBottom: 4 }}>¡Onboarding completo!</div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter,sans-serif" }}>
               Tenés todo listo para aprovechar al máximo GFI®. Seguí participando para bonificar tu suscripción.
             </div>
@@ -216,8 +216,8 @@ export default function OnboardingPage() {
             const hecho = completados[paso.id] ?? false;
             return (
               <div key={paso.id} className={`ob-card${hecho ? " done" : ""}`}>
-                <div className={`ob-check${hecho ? " done" : ""}`} style={{ borderColor: hecho ? "#22c55e" : `${paso.color}50` }}>
-                  {hecho ? <span style={{ color: "#22c55e", fontSize: 13 }}>✓</span> : <span style={{ color: `${paso.color}80`, fontSize: 14 }}>○</span>}
+                <div className={`ob-check${hecho ? " done" : ""}`} style={{ borderColor: hecho ? "#3abab6" : `${paso.color}50` }}>
+                  {hecho ? <span style={{ color: "#3abab6", fontSize: 13 }}>✓</span> : <span style={{ color: `${paso.color}80`, fontSize: 14 }}>○</span>}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
@@ -226,7 +226,7 @@ export default function OnboardingPage() {
                       {paso.titulo}
                     </div>
                     {hecho && (
-                      <span style={{ fontSize: 9, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#22c55e", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 4, padding: "2px 6px", letterSpacing: "0.1em" }}>LISTO</span>
+                      <span style={{ fontSize: 9, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#3abab6", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 4, padding: "2px 6px", letterSpacing: "0.1em" }}>LISTO</span>
                     )}
                   </div>
                   <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", lineHeight: 1.5, marginBottom: hecho ? 0 : 8 }}>

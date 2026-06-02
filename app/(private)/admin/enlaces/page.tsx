@@ -207,16 +207,16 @@ export default function AdminEnlacesPage() {
         /* Header */
         .adm-enl-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .adm-enl-titulo { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; color: #fff; }
-        .adm-enl-titulo span { color: #cc0000; }
+        .adm-enl-titulo span { color: #990000; }
         .adm-enl-header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
         /* Tabs */
         .adm-tabs { display: flex; gap: 0; border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
         .adm-tab { padding: 8px 18px; background: transparent; border: none; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border-right: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 7px; }
         .adm-tab:last-child { border-right: none; }
-        .adm-tab.active { background: rgba(200,0,0,0.15); color: #cc0000; }
+        .adm-tab.active { background: rgba(200,0,0,0.15); color: #990000; }
         .adm-tab:hover:not(.active) { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
-        .adm-tab-badge { background: #cc0000; color: #fff; font-size: 9px; padding: 1px 6px; border-radius: 10px; font-family: 'Montserrat', sans-serif; }
+        .adm-tab-badge { background: #990000; color: #fff; font-size: 9px; padding: 1px 6px; border-radius: 10px; font-family: 'Montserrat', sans-serif; }
 
         /* Toolbar */
         .adm-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -228,14 +228,14 @@ export default function AdminEnlacesPage() {
         .adm-count { font-size: 11px; color: rgba(255,255,255,0.25); white-space: nowrap; }
 
         /* Botones */
-        .btn-primary { padding: 8px 18px; background: #cc0000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .btn-primary { padding: 8px 18px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
         .btn-primary:hover { background: #e60000; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-ghost { padding: 7px 14px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .btn-ghost:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
-        .btn-danger { padding: 6px 12px; background: transparent; border: 1px solid rgba(200,0,0,0.3); border-radius: 4px; color: #cc0000; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .btn-danger { padding: 6px 12px; background: transparent; border: 1px solid rgba(200,0,0,0.3); border-radius: 4px; color: #990000; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .btn-danger:hover { background: rgba(200,0,0,0.12); }
-        .btn-success { padding: 6px 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 4px; color: #22c55e; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .btn-success { padding: 6px 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 4px; color: #3abab6; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .btn-success:hover { background: rgba(34,197,94,0.2); }
         .btn-edit { padding: 6px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: rgba(255,255,255,0.6); font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .btn-edit:hover { border-color: rgba(255,255,255,0.25); color: #fff; background: rgba(255,255,255,0.08); }
@@ -246,14 +246,14 @@ export default function AdminEnlacesPage() {
         .adm-table th { padding: 10px 14px; font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.28); text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.3); white-space: nowrap; }
         .adm-table th.sortable { cursor: pointer; user-select: none; }
         .adm-table th.sortable:hover { color: rgba(255,255,255,0.6); }
-        .adm-table th.sort-activo { color: #cc0000 !important; }
+        .adm-table th.sort-activo { color: #990000 !important; }
         .adm-table td { padding: 11px 14px; font-size: 12px; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
         .adm-table tr:last-child td { border-bottom: none; }
         .adm-table tr:hover td { background: rgba(255,255,255,0.02); }
         .adm-td-nombre { font-weight: 500; color: #fff; max-width: 200px; }
         .adm-td-url { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .adm-td-url a { color: rgba(200,0,0,0.7); text-decoration: none; font-size: 11px; }
-        .adm-td-url a:hover { color: #cc0000; text-decoration: underline; }
+        .adm-td-url a:hover { color: #990000; text-decoration: underline; }
         .adm-td-actions { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
         .adm-badge-cat { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-family: 'Montserrat', sans-serif; white-space: nowrap; }
         .adm-toggle { width: 34px; height: 18px; border-radius: 9px; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
@@ -262,7 +262,7 @@ export default function AdminEnlacesPage() {
         .adm-toggle::after { content: ''; position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #fff; top: 3px; transition: left 0.2s; }
         .adm-toggle.on::after { left: 19px; }
         .adm-toggle.off::after { left: 3px; }
-        .adm-star { color: #eab308; font-size: 14px; }
+        .adm-star { color: #d4960c; font-size: 14px; }
         .adm-star.off { color: rgba(255,255,255,0.1); }
         .adm-orden { font-family: 'Montserrat', sans-serif; font-size: 11px; color: rgba(255,255,255,0.3); }
 
@@ -282,9 +282,9 @@ export default function AdminEnlacesPage() {
         /* Modal */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 24px; }
         .modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 560px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 6px 6px 0 0; }
+        .modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .modal-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 22px; }
-        .modal-title span { color: #cc0000; }
+        .modal-title span { color: #990000; }
         .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .modal-grid .full { grid-column: 1 / -1; }
         .field { display: flex; flex-direction: column; gap: 5px; }
@@ -295,7 +295,7 @@ export default function AdminEnlacesPage() {
         .field select { background: #0f0f0f; }
         .field textarea { resize: vertical; min-height: 70px; }
         .field-check { display: flex; align-items: center; gap: 10px; padding: 9px 0; }
-        .field-check input[type=checkbox] { width: 16px; height: 16px; accent-color: #cc0000; cursor: pointer; }
+        .field-check input[type=checkbox] { width: 16px; height: 16px; accent-color: #990000; cursor: pointer; }
         .field-check label { font-size: 12px; color: rgba(255,255,255,0.6); cursor: pointer; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07); }
 
@@ -306,7 +306,7 @@ export default function AdminEnlacesPage() {
 
         /* Toast */
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: fadeIn 0.3s ease; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
+        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -315,7 +315,7 @@ export default function AdminEnlacesPage() {
 
         /* Loading */
         .adm-loading { padding: 48px; display: flex; align-items: center; justify-content: center; }
-        .spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #cc0000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .spin { width: 28px; height: 28px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {

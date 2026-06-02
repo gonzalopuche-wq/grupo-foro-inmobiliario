@@ -35,9 +35,9 @@ interface Propiedad {
 }
 
 const TIPO_NOVEDAD: Record<string, { label: string; icon: string; color: string }> = {
-  nota:      { label: "Nota",     icon: "📝", color: "#60a5fa" },
-  visita:    { label: "Visita",   icon: "🗓",  color: "#22c55e" },
-  oferta:    { label: "Oferta",   icon: "💰",  color: "#f59e0b" },
+  nota:      { label: "Nota",     icon: "📝", color: "#4ab8d8" },
+  visita:    { label: "Visita",   icon: "🗓",  color: "#3abab6" },
+  oferta:    { label: "Oferta",   icon: "💰",  color: "#d4960c" },
   escritura: { label: "Escritura",icon: "📋",  color: "#a78bfa" },
   otro:      { label: "Otro",     icon: "📌",  color: "#6b7280" },
 };
@@ -193,13 +193,13 @@ export default function PortalVendedorPage() {
             </p>
           </div>
           <button className="pv-btn" onClick={() => setMostrarForm(v => !v)}
-            style={{ background: mostrarForm ? "rgba(255,255,255,0.08)" : "#cc0000", color: "#fff" }}>
+            style={{ background: mostrarForm ? "rgba(255,255,255,0.08)" : "#990000", color: "#fff" }}>
             {mostrarForm ? "✕ Cancelar" : "+ Nuevo portal"}
           </button>
         </div>
 
         {msg && (
-          <div style={{ background: msg.tipo === "ok" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", border: `1px solid ${msg.tipo === "ok" ? "#22c55e44" : "#ef444444"}`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, color: msg.tipo === "ok" ? "#22c55e" : "#ef4444" }}>
+          <div style={{ background: msg.tipo === "ok" ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", border: `1px solid ${msg.tipo === "ok" ? "#3abab644" : "#b8000044"}`, borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, color: msg.tipo === "ok" ? "#3abab6" : "#b80000" }}>
             {msg.texto}
           </div>
         )}
@@ -241,7 +241,7 @@ export default function PortalVendedorPage() {
               <textarea style={{ ...inputStyle, resize: "vertical", minHeight: 70 }} placeholder="Estimado/a {nombre}, aquí podrá seguir el progreso de su propiedad..." value={form.mensaje_bienvenida} onChange={e => setForm(p => ({ ...p, mensaje_bienvenida: e.target.value }))} />
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button className="pv-btn" onClick={guardar} disabled={guardando || !form.vendedor_nombre.trim() || !form.titulo.trim()} style={{ background: "#cc0000", color: "#fff", opacity: guardando ? 0.6 : 1 }}>
+              <button className="pv-btn" onClick={guardar} disabled={guardando || !form.vendedor_nombre.trim() || !form.titulo.trim()} style={{ background: "#990000", color: "#fff", opacity: guardando ? 0.6 : 1 }}>
                 {guardando ? "Creando…" : "Crear portal"}
               </button>
               <button className="pv-btn" onClick={() => setMostrarForm(false)} style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Cancelar</button>
@@ -271,18 +271,18 @@ export default function PortalVendedorPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
                         <span style={{ fontWeight: 700, fontSize: 14, fontFamily: "Montserrat,sans-serif", color: "#fff" }}>{p.titulo}</span>
                         <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>— {p.vendedor_nombre}</span>
-                        {!p.activo && <span style={{ fontSize: 9, fontWeight: 700, color: "#ef4444", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 4, padding: "1px 6px", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.08em" }}>INACTIVO</span>}
+                        {!p.activo && <span style={{ fontSize: 9, fontWeight: 700, color: "#b80000", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 4, padding: "1px 6px", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.08em" }}>INACTIVO</span>}
                       </div>
                       <div style={{ display: "flex", gap: 14, fontSize: 11, color: "rgba(255,255,255,0.35)", flexWrap: "wrap" }}>
                         <span>👁 {p.vistas} vistas</span>
                         <span>📅 {fmtFecha(p.created_at)}</span>
-                        {p.etapa_actual && <span style={{ color: "#22c55e" }}>⬤ {p.etapa_actual}</span>}
-                        {p.expires_at && <span style={{ color: new Date(p.expires_at) < new Date() ? "#ef4444" : "rgba(255,255,255,0.35)" }}>Vence {fmtFecha(p.expires_at)}</span>}
+                        {p.etapa_actual && <span style={{ color: "#3abab6" }}>⬤ {p.etapa_actual}</span>}
+                        {p.expires_at && <span style={{ color: new Date(p.expires_at) < new Date() ? "#b80000" : "rgba(255,255,255,0.35)" }}>Vence {fmtFecha(p.expires_at)}</span>}
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap" }}>
                       <button className="pv-btn" onClick={() => copiarLink(p.token)}
-                        style={{ background: copiadoToken === p.token ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", color: copiadoToken === p.token ? "#22c55e" : "rgba(255,255,255,0.6)", border: `1px solid ${copiadoToken === p.token ? "#22c55e44" : "transparent"}` }}>
+                        style={{ background: copiadoToken === p.token ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", color: copiadoToken === p.token ? "#3abab6" : "rgba(255,255,255,0.6)", border: `1px solid ${copiadoToken === p.token ? "#3abab644" : "transparent"}` }}>
                         {copiadoToken === p.token ? "✓ Copiado" : "🔗 Link"}
                       </button>
                       <button className="pv-btn" onClick={() => toggleActivo(p)}
@@ -290,7 +290,7 @@ export default function PortalVendedorPage() {
                         {p.activo ? "Desactivar" : "Activar"}
                       </button>
                       <button className="pv-btn" onClick={() => abrirPortal(p.id)}
-                        style={{ background: abierto ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.04)", color: abierto ? "#cc0000" : "rgba(255,255,255,0.5)", border: `1px solid ${abierto ? "rgba(200,0,0,0.3)" : "rgba(255,255,255,0.08)"}` }}>
+                        style={{ background: abierto ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.04)", color: abierto ? "#990000" : "rgba(255,255,255,0.5)", border: `1px solid ${abierto ? "rgba(200,0,0,0.3)" : "rgba(255,255,255,0.08)"}` }}>
                         {abierto ? "▲ Cerrar" : "▼ Gestionar"}
                       </button>
                     </div>
@@ -334,7 +334,7 @@ export default function PortalVendedorPage() {
                         <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                           <textarea style={{ ...inputStyle, flex: 1, resize: "vertical", minHeight: 52 }} placeholder="Detalle (opcional)..." value={novForm.contenido} onChange={e => setNovForm(prev => ({ ...prev, contenido: e.target.value }))} />
                           <button className="pv-btn" onClick={() => guardarNovedad(p.id)} disabled={guardandoNov || !novForm.titulo.trim()}
-                            style={{ background: "#cc0000", color: "#fff", opacity: guardandoNov ? 0.6 : 1, flexShrink: 0 }}>
+                            style={{ background: "#990000", color: "#fff", opacity: guardandoNov ? 0.6 : 1, flexShrink: 0 }}>
                             {guardandoNov ? "…" : "Agregar"}
                           </button>
                         </div>

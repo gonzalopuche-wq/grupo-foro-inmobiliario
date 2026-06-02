@@ -25,7 +25,7 @@ interface SavedRow {
 
 const STATUS_COLOR: Record<string, string> = {
   open:     '#3b82f6',
-  resolved: '#22c55e',
+  resolved: '#3abab6',
   closed:   '#6b7280',
 }
 const STATUS_LABEL: Record<string, string> = {
@@ -106,7 +106,7 @@ export default function GuardadosPage() {
         <div style={{ textAlign: 'center', padding: '64px 0' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🔖</div>
           <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, marginBottom: 8 }}>No tenés temas guardados</div>
-          <Link href="/foro" style={{ fontSize: 12, color: '#cc0000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textDecoration: 'none' }}>
+          <Link href="/foro" style={{ fontSize: 12, color: '#990000', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, textDecoration: 'none' }}>
             Ir al foro →
           </Link>
         </div>
@@ -142,7 +142,7 @@ export default function GuardadosPage() {
                       {STATUS_LABEL[t.status] ?? t.status}
                     </span>
                     {t.is_urgent && (
-                      <span style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: '#ef4444', background: 'rgba(239,68,68,0.1)', padding: '2px 8px', borderRadius: 10 }}>
+                      <span style={{ fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, color: '#b80000', background: 'rgba(239,68,68,0.1)', padding: '2px 8px', borderRadius: 10 }}>
                         URGENTE
                       </span>
                     )}
@@ -184,7 +184,7 @@ export default function GuardadosPage() {
                     flexShrink: 0, width: 30, height: 30, borderRadius: 6,
                     background: 'rgba(255,200,0,0.08)', border: '1px solid rgba(255,200,0,0.2)',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14, color: '#f59e0b',
+                    fontSize: 14, color: '#d4960c',
                   }}
                 >
                   🔖

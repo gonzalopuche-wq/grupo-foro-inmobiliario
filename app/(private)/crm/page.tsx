@@ -29,16 +29,16 @@ interface TareaPendiente {
 }
 
 const PRIORIDAD_COLOR: Record<string, string> = {
-  urgente: "#ef4444",
-  alta:    "#f97316",
+  urgente: "#b80000",
+  alta:    "#d4960c",
   normal:  "#3b82f6",
   baja:    "#6b7280",
 };
 
 const ACCIONES_RAPIDAS = [
   { href: "/crm/contactos?nuevo=1",  icon: "👤", label: "Nuevo contacto",   color: "#3b82f6" },
-  { href: "/crm/negocios?nuevo=1",   icon: "💼", label: "Nuevo negocio",    color: "#22c55e" },
-  { href: "/crm/tareas?nueva=1",     icon: "✅", label: "Nueva tarea",      color: "#f59e0b" },
+  { href: "/crm/negocios?nuevo=1",   icon: "💼", label: "Nuevo negocio",    color: "#3abab6" },
+  { href: "/crm/tareas?nueva=1",     icon: "✅", label: "Nueva tarea",      color: "#d4960c" },
   { href: "/crm/cartera",            icon: "🏠", label: "Ver propiedades",  color: "#8b5cf6" },
   { href: "/crm/autorizaciones",     icon: "📋", label: "Autorizaciones",   color: "#06b6d4" },
   { href: "/crm/hoy",                icon: "📅", label: "Agenda de hoy",    color: "#ec4899" },
@@ -144,7 +144,7 @@ export default function CrmDashboard() {
           font-size: 20px; font-weight: 800; color: #fff;
           margin-bottom: 20px;
         }
-        .dash-titulo span { color: #cc0000; }
+        .dash-titulo span { color: #990000; }
 
         /* KPIs */
         .dash-kpis {
@@ -159,7 +159,7 @@ export default function CrmDashboard() {
           transition: border-color 0.2s;
           text-decoration: none;
         }
-        .dash-kpi:hover { border-color: rgba(204,0,0,0.3); }
+        .dash-kpi:hover { border-color: rgba(153,0,0,0.3); }
         .dash-kpi-num {
           font-family: 'Montserrat', sans-serif;
           font-size: 28px; font-weight: 800; color: #fff;
@@ -221,7 +221,7 @@ export default function CrmDashboard() {
           color: rgba(255,255,255,0.5);
         }
         .dash-card-head a {
-          font-size: 11px; color: #cc0000; text-decoration: none;
+          font-size: 11px; color: #990000; text-decoration: none;
         }
         .dash-card-body { padding: 0; }
 
@@ -337,7 +337,7 @@ export default function CrmDashboard() {
             ) : tareasPendientes.map(t => {
               const fechaLabel = formatFechaCorta(t.fecha_vencimiento);
               const venceColor = t.fecha_vencimiento && new Date(t.fecha_vencimiento) < new Date()
-                ? "#ef4444" : "rgba(255,255,255,0.4)";
+                ? "#b80000" : "rgba(255,255,255,0.4)";
               return (
                 <Link key={t.id} href={`/crm/tareas#${t.id}`} style={{textDecoration:"none"}}>
                   <div className="dash-tarea">

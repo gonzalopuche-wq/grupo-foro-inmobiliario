@@ -102,27 +102,27 @@ export default function ApiAccesosPage() {
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
         .ak-wrap { display: flex; flex-direction: column; gap: 24px; max-width: 820px; }
         .ak-titulo { font-family: 'Montserrat',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
-        .ak-titulo span { color: #cc0000; }
+        .ak-titulo span { color: #990000; }
         .ak-sub { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px; }
         .ak-card { background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px; }
         .ak-card-titulo { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
         .ak-endpoint { font-family: monospace; font-size: 12px; color: #818cf8; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); padding: 10px 14px; border-radius: 6px; word-break: break-all; }
         .ak-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .ak-input { flex: 1; min-width: 200px; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; color: #fff; font-size: 14px; font-family: 'Inter',sans-serif; outline: none; transition: border-color 0.2s; }
-        .ak-input:focus { border-color: rgba(204,0,0,0.5); }
+        .ak-input:focus { border-color: rgba(153,0,0,0.5); }
         .ak-input::placeholder { color: rgba(255,255,255,0.2); }
-        .ak-btn { padding: 10px 18px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(204,0,0,0.5); background: rgba(204,0,0,0.12); color: #fff; transition: all 0.15s; white-space: nowrap; }
-        .ak-btn:hover:not(:disabled) { background: rgba(204,0,0,0.22); }
+        .ak-btn { padding: 10px 18px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(153,0,0,0.5); background: rgba(153,0,0,0.12); color: #fff; transition: all 0.15s; white-space: nowrap; }
+        .ak-btn:hover:not(:disabled) { background: rgba(153,0,0,0.22); }
         .ak-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .ak-btn-sm { padding: 5px 12px; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); transition: all 0.15s; }
-        .ak-btn-sm:hover:not(:disabled) { border-color: rgba(239,68,68,0.5); color: #ef4444; }
+        .ak-btn-sm:hover:not(:disabled) { border-color: rgba(239,68,68,0.5); color: #b80000; }
         .ak-btn-sm:disabled { opacity: 0.4; cursor: not-allowed; }
         .ak-nueva-key { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-        .ak-nueva-key-titulo { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #22c55e; }
+        .ak-nueva-key-titulo { font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #3abab6; }
         .ak-nueva-key-aviso { font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Inter',sans-serif; }
         .ak-key-display { display: flex; align-items: center; gap: 10px; }
-        .ak-key-value { font-family: monospace; font-size: 13px; color: #22c55e; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); padding: 10px 14px; border-radius: 4px; flex: 1; word-break: break-all; }
-        .ak-btn-copy { padding: 10px 16px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(34,197,94,0.4); background: rgba(34,197,94,0.1); color: #22c55e; transition: all 0.15s; white-space: nowrap; }
+        .ak-key-value { font-family: monospace; font-size: 13px; color: #3abab6; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); padding: 10px 14px; border-radius: 4px; flex: 1; word-break: break-all; }
+        .ak-btn-copy { padding: 10px 16px; border-radius: 4px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(34,197,94,0.4); background: rgba(34,197,94,0.1); color: #3abab6; transition: all 0.15s; white-space: nowrap; }
         .ak-btn-copy:hover { background: rgba(34,197,94,0.18); }
         .ak-tabla { width: 100%; border-collapse: collapse; }
         .ak-tabla th { padding: 8px 12px; text-align: left; font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.06); }
@@ -131,7 +131,7 @@ export default function ApiAccesosPage() {
         .ak-tabla tbody tr:hover td { background: rgba(255,255,255,0.015); }
         .ak-prefijo { font-family: monospace; font-size: 12px; color: #818cf8; }
         .ak-scope { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 10px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); color: #818cf8; }
-        .ak-pill-activa { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
+        .ak-pill-activa { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #3abab6; }
         .ak-pill-revocada { font-size: 9px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 10px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
         .ak-empty { padding: 32px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; }
         .ak-error { padding: 10px 14px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 6px; font-size: 12px; color: #f87171; }
@@ -189,7 +189,7 @@ export default function ApiAccesosPage() {
             <button
               className="ak-btn-sm"
               onClick={() => setNuevaKey(null)}
-              style={{ alignSelf: "flex-start", borderColor: "rgba(34,197,94,0.3)", color: "#22c55e" }}
+              style={{ alignSelf: "flex-start", borderColor: "rgba(34,197,94,0.3)", color: "#3abab6" }}
             >
               ✓ Ya la guardé, cerrar
             </button>
@@ -201,7 +201,7 @@ export default function ApiAccesosPage() {
           <div className="ak-card-titulo">Keys activas ({activas.length})</div>
           {loading ? (
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 0", color: "rgba(255,255,255,0.3)", fontSize: 12 }}>
-              <div style={{ width: 16, height: 16, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#cc0000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+              <div style={{ width: 16, height: 16, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
               Cargando…
             </div>
           ) : activas.length === 0 ? (

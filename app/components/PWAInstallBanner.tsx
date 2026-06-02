@@ -122,7 +122,7 @@ export default function PWAInstallBanner() {
         <button
           onClick={instalar}
           style={{
-            background: "#cc0000", color: "#fff", border: "none",
+            background: "#990000", color: "#fff", border: "none",
             borderRadius: 6, padding: "8px 14px",
             fontSize: 12, fontWeight: 700,
             fontFamily: "Montserrat, sans-serif", cursor: "pointer",

@@ -183,7 +183,7 @@ export default function CalculadoraAlquilerPage() {
         <td style="padding:6px 10px">${fmtMes(c.desde)}</td>
         <td style="padding:6px 10px">${fmtMes(c.hasta)}</td>
         <td style="padding:6px 10px;text-align:right;font-weight:600">${fmtARS(c.monto)}</td>
-        <td style="padding:6px 10px;text-align:right;color:${c.variacion >= 0 ? "#16a34a" : "#dc2626"}">${i === 0 ? "—" : fmtPct(c.variacion * 100)}</td>
+        <td style="padding:6px 10px;text-align:right;color:${c.variacion >= 0 ? "#22807c" : "#dc2626"}">${i === 0 ? "—" : fmtPct(c.variacion * 100)}</td>
         <td style="padding:6px 10px;text-align:center;font-size:11px;color:#666">${c.esProyeccion ? "Proyección" : "Real"}</td>
       </tr>`).join("");
     win.document.write(`<!DOCTYPE html><html><head><title>Alquiler - Proyección de cuotas</title>
@@ -204,7 +204,7 @@ export default function CalculadoraAlquilerPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
         .alq-input { width:100%; padding:9px 11px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:14px; font-family:'Inter',sans-serif; outline:none; box-sizing:border-box; }
-        .alq-input:focus { border-color:rgba(204,0,0,0.5); }
+        .alq-input:focus { border-color:rgba(153,0,0,0.5); }
         .alq-select { width:100%; padding:9px 11px; background:rgba(14,14,14,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:14px; font-family:'Inter',sans-serif; outline:none; }
         .alq-label { display:block; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:5px; font-family:'Montserrat',sans-serif; }
         .alq-btn { padding:8px 16px; border:none; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; }
@@ -231,9 +231,9 @@ export default function CalculadoraAlquilerPage() {
               display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px",
               borderRadius: 6, fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
               letterSpacing: "0.06em", textDecoration: "none", transition: "all 0.15s",
-              background: active ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${active ? "rgba(204,0,0,0.35)" : "rgba(255,255,255,0.08)"}`,
-              color: active ? "#cc0000" : "rgba(255,255,255,0.5)",
+              background: active ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${active ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}`,
+              color: active ? "#990000" : "rgba(255,255,255,0.5)",
             }}><span style={{ fontSize: 13 }}>{icon}</span>{label}</Link>
           ))}
         </div>
@@ -242,7 +242,7 @@ export default function CalculadoraAlquilerPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#fff" }}>
-              Ajuste de <span style={{ color: "#cc0000" }}>Alquiler</span>
+              Ajuste de <span style={{ color: "#990000" }}>Alquiler</span>
             </div>
             <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>
               Proyección de cuotas por ICL / índice personalizado · Ley 27.737
@@ -303,10 +303,10 @@ export default function CalculadoraAlquilerPage() {
               </div>
               <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
                 <button className="alq-tab"
-                  style={{ background: activeTab === "pct" ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.04)", color: activeTab === "pct" ? "#cc0000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "pct" ? "rgba(204,0,0,0.35)" : "rgba(255,255,255,0.08)"}` }}
+                  style={{ background: activeTab === "pct" ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)", color: activeTab === "pct" ? "#990000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "pct" ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}` }}
                   onClick={() => setActiveTab("pct")}>% Proyectado</button>
                 <button className="alq-tab"
-                  style={{ background: activeTab === "icl" ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.04)", color: activeTab === "icl" ? "#cc0000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "icl" ? "rgba(204,0,0,0.35)" : "rgba(255,255,255,0.08)"}` }}
+                  style={{ background: activeTab === "icl" ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)", color: activeTab === "icl" ? "#990000" : "rgba(255,255,255,0.45)", border: `1px solid ${activeTab === "icl" ? "rgba(153,0,0,0.35)" : "rgba(255,255,255,0.08)"}` }}
                   onClick={() => setActiveTab("icl")}>ICL / Índice</button>
               </div>
 
@@ -324,14 +324,14 @@ export default function CalculadoraAlquilerPage() {
               {activeTab === "icl" && (
                 <div>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginBottom: 10, lineHeight: 1.5 }}>
-                    Ingresá el valor del ICL para cada mes de ajuste. Consultá en <span style={{ color: "#60a5fa" }}>bcra.gob.ar</span>. Los períodos sin dato usarán {proyeccion}% proyectado.
+                    Ingresá el valor del ICL para cada mes de ajuste. Consultá en <span style={{ color: "#4ab8d8" }}>bcra.gob.ar</span>. Los períodos sin dato usarán {proyeccion}% proyectado.
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 240, overflowY: "auto" }}>
                     {mesesAjuste.map((mes, i) => {
                       const p = periodos.find(x => x.mesISO === mes);
                       return (
                         <div key={mes} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ fontSize: 11, color: i === 0 ? "#22c55e" : "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, minWidth: 68 }}>
+                          <div style={{ fontSize: 11, color: i === 0 ? "#3abab6" : "rgba(255,255,255,0.5)", fontFamily: "Montserrat,sans-serif", fontWeight: 700, minWidth: 68 }}>
                             {i === 0 ? "Inicio" : fmtMes(mes)}
                           </div>
                           {i === 0 ? (
@@ -369,9 +369,9 @@ export default function CalculadoraAlquilerPage() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8 }}>
                 {[
                   { n: fmtARS(inicialNum),               l: "Cuota inicial",      c: "#fff" },
-                  { n: fmtARS(totales.ultimaCuota),       l: "Cuota final",        c: "#f59e0b" },
-                  { n: fmtPct(totales.variacionTotal),    l: "Variación total",    c: totales.variacionTotal > 0 ? "#22c55e" : "#ef4444" },
-                  { n: fmtARS(totales.totalPagado),       l: "Total contrato",     c: "#60a5fa" },
+                  { n: fmtARS(totales.ultimaCuota),       l: "Cuota final",        c: "#d4960c" },
+                  { n: fmtPct(totales.variacionTotal),    l: "Variación total",    c: totales.variacionTotal > 0 ? "#3abab6" : "#b80000" },
+                  { n: fmtARS(totales.totalPagado),       l: "Total contrato",     c: "#4ab8d8" },
                 ].map(k => (
                   <div key={k.l} className="alq-card alq-kpi">
                     <div className="alq-kpi-n" style={{ color: k.c, fontSize: 14 }}>{k.n}</div>
@@ -393,8 +393,8 @@ export default function CalculadoraAlquilerPage() {
                     const y = 140 - barH;
                     const x = i * 60 + 5;
                     const barW = 50;
-                    const color = c.esProyeccion ? "rgba(96,165,250,0.5)" : "#cc0000";
-                    const borderColor = c.esProyeccion ? "#60a5fa" : "#ff2222";
+                    const color = c.esProyeccion ? "rgba(74,184,216,0.5)" : "#990000";
+                    const borderColor = c.esProyeccion ? "#4ab8d8" : "#ff2222";
                     return (
                       <g key={i}>
                         <rect x={x} y={y} width={barW} height={barH}
@@ -409,11 +409,11 @@ export default function CalculadoraAlquilerPage() {
                 </svg>
                 <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 12, height: 12, background: "#cc0000", borderRadius: 2 }} />
+                    <div style={{ width: 12, height: 12, background: "#990000", borderRadius: 2 }} />
                     <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Real</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 12, height: 12, background: "rgba(96,165,250,0.5)", borderRadius: 2 }} />
+                    <div style={{ width: 12, height: 12, background: "rgba(74,184,216,0.5)", borderRadius: 2 }} />
                     <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif" }}>Proyección</span>
                   </div>
                 </div>
@@ -451,15 +451,15 @@ export default function CalculadoraAlquilerPage() {
                           <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 700, color: "#fff", fontFamily: "Montserrat,sans-serif", letterSpacing: "0.04em" }}>
                             {fmtARS(c.monto)}
                           </td>
-                          <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 600, color: i === 0 ? "rgba(255,255,255,0.3)" : c.variacion >= 0 ? "#22c55e" : "#ef4444" }}>
+                          <td style={{ padding: "10px 10px", textAlign: "right", fontWeight: 600, color: i === 0 ? "rgba(255,255,255,0.3)" : c.variacion >= 0 ? "#3abab6" : "#b80000" }}>
                             {i === 0 ? "—" : fmtPct(c.variacion * 100)}
                           </td>
                           <td style={{ padding: "10px 10px" }}>
                             <span style={{
                               fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700,
-                              background: c.esProyeccion ? "rgba(96,165,250,0.1)" : "rgba(204,0,0,0.1)",
-                              color: c.esProyeccion ? "#60a5fa" : "#cc0000",
-                              border: `1px solid ${c.esProyeccion ? "rgba(96,165,250,0.25)" : "rgba(204,0,0,0.25)"}`,
+                              background: c.esProyeccion ? "rgba(74,184,216,0.1)" : "rgba(153,0,0,0.1)",
+                              color: c.esProyeccion ? "#4ab8d8" : "#990000",
+                              border: `1px solid ${c.esProyeccion ? "rgba(74,184,216,0.25)" : "rgba(153,0,0,0.25)"}`,
                             }}>
                               {c.esProyeccion ? "Proyección" : "Real"}
                             </span>
@@ -472,10 +472,10 @@ export default function CalculadoraAlquilerPage() {
                         <td colSpan={3} style={{ padding: "12px 10px", fontFamily: "Montserrat,sans-serif", fontWeight: 700, fontSize: 11, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                           Total pagado ({duracion} meses)
                         </td>
-                        <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 14, color: "#60a5fa" }}>
+                        <td style={{ padding: "12px 10px", textAlign: "right", fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 14, color: "#4ab8d8" }}>
                           {fmtARS(totales.totalPagado)}
                         </td>
-                        <td style={{ padding: "12px 10px", textAlign: "right", fontWeight: 700, color: totales.variacionTotal >= 0 ? "#22c55e" : "#ef4444" }}>
+                        <td style={{ padding: "12px 10px", textAlign: "right", fontWeight: 700, color: totales.variacionTotal >= 0 ? "#3abab6" : "#b80000" }}>
                           {fmtPct(totales.variacionTotal)}
                         </td>
                         <td />

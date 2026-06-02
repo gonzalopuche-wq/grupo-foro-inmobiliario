@@ -31,9 +31,9 @@ const TIPO_LABELS: Record<string, string> = {
 };
 
 const ESTADO_COLORS: Record<string, { color: string; bg: string }> = {
-  pendiente: { color: "#eab308", bg: "rgba(234,179,8,0.1)" },
-  revisado:  { color: "#60a5fa", bg: "rgba(96,165,250,0.1)" },
-  resuelto:  { color: "#22c55e", bg: "rgba(34,197,94,0.1)" },
+  pendiente: { color: "#d4960c", bg: "rgba(234,179,8,0.1)" },
+  revisado:  { color: "#4ab8d8", bg: "rgba(74,184,216,0.1)" },
+  resuelto:  { color: "#3abab6", bg: "rgba(34,197,94,0.1)" },
   rechazado: { color: "#94a3b8", bg: "rgba(148,163,184,0.08)" },
 };
 
@@ -107,7 +107,7 @@ export default function ModeracionPage() {
     <div style={{ fontFamily: "Inter,sans-serif", color: "#fff", maxWidth: 960, margin: "0 auto" }}>
       <style>{`
         .mod-tab { padding: 8px 18px; border: none; border-bottom: 2px solid transparent; background: transparent; color: rgba(255,255,255,0.4); font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .mod-tab.active { color: #fff; border-bottom-color: #cc0000; }
+        .mod-tab.active { color: #fff; border-bottom-color: #990000; }
         .mod-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; box-sizing: border-box; }
         .mod-input:focus { outline: none; border-color: rgba(200,0,0,0.5); }
       `}</style>
@@ -119,7 +119,7 @@ export default function ModeracionPage() {
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "Montserrat,sans-serif" }}>
             Panel de Moderación
             {filtroEstado === "pendiente" && totalPendientes > 0 && (
-              <span style={{ marginLeft: 10, fontSize: 13, background: "#cc0000", color: "#fff", borderRadius: 10, padding: "2px 8px", verticalAlign: "middle" }}>{totalPendientes}</span>
+              <span style={{ marginLeft: 10, fontSize: 13, background: "#990000", color: "#fff", borderRadius: 10, padding: "2px 8px", verticalAlign: "middle" }}>{totalPendientes}</span>
             )}
           </h1>
           <p style={{ margin: 0, fontSize: 12, color: "rgba(255,255,255,0.4)" }}>Gestión de denuncias y moderación de contenidos GFI®</p>
@@ -173,7 +173,7 @@ export default function ModeracionPage() {
                     </p>
                   )}
                   {d.resolucion_notas && (
-                    <div style={{ marginTop: 6, fontSize: 11, color: "rgba(96,165,250,0.8)", background: "rgba(96,165,250,0.06)", padding: "5px 10px", borderRadius: 6 }}>
+                    <div style={{ marginTop: 6, fontSize: 11, color: "rgba(74,184,216,0.8)", background: "rgba(74,184,216,0.06)", padding: "5px 10px", borderRadius: 6 }}>
                       ✏️ Resolución: {d.resolucion_notas}
                       {d.accion_tomada && ` · Acción: ${d.accion_tomada}`}
                     </div>
@@ -182,7 +182,7 @@ export default function ModeracionPage() {
                 {d.estado === "pendiente" && (
                   <button
                     onClick={() => { setDenunciaActiva(d); setResolucionNotas(""); setAccionTomada(""); }}
-                    style={{ padding: "7px 14px", background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 6, color: "#cc0000", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "Montserrat,sans-serif" }}>
+                    style={{ padding: "7px 14px", background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 6, color: "#990000", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "Montserrat,sans-serif" }}>
                     Revisar
                   </button>
                 )}
@@ -244,10 +244,10 @@ export default function ModeracionPage() {
               <button onClick={() => resolver("rechazado")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "rgba(255,255,255,0.5)", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
                 Rechazar
               </button>
-              <button onClick={() => resolver("revisado")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(96,165,250,0.15)", border: "1px solid rgba(96,165,250,0.3)", borderRadius: 8, color: "#60a5fa", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+              <button onClick={() => resolver("revisado")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(74,184,216,0.15)", border: "1px solid rgba(74,184,216,0.3)", borderRadius: 8, color: "#4ab8d8", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
                 Marcar revisado
               </button>
-              <button onClick={() => resolver("resuelto")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 8, color: "#22c55e", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+              <button onClick={() => resolver("resuelto")} disabled={procesando} style={{ flex: 1, padding: "10px", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 8, color: "#3abab6", cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
                 {procesando ? "..." : "Resolver ✓"}
               </button>
             </div>

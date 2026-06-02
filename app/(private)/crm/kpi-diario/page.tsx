@@ -92,9 +92,9 @@ function formatFechaCorta(fecha: string): string {
 }
 
 function semaforo(pct: number): string {
-  if (pct >= 80) return "#22c55e";
-  if (pct >= 50) return "#f59e0b";
-  return "#ef4444";
+  if (pct >= 80) return "#3abab6";
+  if (pct >= 50) return "#d4960c";
+  return "#b80000";
 }
 
 function totalActividades(dia: DiaKPI): number {
@@ -246,7 +246,7 @@ function Counter({
           onClick={() => onChange(campo.key, valor + 1)}
           style={{
             width: 32, height: 32,
-            background: "#cc0000",
+            background: "#990000",
             border: "none",
             borderRadius: 6,
             color: "white",
@@ -351,8 +351,8 @@ function RadarChart({ dias, meta }: { dias: DiaKPI[]; meta: MetaDiaria }) {
       {/* Actual polygon */}
       <polygon
         points={points(totalesSemana, metaSemana)}
-        fill="rgba(204,0,0,0.25)"
-        stroke="#cc0000"
+        fill="rgba(153,0,0,0.25)"
+        stroke="#990000"
         strokeWidth={2}
       />
       {/* Labels */}
@@ -429,7 +429,7 @@ function BarChart({ dias, campo }: { dias: DiaKPI[]; campo: KPIKey }) {
             <g key={dia.fecha}>
               <rect
                 x={x} y={y} width={barW} height={barH}
-                fill={isHover ? "#ff2020" : "#cc0000"}
+                fill={isHover ? "#ff2020" : "#990000"}
                 rx={2}
                 style={{ cursor: "pointer", transition: "fill 0.15s" }}
                 onMouseEnter={() => setHover(i)}
@@ -654,8 +654,8 @@ export default function KPIDiarioPage() {
       padding: "8px 20px",
       borderRadius: 8,
       border: "1px solid",
-      borderColor: active ? "#cc0000" : "rgba(255,255,255,0.1)",
-      background: active ? "rgba(204,0,0,0.15)" : "transparent",
+      borderColor: active ? "#990000" : "rgba(255,255,255,0.1)",
+      background: active ? "rgba(153,0,0,0.15)" : "transparent",
       color: active ? "white" : "rgba(255,255,255,0.5)",
       fontFamily: "Montserrat, sans-serif",
       fontWeight: 700,
@@ -684,7 +684,7 @@ export default function KPIDiarioPage() {
       width: "100%",
     } as React.CSSProperties,
     btn: {
-      background: "#cc0000",
+      background: "#990000",
       border: "none",
       borderRadius: 8,
       color: "white",
@@ -709,7 +709,7 @@ export default function KPIDiarioPage() {
         <div
           style={{
             position: "fixed", top: 20, right: 20, zIndex: 9999,
-            background: "#22c55e", color: "white",
+            background: "#3abab6", color: "white",
             padding: "10px 20px", borderRadius: 8,
             fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 14,
             boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
@@ -723,7 +723,7 @@ export default function KPIDiarioPage() {
       {/* Header */}
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <div style={{ marginBottom: 8 }}>
-          <span style={{ fontSize: 11, color: "#cc0000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
+          <span style={{ fontSize: 11, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
             CRM · Tracker Diario
           </span>
         </div>
@@ -740,7 +740,7 @@ export default function KPIDiarioPage() {
                 {formatFechaLarga(fechaActiva)}
               </div>
               {fechaActiva === hoy && (
-                <span style={{ fontSize: 11, color: "#cc0000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: 1 }}>
+                <span style={{ fontSize: 11, color: "#990000", fontFamily: "Montserrat, sans-serif", fontWeight: 700, letterSpacing: 1 }}>
                   HOY
                 </span>
               )}
@@ -895,8 +895,8 @@ export default function KPIDiarioPage() {
                     key={dia.fecha}
                     onClick={() => setFechaActiva(dia.fecha)}
                     style={{
-                      background: esHoy ? "rgba(204,0,0,0.08)" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${esHoy ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
+                      background: esHoy ? "rgba(153,0,0,0.08)" : "rgba(255,255,255,0.03)",
+                      border: `1px solid ${esHoy ? "rgba(153,0,0,0.3)" : "rgba(255,255,255,0.08)"}`,
                       borderRadius: 10,
                       padding: "12px 10px",
                       cursor: "pointer",
@@ -989,7 +989,7 @@ export default function KPIDiarioPage() {
               </div>
               <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 12, height: 3, background: "#cc0000", borderRadius: 2 }} />
+                  <div style={{ width: 12, height: 3, background: "#990000", borderRadius: 2 }} />
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>Real</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -1067,7 +1067,7 @@ export default function KPIDiarioPage() {
                                 {dia[f.key]}
                               </td>
                             ))}
-                            <td style={{ textAlign: "center", padding: "8px 8px", fontWeight: 700, color: "#cc0000" }}>
+                            <td style={{ textAlign: "center", padding: "8px 8px", fontWeight: 700, color: "#990000" }}>
                               {total}
                             </td>
                           </tr>
@@ -1130,7 +1130,7 @@ export default function KPIDiarioPage() {
               }}
             >
               <div style={{ ...s.card, textAlign: "center" }}>
-                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#cc0000", marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#990000", marginBottom: 4 }}>
                   {diasDelMes.length}
                 </div>
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
@@ -1142,7 +1142,7 @@ export default function KPIDiarioPage() {
               </div>
 
               <div style={{ ...s.card, textAlign: "center" }}>
-                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#f59e0b", marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#d4960c", marginBottom: 4 }}>
                   {racha}
                 </div>
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: "Inter, sans-serif" }}>
@@ -1154,7 +1154,7 @@ export default function KPIDiarioPage() {
               </div>
 
               <div style={{ ...s.card, textAlign: "center" }}>
-                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#22c55e", marginBottom: 4 }}>
+                <div style={{ fontSize: 32, fontFamily: "Montserrat, sans-serif", fontWeight: 800, color: "#3abab6", marginBottom: 4 }}>
                   {diasDelMes.length > 0
                     ? Math.round(diasDelMes.reduce((acc, d) => acc + totalActividades(d), 0) / diasDelMes.length)
                     : 0}
@@ -1204,10 +1204,10 @@ export default function KPIDiarioPage() {
                             {formatFechaLarga(dia.fecha)}
                           </div>
                           <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                            <div style={{ height: "100%", width: `${pct}%`, background: "#cc0000", borderRadius: 2 }} />
+                            <div style={{ height: "100%", width: `${pct}%`, background: "#990000", borderRadius: 2 }} />
                           </div>
                         </div>
-                        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: "#cc0000", minWidth: 36, textAlign: "right" }}>
+                        <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 800, fontSize: 18, color: "#990000", minWidth: 36, textAlign: "right" }}>
                           {total}
                         </div>
                       </div>

@@ -141,7 +141,7 @@ export default function ImportarPreciosPage() {
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", padding: "40px 24px", fontFamily: "Inter, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
-        .ip-btn { padding: 10px 22px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
+        .ip-btn { padding: 10px 22px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
         .ip-btn:hover { background: #e60000; }
         .ip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .ip-btn-sec { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
@@ -150,8 +150,8 @@ export default function ImportarPreciosPage() {
         .ip-table th { text-align: left; padding: 8px 12px; font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.07); }
         .ip-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.75); vertical-align: top; }
         .ip-table tr:last-child td { border-bottom: none; }
-        .ip-table .precio-nuevo { color: #22c55e; font-weight: 600; }
-        .ip-table .precio-baja { color: #f97316; }
+        .ip-table .precio-nuevo { color: #3abab6; font-weight: 600; }
+        .ip-table .precio-baja { color: #d4960c; }
         .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
@@ -159,7 +159,7 @@ export default function ImportarPreciosPage() {
       <header style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 40, flexWrap: "wrap" }}>
         <div>
           <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 24, fontWeight: 800, marginBottom: 4 }}>
-            Importar <span style={{ color: "#cc0000" }}>precios</span>
+            Importar <span style={{ color: "#990000" }}>precios</span>
           </div>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)" }}>
             Actualizá los precios de las unidades desde un archivo Excel enviado por la constructora.
@@ -267,7 +267,7 @@ export default function ImportarPreciosPage() {
             ].map((s) => (
               <div key={s.label} style={{ padding: "14px 20px", background: "rgba(14,14,14,0.9)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 6, minWidth: 140 }}>
                 <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6 }}>{s.label}</div>
-                <div style={{ fontSize: 28, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: s.ok ? "#22c55e" : s.warn ? "#f97316" : "#fff" }}>{s.valor}</div>
+                <div style={{ fontSize: 28, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: s.ok ? "#3abab6" : s.warn ? "#d4960c" : "#fff" }}>{s.valor}</div>
               </div>
             ))}
           </div>
@@ -384,7 +384,7 @@ export default function ImportarPreciosPage() {
       {estado === "listo" && resultado && (
         <div style={{ maxWidth: 480 }}>
           <div style={{ padding: "20px 24px", background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, marginBottom: 20 }}>
-            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#22c55e", marginBottom: 6 }}>
+            <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 20, fontWeight: 800, color: "#3abab6", marginBottom: 6 }}>
               ✓ {resultado.actualizados} unidades actualizadas
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)" }}>

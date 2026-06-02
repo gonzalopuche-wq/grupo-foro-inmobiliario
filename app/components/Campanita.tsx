@@ -132,7 +132,7 @@ export default function Campanita({ userId }: { userId: string }) {
         {noLeidas > 0 && (
           <span style={{
             position: "absolute", top: 2, right: 2,
-            background: "#cc0000", color: "#fff",
+            background: "#990000", color: "#fff",
             fontSize: "9px", fontWeight: 800,
             fontFamily: "Montserrat, sans-serif",
             borderRadius: "10px", minWidth: "16px", height: "16px",
@@ -163,7 +163,7 @@ export default function Campanita({ userId }: { userId: string }) {
               Notificaciones
               {noLeidas > 0 && (
                 <span style={{
-                  marginLeft: 8, background: "rgba(200,0,0,0.15)", color: "#cc0000",
+                  marginLeft: 8, background: "rgba(200,0,0,0.15)", color: "#990000",
                   fontSize: 9, padding: "2px 6px", borderRadius: 3,
                 }}>
                   {noLeidas} nuevas
@@ -231,7 +231,7 @@ export default function Campanita({ userId }: { userId: string }) {
                     </p>
                   </div>
                   {!n.leida && (
-                    <div style={{ width: 6, height: 6, background: "#cc0000", borderRadius: "50%", flexShrink: 0, marginTop: 4 }} />
+                    <div style={{ width: 6, height: 6, background: "#990000", borderRadius: "50%", flexShrink: 0, marginTop: 4 }} />
                   )}
                 </div>
               ))

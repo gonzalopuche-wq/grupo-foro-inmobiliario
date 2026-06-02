@@ -36,8 +36,8 @@ export default function TaskBar() {
           .gfi-taskbar-win-btn .tb-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .gfi-taskbar-win-btn .tb-indicator {
             position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
-            width: 16px; height: 2px; border-radius: 2px; background: #cc0000;
-            box-shadow: 0 0 6px rgba(204,0,0,0.6);
+            width: 16px; height: 2px; border-radius: 2px; background: #990000;
+            box-shadow: 0 0 6px rgba(153,0,0,0.6);
           }
         `}</style>
 
@@ -50,8 +50,8 @@ export default function TaskBar() {
             title={`${win.title}${win.minimized ? " (minimizada)" : ""} — clic der. para cerrar`}
             className="gfi-taskbar-win-btn"
             style={{
-              background: win.minimized ? "rgba(255,255,255,0.04)" : "rgba(204,0,0,0.10)",
-              border: `1px solid ${win.minimized ? "#252a35" : "rgba(204,0,0,0.28)"}`,
+              background: win.minimized ? "rgba(255,255,255,0.04)" : "rgba(153,0,0,0.10)",
+              border: `1px solid ${win.minimized ? "#252a35" : "rgba(153,0,0,0.28)"}`,
               color: win.minimized ? "#4a5568" : "#f0f4f8",
             }}
           >
@@ -79,9 +79,9 @@ export default function TaskBar() {
           title="Ver todas las ventanas"
           style={{
             height: 30, padding: "0 12px", borderRadius: 6,
-            background: showGrid ? "rgba(204,0,0,0.12)" : "rgba(255,255,255,0.04)",
-            border: `1px solid ${showGrid ? "rgba(204,0,0,0.30)" : "#252a35"}`,
-            color: showGrid ? "#cc0000" : "#8892a4",
+            background: showGrid ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.04)",
+            border: `1px solid ${showGrid ? "rgba(153,0,0,0.30)" : "#252a35"}`,
+            color: showGrid ? "#990000" : "#8892a4",
             cursor: "pointer", fontSize: 11,
             display: "flex", alignItems: "center", gap: 6,
             fontFamily: "'Montserrat',sans-serif", fontWeight: 700,

@@ -29,11 +29,11 @@ const ORIGEN_EMOJI: Record<string, string> = {
 };
 
 const ESTADO_COLOR: Record<string, string> = {
-  nuevo: "#cc0000", contactado: "#eab308", en_seguimiento: "#60a5fa",
-  visita_coordinada: "#a78bfa", cerrado: "#22c55e", descartado: "#6b7280",
+  nuevo: "#990000", contactado: "#d4960c", en_seguimiento: "#4ab8d8",
+  visita_coordinada: "#a78bfa", cerrado: "#3abab6", descartado: "#6b7280",
 };
 
-const PRIO_COLOR: Record<string, string> = { alta: "#ef4444", media: "#eab308", baja: "#6b7280" };
+const PRIO_COLOR: Record<string, string> = { alta: "#b80000", media: "#d4960c", baja: "#6b7280" };
 
 const FORM_VACIO = {
   nombre: "", telefono: "", email: "", mensaje: "",
@@ -176,9 +176,9 @@ export default function InboxPage() {
         .in-back { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-decoration: none; text-transform: uppercase; }
         .in-back:hover { color: #fff; }
         .in-titulo { font-family: Montserrat,sans-serif; font-size: 14px; font-weight: 800; color: #fff; }
-        .in-badge { background: #cc0000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
+        .in-badge { background: #990000; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; font-family: Montserrat,sans-serif; }
         .in-spacer { flex: 1; }
-        .in-btn-primary { padding: 8px 16px; border-radius: 6px; background: #cc0000; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: none; }
+        .in-btn-primary { padding: 8px 16px; border-radius: 6px; background: #990000; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: none; }
         .in-toolbar { display: flex; gap: 8px; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
         .in-search { flex: 1; min-width: 180px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
         .in-sel { padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 12px; outline: none; cursor: pointer; }
@@ -202,7 +202,7 @@ export default function InboxPage() {
         .in-field { margin-bottom: 12px; }
         .in-label { font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; display: block; }
         .in-input { width: 100%; padding: 9px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 13px; outline: none; font-family: Inter,sans-serif; }
-        .in-input:focus { border-color: rgba(204,0,0,0.5); }
+        .in-input:focus { border-color: rgba(153,0,0,0.5); }
         .in-row { display: flex; gap: 10px; }
         .in-row .in-field { flex: 1; }
         .in-modal-actions { display: flex; gap: 10px; margin-top: 18px; }
@@ -263,10 +263,10 @@ export default function InboxPage() {
                     {l.notas && <div style={{ marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>{l.notas}</div>}
                     <div className="in-actions">
                       <button className="in-act-btn" onClick={() => abrirEditar(l)}>✏️ Editar</button>
-                      {l.estado === "nuevo" && <button className="in-act-btn" style={{ color: "#eab308", borderColor: "rgba(234,179,8,0.3)" }} onClick={() => cambiarEstado(l.id, "contactado")}>📞 Contactado</button>}
-                      {l.estado === "contactado" && <button className="in-act-btn" style={{ color: "#60a5fa", borderColor: "rgba(96,165,250,0.3)" }} onClick={() => cambiarEstado(l.id, "en_seguimiento")}>🔄 En seguimiento</button>}
+                      {l.estado === "nuevo" && <button className="in-act-btn" style={{ color: "#d4960c", borderColor: "rgba(234,179,8,0.3)" }} onClick={() => cambiarEstado(l.id, "contactado")}>📞 Contactado</button>}
+                      {l.estado === "contactado" && <button className="in-act-btn" style={{ color: "#4ab8d8", borderColor: "rgba(74,184,216,0.3)" }} onClick={() => cambiarEstado(l.id, "en_seguimiento")}>🔄 En seguimiento</button>}
                       {l.estado === "en_seguimiento" && <button className="in-act-btn" style={{ color: "#a78bfa", borderColor: "rgba(167,139,250,0.3)" }} onClick={() => cambiarEstado(l.id, "visita_coordinada")}>🗓 Visita</button>}
-                      {!["cerrado", "descartado"].includes(l.estado) && <button className="in-act-btn" style={{ color: "#22c55e", borderColor: "rgba(34,197,94,0.3)" }} onClick={() => cambiarEstado(l.id, "cerrado")}>✓ Cerrado</button>}
+                      {!["cerrado", "descartado"].includes(l.estado) && <button className="in-act-btn" style={{ color: "#3abab6", borderColor: "rgba(34,197,94,0.3)" }} onClick={() => cambiarEstado(l.id, "cerrado")}>✓ Cerrado</button>}
                       {l.telefono && <button className="in-act-btn" style={{ color: "#25d366", borderColor: "rgba(37,211,102,0.3)" }} onClick={() => contactarWhatsApp(l)}>📲 WA</button>}
                       <button className="in-act-btn" style={{ color: "rgba(255,255,255,0.2)" }} onClick={() => eliminar(l.id)}>🗑</button>
                     </div>

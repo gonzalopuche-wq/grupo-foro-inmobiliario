@@ -126,7 +126,7 @@ export default function ComparadorPage() {
     return analisis.reduce((a, b) => a.score > b.score ? a : b).p.id;
   }, [analisis]);
 
-  const colores = ["#cc0000", "#3b82f6", "#22c55e"];
+  const colores = ["#990000", "#3b82f6", "#3abab6"];
 
   const input = (p: Propiedad, field: typeof LABEL_FIELDS[number]) => {
     const val = p[field.key];
@@ -188,7 +188,7 @@ export default function ComparadorPage() {
             style={{ background: "#0a0a0a", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "6px 10px", fontSize: 13, width: 100 }} />
           {props.length < 3 && (
             <button onClick={addProp}
-              style={{ background: "#cc000022", color: "#cc0000", border: "1px solid #cc000044", borderRadius: 6, padding: "6px 14px", fontSize: 13, cursor: "pointer" }}>
+              style={{ background: "#99000022", color: "#990000", border: "1px solid #99000044", borderRadius: 6, padding: "6px 14px", fontSize: 13, cursor: "pointer" }}>
               + Agregar propiedad
             </button>
           )}
@@ -232,7 +232,7 @@ export default function ComparadorPage() {
                   {analisis.map((a, i) => (
                     <th key={a.p.id} style={{ padding: "10px 16px", textAlign: "right", color: colores[i], fontWeight: 700, borderBottom: "1px solid #1f2937", borderLeft: "1px solid #1f2937" }}>
                       {a.p.nombre}
-                      {a.p.id === mejor && <span style={{ marginLeft: 6, color: "#fbbf24" }}>★</span>}
+                      {a.p.id === mejor && <span style={{ marginLeft: 6, color: "#d4960c" }}>★</span>}
                     </th>
                   ))}
                 </tr>
@@ -256,7 +256,7 @@ export default function ComparadorPage() {
                       const isScore = row.label === "Score inversión";
                       const isBest = isScore && a.p.id === mejor;
                       return (
-                        <td key={a.p.id} style={{ padding: "9px 16px", textAlign: "right", color: isBest ? "#22c55e" : "#e5e5e5", fontWeight: isBest ? 700 : 400, borderBottom: "1px solid #1f2937", borderLeft: "1px solid #1f2937" }}>
+                        <td key={a.p.id} style={{ padding: "9px 16px", textAlign: "right", color: isBest ? "#3abab6" : "#e5e5e5", fontWeight: isBest ? 700 : 400, borderBottom: "1px solid #1f2937", borderLeft: "1px solid #1f2937" }}>
                           {val}
                         </td>
                       );
@@ -273,7 +273,7 @@ export default function ComparadorPage() {
           {analisis.map((a, i) => {
             const sc = a.score;
             const label = sc >= 70 ? "Muy buena" : sc >= 50 ? "Buena" : sc >= 30 ? "Regular" : "Baja";
-            const col = sc >= 70 ? "#22c55e" : sc >= 50 ? "#3b82f6" : sc >= 30 ? "#f97316" : "#cc0000";
+            const col = sc >= 70 ? "#3abab6" : sc >= 50 ? "#3b82f6" : sc >= 30 ? "#d4960c" : "#990000";
             return (
               <div key={a.p.id} style={{ background: "#111", border: `1px solid ${colores[i]}33`, borderRadius: 12, padding: 20, textAlign: "center" }}>
                 <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, color: colores[i], marginBottom: 8 }}>{a.p.nombre}</div>
@@ -283,11 +283,11 @@ export default function ComparadorPage() {
                   <div style={{ width: `${sc}%`, height: "100%", background: col, transition: "width 0.5s" }} />
                 </div>
                 {a.p.id === mejor && (
-                  <div style={{ marginTop: 10, color: "#fbbf24", fontWeight: 700, fontSize: 12 }}>★ Mejor opción</div>
+                  <div style={{ marginTop: 10, color: "#d4960c", fontWeight: 700, fontSize: 12 }}>★ Mejor opción</div>
                 )}
                 {a.rentaBruta > 0 && (
                   <div style={{ marginTop: 8, fontSize: 12, color: "#9ca3af" }}>
-                    Renta: <span style={{ color: "#22c55e", fontWeight: 600 }}>{a.rentaBruta.toFixed(1)}%</span> bruta / <span style={{ color: "#3b82f6", fontWeight: 600 }}>{a.rentaNeta.toFixed(1)}%</span> neta
+                    Renta: <span style={{ color: "#3abab6", fontWeight: 600 }}>{a.rentaBruta.toFixed(1)}%</span> bruta / <span style={{ color: "#3b82f6", fontWeight: 600 }}>{a.rentaNeta.toFixed(1)}%</span> neta
                   </div>
                 )}
               </div>

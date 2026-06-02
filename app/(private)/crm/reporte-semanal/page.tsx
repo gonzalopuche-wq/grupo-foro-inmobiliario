@@ -208,7 +208,7 @@ export default function ReporteSemanal() {
           <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>TC: $</span>
           <input type="number" value={tcDolar} onChange={e => setTcDolar(+e.target.value)} style={{ width: 75, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "#fff", padding: "4px 7px", fontSize: 11 }} />
           <input type="number" step="0.5" value={honorariosPct} onChange={e => setHonorariosPct(+e.target.value)} style={{ width: 50, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 5, color: "#fff", padding: "4px 7px", fontSize: 11 }} />
-          <button onClick={exportarPDF} style={{ padding: "5px 14px", borderRadius: 8, background: "rgba(204,0,0,0.12)", border: "1px solid rgba(204,0,0,0.3)", color: "#cc0000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>PDF</button>
+          <button onClick={exportarPDF} style={{ padding: "5px 14px", borderRadius: 8, background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, cursor: "pointer" }}>PDF</button>
         </div>
       </div>
 
@@ -217,16 +217,16 @@ export default function ReporteSemanal() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 24 }}>
           {[
             { label: "Nuevos contactos", val: reporte.contactosNuevos, var: reporte.varContactos, color: "#3b82f6" },
-            { label: "Interacciones", val: reporte.interaccionesSemana, var: reporte.varInteracciones, color: "#f97316" },
+            { label: "Interacciones", val: reporte.interaccionesSemana, var: reporte.varInteracciones, color: "#d4960c" },
             { label: "Negocios abiertos", val: reporte.negociosNuevos, color: "#a78bfa" },
-            { label: "Operaciones cerradas", val: reporte.negociosCerrados, color: "#22c55e" },
-            { label: "Honorarios est.", val: `USD ${fmt(reporte.honorariosEstimados)}`, color: "#cc0000" },
+            { label: "Operaciones cerradas", val: reporte.negociosCerrados, color: "#3abab6" },
+            { label: "Honorarios est.", val: `USD ${fmt(reporte.honorariosEstimados)}`, color: "#990000" },
           ].map(kpi => (
             <div key={kpi.label} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: "14px 16px" }}>
               <p style={{ margin: "0 0 6px 0", fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>{kpi.label}</p>
               <p style={{ margin: 0, fontSize: 24, fontFamily: "'Montserrat',sans-serif", fontWeight: 800, color: kpi.color }}>{kpi.val}</p>
               {"var" in kpi && kpi.var !== undefined && (
-                <p style={{ margin: "4px 0 0 0", fontSize: 10, color: kpi.var >= 0 ? "#22c55e" : "#cc0000" }}>
+                <p style={{ margin: "4px 0 0 0", fontSize: 10, color: kpi.var >= 0 ? "#3abab6" : "#990000" }}>
                   {kpi.var >= 0 ? "▲" : "▼"} {Math.abs(kpi.var).toFixed(0)}% vs sem. ant.
                 </p>
               )}
@@ -238,8 +238,8 @@ export default function ReporteSemanal() {
           {/* Operaciones cerradas */}
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, overflow: "hidden" }}>
             <div style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#22c55e", letterSpacing: "0.08em", textTransform: "uppercase" }}>✅ Operaciones Cerradas</span>
-              <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 700 }}>USD {fmt(reporte.valorCerradoUSD)}</span>
+              <span style={{ fontSize: 10, fontFamily: "'Montserrat',sans-serif", fontWeight: 700, color: "#3abab6", letterSpacing: "0.08em", textTransform: "uppercase" }}>✅ Operaciones Cerradas</span>
+              <span style={{ fontSize: 11, color: "#3abab6", fontWeight: 700 }}>USD {fmt(reporte.valorCerradoUSD)}</span>
             </div>
             {reporte.negociosCerradosLista.length === 0 ? (
               <p style={{ padding: "24px 18px", color: "rgba(255,255,255,0.2)", fontSize: 12, margin: 0, textAlign: "center" }}>Sin cierres esta semana</p>
@@ -249,7 +249,7 @@ export default function ReporteSemanal() {
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{n.titulo}</div>
                   <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{n.tipo_operacion ?? "—"}</div>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#22c55e" }}>{n.moneda} {fmt(n.valor_operacion ?? 0)}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#3abab6" }}>{n.moneda} {fmt(n.valor_operacion ?? 0)}</span>
               </div>
             ))}
           </div>
@@ -280,7 +280,7 @@ export default function ReporteSemanal() {
                 <div key={tipo} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                   <span style={{ fontSize: 11, width: 100, color: "rgba(255,255,255,0.6)", textTransform: "capitalize" }}>{tipo}</span>
                   <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 3, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${(cant / maxCant) * 100}%`, background: "#f97316", borderRadius: 3 }} />
+                    <div style={{ height: "100%", width: `${(cant / maxCant) * 100}%`, background: "#d4960c", borderRadius: 3 }} />
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, width: 24, textAlign: "right" }}>{cant}</span>
                 </div>
@@ -293,8 +293,8 @@ export default function ReporteSemanal() {
             <p style={{ margin: "0 0 14px 0", fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>Estado del Pipeline</p>
             {[
               { label: "Valor total en pipeline", val: `USD ${fmt(reporte.pipelineUSD)}`, color: "#a78bfa" },
-              { label: "Tareas completadas (sem.)", val: reporte.tareasCompletadas, color: "#22c55e" },
-              { label: "Tareas pendientes", val: reporte.tareasPendientes, color: reporte.tareasPendientes > 10 ? "#cc0000" : "#f97316" },
+              { label: "Tareas completadas (sem.)", val: reporte.tareasCompletadas, color: "#3abab6" },
+              { label: "Tareas pendientes", val: reporte.tareasPendientes, color: reporte.tareasPendientes > 10 ? "#990000" : "#d4960c" },
             ].map(row => (
               <div key={row.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                 <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{row.label}</span>

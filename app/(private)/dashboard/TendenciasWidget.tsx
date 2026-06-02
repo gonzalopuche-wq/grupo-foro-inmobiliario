@@ -8,14 +8,14 @@ interface MesCount   { mes: string; label: string; leads: number; cerrados: numb
 
 const ETAPAS_FUNNEL = [
   { key: "prospecto",          label: "Prospecto",     color: "#6b7280" },
-  { key: "contactado",         label: "Contactado",    color: "#60a5fa" },
+  { key: "contactado",         label: "Contactado",    color: "#4ab8d8" },
   { key: "visita_coordinada",  label: "Visita coord.", color: "#a78bfa" },
   { key: "visita_realizada",   label: "Visita real.",  color: "#818cf8" },
-  { key: "oferta_enviada",     label: "Oferta",        color: "#f97316" },
-  { key: "negociacion",        label: "Negociación",   color: "#f59e0b" },
-  { key: "reserva",            label: "Reserva",       color: "#22c55e" },
-  { key: "escritura",          label: "Escritura",     color: "#10b981" },
-  { key: "cerrado",            label: "Cerrado",       color: "#cc0000" },
+  { key: "oferta_enviada",     label: "Oferta",        color: "#d4960c" },
+  { key: "negociacion",        label: "Negociación",   color: "#d4960c" },
+  { key: "reserva",            label: "Reserva",       color: "#3abab6" },
+  { key: "escritura",          label: "Escritura",     color: "#3abab6" },
+  { key: "cerrado",            label: "Cerrado",       color: "#990000" },
   { key: "perdido",            label: "Perdido",       color: "#374151" },
 ];
 
@@ -106,7 +106,7 @@ export default function TendenciasWidget({ uid }: Props) {
     <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "18px 22px", marginBottom: 20 }}>
       <style>{`
         .td-tab { background: none; border: none; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; transition: all 0.15s; }
-        .td-tab.active { background: rgba(204,0,0,0.15); color: #cc0000; }
+        .td-tab.active { background: rgba(153,0,0,0.15); color: #990000; }
         .td-tab:not(.active) { color: rgba(255,255,255,0.25); }
         .td-tab:not(.active):hover { color: rgba(255,255,255,0.5); }
         .td-bar:hover { opacity: 0.85 !important; }
@@ -141,11 +141,11 @@ export default function TendenciasWidget({ uid }: Props) {
             <>
               <div style={{ display: "flex", gap: 20, marginBottom: 12 }}>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#cc0000", lineHeight: 1 }}>{totalFunnel}</div>
+                  <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#990000", lineHeight: 1 }}>{totalFunnel}</div>
                   <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Activos</div>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#10b981", lineHeight: 1 }}>{etapas.find(e => e.etapa === "cerrado")?.count ?? 0}</div>
+                  <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#3abab6", lineHeight: 1 }}>{etapas.find(e => e.etapa === "cerrado")?.count ?? 0}</div>
                   <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Cerrados</div>
                 </div>
               </div>
@@ -185,7 +185,7 @@ export default function TendenciasWidget({ uid }: Props) {
               <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Leads (6m)</div>
             </div>
             <div>
-              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#10b981", lineHeight: 1 }}>{totalCerrados}</div>
+              <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 24, fontWeight: 900, color: "#3abab6", lineHeight: 1 }}>{totalCerrados}</div>
               <div style={{ fontSize: 8, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 4 }}>Cierres (6m)</div>
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function TendenciasWidget({ uid }: Props) {
                 <div key={m.mes} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
                   <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 64 }}>
                     <div title={`${m.leads} leads`} style={{ width: 8, height: lH, background: "#3b82f6", borderRadius: "2px 2px 0 0", opacity: 0.7, transition: "height 0.5s ease" }} />
-                    <div title={`${m.cerrados} cierres`} style={{ width: 8, height: cH, background: "#10b981", borderRadius: "2px 2px 0 0", opacity: 0.8, transition: "height 0.5s ease" }} />
+                    <div title={`${m.cerrados} cierres`} style={{ width: 8, height: cH, background: "#3abab6", borderRadius: "2px 2px 0 0", opacity: 0.8, transition: "height 0.5s ease" }} />
                   </div>
                   <div style={{ fontSize: 8, color: "rgba(255,255,255,0.22)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, marginTop: 4, letterSpacing: "0.04em" }}>{m.label}</div>
                 </div>
@@ -209,7 +209,7 @@ export default function TendenciasWidget({ uid }: Props) {
 
           {/* Legend */}
           <div style={{ display: "flex", gap: 14, marginTop: 4 }}>
-            {[{ color: "#3b82f6", label: "Leads" }, { color: "#10b981", label: "Cierres" }].map(l => (
+            {[{ color: "#3b82f6", label: "Leads" }, { color: "#3abab6", label: "Cierres" }].map(l => (
               <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "rgba(255,255,255,0.3)", fontFamily: "'Montserrat',sans-serif", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 <div style={{ width: 8, height: 8, borderRadius: 2, background: l.color, opacity: 0.8 }} />
                 {l.label}

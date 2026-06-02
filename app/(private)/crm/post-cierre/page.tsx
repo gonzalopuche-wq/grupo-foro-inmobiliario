@@ -141,7 +141,7 @@ export default function PostCierrePage() {
   return (
     <div style={{ padding: "24px 20px", maxWidth: 900, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
       )}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
@@ -157,11 +157,11 @@ export default function PostCierrePage() {
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
         <div style={{ background: "#1e293b", borderRadius: 12, padding: "14px 20px" }}>
-          <div style={{ color: "#f59e0b", fontSize: 11, fontWeight: 700, marginBottom: 4 }}>PENDIENTES</div>
+          <div style={{ color: "#d4960c", fontSize: 11, fontWeight: 700, marginBottom: 4 }}>PENDIENTES</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: "#f8fafc" }}>{pendientes}</div>
         </div>
         <div style={{ background: "#1e293b", borderRadius: 12, padding: "14px 20px" }}>
-          <div style={{ color: "#22c55e", fontSize: 11, fontWeight: 700, marginBottom: 4 }}>COMPLETADAS</div>
+          <div style={{ color: "#3abab6", fontSize: 11, fontWeight: 700, marginBottom: 4 }}>COMPLETADAS</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: "#f8fafc" }}>{completados}</div>
         </div>
       </div>
@@ -207,18 +207,18 @@ export default function PostCierrePage() {
               <div key={item.id} style={{
                 background: "#1e293b", borderRadius: 10, padding: "14px 18px",
                 display: "flex", alignItems: "center", gap: 14,
-                borderLeft: `3px solid ${item.completado ? "#22c55e" : vencida ? "#ef4444" : "#334155"}`,
+                borderLeft: `3px solid ${item.completado ? "#3abab6" : vencida ? "#b80000" : "#334155"}`,
                 opacity: item.completado ? 0.7 : 1,
               }}>
                 <button onClick={() => toggleCompletado(item)}
-                  style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${item.completado ? "#22c55e" : "#334155"}`, background: item.completado ? "#22c55e" : "transparent", cursor: "pointer", flexShrink: 0, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                  style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${item.completado ? "#3abab6" : "#334155"}`, background: item.completado ? "#3abab6" : "transparent", cursor: "pointer", flexShrink: 0, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
                   {item.completado ? "✓" : ""}
                 </button>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 2 }}>
                     <span style={{ fontSize: 16 }}>{tipo?.icon}</span>
                     <span style={{ fontWeight: 600, color: item.completado ? "#64748b" : "#f8fafc", fontSize: 14, textDecoration: item.completado ? "line-through" : "none" }}>{item.titulo}</span>
-                    {vencida && <span style={{ background: "#ef444422", color: "#ef4444", fontSize: 11, padding: "1px 8px", borderRadius: 10, fontWeight: 700 }}>VENCIDA</span>}
+                    {vencida && <span style={{ background: "#b8000022", color: "#b80000", fontSize: 11, padding: "1px 8px", borderRadius: 10, fontWeight: 700 }}>VENCIDA</span>}
                   </div>
                   <div style={{ color: "#64748b", fontSize: 12 }}>
                     {item.negocio && <span>{item.negocio.titulo} · </span>}
@@ -227,8 +227,8 @@ export default function PostCierrePage() {
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => abrirEditar(item)} style={{ background: "#1e3a5f", color: "#60a5fa", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>✏️</button>
-                  <button onClick={() => eliminar(item.id)} style={{ background: "#2d1b1b", color: "#ef4444", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>🗑</button>
+                  <button onClick={() => abrirEditar(item)} style={{ background: "#1e3a5f", color: "#4ab8d8", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>✏️</button>
+                  <button onClick={() => eliminar(item.id)} style={{ background: "#2d1b1b", color: "#b80000", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>🗑</button>
                 </div>
               </div>
             );

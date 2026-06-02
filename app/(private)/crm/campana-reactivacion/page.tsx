@@ -31,9 +31,9 @@ interface ContactoInactivo extends Contacto {
 }
 
 const CAT_CONFIG = {
-  tibia:   { label: "Tibia",   color: "#eab308", dias: "30–60 días",   icon: "🟡" },
-  fria:    { label: "Fría",    color: "#f97316", dias: "60–90 días",   icon: "🟠" },
-  perdida: { label: "Perdida", color: "#cc0000", dias: ">90 días",      icon: "🔴" },
+  tibia:   { label: "Tibia",   color: "#d4960c", dias: "30–60 días",   icon: "🟡" },
+  fria:    { label: "Fría",    color: "#d4960c", dias: "60–90 días",   icon: "🟠" },
+  perdida: { label: "Perdida", color: "#990000", dias: ">90 días",      icon: "🔴" },
 };
 
 function diasDesde(fecha: string | null, ahora: Date): number {
@@ -249,10 +249,10 @@ export default function CampanaReactivacionPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 20 }}>
           {[
             { label: "Total inactivos", value: stats.total, color: "#e5e5e5" },
-            { label: "🟡 Tibios", value: stats.tibia, color: "#eab308" },
-            { label: "🟠 Fríos", value: stats.fria, color: "#f97316" },
-            { label: "🔴 Perdidos", value: stats.perdida, color: "#cc0000" },
-            { label: "✅ Reactivados", value: stats.reactivados, color: "#22c55e" },
+            { label: "🟡 Tibios", value: stats.tibia, color: "#d4960c" },
+            { label: "🟠 Fríos", value: stats.fria, color: "#d4960c" },
+            { label: "🔴 Perdidos", value: stats.perdida, color: "#990000" },
+            { label: "✅ Reactivados", value: stats.reactivados, color: "#3abab6" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "12px 16px" }}>
               <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>{k.label}</div>
@@ -274,7 +274,7 @@ export default function CampanaReactivacionPage() {
               <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                 {[30, 60, 90].map(d => (
                   <button key={d} onClick={() => setUmbral(d)}
-                    style={{ background: umbral === d ? "#cc0000" : "#1f2937", border: "none", borderRadius: 4, color: umbral === d ? "#fff" : "#9ca3af", padding: "4px 10px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                    style={{ background: umbral === d ? "#990000" : "#1f2937", border: "none", borderRadius: 4, color: umbral === d ? "#fff" : "#9ca3af", padding: "4px 10px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
                     {d}d
                   </button>
                 ))}
@@ -312,7 +312,7 @@ export default function CampanaReactivacionPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 8 }}>
                 {PLANTILLAS_DEFAULT.map(p => (
                   <button key={p.id} onClick={() => seleccionarPlantilla(p.id)}
-                    style={{ background: plantillaId === p.id ? "rgba(37,211,102,0.1)" : "transparent", border: `1px solid ${plantillaId === p.id ? "rgba(37,211,102,0.3)" : "#1f2937"}`, borderRadius: 6, color: plantillaId === p.id ? "#22c55e" : "#6b7280", padding: "6px 10px", fontSize: 11, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                    style={{ background: plantillaId === p.id ? "rgba(37,211,102,0.1)" : "transparent", border: `1px solid ${plantillaId === p.id ? "rgba(37,211,102,0.3)" : "#1f2937"}`, borderRadius: 6, color: plantillaId === p.id ? "#3abab6" : "#6b7280", padding: "6px 10px", fontSize: 11, cursor: "pointer", textAlign: "left", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
                     {p.label}
                   </button>
                 ))}
@@ -323,13 +323,13 @@ export default function CampanaReactivacionPage() {
                   style={{ background: "#0a0a0a", border: "1px solid #333", borderRadius: 6, color: "#e5e5e5", padding: "8px 10px", fontSize: 11, width: "100%", boxSizing: "border-box", resize: "vertical", fontFamily: "Inter, sans-serif", lineHeight: 1.6 }} />
               )}
               <div style={{ fontSize: 10, color: "#4b5563", marginTop: 6 }}>
-                Variables: <span style={{ color: "#22c55e" }}>{"{nombre}"}</span> · <span style={{ color: "#3b82f6" }}>{"{zona}"}</span> · <span style={{ color: "#f97316" }}>{"{presupuesto}"}</span>
+                Variables: <span style={{ color: "#3abab6" }}>{"{nombre}"}</span> · <span style={{ color: "#3b82f6" }}>{"{zona}"}</span> · <span style={{ color: "#d4960c" }}>{"{presupuesto}"}</span>
               </div>
             </div>
 
             {reactivados.size > 0 && (
               <button onClick={limpiarReactivados}
-                style={{ background: "transparent", border: "1px solid #cc000044", borderRadius: 8, color: "#cc0000", padding: "8px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
+                style={{ background: "transparent", border: "1px solid #99000044", borderRadius: 8, color: "#990000", padding: "8px 12px", fontSize: 11, cursor: "pointer", fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
                 Limpiar {reactivados.size} reactivados
               </button>
             )}
@@ -360,7 +360,7 @@ export default function CampanaReactivacionPage() {
             ) : visibles.length === 0 ? (
               <div style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 12, padding: 48, textAlign: "center" }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>🎉</div>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#22c55e" }}>
+                <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 16, color: "#3abab6" }}>
                   {stats.total === 0 ? "No hay contactos inactivos" : "No hay resultados para este filtro"}
                 </div>
                 <div style={{ fontSize: 12, color: "#6b7280", marginTop: 4 }}>
@@ -379,7 +379,7 @@ export default function CampanaReactivacionPage() {
                       style={{ background: isSelected ? "rgba(37,211,102,0.05)" : "#111", border: `1px solid ${isSelected ? "rgba(37,211,102,0.3)" : `${cfg.color}33`}`, borderRadius: 10, padding: "14px 16px", cursor: "pointer", transition: "all 0.15s" }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                         {/* Checkbox */}
-                        <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${isSelected ? "#22c55e" : "#374151"}`, background: isSelected ? "#22c55e" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, transition: "all 0.15s" }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${isSelected ? "#3abab6" : "#374151"}`, background: isSelected ? "#3abab6" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, transition: "all 0.15s" }}>
                           {isSelected && <span style={{ color: "#0a0a0a", fontSize: 11, fontWeight: 900 }}>✓</span>}
                         </div>
                         <div style={{ flex: 1 }}>

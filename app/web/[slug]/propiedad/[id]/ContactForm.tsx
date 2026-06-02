@@ -60,7 +60,7 @@ export default function ContactForm({ slug, propiedadId, propiedadTitulo, accent
       <input style={inp} placeholder="Tu nombre *" value={nombre} onChange={e => setNombre(e.target.value)} required aria-label="Nombre" />
       <input style={inp} placeholder="Tu teléfono / WhatsApp" value={telefono} onChange={e => setTelefono(e.target.value)} aria-label="Teléfono" />
       <textarea style={{ ...inp, resize: "vertical", minHeight: 80 }} placeholder="Tu mensaje (opcional)" value={mensaje} onChange={e => setMensaje(e.target.value)} aria-label="Mensaje" />
-      {estado === "error" && <div style={{ fontSize: 12, color: "#ef4444" }}>Error al enviar. Intentá de nuevo.</div>}
+      {estado === "error" && <div style={{ fontSize: 12, color: "#b80000" }}>Error al enviar. Intentá de nuevo.</div>}
       <button type="submit" disabled={estado === "enviando" || !nombre.trim()}
         style={{ padding: "11px", background: accentColor, color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 700, fontFamily: "Montserrat,sans-serif", cursor: "pointer", opacity: (estado === "enviando" || !nombre.trim()) ? 0.6 : 1 }}>
         {estado === "enviando" ? "Enviando..." : "📩 Enviar consulta"}

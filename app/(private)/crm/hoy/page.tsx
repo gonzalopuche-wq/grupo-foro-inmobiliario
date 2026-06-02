@@ -66,8 +66,8 @@ const DIAS_SEMANA = ["domingo","lunes","martes","miércoles","jueves","viernes",
 const MESES_CORTO = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 
 const PRIORIDAD_COLOR: Record<string, string> = {
-  alta:   "#ef4444",
-  media:  "#f59e0b",
+  alta:   "#b80000",
+  media:  "#d4960c",
   baja:   "#3b82f6",
 };
 
@@ -76,8 +76,8 @@ const TIPO_HITO_ICON: Record<string, string> = {
 };
 
 const ETAPA_COLOR: Record<string, string> = {
-  reserva: "#06b6d4", escritura: "#10b981", negociacion: "#f97316",
-  oferta_enviada: "#f59e0b", visita_realizada: "#a78bfa",
+  reserva: "#06b6d4", escritura: "#3abab6", negociacion: "#d4960c",
+  oferta_enviada: "#d4960c", visita_realizada: "#a78bfa",
 };
 
 // ── componente ────────────────────────────────────────────────────────────────
@@ -249,8 +249,8 @@ export default function CrmHoyPage() {
 
   const diasHastaHito = (fecha: string) => {
     const d = Math.floor((new Date(fecha).getTime() - Date.now()) / 86400000);
-    if (d <= 0) return <span style={{ color: "#ef4444", fontWeight: 700 }}>HOY</span>;
-    if (d === 1) return <span style={{ color: "#f59e0b", fontWeight: 700 }}>mañana</span>;
+    if (d <= 0) return <span style={{ color: "#b80000", fontWeight: 700 }}>HOY</span>;
+    if (d === 1) return <span style={{ color: "#d4960c", fontWeight: 700 }}>mañana</span>;
     return <span style={{ color: "rgba(255,255,255,0.45)" }}>en {d}d</span>;
   };
 
@@ -271,7 +271,7 @@ export default function CrmHoyPage() {
         .hoy-item { display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
         .hoy-item:last-child { border-bottom:none; }
         .hoy-check { width:20px; height:20px; border-radius:4px; border:2px solid rgba(255,255,255,0.2); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; font-size:11px; color:#fff; transition:all 0.15s; }
-        .hoy-check:hover { border-color:#22c55e; background:rgba(34,197,94,0.1); }
+        .hoy-check:hover { border-color:#3abab6; background:rgba(34,197,94,0.1); }
         @media(max-width:700px){.hoy-cols{flex-direction:column!important;}}
       `}</style>
 
@@ -281,7 +281,7 @@ export default function CrmHoyPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>
-              Buenos días <span style={{ color: "#cc0000" }}>🌅</span>
+              Buenos días <span style={{ color: "#990000" }}>🌅</span>
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", fontFamily: "Inter,sans-serif", marginTop: 3 }}>
               {fechaHoy} · {hora}
@@ -289,7 +289,7 @@ export default function CrmHoyPage() {
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             {total > 0 && (
-              <div style={{ padding: "8px 14px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#ef4444" }}>
+              <div style={{ padding: "8px 14px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20, fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#b80000" }}>
                 {total} pendiente{total !== 1 ? "s" : ""}
               </div>
             )}
@@ -328,8 +328,8 @@ export default function CrmHoyPage() {
                           <span style={{ fontSize: 10, padding: "1px 7px", borderRadius: 8, fontFamily: "Montserrat,sans-serif", fontWeight: 700, background: `${PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280"}18`, color: PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280", border: `1px solid ${PRIORIDAD_COLOR[t.prioridad] ?? "#6b7280"}35` }}>
                             {t.prioridad}
                           </span>
-                          {venciday && <span style={{ fontSize: 10, color: "#ef4444", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>⚠ Vencida</span>}
-                          {venceHoy && !venciday && <span style={{ fontSize: 10, color: "#f59e0b", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Vence hoy</span>}
+                          {venciday && <span style={{ fontSize: 10, color: "#b80000", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>⚠ Vencida</span>}
+                          {venceHoy && !venciday && <span style={{ fontSize: 10, color: "#d4960c", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>Vence hoy</span>}
                         </div>
                         {t.contacto && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>👤 {(t.contacto as { nombre: string; apellido: string }).nombre} {(t.contacto as { nombre: string; apellido: string }).apellido}</div>}
                         {t.descripcion && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", fontFamily: "Inter,sans-serif", marginTop: 2 }}>{t.descripcion}</div>}
@@ -359,7 +359,7 @@ export default function CrmHoyPage() {
                         <div style={{ fontSize: 13, fontFamily: "Inter,sans-serif", color: "#fff", lineHeight: 1.4 }}>{r.titulo || r.descripcion}</div>
                         <div style={{ fontSize: 11, marginTop: 3, fontFamily: "Inter,sans-serif" }}>
                           {ctc && <span style={{ color: "rgba(255,255,255,0.35)", marginRight: 8 }}>👤 {ctc.nombre} {ctc.apellido}</span>}
-                          <span style={{ color: pasado ? "#ef4444" : esHoy ? "#f59e0b" : "rgba(255,255,255,0.35)", fontWeight: pasado || esHoy ? 700 : 400 }}>
+                          <span style={{ color: pasado ? "#b80000" : esHoy ? "#d4960c" : "rgba(255,255,255,0.35)", fontWeight: pasado || esHoy ? 700 : 400 }}>
                             {pasado ? "⚠ Vencido" : esHoy ? "🔔 Hoy" : fmtHora(r.fecha_recordatorio)}
                           </span>
                         </div>
@@ -427,11 +427,11 @@ export default function CrmHoyPage() {
                               </span>
                             )}
                             {dias !== null && (
-                              <span style={{ fontSize: 10, color: dias > 14 ? "#f59e0b" : "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                              <span style={{ fontSize: 10, color: dias > 14 ? "#d4960c" : "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
                                 {dias === 0 ? "Hoy" : dias === 1 ? "Ayer" : `Hace ${dias}d`}
                               </span>
                             )}
-                            {dias === null && <span style={{ fontSize: 10, color: "#ef4444", fontFamily: "Inter,sans-serif" }}>Sin contacto</span>}
+                            {dias === null && <span style={{ fontSize: 10, color: "#b80000", fontFamily: "Inter,sans-serif" }}>Sin contacto</span>}
                           </div>
                         </div>
                       </div>
@@ -445,7 +445,7 @@ export default function CrmHoyPage() {
                             </a>
                             <a href={`tel:${l.telefono}`}
                               onClick={() => registrarInteraccion(l.id, "llamada")}
-                              style={{ flex: 1, padding: "6px 0", textAlign: "center", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 5, fontSize: 13, textDecoration: "none", cursor: "pointer" }}>
+                              style={{ flex: 1, padding: "6px 0", textAlign: "center", background: "rgba(74,184,216,0.08)", border: "1px solid rgba(74,184,216,0.2)", borderRadius: 5, fontSize: 13, textDecoration: "none", cursor: "pointer" }}>
                               📞
                             </a>
                           </>
@@ -482,7 +482,7 @@ export default function CrmHoyPage() {
                   ].map(l => (
                     <Link key={l.href} href={l.href}
                       style={{ display: "block", padding: "9px 12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, fontSize: 12, fontFamily: "Inter,sans-serif", color: "rgba(255,255,255,0.55)", textDecoration: "none", transition: "all 0.15s" }}
-                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(204,0,0,0.06)"; e.currentTarget.style.color = "#cc0000"; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(153,0,0,0.06)"; e.currentTarget.style.color = "#990000"; }}
                       onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.color = "rgba(255,255,255,0.55)"; }}>
                       {l.label}
                     </Link>

@@ -345,7 +345,7 @@ export default function PerfilPage() {
         .pf-wrap { display: flex; gap: 24px; align-items: flex-start; }
         .pf-sidebar { width: 228px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 84px; }
         .pf-avatar-box { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-lg); padding: 20px 16px; text-align: center; margin-bottom: 8px; position: relative; overflow: hidden; }
-        .pf-avatar-box::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(204,0,0,0.1) 70%, transparent 100%); }
+        .pf-avatar-box::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(153,0,0,0.1) 70%, transparent 100%); }
         .pf-avatar { width: 76px; height: 76px; border-radius: 50%; background: var(--gfi-red-soft); border: 2px solid var(--gfi-red-border); box-shadow: 0 0 0 3px var(--gfi-bg-card), 0 0 0 5px var(--gfi-red-border); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--gfi-red); margin: 0 auto 14px; overflow: hidden; }
         .pf-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .pf-avatar-nombre { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: var(--gfi-text-primary); }
@@ -397,7 +397,7 @@ export default function PerfilPage() {
         .canal-btn { padding: 7px 16px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-secondary); font-size: 11px; font-weight: 700; cursor: pointer; transition: var(--gfi-transition); font-family: var(--font-display); letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
         .canal-btn.on { border-color: var(--gfi-red); background: var(--gfi-red-soft); color: var(--gfi-text-primary); }
         .push-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border); border-radius: var(--gfi-radius-md); margin-top: 8px; }
-        .push-status.activo { border-color: rgba(16,185,129,0.25); background: var(--gfi-green-soft); }
+        .push-status.activo { border-color: rgba(58,186,182,0.25); background: var(--gfi-green-soft); }
         .push-info { display: flex; flex-direction: column; gap: 3px; }
         .push-label { font-size: 13px; color: var(--gfi-text-primary); font-weight: 500; }
         .push-sub { font-size: 11px; color: var(--gfi-text-secondary); }
@@ -451,7 +451,7 @@ export default function PerfilPage() {
         .cir-badge.on { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: var(--gfi-red); }
         .cir-badge.off { background: rgba(255,255,255,0.04); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: var(--gfi-radius-md); font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: gfi-fade-in 0.3s ease; }
-        .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(16,185,129,0.35); color: var(--gfi-green-text); }
+        .toast.ok { background: rgba(10,61,46,0.6); border: 1px solid rgba(58,186,182,0.35); color: var(--gfi-green-text); }
         .toast.err { background: var(--gfi-red-soft); border: 1px solid var(--gfi-red-border); color: #ff6666; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
@@ -790,14 +790,14 @@ export default function PerfilPage() {
                   {perfil.foto_url ? (
                     <img src={perfil.foto_url} alt="Foto" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover" }} />
                   ) : (
-                    <div style={{ width: 52, height: 52, borderRadius: 10, background: "rgba(204,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#cc0000" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 10, background: "rgba(153,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Montserrat,sans-serif", fontSize: 18, fontWeight: 800, color: "#990000" }}>
                       {perfil.nombre?.charAt(0)}{perfil.apellido?.charAt(0)}
                     </div>
                   )}
                   <div>
                     <div style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 800, fontSize: 15, color: "#fff" }}>{perfil.nombre} {perfil.apellido}</div>
                     {perfil.inmobiliaria && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{perfil.inmobiliaria}</div>}
-                    <div style={{ fontSize: 10, color: "#cc0000", marginTop: 2, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}>Mat. {perfil.matricula} · COCIR</div>
+                    <div style={{ fontSize: 10, color: "#990000", marginTop: 2, fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em" }}>Mat. {perfil.matricula} · COCIR</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -1007,7 +1007,7 @@ export default function PerfilPage() {
                   </div>
                 ))}
                 {/* 2FA */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--gfi-bg-secondary)", borderRadius: "var(--gfi-radius-sm)", border: `1px solid ${perfil.mfa_habilitado ? "rgba(16,185,129,0.3)" : "var(--gfi-red-border)"}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: "var(--gfi-bg-secondary)", borderRadius: "var(--gfi-radius-sm)", border: `1px solid ${perfil.mfa_habilitado ? "rgba(58,186,182,0.3)" : "var(--gfi-red-border)"}` }}>
                   <div>
                     <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>2FA — Doble autenticación</span>
                     {!perfil.mfa_habilitado && (
@@ -1052,15 +1052,15 @@ export default function PerfilPage() {
                 return (
                   <>
                     {bonConfig.length > 0 && (
-                      <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(204,0,0,0.06)", border: "1px solid rgba(204,0,0,0.15)", borderRadius: 8 }}>
-                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 800, color: "#cc0000", letterSpacing: "0.12em", marginBottom: 8 }}>MI ABONO INTELIGENTE — ESTE MES</div>
+                      <div style={{ marginTop: 16, padding: "12px 16px", background: "rgba(153,0,0,0.06)", border: "1px solid rgba(153,0,0,0.15)", borderRadius: 8 }}>
+                        <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 800, color: "#990000", letterSpacing: "0.12em", marginBottom: 8 }}>MI ABONO INTELIGENTE — ESTE MES</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
                           <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>USD {precioFinal.toFixed(2)}</span>
                           {totalDescuento > 0 && (
                             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>USD {precioBase}</span>
                           )}
                           {totalDescuento > 0 && (
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "#22c55e", fontFamily: "Montserrat,sans-serif" }}>−USD {totalDescuento.toFixed(2)}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#3abab6", fontFamily: "Montserrat,sans-serif" }}>−USD {totalDescuento.toFixed(2)}</span>
                           )}
                         </div>
                         <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
@@ -1076,7 +1076,7 @@ export default function PerfilPage() {
                             <span style={{ fontSize: 18 }}>{icoMap[b.accion] ?? "🎯"}</span>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{b.label}</div>
-                              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: aplicado ? "#22c55e" : "rgba(204,0,0,0.7)" }}>
+                              <div style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: aplicado ? "#3abab6" : "rgba(153,0,0,0.7)" }}>
                                 {aplicado ? `✓ −USD ${aplicado.descuento_aplicado.toFixed(2)} aplicado` : `Bonifica USD ${b.descuento_usd.toFixed(2)}`}
                               </div>
                             </div>

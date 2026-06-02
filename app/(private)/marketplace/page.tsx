@@ -20,9 +20,9 @@ interface Publicacion {
 }
 
 const TIPOS: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  venta:    { label: 'Vendo',    color: '#22c55e', bg: 'rgba(34,197,94,0.1)',  icon: '🏷️' },
+  venta:    { label: 'Vendo',    color: '#3abab6', bg: 'rgba(34,197,94,0.1)',  icon: '🏷️' },
   servicio: { label: 'Ofrezco',  color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', icon: '🔧' },
-  busqueda: { label: 'Busco',    color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', icon: '🔍' },
+  busqueda: { label: 'Busco',    color: '#d4960c', bg: 'rgba(245,158,11,0.1)', icon: '🔍' },
   trabajo:  { label: 'Empleo',   color: '#a855f7', bg: 'rgba(168,85,247,0.1)', icon: '💼' },
 }
 
@@ -126,14 +126,14 @@ export default function MarketplacePage() {
             Intercambiá servicios, equipamiento y oportunidades laborales entre miembros
           </p>
         </div>
-        <button onClick={() => setModal(true)} style={{ padding: '10px 20px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+        <button onClick={() => setModal(true)} style={{ padding: '10px 20px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           + Publicar
         </button>
       </div>
 
       {/* Filtros tipo */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-        <button onClick={() => setFiltro('todos')} style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#cc0000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+        <button onClick={() => setFiltro('todos')} style={{ padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', fontFamily: 'Montserrat,sans-serif', fontSize: 11, fontWeight: 700, background: filtro === 'todos' ? '#990000' : 'rgba(255,255,255,0.06)', color: filtro === 'todos' ? '#fff' : 'rgba(255,255,255,0.4)' }}>
           Todos ({items.length})
         </button>
         {Object.entries(TIPOS).map(([k, v]) => (
@@ -169,7 +169,7 @@ export default function MarketplacePage() {
                     <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>{item.titulo}</div>
                   </div>
                   {item.autor_id === userId && (
-                    <button onClick={() => eliminar(item.id)} style={{ padding: '4px 8px', background: 'rgba(239,68,68,0.1)', border: 'none', borderRadius: 6, color: '#ef4444', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>✕</button>
+                    <button onClick={() => eliminar(item.id)} style={{ padding: '4px 8px', background: 'rgba(239,68,68,0.1)', border: 'none', borderRadius: 6, color: '#b80000', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>✕</button>
                   )}
                 </div>
 
@@ -190,7 +190,7 @@ export default function MarketplacePage() {
                   </div>
                   <div style={{ display: 'flex', gap: 6 }}>
                     {item.contacto_whatsapp && (
-                      <a href={`https://wa.me/${item.contacto_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 7, color: '#22c55e', fontSize: 11, fontWeight: 700, textDecoration: 'none', fontFamily: 'Montserrat,sans-serif' }}>
+                      <a href={`https://wa.me/${item.contacto_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 7, color: '#3abab6', fontSize: 11, fontWeight: 700, textDecoration: 'none', fontFamily: 'Montserrat,sans-serif' }}>
                         💬 WhatsApp
                       </a>
                     )}
@@ -271,7 +271,7 @@ export default function MarketplacePage() {
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button onClick={() => setModal(false)} style={{ padding: '10px 20px', background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
-              <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.descripcion.trim()} style={{ padding: '10px 24px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.titulo.trim() || !form.descripcion.trim() ? 0.5 : 1 }}>
+              <button onClick={guardar} disabled={guardando || !form.titulo.trim() || !form.descripcion.trim()} style={{ padding: '10px 24px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando || !form.titulo.trim() || !form.descripcion.trim() ? 0.5 : 1 }}>
                 {guardando ? 'Publicando...' : 'Publicar'}
               </button>
             </div>

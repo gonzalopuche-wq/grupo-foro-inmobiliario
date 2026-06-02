@@ -53,14 +53,14 @@ export default function FichaAcciones({ titulo, waLink, waNum, waMsg }: Props) {
 
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-      <button onClick={copiarEnlace} style={{ ...btnBase, background: copiado ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", color: copiado ? "#22c55e" : "rgba(255,255,255,0.6)", border: `1px solid ${copiado ? "rgba(34,197,94,0.3)" : "rgba(255,255,255,0.12)"}` }}>
+      <button onClick={copiarEnlace} style={{ ...btnBase, background: copiado ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.06)", color: copiado ? "#3abab6" : "rgba(255,255,255,0.6)", border: `1px solid ${copiado ? "rgba(34,197,94,0.3)" : "rgba(255,255,255,0.12)"}` }}>
         {copiado ? "✓ Enlace copiado" : "🔗 Copiar enlace"}
       </button>
-      <button onClick={compartirWa} style={{ ...btnBase, background: "rgba(34,197,94,0.08)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
+      <button onClick={compartirWa} style={{ ...btnBase, background: "rgba(34,197,94,0.08)", color: "#3abab6", border: "1px solid rgba(34,197,94,0.2)" }}>
         📤 Compartir
       </button>
       {agendarVisita && (
-        <button onClick={agendarVisita} style={{ ...btnBase, background: "rgba(96,165,250,0.1)", color: "#60a5fa", border: "1px solid rgba(96,165,250,0.25)" }}>
+        <button onClick={agendarVisita} style={{ ...btnBase, background: "rgba(74,184,216,0.1)", color: "#4ab8d8", border: "1px solid rgba(74,184,216,0.25)" }}>
           📅 Agendar visita
         </button>
       )}

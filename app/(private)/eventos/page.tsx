@@ -32,10 +32,10 @@ interface Evento {
 }
 
 const TIPOS: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  gfi:      { label: "GFI®",         color: "#cc0000",  bg: "rgba(200,0,0,0.12)",      border: "rgba(200,0,0,0.3)" },
-  cocir:    { label: "COCIR",        color: "#f97316",  bg: "rgba(249,115,22,0.1)",    border: "rgba(249,115,22,0.3)" },
+  gfi:      { label: "GFI®",         color: "#990000",  bg: "rgba(200,0,0,0.12)",      border: "rgba(200,0,0,0.3)" },
+  cocir:    { label: "COCIR",        color: "#d4960c",  bg: "rgba(249,115,22,0.1)",    border: "rgba(249,115,22,0.3)" },
   cir:      { label: "CIR",          color: "#818cf8",  bg: "rgba(99,102,241,0.1)",    border: "rgba(99,102,241,0.3)" },
-  comercial:{ label: "Comercial",    color: "#eab308",  bg: "rgba(234,179,8,0.1)",     border: "rgba(234,179,8,0.3)" },
+  comercial:{ label: "Comercial",    color: "#d4960c",  bg: "rgba(234,179,8,0.1)",     border: "rgba(234,179,8,0.3)" },
   privado:  { label: "Privado",      color: "#94a3b8",  bg: "rgba(148,163,184,0.08)",  border: "rgba(148,163,184,0.2)" },
   externo:  { label: "Externo",      color: "#64748b",  bg: "rgba(100,116,139,0.08)",  border: "rgba(100,116,139,0.2)" },
 };
@@ -439,9 +439,9 @@ export default function EventosPage() {
         .ev-cal-dow { font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.25); text-align: center; padding: 4px 0; }
         .ev-cal-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 11px; font-family: 'Montserrat',sans-serif; font-weight: 600; cursor: pointer; transition: all 0.15s; color: rgba(255,255,255,0.4); position: relative; border: 1px solid transparent; }
         .ev-cal-dia:hover { background: rgba(255,255,255,0.06); color: #fff; }
-        .ev-cal-dia.hoy { color: #cc0000; font-weight: 800; border-color: rgba(200,0,0,0.3); }
-        .ev-cal-dia.con-eventos::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #cc0000; }
-        .ev-cal-dia.seleccionado { background: rgba(200,0,0,0.15); border-color: #cc0000; color: #fff; }
+        .ev-cal-dia.hoy { color: #990000; font-weight: 800; border-color: rgba(200,0,0,0.3); }
+        .ev-cal-dia.con-eventos::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #990000; }
+        .ev-cal-dia.seleccionado { background: rgba(200,0,0,0.15); border-color: #990000; color: #fff; }
         .ev-cal-dia.vacio { cursor: default; }
         .ev-cal-dia.vacio:hover { background: transparent; }
         .ev-cal-limpiar { width: 100%; margin-top: 8px; padding: 6px; background: transparent; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: rgba(255,255,255,0.3); font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
@@ -458,8 +458,8 @@ export default function EventosPage() {
         .ev-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
         .ev-filtro { padding: 7px 14px; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); transition: all 0.2s; }
         .ev-filtro:hover { border-color: rgba(200,0,0,0.3); color: rgba(255,255,255,0.7); }
-        .ev-filtro.activo { border-color: #cc0000; color: #fff; background: rgba(200,0,0,0.08); }
-        .ev-btn-nuevo { padding: 9px 20px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .ev-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
+        .ev-btn-nuevo { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
         .ev-btn-nuevo:hover { background: #e60000; }
         .ev-lista { display: flex; flex-direction: column; gap: 12px; }
         .ev-card { background: rgba(14,14,14,0.95); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; display: flex; transition: border-color 0.2s; }
@@ -467,7 +467,7 @@ export default function EventosPage() {
         .ev-card.pasado { opacity: 0.5; }
         .ev-card.destacado { border-color: rgba(200,0,0,0.3); }
         .ev-fecha-col { width: 72px; flex-shrink: 0; background: rgba(200,0,0,0.08); border-right: 1px solid rgba(200,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 12px 8px; }
-        .ev-fecha-num { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #cc0000; line-height: 1; }
+        .ev-fecha-num { font-family: 'Montserrat',sans-serif; font-size: 26px; font-weight: 800; color: #990000; line-height: 1; }
         .ev-fecha-mes { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); }
         .ev-fecha-anio { font-size: 9px; color: rgba(255,255,255,0.25); }
         .ev-body { flex: 1; padding: 14px 18px; min-width: 0; }
@@ -483,14 +483,14 @@ export default function EventosPage() {
         .ev-cap-texto { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 3px; }
         .ev-acciones { padding: 14px 16px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; min-width: 130px; flex-shrink: 0; border-left: 1px solid rgba(255,255,255,0.05); }
         .ev-btn-ins { padding: 8px 14px; border: none; border-radius: 3px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-        .ev-btn-ins.libre { background: #cc0000; color: #fff; }
+        .ev-btn-ins.libre { background: #990000; color: #fff; }
         .ev-btn-ins.libre:hover { background: #e60000; }
-        .ev-btn-ins.inscripto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; }
+        .ev-btn-ins.inscripto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #3abab6; }
         .ev-btn-ins.inscripto:hover { background: rgba(34,197,94,0.2); }
         .ev-btn-ins.lleno { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.25); cursor: not-allowed; }
         .ev-btn-ins:disabled { opacity: 0.5; cursor: not-allowed; }
         .ev-btn-cancelar-ev { padding: 5px 10px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: 'Montserrat',sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .ev-btn-cancelar-ev:hover { border-color: #cc0000; color: #cc0000; }
+        .ev-btn-cancelar-ev:hover { border-color: #990000; color: #990000; }
         .ev-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.15); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .ev-empty { padding: 48px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; font-style: italic; background: rgba(14,14,14,0.9); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; }
@@ -498,9 +498,9 @@ export default function EventosPage() {
         /* Modal */
         .ev-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
         .ev-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .ev-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #cc0000, transparent); border-radius: 8px 8px 0 0; }
+        .ev-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 8px 8px 0 0; }
         .ev-modal-titulo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
-        .ev-modal-titulo span { color: #cc0000; }
+        .ev-modal-titulo span { color: #990000; }
         .ev-field { margin-bottom: 14px; }
         .ev-label { display: block; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px; }
         .ev-input { width: 100%; padding: 9px 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: 'Inter',sans-serif; transition: border-color 0.2s; }
@@ -514,16 +514,16 @@ export default function EventosPage() {
         .ev-tipo-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700; font-family: 'Montserrat',sans-serif; cursor: pointer; transition: all 0.15s; }
         .ev-gratuito-toggle { display: flex; gap: 10px; }
         .ev-gt-btn { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .ev-gt-btn.activo.grat { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.08); color: #22c55e; }
-        .ev-gt-btn.activo.pago { border-color: rgba(234,179,8,0.4); background: rgba(234,179,8,0.08); color: #eab308; }
+        .ev-gt-btn.activo.grat { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.08); color: #3abab6; }
+        .ev-gt-btn.activo.pago { border-color: rgba(234,179,8,0.4); background: rgba(234,179,8,0.08); color: #d4960c; }
         .ev-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px; }
         .ev-btn-cancel { padding: 9px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .ev-btn-guardar { padding: 9px 24px; background: #cc0000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .ev-btn-guardar { padding: 9px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .ev-btn-guardar:hover { background: #e60000; }
         .ev-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .ev-seccion-titulo { font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin: 16px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; }
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 5px; font-family: 'Montserrat',sans-serif; font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
-        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #22c55e; }
+        .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
         .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         @media (max-width: 860px) { .ev-layout { grid-template-columns: 1fr; } .ev-sidebar { position: static; } }
@@ -536,7 +536,7 @@ export default function EventosPage() {
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
             <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 22, fontWeight: 800, color: "#fff" }}>
-              Próximos <span style={{ color: "#cc0000" }}>eventos</span>
+              Próximos <span style={{ color: "#990000" }}>eventos</span>
             </div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>
               GFI®, COCIR, CIR y la comunidad
@@ -687,13 +687,13 @@ export default function EventosPage() {
                       <div className="ev-fecha-col">
                         {ev.es_recurrente && ev.fechas_recurrentes && ev.fechas_recurrentes.length > 0 ? (
                           <>
-                            <div style={{ fontSize: 22, fontWeight: 800, color: "#cc0000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{ev.fechas_recurrentes.length}</div>
+                            <div style={{ fontSize: 22, fontWeight: 800, color: "#990000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{ev.fechas_recurrentes.length}</div>
                             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", textAlign: "center" }}>SESIONES</div>
                             <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-AR", { month: "short", year: "2-digit" }).toUpperCase()}</div>
                           </>
                         ) : ev.fecha_fin ? (
                           <>
-                            <div style={{ fontSize: 16, fontWeight: 800, color: "#cc0000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{f.num}→{new Date(ev.fecha_fin).getDate()}</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: "#990000", lineHeight: 1, fontFamily: "'Montserrat',sans-serif" }}>{f.num}→{new Date(ev.fecha_fin).getDate()}</div>
                             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", color: "rgba(255,255,255,0.4)", fontFamily: "'Montserrat',sans-serif", textAlign: "center" }}>{f.mes}</div>
                             <div style={{ fontSize: 9, color: "rgba(255,255,255,0.25)" }}>{anio}</div>
                           </>
@@ -712,11 +712,11 @@ export default function EventosPage() {
                           {ev.destacado && !(ev.media&&Array.isArray(ev.media)&&(ev.media as MediaItem[]).some((m:MediaItem)=>m.tipo==="foto")) && <span style={{fontSize:12}}>⭐</span>}
                           <span className="ev-titulo">{ev.titulo}</span>
                           <span className="ev-badge" style={{color:tipo.color,background:tipo.bg,borderColor:tipo.border}}>{tipo.label}</span>
-                          <span className="ev-badge" style={{color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
+                          <span className="ev-badge" style={{color:ev.gratuito?"#3abab6":"#d4960c",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
                             {ev.gratuito?"Gratuito":ev.precio_entrada?`$${ev.precio_entrada.toLocaleString("es-AR")}`:"Con costo"}
                           </span>
                           {ev.plataforma&&ev.plataforma!=="presencial"&&(
-                            <span className="ev-badge" style={{color:"#60a5fa",background:"rgba(96,165,250,0.08)",borderColor:"rgba(96,165,250,0.2)"}}>
+                            <span className="ev-badge" style={{color:"#4ab8d8",background:"rgba(74,184,216,0.08)",borderColor:"rgba(74,184,216,0.2)"}}>
                               {PLATAFORMAS[ev.plataforma]??"🎥"} Online
                             </span>
                           )}
@@ -737,7 +737,7 @@ export default function EventosPage() {
                         {ev.descripcion&&<div className="ev-desc">{ev.descripcion}</div>}
                         {ev.capacidad!==null&&(
                           <div className="ev-cap">
-                            <div className="ev-cap-bar-wrap"><div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#eab308":"#22c55e"}} /></div>
+                            <div className="ev-cap-bar-wrap"><div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#d4960c":"#3abab6"}} /></div>
                             <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos {lleno&&"· COMPLETO"}</div>
                           </div>
                         )}
@@ -774,7 +774,7 @@ export default function EventosPage() {
                           onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.4)")}>
                           Ver evento
                         </button>
-                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#60a5fa",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Unirse</a>}
+                        {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4ab8d8",textDecoration:"none",fontFamily:"'Montserrat',sans-serif",fontWeight:700}}>Unirse</a>}
                         {esAdmin&&ev.estado==="publicado"&&(
                           <button
                             onClick={() => publicarEventoEnRedes(ev)}
@@ -786,7 +786,7 @@ export default function EventosPage() {
                         {esAdmin&&ev.estado==="publicado"&&eventoRedesResult[ev.id]&&(
                           <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
                             {eventoRedesResult[ev.id].map(r => (
-                              <span key={r.red} style={{fontSize:8,fontFamily:"'Montserrat',sans-serif",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(200,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(200,0,0,0.3)"}`,color:r.ok?"#22c55e":"#f87171"}}>
+                              <span key={r.red} style={{fontSize:8,fontFamily:"'Montserrat',sans-serif",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(200,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(200,0,0,0.3)"}`,color:r.ok?"#3abab6":"#f87171"}}>
                                 {r.red} {r.ok ? "✓" : "✗"}
                               </span>
                             ))}
@@ -937,7 +937,7 @@ export default function EventosPage() {
                   <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                     <input className="ev-input" type="date" value={nuevaFechaRec} onChange={e => setNuevaFechaRec(e.target.value)} style={{ flex: 1 }} />
                     <button type="button" onClick={() => { if (nuevaFechaRec && !fechasRec.includes(nuevaFechaRec)) { setFechasRec(p => [...p, nuevaFechaRec].sort()); setNuevaFechaRec(""); } }}
-                      style={{ padding: "8px 14px", background: "#cc0000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
+                      style={{ padding: "8px 14px", background: "#990000", border: "none", borderRadius: 4, color: "#fff", fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>
                       + Agregar
                     </button>
                   </div>
@@ -1003,7 +1003,7 @@ export default function EventosPage() {
             {esAdmin && (
               <div className="ev-field" style={{ marginTop: 8 }}>
                 <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-                  <input type="checkbox" checked={form.destacado} onChange={e => setF("destacado", e.target.checked)} style={{ accentColor: "#cc0000" }} />
+                  <input type="checkbox" checked={form.destacado} onChange={e => setF("destacado", e.target.checked)} style={{ accentColor: "#990000" }} />
                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>⭐ Marcar como destacado</span>
                 </label>
               </div>
@@ -1139,7 +1139,7 @@ export default function EventosPage() {
                 <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",textAlign:"center",maxWidth:320}}>
                   Instagram no permite reproducción embebida.<br/>
                   <a href={lightbox} target="_blank" rel="noopener noreferrer"
-                    style={{color:"#cc0000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
+                    style={{color:"#990000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
                     Abrir en Instagram →
                   </a>
                 </div>
@@ -1150,7 +1150,7 @@ export default function EventosPage() {
                 <div style={{fontSize:14,color:"rgba(255,255,255,0.7)",textAlign:"center",maxWidth:320}}>
                   TikTok no permite reproducción embebida.<br/>
                   <a href={lightbox} target="_blank" rel="noopener noreferrer"
-                    style={{color:"#cc0000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
+                    style={{color:"#990000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",marginTop:12,display:"inline-block"}}>
                     Abrir en TikTok →
                   </a>
                 </div>
@@ -1167,7 +1167,7 @@ export default function EventosPage() {
               <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:16}}>
                 <div style={{fontSize:48}}>🎬</div>
                 <a href={lightbox} target="_blank" rel="noopener noreferrer"
-                  style={{color:"#cc0000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:14}}>
+                  style={{color:"#990000",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:14}}>
                   Abrir video →
                 </a>
               </div>
@@ -1230,15 +1230,15 @@ export default function EventosPage() {
                 {/* Badges */}
                 <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
                   <span className="ev-badge" style={{color:tipo.color,background:tipo.bg,borderColor:tipo.border}}>{tipo.label}</span>
-                  <span className="ev-badge" style={{color:ev.gratuito?"#22c55e":"#eab308",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
+                  <span className="ev-badge" style={{color:ev.gratuito?"#3abab6":"#d4960c",background:ev.gratuito?"rgba(34,197,94,0.08)":"rgba(234,179,8,0.08)",borderColor:ev.gratuito?"rgba(34,197,94,0.2)":"rgba(234,179,8,0.2)"}}>
                     {ev.gratuito?"Gratuito":ev.precio_entrada?`$${ev.precio_entrada.toLocaleString("es-AR")}`:"Con costo"}
                   </span>
                   {ev.plataforma&&ev.plataforma!=="presencial"&&(
-                    <span className="ev-badge" style={{color:"#60a5fa",background:"rgba(96,165,250,0.08)",borderColor:"rgba(96,165,250,0.2)"}}>
+                    <span className="ev-badge" style={{color:"#4ab8d8",background:"rgba(74,184,216,0.08)",borderColor:"rgba(74,184,216,0.2)"}}>
                       {PLATAFORMAS[ev.plataforma]??"🎥"} Online
                     </span>
                   )}
-                  {ev.destacado&&<span className="ev-badge" style={{color:"#f59e0b",background:"rgba(245,158,11,0.08)",borderColor:"rgba(245,158,11,0.2)"}}>⭐ Destacado</span>}
+                  {ev.destacado&&<span className="ev-badge" style={{color:"#d4960c",background:"rgba(245,158,11,0.08)",borderColor:"rgba(245,158,11,0.2)"}}>⭐ Destacado</span>}
                 </div>
 
                 {/* Título */}
@@ -1252,13 +1252,13 @@ export default function EventosPage() {
                   {ev.lugar&&(
                     <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
                       <span>📍</span><span>{ev.lugar}</span>
-                      {ev.lugar_url&&<a href={ev.lugar_url} target="_blank" rel="noopener noreferrer" style={{color:"#cc0000",fontSize:11,fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>Ver mapa →</a>}
+                      {ev.lugar_url&&<a href={ev.lugar_url} target="_blank" rel="noopener noreferrer" style={{color:"#990000",fontSize:11,fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none"}}>Ver mapa →</a>}
                     </div>
                   )}
                   {ev.link_reunion&&!pasado&&(
                     <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"rgba(255,255,255,0.6)"}}>
                       <span>🔗</span>
-                      <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{color:"#60a5fa",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:13}}>Unirse online →</a>
+                      <a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{color:"#4ab8d8",fontWeight:700,fontFamily:"'Montserrat',sans-serif",textDecoration:"none",fontSize:13}}>Unirse online →</a>
                     </div>
                   )}
                 </div>
@@ -1277,7 +1277,7 @@ export default function EventosPage() {
                     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                       {videos.map((v:MediaItem,i:number)=>(
                         <button key={i} type="button"
-                          style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",background:"rgba(96,165,250,0.08)",border:"1px solid rgba(96,165,250,0.2)",borderRadius:4,color:"#60a5fa",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                          style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",background:"rgba(74,184,216,0.08)",border:"1px solid rgba(74,184,216,0.2)",borderRadius:4,color:"#4ab8d8",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
                           onClick={()=>setLightbox(v.url)}>
                           ▶️ Ver video {videos.length>1?i+1:""}
                         </button>
@@ -1289,7 +1289,7 @@ export default function EventosPage() {
                 {/* Capacidad */}
                 {ev.capacidad!==null&&(
                   <div style={{marginBottom:16}}>
-                    <div className="ev-cap-bar-wrap"><div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#eab308":"#22c55e"}} /></div>
+                    <div className="ev-cap-bar-wrap"><div className="ev-cap-bar" style={{width:`${pct}%`,background:pct>=90?"#f87171":pct>=70?"#d4960c":"#3abab6"}} /></div>
                     <div className="ev-cap-texto">{ev.total_inscriptos} / {ev.capacidad} inscriptos{lleno?" · COMPLETO":""}</div>
                   </div>
                 )}
@@ -1317,7 +1317,7 @@ export default function EventosPage() {
                   )}
                   {ev.link_externo&&(
                     <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
-                      style={{padding:"9px 16px",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#cc0000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
+                      style={{padding:"9px 16px",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#990000",fontFamily:"'Montserrat',sans-serif",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
                       🔗 Link inscripción
                     </a>
                   )}

@@ -70,7 +70,7 @@ export function ContactForm({ slug, accent, card, cardBorder, text, textMuted }:
       <input style={inputStyle} placeholder="Email" type="email" value={f.email} onChange={e => f.setEmail(e.target.value)} />
       <input style={inputStyle} placeholder="Teléfono / WhatsApp" value={f.tel} onChange={e => f.setTel(e.target.value)} />
       <textarea style={taStyle} placeholder="¿En qué puedo ayudarte?" value={f.msg} onChange={e => f.setMsg(e.target.value)} />
-      {f.err && <div style={{ fontSize: 12, color: "#ef4444" }}>{f.err}</div>}
+      {f.err && <div style={{ fontSize: 12, color: "#b80000" }}>{f.err}</div>}
       <button
         onClick={f.enviar}
         disabled={f.enviando}
@@ -109,7 +109,7 @@ export function TasacionForm({ slug, accent, card, cardBorder, text, textMuted }
       </div>
       <input style={inputStyle} placeholder="Dirección de la propiedad" value={f.dir} onChange={e => f.setDir(e.target.value)} />
       <textarea style={taStyle} placeholder="Contanos más sobre la propiedad (tipo, metros, antigüedad...)" value={f.msg} onChange={e => f.setMsg(e.target.value)} />
-      {f.err && <div style={{ fontSize: 12, color: "#ef4444" }}>{f.err}</div>}
+      {f.err && <div style={{ fontSize: 12, color: "#b80000" }}>{f.err}</div>}
       <button
         onClick={f.enviar}
         disabled={f.enviando}

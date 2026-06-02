@@ -108,7 +108,7 @@ const fmtPrecio = (precio: number | null, moneda: string, ocultar: boolean) => {
   return moneda === "USD" ? `USD ${fmtNum(precio)}` : `$ ${fmtNum(precio)}`;
 };
 
-const OP_COLOR: Record<string, string> = { Venta: "#22c55e", Alquiler: "#60a5fa", "Alquiler temporal": "#f59e0b" };
+const OP_COLOR: Record<string, string> = { Venta: "#3abab6", Alquiler: "#4ab8d8", "Alquiler temporal": "#d4960c" };
 
 const AMB_KEYS: [string, string][] = [
   ["amb_balcon","Balcón"], ["amb_terraza","Terraza"], ["amb_patio","Patio"], ["amb_jardin","Jardín"],
@@ -255,8 +255,8 @@ export default async function InmueblePage({ params }: Props) {
         .ficha-ubicacion { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
         .ficha-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
         .badge { padding: 4px 12px; border-radius: 20px; font-family: 'Montserrat',sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-        .ficha-precio { font-family: 'Montserrat',sans-serif; font-size: 30px; font-weight: 800; color: #22c55e; margin-bottom: 4px; }
-        .ficha-precio-reservada { font-size: 13px; color: #f59e0b; margin-top: 4px; }
+        .ficha-precio { font-family: 'Montserrat',sans-serif; font-size: 30px; font-weight: 800; color: #3abab6; margin-bottom: 4px; }
+        .ficha-precio-reservada { font-size: 13px; color: #d4960c; margin-top: 4px; }
         .ficha-expensas { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 2px; }
         .ficha-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 22px 0; }
         .specs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
@@ -267,7 +267,7 @@ export default async function InmueblePage({ params }: Props) {
         .descripcion { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.7; white-space: pre-wrap; }
         .tags { display: flex; gap: 8px; flex-wrap: wrap; }
         .tag { padding: 5px 13px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: rgba(255,255,255,0.6); font-family: 'Montserrat',sans-serif; font-weight: 700; }
-        .tag-v { border-color: rgba(34,197,94,0.3); color: #22c55e; background: rgba(34,197,94,0.06); }
+        .tag-v { border-color: rgba(34,197,94,0.3); color: #3abab6; background: rgba(34,197,94,0.06); }
         .chips { display: flex; gap: 7px; flex-wrap: wrap; }
         .chip { padding: 5px 12px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); font-size: 11px; color: rgba(255,255,255,0.6); font-family: 'Inter',sans-serif; }
         .mapa-wrap { border-radius: 8px; overflow: hidden; margin-top: 16px; border: 1px solid rgba(255,255,255,0.1); }
@@ -278,14 +278,14 @@ export default async function InmueblePage({ params }: Props) {
         .agente-nombre { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
         .agente-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 3px; }
         .agente-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-wa { padding: 10px 20px; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; color: #22c55e; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; letter-spacing: 0.1em; transition: all 0.15s; display: inline-block; }
+        .btn-wa { padding: 10px 20px; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; color: #3abab6; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; letter-spacing: 0.1em; transition: all 0.15s; display: inline-block; }
         .btn-wa:hover { background: rgba(34,197,94,0.2); }
         .btn-email { padding: 10px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: rgba(255,255,255,0.7); font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; letter-spacing: 0.1em; transition: all 0.15s; display: inline-block; }
         .btn-email:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
-        .btn-tel { padding: 10px 20px; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); border-radius: 6px; color: #60a5fa; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; letter-spacing: 0.1em; display: inline-block; }
+        .btn-tel { padding: 10px 20px; background: rgba(74,184,216,0.08); border: 1px solid rgba(74,184,216,0.2); border-radius: 6px; color: #4ab8d8; font-family: 'Montserrat',sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; letter-spacing: 0.1em; display: inline-block; }
         .navbar { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); max-width: 960px; margin: 0 auto; }
         .nav-logo { font-family: 'Montserrat',sans-serif; font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
-        .nav-logo span { color: #cc0000; }
+        .nav-logo span { color: #990000; }
         .codigo-badge { font-size: 10px; color: rgba(255,255,255,0.2); font-family: 'Montserrat',sans-serif; font-weight: 700; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 3px 8px; border-radius: 4px; }
         @media (max-width: 640px) {
           .ficha-body { padding: 18px 16px; }
@@ -322,7 +322,7 @@ export default async function InmueblePage({ params }: Props) {
                     {p.tipo}
                   </span>
                   {reservada && (
-                    <span className="badge" style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)", color: "#f59e0b" }}>
+                    <span className="badge" style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.4)", color: "#d4960c" }}>
                       RESERVADA
                     </span>
                   )}
@@ -336,7 +336,7 @@ export default async function InmueblePage({ params }: Props) {
                     <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)", textDecoration: "line-through", fontFamily: "Montserrat,sans-serif", fontWeight: 700 }}>
                       {fmtPrecio(p.precio_anterior, p.moneda, false)}
                     </span>
-                    <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, letterSpacing: "0.08em", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#22c55e", padding: "2px 7px", borderRadius: 4 }}>
+                    <span style={{ fontSize: 10, fontFamily: "Montserrat,sans-serif", fontWeight: 800, letterSpacing: "0.08em", background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)", color: "#3abab6", padding: "2px 7px", borderRadius: 4 }}>
                       -{Math.round((p.precio_anterior - p.precio) / p.precio_anterior * 100)}%
                     </span>
                   </div>
@@ -468,7 +468,7 @@ export default async function InmueblePage({ params }: Props) {
                   </div>
                 ) : (
                   <a href={p.tour_virtual_url} target="_blank" rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)", borderRadius: 6, color: "#60a5fa", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", background: "rgba(74,184,216,0.08)", border: "1px solid rgba(74,184,216,0.2)", borderRadius: 6, color: "#4ab8d8", fontSize: 12, fontFamily: "Montserrat,sans-serif", fontWeight: 700, textDecoration: "none" }}>
                     🔭 Ver tour virtual
                   </a>
                 )}
@@ -571,7 +571,7 @@ export default async function InmueblePage({ params }: Props) {
                     </div>
                     <div style={{ padding: "10px 12px" }}>
                       <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sf.titulo}</div>
-                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: "#22c55e" }}>{sprecio}</div>
+                      <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 13, fontWeight: 800, color: "#3abab6" }}>{sprecio}</div>
                       {(sf.superficie_cubierta || sf.dormitorios) && (
                         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>
                           {sf.dormitorios != null && `${sf.dormitorios} dorm.`}

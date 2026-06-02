@@ -37,11 +37,11 @@ const TIPO_LABEL: Record<string, string> = {
 };
 
 const TIPO_COLOR: Record<string, string> = {
-  descuento: "#22c55e",
+  descuento: "#3abab6",
   producto_gratis: "#3b82f6",
   servicio_gratis: "#8b5cf6",
-  cashback: "#f59e0b",
-  otro: "#cc0000",
+  cashback: "#d4960c",
+  otro: "#990000",
 };
 
 export default function CampanasPage() {
@@ -154,21 +154,21 @@ export default function CampanasPage() {
         .camp-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
         .camp-detalle { font-size:13px; font-weight:600; color:#fff; padding:10px 14px; background:rgba(255,255,255,.04); border-radius:6px; border:1px solid rgba(255,255,255,.08); }
         .camp-costo { font-size:11px; color:rgba(255,255,255,.35); }
-        .camp-costo strong { color:#cc0000; }
+        .camp-costo strong { color:#990000; }
         .camp-input { width:100%; padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; font-family:'Inter',sans-serif; box-sizing:border-box; }
         .camp-input:focus { border-color:rgba(200,0,0,.4); }
-        .btn-sumar { padding:11px; background:#cc0000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; width:100%; }
+        .btn-sumar { padding:11px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; width:100%; }
         .btn-sumar:hover:not(:disabled) { background:#e60000; }
         .btn-sumar:disabled { opacity:.5; cursor:not-allowed; }
         .camp-link-box { background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.2); border-radius:6px; padding:12px 14px; }
         .camp-link-url { font-family:'Inter',sans-serif; font-size:11px; color:rgba(34,197,94,.8); word-break:break-all; margin-bottom:8px; }
-        .btn-copy { padding:7px 14px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.25); border-radius:4px; color:#22c55e; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; cursor:pointer; }
+        .btn-copy { padding:7px 14px; background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.25); border-radius:4px; color:#3abab6; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; cursor:pointer; }
         .camp-stats-row { display:flex; gap:12px; flex-wrap:wrap; }
         .camp-stat { display:flex; flex-direction:column; gap:2px; }
-        .camp-stat-val { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:#cc0000; }
+        .camp-stat-val { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:#990000; }
         .camp-stat-label { font-size:10px; color:rgba(255,255,255,.35); }
         .toast { position:fixed; bottom:28px; right:28px; padding:12px 20px; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; z-index:999; }
-        .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#22c55e; }
+        .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#3abab6; }
         .toast.err { background:rgba(200,0,0,.15); border:1px solid rgba(200,0,0,.35); color:#ff6666; }
       `}</style>
 
@@ -247,7 +247,7 @@ export default function CampanasPage() {
             <div className="camp-sec">🎯 Campañas disponibles — {disponibles.length}</div>
             <div className="camp-grid">
               {disponibles.map(c => {
-                const color = TIPO_COLOR[c.tipo_beneficio] ?? "#cc0000";
+                const color = TIPO_COLOR[c.tipo_beneficio] ?? "#990000";
                 const estimado = (cantAdminsDeclaradas || parseInt(formAdmins) || 0) * c.costo_por_admin_usd;
                 return (
                   <div key={c.id} className="camp-card">

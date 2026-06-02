@@ -22,7 +22,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
         <div style={{ display: "flex", gap: 12 }}>
           <button
             onClick={reset}
-            style={{ padding: "11px 24px", background: "#cc0000", color: "#fff", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, fontFamily: "Montserrat,sans-serif", cursor: "pointer" }}
+            style={{ padding: "11px 24px", background: "#990000", color: "#fff", border: "none", borderRadius: 7, fontSize: 13, fontWeight: 700, fontFamily: "Montserrat,sans-serif", cursor: "pointer" }}
           >
             Reintentar
           </button>

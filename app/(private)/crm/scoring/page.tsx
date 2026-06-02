@@ -198,7 +198,7 @@ export default function ScoringPage() {
   const totalFrio = scores.filter(s => s.categoria === "frio").length;
   const promScore = scores.length > 0 ? scores.reduce((s, x) => s + x.score, 0) / scores.length : 0;
 
-  const catColor = (cat: string) => cat === "caliente" ? "#cc0000" : cat === "tibio" ? "#f97316" : "#3b82f6";
+  const catColor = (cat: string) => cat === "caliente" ? "#990000" : cat === "tibio" ? "#d4960c" : "#3b82f6";
   const catIcon = (cat: string) => cat === "caliente" ? "🔥" : cat === "tibio" ? "⚡" : "❄️";
 
   return (
@@ -217,8 +217,8 @@ export default function ScoringPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
           {[
             { label: "Score promedio", value: promScore.toFixed(0), color: "#e5e5e5", sub: `de ${scores.length} contactos` },
-            { label: "🔥 Calientes", value: totalCaliente, color: "#cc0000", sub: "score ≥ 60" },
-            { label: "⚡ Tibios", value: totalTibio, color: "#f97316", sub: "score 30–59" },
+            { label: "🔥 Calientes", value: totalCaliente, color: "#990000", sub: "score ≥ 60" },
+            { label: "⚡ Tibios", value: totalTibio, color: "#d4960c", sub: "score 30–59" },
             { label: "❄️ Fríos", value: totalFrio, color: "#3b82f6", sub: "score < 30" },
           ].map(k => (
             <div key={k.label} style={{ background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "14px 16px" }}>
@@ -311,12 +311,12 @@ export default function ScoringPage() {
                   <div key={d.label} style={{ marginBottom: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
                       <span style={{ color: "#9ca3af" }}>{d.label}</span>
-                      <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: d.pts > 0 ? "#22c55e" : "#4b5563" }}>
+                      <span style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, color: d.pts > 0 ? "#3abab6" : "#4b5563" }}>
                         {d.pts}/{d.max}
                       </span>
                     </div>
                     <div style={{ background: "#0a0a0a", borderRadius: 3, height: 4, overflow: "hidden" }}>
-                      <div style={{ width: `${(d.pts / d.max) * 100}%`, height: "100%", background: d.pts / d.max >= 0.7 ? "#22c55e" : d.pts / d.max >= 0.4 ? "#f97316" : "#cc0000" }} />
+                      <div style={{ width: `${(d.pts / d.max) * 100}%`, height: "100%", background: d.pts / d.max >= 0.7 ? "#3abab6" : d.pts / d.max >= 0.4 ? "#d4960c" : "#990000" }} />
                     </div>
                   </div>
                 ))}
@@ -345,7 +345,7 @@ export default function ScoringPage() {
                     {iaAnalisis[seleccionado.contacto.id].resumen}
                   </div>
                   <div style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 6, padding: 10, marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, color: "#22c55e", fontWeight: 700, marginBottom: 4, fontFamily: "Montserrat,sans-serif", textTransform: "uppercase" }}>Próximo paso</div>
+                    <div style={{ fontSize: 10, color: "#3abab6", fontWeight: 700, marginBottom: 4, fontFamily: "Montserrat,sans-serif", textTransform: "uppercase" }}>Próximo paso</div>
                     <div style={{ fontSize: 12, color: "#d1d5db" }}>{iaAnalisis[seleccionado.contacto.id].proximo_paso}</div>
                   </div>
                   {iaAnalisis[seleccionado.contacto.id].riesgo && (

@@ -91,25 +91,25 @@ const ESTADO_LABEL: Record<EstadoCampana, string> = {
 
 const ESTADO_COLOR: Record<EstadoCampana, string> = {
   planificada: "#6b7280",
-  activa: "#cc0000",
-  pausada: "#f59e0b",
-  finalizada: "#22c55e",
+  activa: "#990000",
+  pausada: "#d4960c",
+  finalizada: "#3abab6",
 };
 
 const TIPO_COLOR: Record<TipoCampana, string> = {
   redes_sociales: "#8b5cf6",
   email: "#3b82f6",
-  whatsapp: "#22c55e",
-  portal_inmobiliario: "#f59e0b",
+  whatsapp: "#3abab6",
+  portal_inmobiliario: "#d4960c",
   flyer_digital: "#ec4899",
   referidos: "#14b8a6",
-  open_house: "#f97316",
+  open_house: "#d4960c",
   otro: "#6b7280",
 };
 
 const OBJETIVO_COLOR: Record<ObjetivoCampana, string> = {
   captacion: "#8b5cf6",
-  ventas: "#22c55e",
+  ventas: "#3abab6",
   alquileres: "#3b82f6",
   marca_personal: "#ec4899",
   otro: "#6b7280",
@@ -610,7 +610,7 @@ export default function CampanasMarketingPage() {
         <button
           onClick={openNew}
           style={{
-            background: "#cc0000",
+            background: "#990000",
             color: "#fff",
             border: "none",
             borderRadius: 6,
@@ -647,7 +647,7 @@ export default function CampanasMarketingPage() {
             style={{
               background: "none",
               border: "none",
-              borderBottom: tab === t.key ? "2px solid #cc0000" : "2px solid transparent",
+              borderBottom: tab === t.key ? "2px solid #990000" : "2px solid transparent",
               color: tab === t.key ? "#e0e0e0" : "#888",
               fontFamily: "Inter, sans-serif",
               fontSize: 14,
@@ -709,7 +709,7 @@ export default function CampanasMarketingPage() {
               <div style={{ fontSize: 11, color: "#888", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
                 Inversión activa
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#cc0000" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#990000" }}>
                 {formatARS(inversionTotal)}
               </div>
               <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>en campañas activas/planificadas</div>
@@ -727,7 +727,7 @@ export default function CampanasMarketingPage() {
               <div style={{ fontSize: 11, color: "#888", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1 }}>
                 Tasa de conversión
               </div>
-              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#22c55e" }}>
+              <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "Montserrat, sans-serif", color: "#3abab6" }}>
                 {conversionTotal.toFixed(1)}%
               </div>
               <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>conversiones / leads</div>
@@ -741,7 +741,7 @@ export default function CampanasMarketingPage() {
                   fontSize: 22,
                   fontWeight: 700,
                   fontFamily: "Montserrat, sans-serif",
-                  color: roiEstimado >= 0 ? "#22c55e" : "#cc0000",
+                  color: roiEstimado >= 0 ? "#3abab6" : "#990000",
                 }}
               >
                 {roiEstimado >= 0 ? "+" : ""}
@@ -820,9 +820,9 @@ export default function CampanasMarketingPage() {
                           onClick={() => cambiarEstado(c.id, "pausada")}
                           style={{
                             background: "#1a1a1a",
-                            border: "1px solid #f59e0b44",
+                            border: "1px solid #d4960c44",
                             borderRadius: 5,
-                            color: "#f59e0b",
+                            color: "#d4960c",
                             padding: "5px 12px",
                             fontSize: 12,
                             cursor: "pointer",
@@ -837,9 +837,9 @@ export default function CampanasMarketingPage() {
                           onClick={() => cambiarEstado(c.id, "activa")}
                           style={{
                             background: "#1a1a1a",
-                            border: "1px solid #cc000044",
+                            border: "1px solid #99000044",
                             borderRadius: 5,
-                            color: "#cc0000",
+                            color: "#990000",
                             padding: "5px 12px",
                             fontSize: 12,
                             cursor: "pointer",
@@ -854,9 +854,9 @@ export default function CampanasMarketingPage() {
                           onClick={() => cambiarEstado(c.id, "finalizada")}
                           style={{
                             background: "#1a1a1a",
-                            border: "1px solid #22c55e44",
+                            border: "1px solid #3abab644",
                             borderRadius: 5,
-                            color: "#22c55e",
+                            color: "#3abab6",
                             padding: "5px 12px",
                             fontSize: 12,
                             cursor: "pointer",
@@ -871,9 +871,9 @@ export default function CampanasMarketingPage() {
                           onClick={() => cambiarEstado(c.id, "activa")}
                           style={{
                             background: "#1a1a1a",
-                            border: "1px solid #cc000044",
+                            border: "1px solid #99000044",
                             borderRadius: 5,
-                            color: "#cc0000",
+                            color: "#990000",
                             padding: "5px 12px",
                             fontSize: 12,
                             cursor: "pointer",
@@ -924,7 +924,7 @@ export default function CampanasMarketingPage() {
                     <ProgressBar
                       value={c.gasto_real}
                       max={c.presupuesto}
-                      color={c.gasto_real > c.presupuesto ? "#cc0000" : "#f59e0b"}
+                      color={c.gasto_real > c.presupuesto ? "#990000" : "#d4960c"}
                     />
                   </div>
 
@@ -942,10 +942,10 @@ export default function CampanasMarketingPage() {
                     <span>
                       {formatFecha(c.fecha_inicio)} → {formatFecha(c.fecha_fin)}
                     </span>
-                    <span style={{ color: dias < 0 ? "#cc0000" : dias <= 7 ? "#f59e0b" : "#888" }}>
+                    <span style={{ color: dias < 0 ? "#990000" : dias <= 7 ? "#d4960c" : "#888" }}>
                       {dias < 0 ? `Venció hace ${Math.abs(dias)} días` : `${dias} días restantes`}
                     </span>
-                    <span style={{ color: "#22c55e" }}>
+                    <span style={{ color: "#3abab6" }}>
                       {c.conversiones} conversiones
                     </span>
                   </div>
@@ -1032,7 +1032,7 @@ export default function CampanasMarketingPage() {
                         border: "1px solid #222",
                         padding: "10px 12px",
                         textAlign: "left",
-                        color: sortCol === col ? "#cc0000" : "#888",
+                        color: sortCol === col ? "#990000" : "#888",
                         cursor: "pointer",
                         userSelect: "none",
                         fontWeight: 600,
@@ -1071,12 +1071,12 @@ export default function CampanasMarketingPage() {
                       >
                         {c.nombre}
                         {isBest && (
-                          <span style={{ marginLeft: 6, fontSize: 10, color: "#22c55e" }}>
+                          <span style={{ marginLeft: 6, fontSize: 10, color: "#3abab6" }}>
                             ★ mejor
                           </span>
                         )}
                         {isWorst && (
-                          <span style={{ marginLeft: 6, fontSize: 10, color: "#cc0000" }}>
+                          <span style={{ marginLeft: 6, fontSize: 10, color: "#990000" }}>
                             ▼ peor
                           </span>
                         )}
@@ -1087,7 +1087,7 @@ export default function CampanasMarketingPage() {
                       <td style={{ border: "1px solid #1a1a1a", padding: "9px 12px", color: "#3b82f6" }}>
                         {c.leads_obtenidos}
                       </td>
-                      <td style={{ border: "1px solid #1a1a1a", padding: "9px 12px", color: "#22c55e" }}>
+                      <td style={{ border: "1px solid #1a1a1a", padding: "9px 12px", color: "#3abab6" }}>
                         {c.conversiones}
                       </td>
                       <td style={{ border: "1px solid #1a1a1a", padding: "9px 12px", color: "#e0e0e0" }}>
@@ -1100,7 +1100,7 @@ export default function CampanasMarketingPage() {
                         style={{
                           border: "1px solid #1a1a1a",
                           padding: "9px 12px",
-                          color: isBest ? "#22c55e" : isWorst ? "#cc0000" : "#e0e0e0",
+                          color: isBest ? "#3abab6" : isWorst ? "#990000" : "#e0e0e0",
                           fontWeight: isBest || isWorst ? 700 : 400,
                         }}
                       >
@@ -1224,7 +1224,7 @@ export default function CampanasMarketingPage() {
                   fontFamily: "Montserrat, sans-serif",
                   fontWeight: 700,
                   fontSize: 18,
-                  color: "#22c55e",
+                  color: "#3abab6",
                   textTransform: "capitalize",
                 }}
               >
@@ -1263,7 +1263,7 @@ export default function CampanasMarketingPage() {
                   fontFamily: "Montserrat, sans-serif",
                   fontWeight: 700,
                   fontSize: 18,
-                  color: "#f59e0b",
+                  color: "#d4960c",
                 }}
               >
                 {formatARS(insights.gastoMensual)}
@@ -1391,7 +1391,7 @@ function BarChart({
                 y={chartH - hConv}
                 width={barW}
                 height={hConv}
-                fill="#22c55e"
+                fill="#3abab6"
                 rx={2}
               />
               {/* Label */}
@@ -1413,7 +1413,7 @@ function BarChart({
       <g transform={`translate(${PADDING.left + 10},${H - 14})`}>
         <rect x={0} y={-8} width={10} height={8} fill="#3b82f6" rx={1} />
         <text x={14} y={0} fill="#888" fontSize={11}>Leads promedio</text>
-        <rect x={130} y={-8} width={10} height={8} fill="#22c55e" rx={1} />
+        <rect x={130} y={-8} width={10} height={8} fill="#3abab6" rx={1} />
         <text x={144} y={0} fill="#888" fontSize={11}>Conversiones promedio</text>
       </g>
     </svg>
@@ -1789,9 +1789,9 @@ function ModalForm({
                 style={{
                   padding: "4px 10px",
                   borderRadius: 4,
-                  border: `1px solid ${active ? "#cc0000" : "#333"}`,
-                  background: active ? "#cc000022" : "#0a0a0a",
-                  color: active ? "#cc0000" : "#666",
+                  border: `1px solid ${active ? "#990000" : "#333"}`,
+                  background: active ? "#99000022" : "#0a0a0a",
+                  color: active ? "#990000" : "#666",
                   fontSize: 12,
                   cursor: "pointer",
                   fontFamily: "Inter, sans-serif",
@@ -1827,7 +1827,7 @@ function ModalForm({
           type="button"
           onClick={onSubmit}
           style={{
-            background: "#cc0000",
+            background: "#990000",
             border: "none",
             borderRadius: 5,
             color: "#fff",

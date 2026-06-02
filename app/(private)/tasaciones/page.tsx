@@ -148,13 +148,13 @@ export default function TasacionesPage() {
 <title>Tasación GFI® — ${form.barrio}</title>
 <style>
   body { font-family: 'Georgia',serif; color: #111; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.6; }
-  h1 { font-size: 22px; font-weight: 700; color: #cc0000; margin: 0 0 4px; letter-spacing: -0.02em; }
+  h1 { font-size: 22px; font-weight: 700; color: #990000; margin: 0 0 4px; letter-spacing: -0.02em; }
   .subtitle { color: #666; font-size: 12px; margin-bottom: 28px; }
   .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
   .kpi { background: #f8f8f8; border: 1px solid #e8e8e8; border-radius: 6px; padding: 14px 16px; }
   .kpi-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-family: sans-serif; margin-bottom: 4px; }
   .kpi-val { font-size: 18px; font-weight: 700; color: #111; font-family: sans-serif; }
-  .kpi-val.highlight { color: #cc0000; }
+  .kpi-val.highlight { color: #990000; }
   .section { margin-bottom: 20px; }
   .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; font-family: sans-serif; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px; margin-bottom: 10px; }
   .analisis { color: #333; }
@@ -166,7 +166,7 @@ export default function TasacionesPage() {
   .comp-portal { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; font-family: sans-serif; }
   .comp-titulo { font-weight: 600; color: #111; margin: 2px 0; }
   .comp-meta { font-size: 11px; color: #555; }
-  .rec { background: #fff8f0; border-left: 3px solid #f97316; padding: 10px 14px; font-style: italic; color: #333; margin-top: 6px; }
+  .rec { background: #fff8f0; border-left: 3px solid #d4960c; padding: 10px 14px; font-style: italic; color: #333; margin-top: 6px; }
   .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e0e0e0; font-size: 10px; color: #aaa; text-align: center; font-family: sans-serif; }
   @media print { @page { margin: 1.5cm; } }
 </style>
@@ -417,7 +417,7 @@ ${resultado.recomendacion}`
               </div>
             </div>
 
-            {error && <div style={{ marginBottom: 12, padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, fontSize: 12, color: '#ef4444' }}>{error}</div>}
+            {error && <div style={{ marginBottom: 12, padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, fontSize: 12, color: '#b80000' }}>{error}</div>}
 
             <button
               onClick={tasar}
@@ -455,7 +455,7 @@ ${resultado.recomendacion}`
                   ))}
                 </div>
                 {resultado.alquiler_estimado && (
-                  <div style={{ marginTop: 10, padding: '10px 14px', background: 'var(--gfi-green-soft)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--gfi-radius-md)' }}>
+                  <div style={{ marginTop: 10, padding: '10px 14px', background: 'var(--gfi-green-soft)', border: '1px solid rgba(58,186,182,0.2)', borderRadius: 'var(--gfi-radius-md)' }}>
                     <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--gfi-green-text)', fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>Alquiler estimado: ARS {resultado.alquiler_estimado.toLocaleString('es-AR')}/mes</span>
                   </div>
                 )}
@@ -469,7 +469,7 @@ ${resultado.recomendacion}`
 
               {/* Factores */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <div style={{ background: 'var(--gfi-green-soft)', border: '1px solid rgba(16,185,129,0.18)', borderRadius: 'var(--gfi-radius-md)', padding: 14 }}>
+                <div style={{ background: 'var(--gfi-green-soft)', border: '1px solid rgba(58,186,182,0.18)', borderRadius: 'var(--gfi-radius-md)', padding: 14 }}>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: 'var(--gfi-green-text)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 8 }}>Positivos</div>
                   {resultado.factores_positivos.map((f, i) => (
                     <div key={i} style={{ fontSize: 12, color: 'var(--gfi-text-secondary)', marginBottom: 5, paddingLeft: 14, position: 'relative' }}>
@@ -490,7 +490,7 @@ ${resultado.recomendacion}`
               {/* Justificación del valor — hoy */}
               {resultado.justificacion_valor_hoy && (
                 <div style={{ background: 'var(--gfi-orange-soft)', border: '1px solid var(--gfi-orange-border)', borderRadius: 'var(--gfi-radius-md)', padding: 14 }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: '#f97316', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 9, fontWeight: 700, color: '#d4960c', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>
                     Justificacion del valor · hoy
                   </div>
                   <p style={{ fontSize: 13, color: 'var(--gfi-text-primary)', lineHeight: 1.6, margin: 0 }}>{resultado.justificacion_valor_hoy}</p>
@@ -512,7 +512,7 @@ ${resultado.recomendacion}`
                     {resultado._portales_consultados && resultado._portales_consultados.length > 0 && resultado._comparables_tipo !== 'busqueda' && (
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                         {resultado._portales_consultados.map(p => (
-                          <span key={p} style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: p === 'Red GFI' ? 'rgba(204,0,0,0.12)' : 'rgba(59,130,246,0.12)', color: p === 'Red GFI' ? '#cc0000' : '#3b82f6', border: `1px solid ${p === 'Red GFI' ? 'rgba(204,0,0,0.25)' : 'rgba(59,130,246,0.2)'}` }}>{p}</span>
+                          <span key={p} style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: p === 'Red GFI' ? 'rgba(153,0,0,0.12)' : 'rgba(59,130,246,0.12)', color: p === 'Red GFI' ? '#990000' : '#3b82f6', border: `1px solid ${p === 'Red GFI' ? 'rgba(153,0,0,0.25)' : 'rgba(59,130,246,0.2)'}` }}>{p}</span>
                         ))}
                       </div>
                     )}
@@ -522,9 +522,9 @@ ${resultado.recomendacion}`
                       const esBusqueda = c.precio === 0
                       const esRedGFI = c.portal === 'Red GFI'
                       return (
-                        <div key={i} style={{ background: esRedGFI ? 'rgba(204,0,0,0.04)' : 'rgba(255,255,255,0.03)', border: `1px solid ${esBusqueda ? 'rgba(255,255,255,0.05)' : (esRedGFI ? 'rgba(204,0,0,0.15)' : 'rgba(255,255,255,0.08)')}`, borderRadius: 8, padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                        <div key={i} style={{ background: esRedGFI ? 'rgba(153,0,0,0.04)' : 'rgba(255,255,255,0.03)', border: `1px solid ${esBusqueda ? 'rgba(255,255,255,0.05)' : (esRedGFI ? 'rgba(153,0,0,0.15)' : 'rgba(255,255,255,0.08)')}`, borderRadius: 8, padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: esRedGFI ? 'rgba(204,0,0,0.12)' : 'rgba(255,255,255,0.06)', color: esRedGFI ? '#cc0000' : 'rgba(255,255,255,0.35)', border: `1px solid ${esRedGFI ? 'rgba(204,0,0,0.2)' : 'rgba(255,255,255,0.08)'}`, marginRight: 7 }}>{c.portal}</span>
+                            <span style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: esRedGFI ? 'rgba(153,0,0,0.12)' : 'rgba(255,255,255,0.06)', color: esRedGFI ? '#990000' : 'rgba(255,255,255,0.35)', border: `1px solid ${esRedGFI ? 'rgba(153,0,0,0.2)' : 'rgba(255,255,255,0.08)'}`, marginRight: 7 }}>{c.portal}</span>
                             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{esBusqueda ? `Ver ${c.barrio}` : (c.titulo || c.barrio)}</span>
                             {!esBusqueda && c.m2 && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginLeft: 8 }}>{c.m2} m²</span>}
                           </div>
@@ -535,7 +535,7 @@ ${resultado.recomendacion}`
                               </span>
                             )}
                             {esRedGFI ? (
-                              <span style={{ fontSize: 10, color: 'rgba(204,0,0,0.6)', fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>interna</span>
+                              <span style={{ fontSize: 10, color: 'rgba(153,0,0,0.6)', fontFamily: 'Montserrat,sans-serif', fontWeight: 600 }}>interna</span>
                             ) : (
                               <a href={c.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: '#3b82f6', textDecoration: 'none', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, padding: '4px 10px', borderRadius: 5, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)', whiteSpace: 'nowrap' }}>
                                 Ver →
@@ -583,7 +583,7 @@ ${resultado.recomendacion}`
               </div>
               <button onClick={() => setVerDetalle(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 18, cursor: 'pointer' }}>✕</button>
             </div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#cc0000', fontFamily: 'Montserrat,sans-serif', marginBottom: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#990000', fontFamily: 'Montserrat,sans-serif', marginBottom: 8 }}>
               USD {verDetalle.resultado?.valor_sugerido?.toLocaleString('es-AR')}
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>
@@ -596,8 +596,8 @@ ${resultado.recomendacion}`
 
             {/* Justificación del valor */}
             {verDetalle.resultado?.justificacion_valor_hoy && (
-              <div style={{ marginTop: 16, padding: 14, background: 'rgba(204,0,0,0.06)', border: '1px solid rgba(204,0,0,0.15)', borderRadius: 8 }}>
-                <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#cc0000', marginBottom: 8 }}>
+              <div style={{ marginTop: 16, padding: 14, background: 'rgba(153,0,0,0.06)', border: '1px solid rgba(153,0,0,0.15)', borderRadius: 8 }}>
+                <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#990000', marginBottom: 8 }}>
                   Justificación del valor
                 </div>
                 <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>{verDetalle.resultado.justificacion_valor_hoy}</p>
@@ -609,12 +609,12 @@ ${resultado.recomendacion}`
               <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 {(verDetalle.resultado?.factores_positivos?.length ?? 0) > 0 && (
                   <div style={{ padding: 12, background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 8 }}>
-                    <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#22c55e', marginBottom: 8 }}>
+                    <div style={{ fontSize: 9, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#3abab6', marginBottom: 8 }}>
                       Factores positivos
                     </div>
                     {verDetalle.resultado!.factores_positivos.map((f, i) => (
                       <div key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, marginBottom: 4, paddingLeft: 10, position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: '#22c55e' }}>+</span>{f}
+                        <span style={{ position: 'absolute', left: 0, color: '#3abab6' }}>+</span>{f}
                       </div>
                     ))}
                   </div>
@@ -649,7 +649,7 @@ ${resultado.recomendacion}`
                           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4, marginBottom: 3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{c.titulo}</div>
                           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>{c.barrio}{c.m2 ? ` · ${c.m2} m²` : ''} · {c.portal}</div>
                         </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#cc0000', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#990000', fontFamily: 'Montserrat,sans-serif', whiteSpace: 'nowrap', flexShrink: 0 }}>
                           {c.moneda} {c.precio?.toLocaleString('es-AR')}
                         </div>
                       </div>

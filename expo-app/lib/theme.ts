@@ -3,14 +3,14 @@ export const C = {
   bgCard:   '#111111',
   bgInput:  '#161616',
   border:   'rgba(255,255,255,0.08)',
-  red:      '#cc0000',
-  redDim:   'rgba(204,0,0,0.15)',
+  red:      '#990000',
+  redDim:   'rgba(153,0,0,0.15)',
   white:    '#ffffff',
   text:     'rgba(255,255,255,0.88)',
   textMid:  'rgba(255,255,255,0.5)',
   textDim:  'rgba(255,255,255,0.3)',
-  yellow:   '#f59e0b',
-  green:    '#22c55e',
+  yellow:   '#d4960c',
+  green:    '#3abab6',
   blue:     '#3b82f6',
 };
 

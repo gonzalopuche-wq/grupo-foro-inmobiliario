@@ -51,7 +51,7 @@ function ComunidadStack() {
 function MainTabs() {
   const icon = (emoji: string, focused: boolean) => (
     <View style={{ alignItems: 'center' }}>
-      <View style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? 'rgba(204,0,0,0.15)' : 'transparent' }}>
+      <View style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? 'rgba(153,0,0,0.15)' : 'transparent' }}>
         <View>
           {React.createElement(require('react-native').Text, { style: { fontSize: 20 } }, emoji)}
         </View>

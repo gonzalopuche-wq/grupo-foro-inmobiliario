@@ -207,7 +207,7 @@ export default function MetasPage() {
   return (
     <div style={{ padding: "24px 20px", maxWidth: 900, margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#22c55e", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: "#3abab6", color: "#fff", padding: "12px 20px", borderRadius: 10, fontWeight: 600, zIndex: 9999 }}>{toast}</div>
       )}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
@@ -245,21 +245,21 @@ export default function MetasPage() {
             const p = pct(m.progreso, m.objetivo);
             const cumplida = p >= 100;
             return (
-              <div key={m.id} style={{ background: "#1e293b", borderRadius: 14, padding: "20px 22px", border: cumplida ? "1px solid #22c55e44" : "1px solid transparent" }}>
+              <div key={m.id} style={{ background: "#1e293b", borderRadius: 14, padding: "20px 22px", border: cumplida ? "1px solid #3abab644" : "1px solid transparent" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                   <div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
                       <span style={{ fontSize: 20 }}>{info.icon}</span>
                       <span style={{ fontWeight: 700, color: "#f8fafc", fontSize: 16 }}>{m.titulo}</span>
-                      {cumplida && <span style={{ background: "#22c55e22", color: "#22c55e", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>CUMPLIDA ✓</span>}
+                      {cumplida && <span style={{ background: "#3abab622", color: "#3abab6", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>CUMPLIDA ✓</span>}
                       {!m.activa && <span style={{ background: "#33415522", color: "#64748b", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10 }}>INACTIVA</span>}
                     </div>
                     <div style={{ color: "#64748b", fontSize: 12 }}>{info.label} · {PERIODOS.find(p => p.value === m.periodo)?.label} · Inicio: {m.fecha_inicio}</div>
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <button onClick={() => abrirEditar(m)} style={{ background: "#1e3a5f", color: "#60a5fa", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>✏️</button>
+                    <button onClick={() => abrirEditar(m)} style={{ background: "#1e3a5f", color: "#4ab8d8", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>✏️</button>
                     <button onClick={() => toggleActiva(m)} style={{ background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 13 }}>{m.activa ? "Pausar" : "Activar"}</button>
-                    <button onClick={() => eliminar(m.id)} style={{ background: "#2d1b1b", color: "#ef4444", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>🗑</button>
+                    <button onClick={() => eliminar(m.id)} style={{ background: "#2d1b1b", color: "#b80000", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer" }}>🗑</button>
                   </div>
                 </div>
 
@@ -267,10 +267,10 @@ export default function MetasPage() {
                 <div style={{ marginBottom: 10 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#94a3b8", marginBottom: 6 }}>
                     <span>Progreso: <strong style={{ color: "#f8fafc" }}>{m.progreso} {info.unit}</strong> de {m.objetivo} {info.unit}</span>
-                    <strong style={{ color: cumplida ? "#22c55e" : "#f8fafc" }}>{p}%</strong>
+                    <strong style={{ color: cumplida ? "#3abab6" : "#f8fafc" }}>{p}%</strong>
                   </div>
                   <div style={{ background: "#0f172a", borderRadius: 100, height: 8, overflow: "hidden" }}>
-                    <div style={{ width: `${p}%`, height: "100%", background: cumplida ? "#22c55e" : "#6366f1", borderRadius: 100, transition: "width 0.4s" }} />
+                    <div style={{ width: `${p}%`, height: "100%", background: cumplida ? "#3abab6" : "#6366f1", borderRadius: 100, transition: "width 0.4s" }} />
                   </div>
                 </div>
 

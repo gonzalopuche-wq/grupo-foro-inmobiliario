@@ -70,8 +70,8 @@ function diasDesde(fecha: string): number {
 
 function badge(tipo: Alerta["tipo"]) {
   const map: Record<Alerta["tipo"], { icon: string; color: string; label: string }> = {
-    tarea_vencida:      { icon: "⏰", color: "#cc0000", label: "Tarea Vencida" },
-    tarea_hoy:          { icon: "📅", color: "#f97316", label: "Vence Hoy" },
+    tarea_vencida:      { icon: "⏰", color: "#990000", label: "Tarea Vencida" },
+    tarea_hoy:          { icon: "📅", color: "#d4960c", label: "Vence Hoy" },
     negocio_estancado:  { icon: "🔒", color: "#a855f7", label: "Negocio Estancado" },
     contacto_inactivo:  { icon: "💤", color: "#6b7280", label: "Contacto Inactivo" },
     recordatorio:       { icon: "🔔", color: "#3b82f6", label: "Recordatorio" },
@@ -222,7 +222,7 @@ export default function AlertasPage() {
   const dismiss = (id: string) => setDismissed(prev => new Set([...prev, id]));
   const dismissAll = () => setDismissed(new Set(filtradas.map(a => a.id)));
 
-  const colPrioridad = { alta: "#cc0000", media: "#f97316", baja: "#6b7280" };
+  const colPrioridad = { alta: "#990000", media: "#d4960c", baja: "#6b7280" };
 
   return (
     <div style={{ fontFamily: "Inter, sans-serif", background: "#0a0a0a", minHeight: "100vh", color: "#e5e5e5", padding: "24px" }}>
@@ -244,8 +244,8 @@ export default function AlertasPage() {
         {/* KPI chips */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 24 }}>
           {[
-            { label: "Vencidas", count: porTipo["tarea_vencida"] ?? 0, color: "#cc0000" },
-            { label: "Hoy", count: porTipo["tarea_hoy"] ?? 0, color: "#f97316" },
+            { label: "Vencidas", count: porTipo["tarea_vencida"] ?? 0, color: "#990000" },
+            { label: "Hoy", count: porTipo["tarea_hoy"] ?? 0, color: "#d4960c" },
             { label: "Recordatorios", count: porTipo["recordatorio"] ?? 0, color: "#3b82f6" },
             { label: "Estancados", count: porTipo["negocio_estancado"] ?? 0, color: "#a855f7" },
             { label: "Inactivos", count: porTipo["contacto_inactivo"] ?? 0, color: "#6b7280" },
@@ -257,7 +257,7 @@ export default function AlertasPage() {
           ))}
           <div style={{ background: "#111", border: "1px solid #333", borderRadius: 8, padding: "8px 16px" }}>
             <span style={{ fontSize: 12, color: "#9ca3af" }}>Alta prioridad: </span>
-            <span style={{ fontWeight: 700, color: "#cc0000" }}>{porPrioridad["alta"] ?? 0}</span>
+            <span style={{ fontWeight: 700, color: "#990000" }}>{porPrioridad["alta"] ?? 0}</span>
           </div>
         </div>
 
@@ -299,7 +299,7 @@ export default function AlertasPage() {
         ) : filtradas.length === 0 ? (
           <div style={{ background: "#111", border: "1px solid #222", borderRadius: 12, padding: 60, textAlign: "center" }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
-            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 18, color: "#22c55e" }}>Sin alertas pendientes</div>
+            <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 18, color: "#3abab6" }}>Sin alertas pendientes</div>
             <div style={{ color: "#6b7280", fontSize: 13, marginTop: 4 }}>Todo en orden por ahora</div>
           </div>
         ) : (
@@ -323,7 +323,7 @@ export default function AlertasPage() {
                   <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                     {alerta.accion && (
                       <a href={alerta.accion} target="_blank" rel="noreferrer"
-                        style={{ background: "#15803d22", color: "#22c55e", border: "1px solid #22c55e44", borderRadius: 6, padding: "5px 10px", fontSize: 12, textDecoration: "none" }}>
+                        style={{ background: "#15803d22", color: "#3abab6", border: "1px solid #3abab644", borderRadius: 6, padding: "5px 10px", fontSize: 12, textDecoration: "none" }}>
                         WhatsApp
                       </a>
                     )}
@@ -348,8 +348,8 @@ export default function AlertasPage() {
         {alertas.length > 0 && (
           <div style={{ marginTop: 24, background: "#111", border: "1px solid #1f2937", borderRadius: 10, padding: "14px 18px", display: "flex", gap: 24, flexWrap: "wrap" }}>
             <div style={{ fontSize: 12, color: "#9ca3af" }}>
-              <span style={{ color: "#cc0000", fontWeight: 700 }}>{porPrioridad["alta"] ?? 0}</span> alta ·{" "}
-              <span style={{ color: "#f97316", fontWeight: 700 }}>{porPrioridad["media"] ?? 0}</span> media ·{" "}
+              <span style={{ color: "#990000", fontWeight: 700 }}>{porPrioridad["alta"] ?? 0}</span> alta ·{" "}
+              <span style={{ color: "#d4960c", fontWeight: 700 }}>{porPrioridad["media"] ?? 0}</span> media ·{" "}
               <span style={{ color: "#6b7280", fontWeight: 700 }}>{porPrioridad["baja"] ?? 0}</span> baja
             </div>
             <div style={{ fontSize: 12, color: "#6b7280" }}>

@@ -20,8 +20,8 @@ const TIPO_ICON: Record<string, string> = {
   foro: '💬', evento: '📅', smart: '🎯', sistema: '⚙️',
 }
 const TIPO_COLOR: Record<string, string> = {
-  cartera: '#60a5fa', mir: '#34d399', crm: '#a78bfa', web_lead: '#fb923c',
-  suscripcion: '#f87171', foro: '#facc15', evento: '#38bdf8', smart: '#f472b6', sistema: 'rgba(255,255,255,0.4)',
+  cartera: '#4ab8d8', mir: '#34d399', crm: '#a78bfa', web_lead: '#fb923c',
+  suscripcion: '#f87171', foro: '#d4960c', evento: '#38bdf8', smart: '#f472b6', sistema: 'rgba(255,255,255,0.4)',
 }
 
 function tipoIcon(tipo: string | null) { return TIPO_ICON[tipo ?? ''] ?? '🔔' }
@@ -178,9 +178,9 @@ export default function NotificacionesPage() {
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: 0 }}>
         {([['bandeja', '🔔 Bandeja', noLeidas], ['config', '⚙️ Configuración', 0]] as const).map(([t, label, badge]) => (
-          <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 16px', background: 'none', border: 'none', borderBottom: `2px solid ${tab === t ? '#cc0000' : 'transparent'}`, color: tab === t ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', transition: 'color 0.15s', display: 'flex', alignItems: 'center', gap: 6, marginBottom: -1 }}>
+          <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 16px', background: 'none', border: 'none', borderBottom: `2px solid ${tab === t ? '#990000' : 'transparent'}`, color: tab === t ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', transition: 'color 0.15s', display: 'flex', alignItems: 'center', gap: 6, marginBottom: -1 }}>
             {label}
-            {badge > 0 && <span style={{ background: '#cc0000', color: '#fff', fontSize: 10, fontWeight: 800, padding: '1px 6px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif' }}>{badge}</span>}
+            {badge > 0 && <span style={{ background: '#990000', color: '#fff', fontSize: 10, fontWeight: 800, padding: '1px 6px', borderRadius: 10, fontFamily: 'Montserrat,sans-serif' }}>{badge}</span>}
           </button>
         ))}
       </div>
@@ -214,7 +214,7 @@ export default function NotificacionesPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                       <span style={{ fontSize: 13, fontWeight: n.leida ? 500 : 700, color: n.leida ? 'rgba(255,255,255,0.6)' : '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.titulo}</span>
-                      {!n.leida && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#cc0000', flexShrink: 0 }} />}
+                      {!n.leida && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#990000', flexShrink: 0 }} />}
                     </div>
                     {n.mensaje && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.mensaje}</div>}
                   </div>
@@ -282,7 +282,7 @@ export default function NotificacionesPage() {
                             onClick={() => toggle(m.key, c.key)}
                             style={{
                               width: 36, height: 20, borderRadius: 10,
-                              background: config[m.key]?.[c.key] ? '#cc0000' : 'rgba(255,255,255,0.08)',
+                              background: config[m.key]?.[c.key] ? '#990000' : 'rgba(255,255,255,0.08)',
                               border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
                             }}
                           >
@@ -306,7 +306,7 @@ export default function NotificacionesPage() {
             <button
               onClick={guardar}
               disabled={guardando}
-              style={{ padding: '10px 28px', background: '#cc0000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando ? 0.6 : 1 }}
+              style={{ padding: '10px 28px', background: '#990000', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'Montserrat,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: guardando ? 0.6 : 1 }}
             >
               {guardando ? 'Guardando...' : 'Guardar preferencias'}
             </button>
