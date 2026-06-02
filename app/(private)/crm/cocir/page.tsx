@@ -78,6 +78,24 @@ function estadoColor(estado: string | null) {
   return "#d4960c";
 }
 
+function parseCamposContacto(raw: { celular: string | null; telefono: string | null; email: string | null }) {
+  let celular = raw.celular ?? raw.telefono ?? null;
+  let email = raw.email ?? null;
+  if (!celular && email && email.includes("@")) {
+    const partes = email.trim().split(/\s+/);
+    const idxEmail = partes.findIndex(p => p.includes("@"));
+    if (idxEmail > 0) {
+      celular = partes.slice(0, idxEmail).join(" ");
+      email = partes.slice(idxEmail).join(" ");
+    }
+  }
+  return { celular, email };
+}
+
+function waLink(num: string) {
+  return `https://wa.me/${num.replace(/\D/g, "").replace(/^0/, "549").replace(/^54(?!9)/, "549")}`;
+}
+
 // ── Componente ────────────────────────────────────────────────────────────────
 
 export default function COCIRPage() {
@@ -490,8 +508,7 @@ export default function COCIRPage() {
                       <th>Apellido y Nombre</th>
                       <th>Estado</th>
                       <th>Inmobiliaria</th>
-                      <th>Teléfono</th>
-                      <th>Celular</th>
+                      <th>Celular / WhatsApp</th>
                       <th>Email</th>
                       <th>Localidad</th>
                     </tr>
@@ -509,20 +526,25 @@ export default function COCIRPage() {
                           </span>
                         </td>
                         <td style={{ color: "var(--gfi-text-secondary)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
-                        <td>
-                          {r.telefono
-                            ? <span style={{color:"var(--gfi-text-secondary)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.telefono}</span>
-                            : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
+                        <td style={{fontSize:11}}>
+                          {(() => {
+                            const { celular } = parseCamposContacto({ celular: r.celular, telefono: r.telefono, email: r.email });
+                            return celular
+                              ? <a href={waLink(celular)} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"var(--font-mono)",display:"inline-flex",alignItems:"center",gap:4}}>
+                                  💬 {celular}
+                                </a>
+                              : <span style={{color:"var(--gfi-text-muted)"}}>—</span>;
+                          })()}
                         </td>
-                        <td>
-                          {r.celular
-                            ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"var(--font-mono)",fontSize:12}}>{r.celular}</a>
-                            : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
-                        </td>
-                        <td>
-                          {r.email
-                            ? <a href={`mailto:${r.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:11,wordBreak:"break-all"}}>{r.email}</a>
-                            : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
+                        <td style={{fontSize:11}}>
+                          {(() => {
+                            const { email } = parseCamposContacto({ celular: r.celular, telefono: r.telefono, email: r.email });
+                            return email
+                              ? <a href={`mailto:${email}`} style={{color:"#f87171",textDecoration:"none",wordBreak:"break-all"}}>
+                                  {email.toLowerCase()}
+                                </a>
+                              : <span style={{color:"var(--gfi-text-muted)"}}>—</span>;
+                          })()}
                         </td>
                         <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{r.localidad || "—"}</td>
                       </tr>
@@ -912,7 +934,7 @@ function PadronMuestra({ onSelect }: { onSelect: (r: PadronEntry) => void }) {
       <table className="gfi-table" style={{ minWidth: 700 }}>
         <thead>
           <tr>
-            {["Matrícula", "Apellido y Nombre", "Estado", "Inmobiliaria", "Teléfono", "Celular", "Email", "Localidad"].map(h => (
+            {["Matrícula", "Apellido y Nombre", "Estado", "Inmobiliaria", "Celular / WhatsApp", "Email", "Localidad"].map(h => (
               <th key={h}>{h}</th>
             ))}
           </tr>
@@ -930,20 +952,25 @@ function PadronMuestra({ onSelect }: { onSelect: (r: PadronEntry) => void }) {
                 </span>
               </td>
               <td style={{ color: "var(--gfi-text-secondary)", fontSize: 11 }}>{r.inmobiliaria || "—"}</td>
-              <td>
-                {r.telefono
-                  ? <span style={{color:"var(--gfi-text-secondary)",fontFamily:"var(--font-mono)",fontSize:11}}>{r.telefono}</span>
-                  : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
+              <td style={{fontSize:11}}>
+                {(() => {
+                  const { celular } = parseCamposContacto({ celular: r.celular, telefono: r.telefono, email: r.email });
+                  return celular
+                    ? <a href={waLink(celular)} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",display:"inline-flex",alignItems:"center",gap:4}}>
+                        💬 {celular}
+                      </a>
+                    : <span style={{color:"var(--gfi-text-muted)"}}>—</span>;
+                })()}
               </td>
-              <td>
-                {r.celular
-                  ? <a href={`https://wa.me/${r.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontFamily:"var(--font-mono)",fontSize:11}}>{r.celular}</a>
-                  : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
-              </td>
-              <td>
-                {r.email
-                  ? <a href={`mailto:${r.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:11,wordBreak:"break-all"}}>{r.email}</a>
-                  : <span style={{color:"var(--gfi-text-muted)"}}>—</span>}
+              <td style={{fontSize:11}}>
+                {(() => {
+                  const { email } = parseCamposContacto({ celular: r.celular, telefono: r.telefono, email: r.email });
+                  return email
+                    ? <a href={`mailto:${email}`} style={{color:"#f87171",textDecoration:"none",wordBreak:"break-all"}}>
+                        {email.toLowerCase()}
+                      </a>
+                    : <span style={{color:"var(--gfi-text-muted)"}}>—</span>;
+                })()}
               </td>
               <td style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>{r.localidad || "—"}</td>
             </tr>

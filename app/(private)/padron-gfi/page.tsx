@@ -64,6 +64,33 @@ type Fuente = "cocir" | "gfi" | "ambos";
 
 const ESTADOS_ALERTA = ["suspendido", "suspension", "baja", "dado de baja", "inhabilitado", "inactivo"];
 
+// El scraping de COCIR a veces guarda "TELEFONO EMAIL" en el mismo campo email.
+// También puede guardar "DIRECCIÓN Ver mapa" en el campo dirección.
+function parseCamposContacto(raw: { celular: string | null; telefono: string | null; email: string | null }) {
+  let celular = raw.celular ?? raw.telefono ?? null;
+  let email = raw.email ?? null;
+  if (!celular && email && email.includes("@")) {
+    const partes = email.trim().split(/\s+/);
+    const idxEmail = partes.findIndex(p => p.includes("@"));
+    if (idxEmail > 0) {
+      celular = partes.slice(0, idxEmail).join(" ");
+      email = partes.slice(idxEmail).join(" ");
+    }
+  }
+  return { celular, email };
+}
+
+function parseDireccion(dir: string | null): { texto: string | null; mapsUrl: string | null } {
+  if (!dir) return { texto: null, mapsUrl: null };
+  const texto = dir.replace(/\s*Ver mapa\s*/gi, "").trim() || null;
+  const mapsUrl = texto ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(texto)}` : null;
+  return { texto, mapsUrl };
+}
+
+function waLink(num: string) {
+  return `https://wa.me/${num.replace(/\D/g, "").replace(/^0/, "549").replace(/^54(?!9)/, "549")}`;
+}
+
 const estadoColor = (estado: string | null) => {
   if (!estado) return "#3abab6";
   const e = estado.toLowerCase();
@@ -524,23 +551,31 @@ export default function PadronGFIPage() {
                         {r.inmobiliaria || <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
                       </td>
                       <td style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>
-                        {r.direccion
-                          ? <>{r.direccion}{r.localidad ? ` · ${r.localidad}` : ""}</>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        {(() => {
+                          const { texto, mapsUrl } = parseDireccion(r.direccion);
+                          if (!texto) return <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>;
+                          return <>{texto}{r.localidad ? ` · ${r.localidad}` : ""}{mapsUrl && <> <a href={mapsUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"var(--gfi-ocean-text)",fontSize:10,textDecoration:"none",fontWeight:600,marginLeft:4}}>📍</a></>}</>;
+                        })()}
                       </td>
                       <td style={{fontSize:12}}>
-                        {(r.celular ?? r.telefono)
-                          ? <a href={`https://wa.me/${(r.celular ?? r.telefono)!.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"#25d366",textDecoration:"none",fontFamily:"Inter,sans-serif"}}>
-                              {r.celular ?? r.telefono}
-                            </a>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        {(() => {
+                          const { celular } = parseCamposContacto({ celular: r.celular, telefono: r.telefono, email: r.email });
+                          return celular
+                            ? <a href={waLink(celular)} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{color:"#25d366",textDecoration:"none",fontFamily:"Inter,sans-serif",display:"inline-flex",alignItems:"center",gap:4}}>
+                                <span style={{fontSize:13}}>💬</span>{celular}
+                              </a>
+                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>;
+                        })()}
                       </td>
                       <td style={{fontSize:12}}>
-                        {r.email
-                          ? <a href={`mailto:${r.email}`} onClick={e => e.stopPropagation()} style={{color:"#f87171",textDecoration:"none",fontFamily:"Inter,sans-serif",wordBreak:"break-all"}}>
-                              {r.email}
-                            </a>
-                          : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>}
+                        {(() => {
+                          const { email } = parseCamposContacto({ celular: r.celular, telefono: r.telefono, email: r.email });
+                          return email
+                            ? <a href={`mailto:${email}`} onClick={e => e.stopPropagation()} style={{color:"#f87171",textDecoration:"none",fontFamily:"Inter,sans-serif",wordBreak:"break-all"}}>
+                                {email.toLowerCase()}
+                              </a>
+                            : <span style={{color:"rgba(255,255,255,0.2)"}}>—</span>;
+                        })()}
                       </td>
                       {fuente === "ambos" && (
                         <td>
@@ -624,36 +659,41 @@ export default function PadronGFIPage() {
                   <span style={{fontSize:13,color:"rgba(255,255,255,0.8)"}}>{contactoSeleccionado.inmobiliaria}</span>
                 </div>
               )}
-              {(contactoSeleccionado.direccion || contactoSeleccionado.localidad) && (
-                <div style={{display:"flex",gap:10}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Dirección</span>
-                  <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>
-                    {[contactoSeleccionado.direccion, contactoSeleccionado.localidad].filter(Boolean).join(" · ")}
-                  </span>
-                </div>
-              )}
-              {contactoSeleccionado.celular && (
-                <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Celular</span>
-                  <a href={`https://wa.me/${contactoSeleccionado.celular.replace(/\D/g,"").replace(/^0/,"549").replace(/^54(?!9)/,"549")}`} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontWeight:700,fontSize:13}}>
-                    {contactoSeleccionado.celular}
-                  </a>
-                </div>
-              )}
-              {contactoSeleccionado.telefono && contactoSeleccionado.telefono !== contactoSeleccionado.celular && (
-                <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Teléfono</span>
-                  <span style={{color:"rgba(255,255,255,0.7)",fontSize:13}}>{contactoSeleccionado.telefono}</span>
-                </div>
-              )}
-              {contactoSeleccionado.email && (
-                <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                  <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Email</span>
-                  <a href={`mailto:${contactoSeleccionado.email}`} style={{color:"#f87171",textDecoration:"none",fontSize:13,wordBreak:"break-all"}}>
-                    {contactoSeleccionado.email}
-                  </a>
-                </div>
-              )}
+              {(contactoSeleccionado.direccion || contactoSeleccionado.localidad) && (() => {
+                const { texto, mapsUrl } = parseDireccion(contactoSeleccionado.direccion);
+                const dirTexto = [texto, contactoSeleccionado.localidad].filter(Boolean).join(" · ");
+                return dirTexto ? (
+                  <div style={{display:"flex",gap:10}}>
+                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)",paddingTop:1}}>Dirección</span>
+                    <span style={{fontSize:13,color:"rgba(255,255,255,0.7)"}}>
+                      {dirTexto}
+                      {mapsUrl && <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{color:"var(--gfi-ocean-text)",marginLeft:8,fontSize:12,textDecoration:"none"}}>📍 Ver mapa</a>}
+                    </span>
+                  </div>
+                ) : null;
+              })()}
+              {(() => {
+                const { celular } = parseCamposContacto({ celular: contactoSeleccionado.celular, telefono: contactoSeleccionado.telefono, email: contactoSeleccionado.email });
+                return celular ? (
+                  <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Celular</span>
+                    <a href={waLink(celular)} target="_blank" rel="noopener noreferrer" style={{color:"#25d366",textDecoration:"none",fontWeight:700,fontSize:13,display:"inline-flex",alignItems:"center",gap:6}}>
+                      💬 {celular}
+                    </a>
+                  </div>
+                ) : null;
+              })()}
+              {(() => {
+                const { email } = parseCamposContacto({ celular: contactoSeleccionado.celular, telefono: contactoSeleccionado.telefono, email: contactoSeleccionado.email });
+                return email ? (
+                  <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                    <span style={{minWidth:80,fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.3)"}}>Email</span>
+                    <a href={`mailto:${email}`} style={{color:"#f87171",textDecoration:"none",fontSize:13,wordBreak:"break-all"}}>
+                      ✉️ {email.toLowerCase()}
+                    </a>
+                  </div>
+                ) : null;
+              })()}
             </div>
           </div>
         </div>
