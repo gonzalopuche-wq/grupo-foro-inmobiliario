@@ -51,6 +51,7 @@ export default function DMPage() {
   const [subiendoAudio, setSubiendoAudio] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [modalMic, setModalMic] = useState(false);
+  const [menuAdj, setMenuAdj] = useState(false);
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
   const mrRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -60,6 +61,7 @@ export default function DMPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const fileImgRef = useRef<HTMLInputElement>(null);
   const fileDocRef = useRef<HTMLInputElement>(null);
+  const fileCamRef = useRef<HTMLInputElement>(null);
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -226,6 +228,16 @@ export default function DMPage() {
   const detenerGrab = () => { if (timerRef.current) clearInterval(timerRef.current); mrRef.current?.stop(); };
   const cancelarAudio = () => { mrRef.current?.stop(); setGrabando(false); setAudioBlob(null); setAudioUrl(null); setAudioSeg(0); if (timerRef.current) clearInterval(timerRef.current); };
 
+  const compartirUbicacion = () => {
+    setMenuAdj(false);
+    if (!navigator.geolocation) { showToast("Geolocalización no disponible"); return; }
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      const adj: Adjunto = { tipo: "documento", url: `https://www.google.com/maps?q=${lat},${lng}`, nombre: `📍 Mi ubicación (${lat.toFixed(5)}, ${lng.toFixed(5)})` };
+      setAdjuntos(prev => [...prev, adj]);
+    }, () => showToast("No se pudo obtener la ubicación"));
+  };
+
   const enviarAudio = async () => {
     if (!audioBlob || !userId || !chatId) return; setSubiendoAudio(true);
     const mime = audioBlob.type || "audio/webm";
@@ -348,6 +360,8 @@ export default function DMPage() {
         .dc-rb-t{flex:1;font-size:11px;color:var(--gfi-text-muted);font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .dc-adb{width:34px;height:34px;background:var(--gfi-border-subtle);border:1px solid rgba(255,255,255,0.09);border-radius:6px;color:var(--gfi-text-secondary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
         .dc-adb:hover{border-color:rgba(200,0,0,0.35);color:#990000;}
+        .dc-adb-on{border-color:rgba(200,0,0,0.5) !important;color:#990000 !important;background:rgba(200,0,0,0.1) !important;}
+        .dc-adj-menu-btn:hover{background:rgba(255,255,255,0.08) !important;}
         .dc-ta{flex:1;padding:9px 12px;background:var(--gfi-border-subtle);border:1px solid rgba(255,255,255,0.09);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:var(--font-body);resize:none;line-height:1.5;max-height:120px;overflow-y:auto;}
         .dc-ta:focus{border-color:rgba(200,0,0,0.35);}
         .dc-ta::placeholder{color:var(--gfi-text-dim);}
@@ -366,7 +380,7 @@ export default function DMPage() {
         @keyframes spin{to{transform:rotate(360deg);}}
       `}</style>
 
-      <div className="dc" onClick={() => setMenuId(null)}>
+      <div className="dc" onClick={() => { setMenuId(null); setMenuAdj(false); }}>
 
         {/* Header */}
         <div className="dc-hd">
@@ -490,10 +504,28 @@ export default function DMPage() {
           {!grabando && !audioUrl && (
             <div style={{ display: "flex", gap: 6, alignItems: "flex-end" }}>
               <input ref={fileImgRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={e => manejarArchivos(e.target.files)} />
-              <button className="dc-adb" onClick={() => fileImgRef.current?.click()} disabled={subiendoAdj} title="Fotos y videos">📷</button>
               <input ref={fileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarArchivos(e.target.files)} />
-              <button className="dc-adb" onClick={() => fileDocRef.current?.click()} disabled={subiendoAdj} title="Documentos">📎</button>
-              <button className="dc-adb" onClick={iniciarGrab} title="Grabar audio" style={{ color: "rgba(200,0,0,0.7)" }}>🎙</button>
+              <input ref={fileCamRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={e => manejarArchivos(e.target.files)} />
+              <div style={{ position: "relative", flexShrink: 0 }}>
+                {menuAdj && <>
+                  <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setMenuAdj(false)} />
+                  <div style={{ position: "absolute", bottom: "calc(100% + 10px)", left: 0, background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: "12px 10px", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, width: 216, zIndex: 100, boxShadow: "0 8px 32px rgba(0,0,0,0.7)" }}>
+                    {([
+                      { icon: "📸", label: "Cámara",    action: () => { setMenuAdj(false); fileCamRef.current?.click(); } },
+                      { icon: "🖼",  label: "Galería",   action: () => { setMenuAdj(false); fileImgRef.current?.click(); } },
+                      { icon: "📄",  label: "Documento", action: () => { setMenuAdj(false); fileDocRef.current?.click(); } },
+                      { icon: "🎙",  label: "Audio",     action: () => { setMenuAdj(false); iniciarGrab(); } },
+                      { icon: "📍",  label: "Ubicación", action: compartirUbicacion },
+                    ] as { icon: string; label: string; action: () => void }[]).map(({ icon, label, action }) => (
+                      <button key={label} onClick={action} className="dc-adj-menu-btn" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, padding: "10px 4px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, cursor: "pointer", color: "#fff", fontFamily: "var(--font-body)", fontSize: 10, transition: "background 0.15s" }}>
+                        <span style={{ fontSize: 22 }}>{icon}</span>
+                        <span style={{ color: "var(--gfi-text-secondary)" }}>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>}
+                <button className={`dc-adb${menuAdj ? " dc-adb-on" : ""}`} onClick={e => { e.stopPropagation(); setMenuAdj(v => !v); }} title="Adjuntar">📎</button>
+              </div>
               <textarea ref={inputRef} className="dc-ta" placeholder="Escribí un mensaje..." value={input} rows={1}
                 onChange={e => {
                   setInput(e.target.value);
