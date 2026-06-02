@@ -4,6 +4,7 @@ import { PrintButton } from "./PrintButton";
 import { PostRedesButton } from "./PostRedesButton";
 import { PropiaPublicarButton } from "./PropiaPublicarButton";
 import { QRLinkButton } from "./QRLinkButton";
+import { CalculadoraRentabilidad } from "./CalculadoraRentabilidad";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,11 +15,21 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
+interface HistorialPrecio {
+  id: string;
+  propiedad_id: string;
+  precio: number;
+  moneda: string;
+  tipo: string;
+  nota: string | null;
+  created_at: string;
+}
+
 async function getData(id: string) {
   const { data: prop } = await supabase
     .from("cartera_propiedades")
     .select(`
-      id, titulo, descripcion, operacion, tipo, precio, moneda,
+      id, titulo, descripcion, operacion, tipo, precio, moneda, precio_anterior,
       ciudad, zona, direccion, dormitorios, banos, toilettes,
       superficie_cubierta, superficie_total, estacionamientos, con_cochera, ambientes,
       antiguedad, piso, orientacion, amenities, observaciones,
@@ -30,7 +41,13 @@ async function getData(id: string) {
     .eq("id", id)
     .single();
 
-  return prop;
+  const { data: historialPrecios } = await supabase
+    .from("historial_precios_cartera")
+    .select("id, propiedad_id, precio, moneda, tipo, nota, created_at")
+    .eq("propiedad_id", id)
+    .order("created_at", { ascending: true });
+
+  return { prop, historialPrecios: (historialPrecios ?? []) as HistorialPrecio[] };
 }
 
 const fmtPrecio = (p: number | null, m: string) => {
@@ -40,11 +57,37 @@ const fmtPrecio = (p: number | null, m: string) => {
 
 export default async function FichaPage({ params }: Props) {
   const { id } = await params;
-  const prop = await getData(id);
+  const { prop, historialPrecios } = await getData(id);
   if (!prop) return notFound();
 
   const perfil = (prop.perfil as any) ?? {};
   const fotos: string[] = prop.fotos ?? [];
+
+  // Build effective historial — use DB data, or synthesise from precio_anterior if empty
+  const precioAnterior = (prop as any).precio_anterior as number | null | undefined;
+  let historialEfectivo: HistorialPrecio[] = historialPrecios;
+  if (historialEfectivo.length === 0 && precioAnterior && prop.precio) {
+    historialEfectivo = [
+      {
+        id: "sintetico-1",
+        propiedad_id: prop.id,
+        precio: precioAnterior,
+        moneda: prop.moneda ?? "USD",
+        tipo: "inicial",
+        nota: "Precio original",
+        created_at: prop.created_at ?? new Date().toISOString(),
+      },
+      {
+        id: "sintetico-2",
+        propiedad_id: prop.id,
+        precio: prop.precio,
+        moneda: prop.moneda ?? "USD",
+        tipo: prop.precio < precioAnterior ? "reduccion" : "aumento",
+        nota: "Precio actual",
+        created_at: new Date().toISOString(),
+      },
+    ];
+  }
 
   return (
     <>
@@ -123,6 +166,23 @@ export default async function FichaPage({ params }: Props) {
           .ficha-fotos { height: 240px; }
           .ficha-corredor { flex-direction: column; align-items: flex-start; }
         }
+
+        /* Historial de precios */
+        .hist-container { margin-top: 0; }
+        .hist-grafico { background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+        .hist-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .hist-table th { text-align: left; padding: 6px 10px; font-family: 'Montserrat',sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; border-bottom: 1px solid #eee; }
+        .hist-table td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; color: #444; vertical-align: middle; }
+        .hist-table tr:last-child td { border-bottom: none; }
+        .hist-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; }
+        .hist-badge-reduccion { background: rgba(34,197,94,0.12); color: #22c55e; }
+        .hist-badge-aumento { background: rgba(239,68,68,0.12); color: #ef4444; }
+        .hist-badge-inicial { background: rgba(148,163,184,0.15); color: #94a3b8; }
+        .hist-badge-actualizacion { background: rgba(167,139,250,0.12); color: #a78bfa; }
+        .hist-empty { font-size: 12px; color: #bbb; font-style: italic; padding: 8px 0; }
+
+        /* Calculadora */
+        .calc-section { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 20px 24px; margin-top: 0; }
 
         @media print {
           .toolbar { display: none; }
@@ -372,6 +432,109 @@ export default async function FichaPage({ params }: Props) {
             );
           })()}
 
+          {/* Historial de precios */}
+          <hr className="ficha-divider" />
+          <div className="ficha-section-title">Historial de precios</div>
+          <div className="hist-container">
+            {historialEfectivo.length === 0 ? (
+              <div className="hist-empty">Sin historial de cambios de precio</div>
+            ) : (() => {
+              const precios = historialEfectivo.map(h => h.precio);
+              const minP = Math.min(...precios);
+              const maxP = Math.max(...precios);
+              const rango = maxP - minP || 1;
+              const W = 600;
+              const H = 90;
+              const pad = 32;
+              const n = historialEfectivo.length;
+              // Build SVG bar chart (horizontal bars per entry)
+              const barH = Math.min(28, Math.floor((H - (n + 1) * 6) / n));
+              const totalH = n * (barH + 6) + 6 + 20; // +20 for labels
+              return (
+                <>
+                  <div className="hist-grafico">
+                    <svg width="100%" viewBox={`0 0 ${W} ${totalH}`} style={{ display: "block", overflow: "visible" }}>
+                      {historialEfectivo.map((h, i) => {
+                        const barW = rango === 0
+                          ? W - pad * 2
+                          : ((h.precio - minP) / rango) * (W - pad * 2 - 80) + 40;
+                        const y = 20 + i * (barH + 6);
+                        const isLast = i === historialEfectivo.length - 1;
+                        const color = h.tipo === "reduccion" ? "#22c55e"
+                          : h.tipo === "aumento" ? "#ef4444"
+                          : h.tipo === "inicial" ? "#94a3b8"
+                          : "#a78bfa";
+                        const label = h.moneda === "USD"
+                          ? `USD ${h.precio.toLocaleString("es-AR")}`
+                          : `$ ${h.precio.toLocaleString("es-AR")}`;
+                        return (
+                          <g key={h.id}>
+                            <rect x={pad} y={y} width={Math.max(barW, 4)} height={barH} rx={4} fill={isLast ? "#cc0000" : color} opacity={isLast ? 1 : 0.6} />
+                            <text x={pad + Math.max(barW, 4) + 8} y={y + barH / 2 + 4} fontSize={11} fill={isLast ? "#cc0000" : "#555"} fontFamily="Montserrat,sans-serif" fontWeight={isLast ? "800" : "600"}>{label}</text>
+                          </g>
+                        );
+                      })}
+                      {/* X-axis dates */}
+                      {historialEfectivo.map((h, i) => {
+                        const y = 20 + i * (barH + 6);
+                        const fecha = new Date(h.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "2-digit" });
+                        return (
+                          <text key={`lbl-${h.id}`} x={pad} y={y - 4} fontSize={9} fill="#aaa" fontFamily="Montserrat,sans-serif">{fecha}</text>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                  <table className="hist-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Precio</th>
+                        <th>Tipo</th>
+                        <th>Nota</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...historialEfectivo].reverse().map(h => (
+                        <tr key={h.id}>
+                          <td style={{ color: "#888", whiteSpace: "nowrap" }}>
+                            {new Date(h.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}
+                          </td>
+                          <td style={{ fontFamily: "Montserrat,sans-serif", fontWeight: 700, color: "#111" }}>
+                            {h.moneda === "USD"
+                              ? `USD ${h.precio.toLocaleString("es-AR")}`
+                              : `$ ${h.precio.toLocaleString("es-AR")}`}
+                          </td>
+                          <td>
+                            <span className={`hist-badge hist-badge-${h.tipo}`}>
+                              {h.tipo === "reduccion" ? "↓ Reducción"
+                                : h.tipo === "aumento" ? "↑ Aumento"
+                                : h.tipo === "inicial" ? "Inicial"
+                                : "Actualización"}
+                            </span>
+                          </td>
+                          <td style={{ color: "#999", fontStyle: h.nota ? "normal" : "italic" }}>
+                            {h.nota ?? "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              );
+            })()}
+          </div>
+
+          {/* Calculadora de rentabilidad */}
+          <hr className="ficha-divider" />
+          <div className="ficha-section-title">Calculadora de rentabilidad</div>
+          <div className="calc-section">
+            <CalculadoraRentabilidad
+              precioVenta={prop.precio ?? null}
+              moneda={prop.moneda ?? "USD"}
+              precioAlquiler={prop.operacion === "alquiler" ? (prop.precio ?? null) : null}
+            />
+          </div>
+
           {/* QR y link rastreable */}
           <QRLinkButton propiedadId={prop.id} titulo={prop.titulo ?? "Propiedad GFI"} />
 
@@ -412,7 +575,7 @@ export default async function FichaPage({ params }: Props) {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const prop = await getData(id);
+  const { prop } = await getData(id);
   if (!prop) return {};
   return {
     title: `${prop.titulo} · GFI®`,
