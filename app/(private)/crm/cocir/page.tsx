@@ -17,6 +17,22 @@ interface PadronEntry {
   localidad: string | null;
 }
 
+interface Capacitacion {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  fecha: string; // ISO date
+  hora?: string;
+  modalidad: "presencial" | "virtual" | "hibrida";
+  lugar?: string;
+  link_inscripcion?: string;
+  link_zoom?: string;
+  instructor?: string;
+  duracion?: string;
+  aranceles?: string;
+  obligatoria?: boolean;
+}
+
 interface SyncResult {
   actualizados: number;
   omitidos: number;
@@ -96,6 +112,118 @@ function waLink(num: string) {
   return `https://wa.me/${num.replace(/\D/g, "").replace(/^0/, "549").replace(/^54(?!9)/, "549")}`;
 }
 
+// ── Capacitaciones 2026 (hardcoded) ──────────────────────────────────────────
+
+const CAPACITACIONES_2026: Capacitacion[] = [
+  {
+    id: "1",
+    titulo: "Gestión de Alquileres bajo la Ley 27.551",
+    descripcion: "Marco legal vigente, índices de actualización ICL/IPC, contratos y resolución de conflictos.",
+    fecha: "2026-06-20",
+    hora: "09:00",
+    modalidad: "virtual",
+    link_inscripcion: "https://cocir.org.ar/capacitaciones",
+    instructor: "Dr. Carlos Mendoza",
+    duracion: "4 horas",
+    aranceles: "Incluido en matrícula",
+    obligatoria: false,
+  },
+  {
+    id: "2",
+    titulo: "Actualización Arancelaria y Honorarios 2026",
+    descripcion: "Nueva tabla de honorarios COCIR 2026, casos prácticos y liquidaciones.",
+    fecha: "2026-07-05",
+    hora: "10:00",
+    modalidad: "presencial",
+    lugar: "Sede COCIR — Av. Corrientes 1234, CABA",
+    link_inscripcion: "https://cocir.org.ar/capacitaciones",
+    instructor: "Lic. Ana García",
+    duracion: "3 horas",
+    aranceles: "Gratuito para matriculados",
+    obligatoria: true,
+  },
+  {
+    id: "3",
+    titulo: "Marketing Digital para Corredores Inmobiliarios",
+    descripcion: "Instagram, TikTok, portales. Captación de leads orgánicos en 2026.",
+    fecha: "2026-07-18",
+    hora: "14:00",
+    modalidad: "virtual",
+    link_inscripcion: "https://cocir.org.ar/capacitaciones",
+    instructor: "Mg. Lucas Torres",
+    duracion: "6 horas (3 módulos)",
+    aranceles: "$ 15.000 ARS",
+    obligatoria: false,
+  },
+  {
+    id: "4",
+    titulo: "Tasaciones: Método Comparativo y Residual",
+    descripcion: "Valuación de inmuebles urbanos y rurales. Normas IVSC y práctica argentina.",
+    fecha: "2026-08-08",
+    hora: "09:00",
+    modalidad: "hibrida",
+    lugar: "Sede COCIR y Zoom",
+    link_inscripcion: "https://cocir.org.ar/capacitaciones",
+    instructor: "Arq. Roberto Sánchez",
+    duracion: "8 horas",
+    aranceles: "Incluido en matrícula",
+    obligatoria: false,
+  },
+  {
+    id: "5",
+    titulo: "Jura de nuevos Corredores Inmobiliarios",
+    descripcion: "Ceremonia de jura para nuevos matriculados. Presentación obligatoria con documentación.",
+    fecha: "2026-07-31",
+    hora: "11:00",
+    modalidad: "presencial",
+    lugar: "Sede COCIR — Salón de Actos",
+    link_inscripcion: "https://cocir.org.ar/juras",
+    duracion: "2 horas",
+    aranceles: "Gratuito",
+    obligatoria: true,
+  },
+  {
+    id: "6",
+    titulo: "Compraventa: Due Diligence y Escrituración",
+    descripcion: "Proceso de venta, documentación, trámites registrales y aspectos impositivos.",
+    fecha: "2026-08-22",
+    hora: "09:00",
+    modalidad: "virtual",
+    link_inscripcion: "https://cocir.org.ar/capacitaciones",
+    instructor: "Escribana M. Fernández",
+    duracion: "5 horas",
+    aranceles: "$ 20.000 ARS",
+    obligatoria: false,
+  },
+  {
+    id: "7",
+    titulo: "Mediación y Resolución de Conflictos Inmobiliarios",
+    descripcion: "Técnicas de mediación, legislación vigente y práctica en casos reales.",
+    fecha: "2026-09-12",
+    hora: "10:00",
+    modalidad: "presencial",
+    lugar: "Sede COCIR",
+    link_inscripcion: "https://cocir.org.ar/capacitaciones",
+    instructor: "Dr. Pablo Ruiz",
+    duracion: "4 horas",
+    aranceles: "Incluido en matrícula",
+    obligatoria: false,
+  },
+  {
+    id: "8",
+    titulo: "Jura de nuevos Corredores Inmobiliarios",
+    descripcion: "Ceremonia de jura para nuevos matriculados. Presentación obligatoria con documentación.",
+    fecha: "2026-09-25",
+    hora: "11:00",
+    modalidad: "presencial",
+    lugar: "Sede COCIR — Salón de Actos",
+    link_inscripcion: "https://cocir.org.ar/juras",
+    duracion: "2 horas",
+    aranceles: "Gratuito",
+    obligatoria: true,
+  },
+];
+
 // ── Componente ────────────────────────────────────────────────────────────────
 
 export default function COCIRPage() {
@@ -104,7 +232,7 @@ export default function COCIRPage() {
   const [busqueda, setBusqueda] = useState("");
   const [resultados, setResultados] = useState<PadronEntry[]>([]);
   const [buscando, setBuscando] = useState(false);
-  const [tab, setTab] = useState<"padron" | "sync" | "buscar" | "telefonos">("padron");
+  const [tab, setTab] = useState<"padron" | "sync" | "buscar" | "telefonos" | "capacitaciones">("padron");
   const [syncCampos, setSyncCampos] = useState<string[]>(["telefono"]);
   const [syncForzar, setSyncForzar] = useState(false);
   const [syncCargando, setSyncCargando] = useState(false);
@@ -450,6 +578,7 @@ export default function COCIRPage() {
         <div className="cc-tabs">
           <button className={`cc-tab${tab === "padron" ? " on" : ""}`} onClick={() => setTab("padron")}>📋 Padrón</button>
           <button className={`cc-tab${tab === "buscar" ? " on" : ""}`} onClick={() => setTab("buscar")}>🔍 Buscar matriculado</button>
+          <button className={`cc-tab${tab === "capacitaciones" ? " on" : ""}`} onClick={() => setTab("capacitaciones")}>📅 Capacitaciones</button>
           {esAdmin && <button className={`cc-tab${tab === "telefonos" ? " on" : ""}`} onClick={() => setTab("telefonos")}>📱 Teléfonos GFI vs COCIR</button>}
           {esAdmin && <button className={`cc-tab${tab === "sync" ? " on" : ""}`} onClick={() => setTab("sync")}>🔄 Sincronizar masivo</button>}
         </div>
@@ -563,6 +692,200 @@ export default function COCIRPage() {
             )}
           </div>
         )}
+
+        {/* ═══ CAPACITACIONES ═══ */}
+        {tab === "capacitaciones" && (() => {
+          const now = new Date();
+          const sorted = [...CAPACITACIONES_2026].sort((a, b) => a.fecha.localeCompare(b.fecha));
+          const proximas = sorted.filter(c => new Date(c.fecha) >= now);
+          const pasadas = sorted.filter(c => new Date(c.fecha) < now);
+
+          const modalidadBadge = (m: Capacitacion["modalidad"]) => {
+            const map = {
+              presencial: { bg: "rgba(180,50,30,0.18)", border: "rgba(220,80,50,0.35)", color: "#e07060" },
+              virtual:    { bg: "rgba(20,80,80,0.25)",  border: "rgba(58,186,182,0.35)", color: "#3abab6" },
+              hibrida:    { bg: "rgba(120,90,0,0.22)",  border: "rgba(212,150,12,0.35)", color: "#d4960c" },
+            };
+            const s = map[m];
+            return (
+              <span className="cc-badge" style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.color, textTransform: "uppercase" }}>
+                {m}
+              </span>
+            );
+          };
+
+          const fechaFormateada = (c: Capacitacion) => {
+            const d = new Date(`${c.fecha}T${c.hora ?? "00:00"}:00`);
+            const str = d.toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+            return c.hora ? `${str} — ${c.hora}` : str;
+          };
+
+          const renderCard = (c: Capacitacion, pasada: boolean) => (
+            <div
+              key={c.id}
+              style={{
+                background: "var(--gfi-bg-card)",
+                border: "1px solid var(--gfi-border)",
+                borderRadius: "var(--gfi-radius-lg)",
+                padding: "18px 20px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                opacity: pasada ? 0.5 : 1,
+              }}
+            >
+              {/* Fecha + badges */}
+              <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, fontWeight: 700, color: "#3abab6" }}>
+                  {fechaFormateada(c)}
+                </span>
+                {modalidadBadge(c.modalidad)}
+                {c.obligatoria && (
+                  <span className="cc-badge" style={{ background: "rgba(153,0,0,0.18)", border: "1px solid rgba(153,0,0,0.35)", color: "#ff6060", textTransform: "uppercase" }}>
+                    Obligatoria
+                  </span>
+                )}
+                {pasada && (
+                  <span className="cc-badge" style={{ background: "rgba(80,80,80,0.18)", border: "1px solid rgba(120,120,120,0.3)", color: "#888", textTransform: "uppercase" }}>
+                    Finalizada
+                  </span>
+                )}
+              </div>
+
+              {/* Título + instructor */}
+              <div>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 800, color: "var(--gfi-text-primary)", letterSpacing: "-0.01em", lineHeight: 1.3 }}>
+                  {c.titulo}
+                </div>
+                {c.instructor && (
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", marginTop: 3 }}>
+                    {c.instructor}
+                  </div>
+                )}
+              </div>
+
+              {/* Descripción */}
+              <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", lineHeight: 1.6 }}>
+                {c.descripcion}
+              </div>
+
+              {/* Detalles */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 16, fontSize: 12 }}>
+                {c.lugar && (c.modalidad === "presencial" || c.modalidad === "hibrida") && (
+                  <span style={{ color: "var(--gfi-text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>📍</span> {c.lugar}
+                  </span>
+                )}
+                {c.duracion && (
+                  <span style={{ color: "var(--gfi-text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>⏱</span> {c.duracion}
+                  </span>
+                )}
+                {c.aranceles && (
+                  <span style={{ color: "var(--gfi-text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>💰</span> {c.aranceles}
+                  </span>
+                )}
+              </div>
+
+              {/* Botones */}
+              {(c.link_inscripcion || c.link_zoom) && (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
+                  {c.link_inscripcion && (
+                    <a
+                      href={c.link_inscripcion}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: "var(--gfi-radius-md)",
+                        background: pasada ? "rgba(80,80,80,0.12)" : "var(--gfi-red-gradient)",
+                        color: pasada ? "#888" : "#fff",
+                        fontFamily: "var(--font-display)",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                        boxShadow: pasada ? "none" : "var(--gfi-shadow-red)",
+                        border: pasada ? "1px solid rgba(120,120,120,0.2)" : "1px solid transparent",
+                      }}
+                    >
+                      Inscribirse →
+                    </a>
+                  )}
+                  {c.link_zoom && (
+                    <a
+                      href={c.link_zoom}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: "var(--gfi-radius-md)",
+                        background: "rgba(20,80,80,0.25)",
+                        border: "1px solid rgba(58,186,182,0.35)",
+                        color: "#3abab6",
+                        fontFamily: "var(--font-display)",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      Unirse por Zoom
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {/* Encabezado */}
+              <div>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "var(--gfi-text-primary)", letterSpacing: "-0.01em" }}>
+                  Calendario de Capacitaciones COCIR 2026
+                </div>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 3 }}>
+                  Actualizá tu matrícula con las capacitaciones del Colegio
+                </div>
+              </div>
+
+              {/* Próximas */}
+              {proximas.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {proximas.map(c => renderCard(c, false))}
+                </div>
+              )}
+
+              {/* Pasadas */}
+              {pasadas.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gfi-text-muted)", paddingTop: 8, borderTop: "1px solid var(--gfi-border-subtle)" }}>
+                    Capacitaciones anteriores
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {pasadas.map(c => renderCard(c, true))}
+                  </div>
+                </div>
+              )}
+
+              {sorted.length === 0 && (
+                <div style={{ textAlign: "center", padding: "30px 20px", color: "var(--gfi-text-muted)", fontSize: 12 }}>
+                  No hay capacitaciones programadas.
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* ═══ TELÉFONOS GFI vs COCIR (solo admin) ═══ */}
         {tab === "telefonos" && esAdmin && (

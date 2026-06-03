@@ -83,6 +83,14 @@
     {
       "path": "/api/cron/digest-semanal",
       "schedule": "0 11 * * 1"
+    },
+    {
+      "path": "/api/cron/newsletter-leads",
+      "schedule": "0 12 * * 1"
+    },
+    {
+      "path": "/api/cron/alertas-busqueda",
+      "schedule": "0 9 * * *"
     }
   ]
 }

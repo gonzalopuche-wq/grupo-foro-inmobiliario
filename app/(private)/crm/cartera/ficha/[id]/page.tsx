@@ -5,6 +5,7 @@ import { PostRedesButton } from "./PostRedesButton";
 import { PropiaPublicarButton } from "./PropiaPublicarButton";
 import { QRLinkButton } from "./QRLinkButton";
 import { CalculadoraRentabilidad } from "./CalculadoraRentabilidad";
+import { AnalizarPrecioButton } from "./AnalizarPrecioButton";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -698,6 +699,11 @@ export default async function FichaPage({ params }: Props) {
               );
             })()}
           </div>
+
+          {/* Análisis de precio vs mercado */}
+          <hr className="ficha-divider" />
+          <div className="ficha-section-title">Análisis de precio vs mercado</div>
+          <AnalizarPrecioButton propiedadId={prop.id} moneda={prop.moneda ?? "USD"} />
 
           {/* Calculadora de rentabilidad */}
           <hr className="ficha-divider" />
