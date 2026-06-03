@@ -75,18 +75,18 @@ const estadoLabel = (e: string | undefined) => {
   return e;
 };
 
-// ── MercadoPago modal state ───────────────────────────────────────────────────
-interface MpModal {
+// ── Transferencia modal state ─────────────────────────────────────────────────
+interface TransfModal {
   contrato: Contrato;
   concepto: string;
   monto: string;
-  email: string;
 }
 
-interface MpResult {
-  init_point: string;
-  preference_id: string;
-  contrato_nombre: string;
+interface DatosBancarios {
+  cbu: string;
+  alias: string;
+  banco: string;
+  titular: string;
 }
 
 export default function CobranzasPage() {
@@ -102,63 +102,41 @@ export default function CobranzasPage() {
   const [toast, setToast]         = useState<string | null>(null);
   const [verFinalizados, setVerFinalizados] = useState(false);
 
-  // MercadoPago states
-  const [mpModal, setMpModal]     = useState<MpModal | null>(null);
-  const [mpLoading, setMpLoading] = useState(false);
-  const [mpResult, setMpResult]   = useState<MpResult | null>(null);
-  const [mpCopied, setMpCopied]   = useState(false);
+  // Transferencia states
+  const [transfModal, setTransfModal]   = useState<TransfModal | null>(null);
+  const [datosBanc, setDatosBanc]       = useState<DatosBancarios>({ cbu: "", alias: "", banco: "", titular: "" });
+  const [editandoBanc, setEditandoBanc] = useState(false);
+  const [copiado, setCopiado]           = useState<string | null>(null);
 
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(null), 3200); };
 
-  const abrirMpModal = useCallback((c: Contrato) => {
-    setMpResult(null);
-    setMpCopied(false);
-    setMpModal({
+  const copiar = (texto: string, key: string) => {
+    navigator.clipboard.writeText(texto).catch(() => {});
+    setCopiado(key);
+    setTimeout(() => setCopiado(null), 2000);
+  };
+
+  const abrirTransfModal = useCallback((c: Contrato) => {
+    setTransfModal({
       contrato: c,
       concepto: `Alquiler ${mesLabel(mesActual())} — ${c.direccion}`,
       monto: String(c.alquiler_actual),
-      email: "",
     });
   }, []);
 
-  const generarLinkMP = async () => {
-    if (!mpModal || !uid) return;
-    const { contrato, concepto, monto, email } = mpModal;
-    if (!email.trim()) { showToast("Ingresá el email del pagador"); return; }
-    if (!monto || parseFloat(monto) <= 0) { showToast("Ingresá un monto válido"); return; }
-    setMpLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch("/api/pagos/crear-preferencia", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token ?? ""}`,
-        },
-        body: JSON.stringify({
-          contrato_id: contrato.id,
-          concepto,
-          monto: parseFloat(monto),
-          moneda: contrato.moneda,
-          email_pagador: email.trim(),
-          descripcion: concepto,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) { showToast(data.error ?? "Error al generar link"); setMpLoading(false); return; }
-      setMpResult({ init_point: data.init_point, preference_id: data.preference_id, contrato_nombre: contrato.inquilino_nombre });
-    } catch {
-      showToast("Error de conexión");
+  const guardarDatosBancarios = async () => {
+    if (!uid) return;
+    const entries = [
+      { clave: "cbu_corredor",      valor: datosBanc.cbu },
+      { clave: "alias_corredor",    valor: datosBanc.alias },
+      { clave: "banco_corredor",    valor: datosBanc.banco },
+      { clave: "titular_corredor",  valor: datosBanc.titular },
+    ];
+    for (const e of entries) {
+      await supabase.from("indicadores").upsert({ clave: e.clave, valor: e.valor }, { onConflict: "clave" });
     }
-    setMpLoading(false);
-  };
-
-  const copiarLinkMP = () => {
-    if (!mpResult) return;
-    navigator.clipboard.writeText(mpResult.init_point).then(() => {
-      setMpCopied(true);
-      setTimeout(() => setMpCopied(false), 2000);
-    });
+    setEditandoBanc(false);
+    showToast("Datos bancarios guardados");
   };
 
   useEffect(() => {
@@ -167,6 +145,21 @@ export default function CobranzasPage() {
       setUid(data.user.id);
       cargar(data.user.id);
     });
+    // Cargar datos bancarios del corredor
+    supabase.from("indicadores")
+      .select("clave, valor")
+      .in("clave", ["cbu_corredor", "alias_corredor", "banco_corredor", "titular_corredor"])
+      .then(({ data }) => {
+        if (!data) return;
+        const m: Record<string, string> = {};
+        data.forEach(r => { m[r.clave] = r.valor ?? ""; });
+        setDatosBanc({
+          cbu:     m.cbu_corredor     ?? "",
+          alias:   m.alias_corredor   ?? "",
+          banco:   m.banco_corredor   ?? "",
+          titular: m.titular_corredor ?? "",
+        });
+      });
   }, []);
 
   const cargar = async (id: string) => {
@@ -426,9 +419,9 @@ export default function CobranzasPage() {
                     )}
                     {c.estado === "activo" && (
                       <button className="cob-btn"
-                        style={{ background: "rgba(0,180,120,0.10)", border: "1px solid rgba(0,180,120,0.35)", color: "#00c87a", padding: "4px 12px", fontSize: 10 }}
-                        onClick={() => abrirMpModal(c)}>
-                        💳 MP
+                        style={{ background: "rgba(58,186,182,0.10)", border: "1px solid rgba(58,186,182,0.35)", color: "#3abab6", padding: "4px 12px", fontSize: 10 }}
+                        onClick={() => abrirTransfModal(c)}>
+                        💸 Cobrar
                       </button>
                     )}
                     <button className="cob-btn"
@@ -508,93 +501,102 @@ export default function CobranzasPage() {
         </div>
       )}
 
-      {/* Modal MercadoPago */}
-      {mpModal && (
+      {/* Modal Transferencia */}
+      {transfModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.82)", zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
-          onClick={() => { setMpModal(null); setMpResult(null); }}>
-          <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 14, padding: 24, width: "100%", maxWidth: 480 }}
+          onClick={() => setTransfModal(null)}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 14, padding: 24, width: "100%", maxWidth: 480 }}
             onClick={e => e.stopPropagation()}>
 
-            {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <div>
-                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>
-                  Cobrar con <span style={{ color: "#00c87a" }}>MercadoPago</span>
-                </div>
-                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{mpModal.contrato.inquilino_nombre}</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>Datos para transferencia</div>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{transfModal.contrato.inquilino_nombre}</div>
               </div>
-              <button onClick={() => { setMpModal(null); setMpResult(null); }} style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: 20 }}>✕</button>
+              <button onClick={() => setTransfModal(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 20 }}>✕</button>
             </div>
 
-            {!mpResult ? (
-              <>
-                <div className="cob-field">
-                  <label className="cob-label">Concepto</label>
-                  <input className="cob-input" value={mpModal.concepto}
-                    onChange={e => setMpModal(m => m ? { ...m, concepto: e.target.value } : m)} />
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: 12 }}>
-                  <div className="cob-field">
-                    <label className="cob-label">Monto</label>
-                    <input className="cob-input" type="number" value={mpModal.monto}
-                      onChange={e => setMpModal(m => m ? { ...m, monto: e.target.value } : m)} />
-                  </div>
-                  <div className="cob-field">
-                    <label className="cob-label">Moneda</label>
-                    <input className="cob-input" value={mpModal.contrato.moneda} readOnly style={{ opacity: 0.6 }} />
-                  </div>
-                </div>
-                <div className="cob-field">
-                  <label className="cob-label">Email del pagador *</label>
-                  <input className="cob-input" type="email" placeholder="email@inquilino.com"
-                    value={mpModal.email}
-                    onChange={e => setMpModal(m => m ? { ...m, email: e.target.value } : m)} />
-                </div>
-                <button className="cob-btn"
-                  style={{ width: "100%", background: "rgba(0,180,120,0.15)", border: "1px solid rgba(0,180,120,0.4)", color: "#00c87a", padding: "12px 0", fontSize: 13, opacity: mpLoading ? 0.6 : 1, marginTop: 4 }}
-                  onClick={generarLinkMP} disabled={mpLoading}>
-                  {mpLoading ? "Generando..." : "Generar link de pago"}
-                </button>
-              </>
-            ) : (
-              /* Resultado: link generado */
-              <div>
-                <div style={{ background: "#0a1628", border: "1px solid #1e293b", borderRadius: 10, padding: 16, marginBottom: 16 }}>
-                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6 }}>Link de pago generado para {mpResult.contrato_nombre}</div>
-                  <div style={{ fontSize: 12, color: "#00c87a", wordBreak: "break-all", fontFamily: "monospace" }}>
-                    {mpResult.init_point}
-                  </div>
-                </div>
-
-                {/* QR */}
-                <div style={{ textAlign: "center", marginBottom: 16 }}>
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(mpResult.init_point)}&size=180x180&bgcolor=0f172a&color=00c87a&margin=10`}
-                    alt="QR de pago"
-                    style={{ borderRadius: 10, border: "1px solid #1e293b", width: 180, height: 180 }}
-                  />
-                  <div style={{ fontSize: 11, color: "#475569", marginTop: 6 }}>Escaneá para pagar</div>
-                </div>
-
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button className="cob-btn"
-                    style={{ flex: 1, background: mpCopied ? "rgba(0,180,120,0.2)" : "rgba(255,255,255,0.06)", border: `1px solid ${mpCopied ? "rgba(0,180,120,0.5)" : "var(--gfi-border)"}`, color: mpCopied ? "#00c87a" : "#fff", padding: "10px 0", fontSize: 12 }}
-                    onClick={copiarLinkMP}>
-                    {mpCopied ? "✓ Copiado" : "Copiar link"}
-                  </button>
-                  <a href={mpResult.init_point} target="_blank" rel="noreferrer"
-                    className="cob-btn"
-                    style={{ flex: 1, background: "rgba(0,180,120,0.15)", border: "1px solid rgba(0,180,120,0.4)", color: "#00c87a", padding: "10px 0", fontSize: 12, textDecoration: "none", textAlign: "center" }}>
-                    Abrir en MP
-                  </a>
-                </div>
-
-                <button className="cob-btn"
-                  style={{ width: "100%", marginTop: 10, background: "transparent", border: "1px solid #1e293b", color: "#475569", padding: "8px 0", fontSize: 11 }}
-                  onClick={() => setMpResult(null)}>
-                  Generar otro link
-                </button>
+            {/* Monto y concepto editables */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: 12, marginBottom: 16 }}>
+              <div className="cob-field" style={{ margin: 0 }}>
+                <label className="cob-label">Concepto</label>
+                <input className="cob-input" value={transfModal.concepto}
+                  onChange={e => setTransfModal(m => m ? { ...m, concepto: e.target.value } : m)} />
               </div>
+              <div className="cob-field" style={{ margin: 0 }}>
+                <label className="cob-label">Monto</label>
+                <input className="cob-input" type="number" value={transfModal.monto}
+                  onChange={e => setTransfModal(m => m ? { ...m, monto: e.target.value } : m)} />
+              </div>
+            </div>
+
+            {/* Datos bancarios del corredor */}
+            {!editandoBanc ? (
+              <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Tus datos bancarios</div>
+                  <button className="cob-btn" style={{ fontSize: 10, padding: "2px 8px", background: "transparent", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-muted)" }} onClick={() => setEditandoBanc(true)}>Editar</button>
+                </div>
+                {datosBanc.cbu ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {[
+                      { label: "CBU / CVU", val: datosBanc.cbu,     key: "cbu" },
+                      { label: "Alias",     val: datosBanc.alias,   key: "alias" },
+                      { label: "Banco",     val: datosBanc.banco,   key: "banco" },
+                      { label: "Titular",   val: datosBanc.titular, key: "titular" },
+                    ].filter(r => r.val).map(row => (
+                      <div key={row.key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                          <div style={{ fontSize: 10, color: "var(--gfi-text-muted)" }}>{row.label}</div>
+                          <div style={{ fontSize: 13, color: "var(--gfi-text-primary)", fontFamily: row.key === "cbu" ? "monospace" : "inherit", letterSpacing: row.key === "cbu" ? "0.04em" : "normal" }}>{row.val}</div>
+                        </div>
+                        <button className="cob-btn" style={{ fontSize: 10, padding: "3px 10px", background: copiado === row.key ? "rgba(58,186,182,0.12)" : "rgba(255,255,255,0.05)", border: `1px solid ${copiado === row.key ? "rgba(58,186,182,0.4)" : "var(--gfi-border)"}`, color: copiado === row.key ? "#3abab6" : "var(--gfi-text-secondary)" }}
+                          onClick={() => copiar(row.val, row.key)}>
+                          {copiado === row.key ? "✓" : "Copiar"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", textAlign: "center", padding: "8px 0" }}>
+                    No hay datos bancarios cargados.{" "}
+                    <button style={{ background: "none", border: "none", color: "#3abab6", cursor: "pointer", fontSize: 12, padding: 0 }} onClick={() => setEditandoBanc(true)}>Agregar ahora</button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Editar datos bancarios</div>
+                {(["cbu","alias","banco","titular"] as const).map(k => (
+                  <div key={k} className="cob-field" style={{ margin: "0 0 10px" }}>
+                    <label className="cob-label">{{ cbu: "CBU / CVU", alias: "Alias", banco: "Banco", titular: "Titular de la cuenta" }[k]}</label>
+                    <input className="cob-input" value={datosBanc[k]} onChange={e => setDatosBanc(d => ({ ...d, [k]: e.target.value }))} />
+                  </div>
+                ))}
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button className="cob-btn" style={{ flex: 1, background: "#990000", color: "#fff", padding: "8px 0", fontSize: 12 }} onClick={guardarDatosBancarios}>Guardar</button>
+                  <button className="cob-btn" style={{ flex: 1, background: "transparent", border: "1px solid var(--gfi-border)", color: "var(--gfi-text-secondary)", padding: "8px 0", fontSize: 12 }} onClick={() => setEditandoBanc(false)}>Cancelar</button>
+                </div>
+              </div>
+            )}
+
+            {/* Botón enviar por WhatsApp */}
+            {transfModal.contrato.inquilino_telefono && (
+              <a
+                href={`https://wa.me/54${transfModal.contrato.inquilino_telefono}?text=${encodeURIComponent(
+                  `Hola ${transfModal.contrato.inquilino_nombre.split(",")[0].trim()}, te paso los datos para la transferencia del ${transfModal.concepto}:\n\n` +
+                  `💰 *Monto: ${transfModal.contrato.moneda} ${Number(transfModal.monto).toLocaleString("es-AR")}*\n` +
+                  (datosBanc.cbu    ? `🏦 CBU/CVU: ${datosBanc.cbu}\n`         : "") +
+                  (datosBanc.alias  ? `📌 Alias: ${datosBanc.alias}\n`          : "") +
+                  (datosBanc.banco  ? `🏛 Banco: ${datosBanc.banco}\n`          : "") +
+                  (datosBanc.titular? `👤 Titular: ${datosBanc.titular}\n`      : "") +
+                  `\nConfirmá cuando realices la transferencia. ¡Gracias!`
+                )}`}
+                target="_blank" rel="noreferrer"
+                className="cob-btn"
+                style={{ display: "block", width: "100%", background: "rgba(37,211,102,0.10)", border: "1px solid rgba(37,211,102,0.3)", color: "#25d366", padding: "12px 0", fontSize: 13, textAlign: "center", textDecoration: "none", borderRadius: 8 }}>
+                💬 Enviar datos por WhatsApp
+              </a>
             )}
           </div>
         </div>
