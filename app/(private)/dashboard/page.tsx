@@ -24,6 +24,11 @@ interface PronosticoItem {
   precipitacion: number;
   codIcono: number;
 }
+interface DailyForecast {
+  dia: string; diaNombre: string; fecha: string;
+  codIcono: number; icon: string;
+  tempMax: number; tempMin: number; precipitacion: number;
+}
 interface HistItem { periodo: string; valor: number; }
 interface Acum { mensual: number | null; trimestral: number | null; cuatrimestral: number | null; semestral: number | null; }
 interface Grupo {
@@ -78,6 +83,7 @@ export default function DashboardPage() {
   const [climaLoading, setClimaLoading] = useState(true);
   const [climaError, setClimaError] = useState(false);
   const [pronostico, setPronostico] = useState<PronosticoItem[]>([]);
+  const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
   const [mostrarCiudadInput, setMostrarCiudadInput] = useState(false);
   const [ciudadInput, setCiudadInput] = useState("");
   const [dolar, setDolar] = useState<Dolar | null>(null);
@@ -145,10 +151,12 @@ export default function DashboardPage() {
 
   const fetchPronostico = async (lat: number, lon: number) => {
     try {
-      const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=es&cnt=8`);
+      const r = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric&lang=es&cnt=40`);
       const d = await r.json();
       if (!d.list) return;
-      const items: PronosticoItem[] = d.list.slice(0, 6).map((item: any) => ({
+
+      // Carrusel horario — primeros 8 slots = ~24 hs
+      const items: PronosticoItem[] = d.list.slice(0, 8).map((item: any) => ({
         hora: new Date(item.dt * 1000).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false }),
         temp: Math.round(item.main.temp),
         icon: item.weather?.[0]?.icon ?? "01d",
@@ -157,6 +165,34 @@ export default function DashboardPage() {
         codIcono: item.weather?.[0]?.id ?? 800,
       }));
       setPronostico(items);
+
+      // Pronóstico diario — agrupa por fecha, saltea hoy, toma 3 días
+      const DIAS_C = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+      const hoyStr = new Date().toDateString();
+      const byDate: Record<string, any[]> = {};
+      for (const item of d.list) {
+        const fd = new Date(item.dt * 1000);
+        const key = fd.toDateString();
+        if (key === hoyStr) continue;
+        (byDate[key] = byDate[key] || []).push({ item, fd });
+      }
+      const daily: DailyForecast[] = Object.values(byDate).slice(0, 3).map((slots) => {
+        const { fd } = slots[0];
+        const temps = slots.map(s => Math.round(s.item.main.temp));
+        const mid = slots[Math.floor(slots.length / 2)];
+        const precip = slots.reduce((a, s) => a + (s.item.rain?.["3h"] ?? s.item.snow?.["3h"] ?? 0), 0);
+        return {
+          dia: DIAS_C[fd.getDay()],
+          diaNombre: ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"][fd.getDay()],
+          fecha: `${String(fd.getDate()).padStart(2,"0")}/${String(fd.getMonth()+1).padStart(2,"0")}`,
+          codIcono: mid.item.weather?.[0]?.id ?? 800,
+          icon: mid.item.weather?.[0]?.icon ?? "01d",
+          tempMax: Math.max(...temps),
+          tempMin: Math.min(...temps),
+          precipitacion: Math.round(precip * 10) / 10,
+        };
+      });
+      setDailyForecast(daily);
     } catch { /* silencioso */ }
   };
 
@@ -526,41 +562,71 @@ export default function DashboardPage() {
         }
         .db-hoy-label { font-size: 9px; color: var(--db-txt3); margin-top: 6px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; }
 
+        /* ── Clima widget ── */
+        @keyframes db-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+        @keyframes db-glow-sun { 0%,100%{filter:drop-shadow(0 0 10px rgba(255,210,80,.5))} 50%{filter:drop-shadow(0 0 28px rgba(255,210,80,.9)) drop-shadow(0 0 60px rgba(255,180,20,.35))} }
+        @keyframes db-glow-rain { 0%,100%{filter:drop-shadow(0 0 8px rgba(100,180,255,.4))} 50%{filter:drop-shadow(0 0 22px rgba(100,180,255,.8))} }
+        @keyframes db-glow-storm { 0%,100%{filter:drop-shadow(0 0 8px rgba(200,160,255,.4))} 50%{filter:drop-shadow(0 0 26px rgba(200,160,255,.9))} }
+        @keyframes db-glow-moon { 0%,100%{filter:drop-shadow(0 0 10px rgba(150,200,255,.4))} 50%{filter:drop-shadow(0 0 24px rgba(150,200,255,.7))} }
+        @keyframes db-rain-drop { 0%{transform:translateY(-8px);opacity:0} 20%{opacity:.55} 100%{transform:translateY(28px);opacity:0} }
+        @keyframes db-slide-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
         .db-clima-card {
-          border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
-          cursor: pointer; transition: all 0.22s; border: 1px solid var(--db-bd);
-          background: var(--db-card);
+          border-radius: 14px; display: flex; flex-direction: column; overflow: hidden;
+          cursor: pointer; transition: transform 0.22s, box-shadow 0.22s; border: 1px solid rgba(255,255,255,0.07);
         }
-        .db-clima-card:hover { border-color: var(--db-bd2); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.50); }
-        .db-clima-top { padding: 14px 16px 0; display: flex; align-items: center; justify-content: space-between; }
-        .db-clima-ciudad { font-size: 8px; font-family: var(--font-display); font-weight: 800; letter-spacing: 0.20em; text-transform: uppercase; color: var(--db-txt2); }
-        .db-clima-hora { font-family: var(--db-mono); font-size: 11px; font-weight: 600; color: var(--db-txt3); letter-spacing: 0.05em; }
-        .db-clima-centro { padding: 10px 16px 8px; text-align: center; }
-        .db-clima-emoji { font-size: 38px; line-height: 1; display: block; margin-bottom: 4px; }
-        .db-clima-temp { font-family: var(--db-mono); font-size: 44px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-        .db-clima-desc { font-size: 10px; color: var(--db-txt2); margin-top: 5px; font-style: italic; }
-        .db-clima-minmax { font-size: 10px; color: var(--db-txt3); margin-top: 5px; display: flex; gap: 8px; justify-content: center; font-family: var(--db-mono); }
-        .db-clima-minmax .up { color: #fca5a5; } .db-clima-minmax .dn { color: #93c5fd; }
-        .db-clima-calidad { margin: 0 12px 10px; padding: 5px 10px; border-radius: 20px; font-size: 8px; font-family: var(--font-display); font-weight: 800; letter-spacing: 0.08em; text-align: center; }
-        .db-clima-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid var(--db-bd); }
-        .db-clima-stat { padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-right: 1px solid var(--gfi-border-subtle); }
-        .db-clima-stat:last-child { border-right: none; }
-        .db-clima-stat-val { font-family: var(--db-mono); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
-        .db-clima-stat-label { font-size: 7px; color: var(--db-txt3); text-transform: uppercase; letter-spacing: 0.12em; font-family: var(--font-display); font-weight: 700; }
-        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid var(--gfi-border-subtle); color: rgba(153,0,0,0.45); font-size: 10px; cursor: pointer; font-family: var(--font-body); text-align: center; padding: 7px 18px; width: 100%; transition: color 0.15s; }
+        .db-clima-card:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(0,0,0,.65); }
+
+        .db-wt-header { padding: 14px 16px 10px; display: flex; align-items: flex-start; justify-content: space-between; }
+        .db-wt-ciudad { font-size: 9px; font-family: var(--font-display); font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 3px; }
+        .db-wt-dia { font-size: 11px; font-family: var(--font-display); font-weight: 700; color: rgba(255,255,255,.75); letter-spacing: .04em; }
+        .db-wt-reloj { font-family: var(--db-mono); font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+
+        .db-wt-main { padding: 0 16px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .db-wt-left {}
+        .db-wt-temp { font-family: var(--db-mono); font-size: 52px; font-weight: 700; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+        .db-wt-temp-unit { font-size: 20px; font-weight: 400; opacity: .45; }
+        .db-wt-minmax { font-size: 11px; color: rgba(255,255,255,.6); font-family: var(--db-mono); margin-top: 3px; display: flex; gap: 8px; }
+        .db-wt-minmax .up { color: #fca5a5; } .db-wt-minmax .dn { color: #93c5fd; }
+        .db-wt-desc { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 4px; font-style: italic; text-transform: capitalize; }
+        .db-wt-emoji { font-size: 68px; line-height: 1; display: block; }
+        .db-wt-emoji-sun  { animation: db-float 3s ease-in-out infinite, db-glow-sun 3s ease-in-out infinite; }
+        .db-wt-emoji-rain { animation: db-float 2.5s ease-in-out infinite, db-glow-rain 2.5s ease-in-out infinite; }
+        .db-wt-emoji-storm{ animation: db-float 2s ease-in-out infinite, db-glow-storm 2s ease-in-out infinite; }
+        .db-wt-emoji-moon { animation: db-float 4s ease-in-out infinite, db-glow-moon 4s ease-in-out infinite; }
+        .db-wt-emoji-cloud { animation: db-float 3.5s ease-in-out infinite; }
+
+        .db-wt-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border-top: 1px solid rgba(255,255,255,.07); border-bottom: 1px solid rgba(255,255,255,.07); }
+        .db-wt-stat { padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-right: 1px solid rgba(255,255,255,.06); }
+        .db-wt-stat:last-child { border-right: none; }
+        .db-wt-stat-val { font-family: var(--db-mono); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .db-wt-stat-label { font-size: 7px; color: rgba(255,255,255,.38); text-transform: uppercase; letter-spacing: .12em; font-family: var(--font-display); font-weight: 700; }
+
+        .db-wt-calidad { margin: 8px 14px; padding: 4px 10px; border-radius: 20px; font-size: 8px; font-family: var(--font-display); font-weight: 800; letter-spacing: .08em; text-align: center; }
+
+        .db-wt-forecast { display: flex; overflow-x: auto; gap: 0; scrollbar-width: none; border-top: 1px solid rgba(255,255,255,.07); }
+        .db-wt-forecast::-webkit-scrollbar { display: none; }
+        .db-wt-fitem { flex: 0 0 auto; min-width: 52px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-right: 1px solid rgba(255,255,255,.06); animation: db-slide-in .3s ease both; }
+        .db-wt-fitem:last-child { border-right: none; }
+        .db-wt-fhora { font-size: 8px; font-family: var(--db-mono); color: rgba(255,255,255,.45); letter-spacing: .04em; }
+        .db-wt-ftemp { font-size: 12px; font-family: var(--db-mono); font-weight: 700; color: #fff; }
+        .db-wt-frain { font-size: 8px; color: #7dd3fc; font-family: var(--db-mono); font-weight: 600; }
+
+        .db-wt-daily { display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid rgba(255,255,255,.07); }
+        .db-wt-ditem { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px; border-right: 1px solid rgba(255,255,255,.06); animation: db-slide-in .4s ease both; }
+        .db-wt-ditem:last-child { border-right: none; }
+        .db-wt-ddia { font-size: 9px; font-family: var(--font-display); font-weight: 800; letter-spacing: .1em; color: rgba(255,255,255,.5); text-transform: uppercase; }
+        .db-wt-dfecha { font-size: 8px; color: rgba(255,255,255,.3); font-family: var(--db-mono); }
+        .db-wt-dtemp { font-size: 11px; font-family: var(--db-mono); font-weight: 700; color: rgba(255,255,255,.85); }
+        .db-wt-dtemp .dn { color: #93c5fd; font-weight: 400; font-size: 10px; }
+
+        .db-clima-ciudad-btn { background: none; border: none; border-top: 1px solid rgba(255,255,255,.06); color: rgba(153,0,0,.5); font-size: 10px; cursor: pointer; font-family: var(--font-body); text-align: center; padding: 7px 18px; width: 100%; transition: color 0.15s; }
         .db-clima-ciudad-btn:hover { color: var(--db-red); }
-        .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid var(--gfi-border-subtle); }
-        .db-ciudad-input { flex: 1; padding: 7px 10px; background: #0d1017; border: 1px solid var(--db-bd); border-radius: 6px; color: var(--db-txt); font-size: 12px; outline: none; font-family: var(--font-body); transition: border-color 0.15s; }
-        .db-ciudad-input:focus { border-color: var(--db-red); box-shadow: 0 0 0 3px rgba(153,0,0,0.10); }
-        .db-ciudad-input::placeholder { color: var(--db-txt3); }
+        .db-ciudad-form { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid rgba(255,255,255,.06); }
+        .db-ciudad-input { flex: 1; padding: 7px 10px; background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.1); border-radius: 6px; color: #fff; font-size: 12px; outline: none; font-family: var(--font-body); transition: border-color 0.15s; }
+        .db-ciudad-input:focus { border-color: rgba(153,0,0,.6); }
+        .db-ciudad-input::placeholder { color: rgba(255,255,255,.25); }
         .db-ciudad-btn { padding: 7px 12px; background: var(--db-red-g); border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; font-weight: 700; }
-        .db-clima-forecast { display: flex; overflow-x: auto; gap: 0; border-top: 1px solid var(--gfi-border-subtle); scrollbar-width: none; }
-        .db-clima-forecast::-webkit-scrollbar { display: none; }
-        .db-clima-fitem { flex: 0 0 auto; min-width: 56px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; gap: 1px; border-right: 1px solid var(--gfi-border-subtle); }
-        .db-clima-fitem:last-child { border-right: none; }
-        .db-clima-fhora { font-size: 8px; font-family: var(--db-mono); font-weight: 500; color: var(--db-txt3); letter-spacing: 0.05em; }
-        .db-clima-ftemp { font-size: 12px; font-family: var(--db-mono); font-weight: 700; color: var(--db-txt); }
-        .db-clima-frain { font-size: 8px; color: #7dd3fc; font-family: var(--db-mono); font-weight: 600; }
 
         /* ── Quick access grid ── */
         .db-accesos { margin-bottom: 18px; }
@@ -860,63 +926,112 @@ export default function DashboardPage() {
         </div>
 
         <div className="db-clima-card"
-          style={{ background: clima ? climaGradient(clima.temp) : "var(--gfi-bg-card)" }}
+          style={{ background: clima ? climaGradient(clima.temp) : "linear-gradient(135deg,#0d1117 0%,#111827 100%)" }}
           onClick={abrirClima}>
           {climaLoading ? (
-            <div style={{padding:"24px 16px",textAlign:"center"}}>
-              <div className="skeleton" style={{width:40,height:40,borderRadius:20,margin:"0 auto 10px"}}/>
-              <div className="skeleton" style={{width:80,height:40,borderRadius:6,margin:"0 auto 8px"}}/>
-              <div className="skeleton" style={{width:100,height:12,borderRadius:4,margin:"0 auto"}}/>
+            <div style={{padding:"28px 16px",textAlign:"center"}}>
+              <div className="skeleton" style={{width:44,height:44,borderRadius:22,margin:"0 auto 10px"}}/>
+              <div className="skeleton" style={{width:90,height:44,borderRadius:6,margin:"0 auto 8px"}}/>
+              <div className="skeleton" style={{width:110,height:12,borderRadius:4,margin:"0 auto"}}/>
             </div>
           ) : climaError || !clima ? (
-            <div style={{padding:"30px 16px",textAlign:"center"}}>
-              <div style={{fontSize:36,marginBottom:8}}>🌡️</div>
-              <div style={{fontSize:13,color:"var(--gfi-text-muted)"}}>Sin datos</div>
+            <div style={{padding:"36px 16px",textAlign:"center"}}>
+              <div style={{fontSize:40,marginBottom:8}}>🌡️</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.4)"}}>Sin datos de clima</div>
             </div>
           ) : ((() => {
             const calidad = climaCalidad(clima);
             const tc = climaTempColor(clima.temp);
+            const emoji = climaEmoji(clima.codIcono, clima.icon);
+            const night = clima.icon?.endsWith("n");
+            const emojiCls = clima.codIcono >= 200 && clima.codIcono < 300 ? "db-wt-emoji-storm"
+              : clima.codIcono >= 300 && clima.codIcono < 700 ? "db-wt-emoji-rain"
+              : clima.codIcono === 800 ? (night ? "db-wt-emoji-moon" : "db-wt-emoji-sun")
+              : "db-wt-emoji-cloud";
+            const ahora = new Date();
+            const DIAS_ES = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+            const MESES_ES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+            const diaNombreHoy = DIAS_ES[ahora.getDay()];
+            const fechaHoy = `${String(ahora.getDate()).padStart(2,"0")} ${MESES_ES[ahora.getMonth()]}`;
             return (
               <>
-                <div className="db-clima-top">
-                  <span className="db-clima-ciudad">{clima.gpsActivo ? "📍 " : ""}{clima.ciudad}</span>
-                  <span className="db-clima-hora">{hora}</span>
+                {/* Header: ciudad + día + fecha */}
+                <div className="db-wt-header">
+                  <div>
+                    <div className="db-wt-ciudad">{clima.gpsActivo ? "📍 " : ""}{clima.ciudad}</div>
+                    <div className="db-wt-dia">{diaNombreHoy} · {fechaHoy}</div>
+                    <div className="db-wt-reloj">{hora}</div>
+                  </div>
+                  {/* Emoji animado — derecha del header */}
+                  <span className={`db-wt-emoji ${emojiCls}`}>{emoji}</span>
                 </div>
-                <div className="db-clima-centro">
-                  <span style={{fontSize:56,display:"block",textAlign:"center",margin:"0 auto 2px",lineHeight:1}}>{climaEmoji(clima.codIcono, clima.icon)}</span>
-                  <div className="db-clima-temp" style={{color:tc}}>{clima.temp}°<span style={{fontSize:18,fontWeight:400,opacity:0.5}}>C</span></div>
-                  <div className="db-clima-desc">{climaDesc}</div>
-                  <div className="db-clima-minmax">
-                    <span className="dn">↓ {clima.tempMin}°</span>
-                    <span className="up">↑ {clima.tempMax}°</span>
-                    <span>ST {clima.sensacion}°</span>
+
+                {/* Temperatura principal */}
+                <div className="db-wt-main">
+                  <div className="db-wt-left">
+                    <div className="db-wt-temp" style={{color:tc}}>
+                      {clima.temp}°<span className="db-wt-temp-unit">C</span>
+                    </div>
+                    <div className="db-wt-minmax">
+                      <span className="dn">↓{clima.tempMin}°</span>
+                      <span className="up">↑{clima.tempMax}°</span>
+                      <span style={{color:"rgba(255,255,255,.5)"}}>ST {clima.sensacion}°</span>
+                    </div>
+                    <div className="db-wt-desc">{climaDesc}</div>
                   </div>
                 </div>
-                <div className="db-clima-calidad" style={{color:calidad.color, background:calidad.bg}}>
+
+                {/* Badge calidad */}
+                <div className="db-wt-calidad" style={{color:calidad.color, background:calidad.bg}}>
                   {calidad.label}
                 </div>
-                <div className="db-clima-stats">
-                  <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#4ab8d8"}}>{clima.humedad}%</span>
-                    <span className="db-clima-stat-label">💧 Humedad</span>
+
+                {/* Stats */}
+                <div className="db-wt-stats">
+                  <div className="db-wt-stat">
+                    <span className="db-wt-stat-val" style={{color:"#4ab8d8"}}>{clima.humedad}%</span>
+                    <span className="db-wt-stat-label">💧 Humedad</span>
                   </div>
-                  <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color:"#a5f3fc"}}>{clima.viento} <span style={{fontSize:9}}>km/h</span></span>
-                    <span className="db-clima-stat-label">💨 Viento</span>
+                  <div className="db-wt-stat">
+                    <span className="db-wt-stat-val" style={{color:"#a5f3fc"}}>{clima.viento}<span style={{fontSize:9}}> km/h</span></span>
+                    <span className="db-wt-stat-label">💨 Viento</span>
                   </div>
-                  <div className="db-clima-stat">
-                    <span className="db-clima-stat-val" style={{color: clima.precipitacion > 0 ? "#7dd3fc" : "var(--gfi-text-muted)"}}>{clima.precipitacion > 0 ? `${clima.precipitacion}mm` : `${clima.nubes}%`}</span>
-                    <span className="db-clima-stat-label">{clima.precipitacion > 0 ? "🌧 Lluvia" : "☁️ Nubos."}</span>
+                  <div className="db-wt-stat">
+                    <span className="db-wt-stat-val" style={{color: clima.precipitacion > 0 ? "#7dd3fc" : "rgba(255,255,255,.35)"}}>
+                      {clima.precipitacion > 0 ? `${clima.precipitacion}mm` : `${clima.nubes}%`}
+                    </span>
+                    <span className="db-wt-stat-label">{clima.precipitacion > 0 ? "🌧 Lluvia" : "☁️ Nubes"}</span>
                   </div>
                 </div>
+
+                {/* Carrusel horario */}
                 {pronostico.length > 0 && (
-                  <div className="db-clima-forecast">
+                  <div className="db-wt-forecast">
                     {pronostico.map((item, i) => (
-                      <div key={i} className="db-clima-fitem">
-                        <span className="db-clima-fhora">{item.hora}</span>
-                        <span style={{fontSize:22,lineHeight:1}}>{climaEmoji(item.codIcono, item.icon)}</span>
-                        <span className="db-clima-ftemp">{item.temp}°</span>
-                        {item.precipitacion > 0 && <span className="db-clima-frain">{item.precipitacion}mm</span>}
+                      <div key={i} className="db-wt-fitem" style={{animationDelay:`${i*40}ms`}}>
+                        <span className="db-wt-fhora">{item.hora}</span>
+                        <span style={{fontSize:20,lineHeight:1}}>{climaEmoji(item.codIcono, item.icon)}</span>
+                        <span className="db-wt-ftemp">{item.temp}°</span>
+                        {item.precipitacion > 0 && <span className="db-wt-frain">{item.precipitacion}mm</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Pronóstico 3 días */}
+                {dailyForecast.length > 0 && (
+                  <div className="db-wt-daily">
+                    {dailyForecast.map((d, i) => (
+                      <div key={i} className="db-wt-ditem" style={{animationDelay:`${i*60}ms`}}>
+                        <span className="db-wt-ddia">{d.dia}</span>
+                        <span className="db-wt-dfecha">{d.fecha}</span>
+                        <span style={{fontSize:28,lineHeight:1,margin:"4px 0"}}>{climaEmoji(d.codIcono, d.icon)}</span>
+                        <span className="db-wt-dtemp">
+                          {d.tempMax}° / <span className="dn">{d.tempMin}°</span>
+                        </span>
+                        {d.precipitacion > 0 && (
+                          <span style={{fontSize:8,color:"#7dd3fc",fontFamily:"var(--db-mono)"}}>{d.precipitacion.toFixed(1)}mm</span>
+                        )}
                       </div>
                     ))}
                   </div>
