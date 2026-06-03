@@ -73,7 +73,6 @@ const NAV = [
     children: [
       { href: "/crm/honorarios",  label: "Honorarios" },
       { href: "/crm/comisiones",  label: "Comisiones" },
-      { href: "/crm/cobranzas",   label: "Cobranzas" },
     ],
   },
   {
