@@ -83,6 +83,12 @@ const NAV = [
     href: "/crm/actividad",
   },
   {
+    id: "google",
+    icon: "🔗",
+    label: "Google Workspace",
+    href: "/crm/google",
+  },
+  {
     id: "config",
     icon: "⚙️",
     label: "Configuración",
