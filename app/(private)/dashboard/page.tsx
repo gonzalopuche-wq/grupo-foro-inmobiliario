@@ -867,7 +867,7 @@ export default function DashboardPage() {
                   <span className="db-clima-hora">{hora}</span>
                 </div>
                 <div className="db-clima-centro">
-                  <img src={`https://openweathermap.org/img/wn/${clima.icon}@2x.png`} alt={climaDesc} style={{width:64,height:64,display:"block",margin:"0 auto 2px",filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.4))"}}/>
+                  <span style={{fontSize:56,display:"block",textAlign:"center",margin:"0 auto 2px",lineHeight:1}}>{climaEmoji(clima.codIcono, clima.icon)}</span>
                   <div className="db-clima-temp" style={{color:tc}}>{clima.temp}°<span style={{fontSize:18,fontWeight:400,opacity:0.5}}>C</span></div>
                   <div className="db-clima-desc">{climaDesc}</div>
                   <div className="db-clima-minmax">
@@ -898,7 +898,7 @@ export default function DashboardPage() {
                     {pronostico.map((item, i) => (
                       <div key={i} className="db-clima-fitem">
                         <span className="db-clima-fhora">{item.hora}</span>
-                        <img src={`https://openweathermap.org/img/wn/${item.icon}.png`} alt={item.desc} style={{width:28,height:28}}/>
+                        <span style={{fontSize:22,lineHeight:1}}>{climaEmoji(item.codIcono, item.icon)}</span>
                         <span className="db-clima-ftemp">{item.temp}°</span>
                         {item.precipitacion > 0 && <span className="db-clima-frain">{item.precipitacion}mm</span>}
                       </div>
