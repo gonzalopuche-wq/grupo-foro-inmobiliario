@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 interface Perfil {
@@ -44,10 +45,11 @@ function estadoBadge(cocirEstado: string | null, estado: string) {
     return { texto: "SUSPENDIDO", color: "#d05050", bg: "rgba(200,0,0,0.12)", border: "rgba(200,0,0,0.4)" };
   if (s.includes("baja") || s.includes("cancela"))
     return { texto: "BAJA", color: "#888", bg: "rgba(136,136,136,0.12)", border: "rgba(136,136,136,0.4)" };
-  return { texto: estado.toUpperCase() || "SIN ESTADO", color: "#d4960c", bg: "rgba(212,150,12,0.12)", border: "rgba(212,150,12,0.4)" };
+  return { texto: (estado ?? "SIN ESTADO").toUpperCase(), color: "#d4960c", bg: "rgba(212,150,12,0.12)", border: "rgba(212,150,12,0.4)" };
 }
 
 export default function CredencialPage() {
+  const router = useRouter();
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [loading, setLoading] = useState(true);
   const [copiado, setCopiado] = useState(false);
@@ -57,30 +59,23 @@ export default function CredencialPage() {
 
   useEffect(() => {
     const init = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) { window.location.href = "/login"; return; }
-      const { data: p } = await supabase
-        .from("perfiles")
-        .select("id, nombre, apellido, matricula, foto_url, inmobiliaria, cocir_estado, estado, tipo, especialidades, zona_trabajo, created_at")
-        .eq("id", data.user.id)
-        .single();
-      if (p) setPerfil(p as Perfil);
-      setLoading(false);
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (!data.user) { router.push("/login"); return; }
+        const { data: p, error } = await supabase
+          .from("perfiles")
+          .select("id, nombre, apellido, matricula, foto_url, inmobiliaria, cocir_estado, estado, tipo, especialidades, zona_trabajo, created_at")
+          .eq("id", data.user.id)
+          .single();
+        if (!error && p) setPerfil(p as Perfil);
+      } catch {
+        // silently fail — loading state will clear and null perfil will render nothing
+      } finally {
+        setLoading(false);
+      }
     };
     init();
-  }, []);
-
-  const verUrl = perfil?.matricula
-    ? `https://foroinmobiliario.com.ar/padron/${perfil.matricula}`
-    : typeof window !== "undefined" ? window.location.origin : "https://foroinmobiliario.com.ar";
-
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(verUrl)}&bgcolor=111111&color=3abab6&margin=6`;
-
-  async function copiarLink() {
-    await navigator.clipboard.writeText(verUrl);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2500);
-  }
+  }, [router]);
 
   if (loading) {
     return (
@@ -95,6 +90,24 @@ export default function CredencialPage() {
   const badge = estadoBadge(perfil.cocir_estado, perfil.estado);
   const nombreCompleto = `${perfil.nombre} ${perfil.apellido}`.trim();
   const anioVigencia = new Date().getFullYear();
+  const verUrl = perfil.matricula
+    ? `https://foroinmobiliario.com.ar/padron/${perfil.matricula}`
+    : typeof window !== "undefined" ? window.location.origin : "https://foroinmobiliario.com.ar";
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(verUrl)}&bgcolor=111111&color=3abab6&margin=6`;
+
+  async function copiarLink() {
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(verUrl);
+        setCopiado(true);
+        setTimeout(() => setCopiado(false), 2500);
+      }
+    } catch {
+      // clipboard not available or permission denied
+    }
+  }
+
+  const hoyMs = (() => { const h = new Date(); h.setHours(0, 0, 0, 0); return h.getTime(); })();
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", padding: "24px 16px", fontFamily: "Inter, sans-serif" }}>
@@ -148,7 +161,7 @@ export default function CredencialPage() {
                     />
                   ) : (
                     <span style={{ fontSize: 42, color: "#555" }}>
-                      {perfil.nombre.charAt(0).toUpperCase()}
+                      {(perfil.nombre || "").charAt(0).toUpperCase()}
                     </span>
                   )}
                 </div>
@@ -315,8 +328,7 @@ export default function CredencialPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {JURAS_2026.map((j) => {
               const d = new Date(j.fecha + "T00:00:00");
-              const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-              const diff = Math.round((d.getTime() - hoy.getTime()) / 86400000);
+              const diff = Math.round((d.getTime() - hoyMs) / 86400000);
               const pasada = diff < 0;
               const esProxima = !pasada && jura?.label === j.label;
               return (
