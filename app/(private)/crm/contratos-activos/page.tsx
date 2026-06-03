@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../../lib/supabase";
 import GenerarContratoModal from "./GenerarContratoModal";
-import RenovarContratoModal from "./RenovarContratoModal";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -868,26 +867,6 @@ export default function ContratosActivosPage() {
                             deposito_meses: c.deposito_meses,
                           }}
                         />
-                        {(c.estado === "vigente" || c.estado === "por_vencer" || c.estado === "vencido") && (
-                          <RenovarContratoModal
-                            contrato={c}
-                            onRenovado={() => {
-                              // Reload contracts after renewal
-                              setSelectedId(null);
-                              supabase.auth.getUser().then(({ data: { user } }) => {
-                                if (!user) return;
-                                supabase
-                                  .from("crm_contratos")
-                                  .select("*")
-                                  .eq("perfil_id", user.id)
-                                  .order("fecha_fin", { ascending: true })
-                                  .then(({ data }) => {
-                                    if (data) setContratos(data as Contrato[]);
-                                  });
-                              });
-                            }}
-                          />
-                        )}
                       </div>
                     </div>
                   </div>
@@ -982,25 +961,6 @@ export default function ContratosActivosPage() {
                     deposito_meses: selected.deposito_meses,
                   }}
                 />
-                {(selected.estado === "vigente" || selected.estado === "por_vencer" || selected.estado === "vencido") && (
-                  <RenovarContratoModal
-                    contrato={selected}
-                    onRenovado={() => {
-                      setSelectedId(null);
-                      supabase.auth.getUser().then(({ data: { user } }) => {
-                        if (!user) return;
-                        supabase
-                          .from("crm_contratos")
-                          .select("*")
-                          .eq("perfil_id", user.id)
-                          .order("fecha_fin", { ascending: true })
-                          .then(({ data }) => {
-                            if (data) setContratos(data as Contrato[]);
-                          });
-                      });
-                    }}
-                  />
-                )}
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button style={s.btn} onClick={() => abrirEditar(selected)}>Editar</button>
