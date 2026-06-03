@@ -77,6 +77,15 @@ const NAV = [
     ],
   },
   {
+    id: "marketing",
+    icon: "📣",
+    label: "Marketing",
+    children: [
+      { href: "/crm/campanas-marketing", label: "Campañas" },
+      { href: "/crm/redes-contenido",    label: "✨ Redes con IA" },
+    ],
+  },
+  {
     id: "actividad",
     icon: "⚡",
     label: "Actividad",
