@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { supabase } from "../../../lib/supabase";
 
 // Usa la tabla crm_contratos (migración 097) + columnas dia_vencimiento/estado (migración 105)
@@ -75,6 +75,20 @@ const estadoLabel = (e: string | undefined) => {
   return e;
 };
 
+// ── MercadoPago modal state ───────────────────────────────────────────────────
+interface MpModal {
+  contrato: Contrato;
+  concepto: string;
+  monto: string;
+  email: string;
+}
+
+interface MpResult {
+  init_point: string;
+  preference_id: string;
+  contrato_nombre: string;
+}
+
 export default function CobranzasPage() {
   const [uid, setUid]             = useState<string | null>(null);
   const [contratos, setContratos] = useState<Contrato[]>([]);
@@ -88,7 +102,64 @@ export default function CobranzasPage() {
   const [toast, setToast]         = useState<string | null>(null);
   const [verFinalizados, setVerFinalizados] = useState(false);
 
+  // MercadoPago states
+  const [mpModal, setMpModal]     = useState<MpModal | null>(null);
+  const [mpLoading, setMpLoading] = useState(false);
+  const [mpResult, setMpResult]   = useState<MpResult | null>(null);
+  const [mpCopied, setMpCopied]   = useState(false);
+
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(null), 3200); };
+
+  const abrirMpModal = useCallback((c: Contrato) => {
+    setMpResult(null);
+    setMpCopied(false);
+    setMpModal({
+      contrato: c,
+      concepto: `Alquiler ${mesLabel(mesActual())} — ${c.direccion}`,
+      monto: String(c.alquiler_actual),
+      email: "",
+    });
+  }, []);
+
+  const generarLinkMP = async () => {
+    if (!mpModal || !uid) return;
+    const { contrato, concepto, monto, email } = mpModal;
+    if (!email.trim()) { showToast("Ingresá el email del pagador"); return; }
+    if (!monto || parseFloat(monto) <= 0) { showToast("Ingresá un monto válido"); return; }
+    setMpLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/pagos/crear-preferencia", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token ?? ""}`,
+        },
+        body: JSON.stringify({
+          contrato_id: contrato.id,
+          concepto,
+          monto: parseFloat(monto),
+          moneda: contrato.moneda,
+          email_pagador: email.trim(),
+          descripcion: concepto,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error ?? "Error al generar link"); setMpLoading(false); return; }
+      setMpResult({ init_point: data.init_point, preference_id: data.preference_id, contrato_nombre: contrato.inquilino_nombre });
+    } catch {
+      showToast("Error de conexión");
+    }
+    setMpLoading(false);
+  };
+
+  const copiarLinkMP = () => {
+    if (!mpResult) return;
+    navigator.clipboard.writeText(mpResult.init_point).then(() => {
+      setMpCopied(true);
+      setTimeout(() => setMpCopied(false), 2000);
+    });
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -353,6 +424,13 @@ export default function CobranzasPage() {
                         💬 WA
                       </a>
                     )}
+                    {c.estado === "activo" && (
+                      <button className="cob-btn"
+                        style={{ background: "rgba(0,180,120,0.10)", border: "1px solid rgba(0,180,120,0.35)", color: "#00c87a", padding: "4px 12px", fontSize: 10 }}
+                        onClick={() => abrirMpModal(c)}>
+                        💳 MP
+                      </button>
+                    )}
                     <button className="cob-btn"
                       style={{ background: "rgba(239,68,68,0.08)", color: "rgba(239,68,68,0.6)", border: "1px solid rgba(239,68,68,0.2)", padding: "4px 10px", fontSize: 10, marginLeft: "auto" }}
                       onClick={() => eliminarContrato(c.id)}>
@@ -426,6 +504,98 @@ export default function CobranzasPage() {
                 {guardando ? "Guardando..." : "Crear contrato"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal MercadoPago */}
+      {mpModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.82)", zIndex: 1100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+          onClick={() => { setMpModal(null); setMpResult(null); }}>
+          <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 14, padding: 24, width: "100%", maxWidth: 480 }}
+            onClick={e => e.stopPropagation()}>
+
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>
+                  Cobrar con <span style={{ color: "#00c87a" }}>MercadoPago</span>
+                </div>
+                <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{mpModal.contrato.inquilino_nombre}</div>
+              </div>
+              <button onClick={() => { setMpModal(null); setMpResult(null); }} style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: 20 }}>✕</button>
+            </div>
+
+            {!mpResult ? (
+              <>
+                <div className="cob-field">
+                  <label className="cob-label">Concepto</label>
+                  <input className="cob-input" value={mpModal.concepto}
+                    onChange={e => setMpModal(m => m ? { ...m, concepto: e.target.value } : m)} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 80px", gap: 12 }}>
+                  <div className="cob-field">
+                    <label className="cob-label">Monto</label>
+                    <input className="cob-input" type="number" value={mpModal.monto}
+                      onChange={e => setMpModal(m => m ? { ...m, monto: e.target.value } : m)} />
+                  </div>
+                  <div className="cob-field">
+                    <label className="cob-label">Moneda</label>
+                    <input className="cob-input" value={mpModal.contrato.moneda} readOnly style={{ opacity: 0.6 }} />
+                  </div>
+                </div>
+                <div className="cob-field">
+                  <label className="cob-label">Email del pagador *</label>
+                  <input className="cob-input" type="email" placeholder="email@inquilino.com"
+                    value={mpModal.email}
+                    onChange={e => setMpModal(m => m ? { ...m, email: e.target.value } : m)} />
+                </div>
+                <button className="cob-btn"
+                  style={{ width: "100%", background: "rgba(0,180,120,0.15)", border: "1px solid rgba(0,180,120,0.4)", color: "#00c87a", padding: "12px 0", fontSize: 13, opacity: mpLoading ? 0.6 : 1, marginTop: 4 }}
+                  onClick={generarLinkMP} disabled={mpLoading}>
+                  {mpLoading ? "Generando..." : "Generar link de pago"}
+                </button>
+              </>
+            ) : (
+              /* Resultado: link generado */
+              <div>
+                <div style={{ background: "#0a1628", border: "1px solid #1e293b", borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6 }}>Link de pago generado para {mpResult.contrato_nombre}</div>
+                  <div style={{ fontSize: 12, color: "#00c87a", wordBreak: "break-all", fontFamily: "monospace" }}>
+                    {mpResult.init_point}
+                  </div>
+                </div>
+
+                {/* QR */}
+                <div style={{ textAlign: "center", marginBottom: 16 }}>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(mpResult.init_point)}&size=180x180&bgcolor=0f172a&color=00c87a&margin=10`}
+                    alt="QR de pago"
+                    style={{ borderRadius: 10, border: "1px solid #1e293b", width: 180, height: 180 }}
+                  />
+                  <div style={{ fontSize: 11, color: "#475569", marginTop: 6 }}>Escaneá para pagar</div>
+                </div>
+
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button className="cob-btn"
+                    style={{ flex: 1, background: mpCopied ? "rgba(0,180,120,0.2)" : "rgba(255,255,255,0.06)", border: `1px solid ${mpCopied ? "rgba(0,180,120,0.5)" : "var(--gfi-border)"}`, color: mpCopied ? "#00c87a" : "#fff", padding: "10px 0", fontSize: 12 }}
+                    onClick={copiarLinkMP}>
+                    {mpCopied ? "✓ Copiado" : "Copiar link"}
+                  </button>
+                  <a href={mpResult.init_point} target="_blank" rel="noreferrer"
+                    className="cob-btn"
+                    style={{ flex: 1, background: "rgba(0,180,120,0.15)", border: "1px solid rgba(0,180,120,0.4)", color: "#00c87a", padding: "10px 0", fontSize: 12, textDecoration: "none", textAlign: "center" }}>
+                    Abrir en MP
+                  </a>
+                </div>
+
+                <button className="cob-btn"
+                  style={{ width: "100%", marginTop: 10, background: "transparent", border: "1px solid #1e293b", color: "#475569", padding: "8px 0", fontSize: 11 }}
+                  onClick={() => setMpResult(null)}>
+                  Generar otro link
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
