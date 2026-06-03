@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 //   27 = IPC (Inflación mensual %) — publica un dato por mes
 //   40 = ICL (Índice para Contratos de Locación, base 30.6.20=1) — dato diario
 //   30 = CER (Coeficiente de Estabilización de Referencia) — dato diario
+//   31 = UVA (Unidad de Valor Adquisitivo) — dato diario
 
 const BCRA_BASE = "https://api.bcra.gob.ar/estadisticas/v4.0/monetarias";
 
@@ -20,6 +21,7 @@ const BCRA_MENSUAL: Record<string, number> = {
 const BCRA_DIARIO: Record<string, number> = {
   ICL: 40,
   CER: 30,
+  UVA: 31,
 };
 
 function fechaDesde(): string {
@@ -133,6 +135,7 @@ export async function GET() {
     if (!indices.ICL) indices.ICL = {};
     if (!indices.IPC) indices.IPC = {};
     if (!indices.CER) indices.CER = {};
+    if (!indices.UVA) indices.UVA = {};
 
     const response = {
       ok: anySuccess,
@@ -156,6 +159,7 @@ export async function GET() {
         IPC: {},
         CAC: CAC_FALLBACK,
         CER: {},
+        UVA: {},
       },
     });
   }
