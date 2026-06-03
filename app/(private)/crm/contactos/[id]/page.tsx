@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, use } from "react";
 import Link from "next/link";
 import { supabase } from "../../../../lib/supabase";
+import LeadScoreButton from "../LeadScoreButton";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -598,6 +599,9 @@ export default function ContactoFichaPage({ params }: { params: Promise<{ id: st
               <div style={{ fontSize: 13, color: "var(--gfi-text-secondary)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{contacto.notas}</div>
             </div>
           )}
+
+          {/* Lead Score IA */}
+          <LeadScoreButton contactoId={contacto.id} />
 
           {/* Recordatorios pendientes */}
           {recordatoriosPendientes.length > 0 && (
