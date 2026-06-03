@@ -1,4 +1,4 @@
-// GET /api/google-auth?perfil_id=... → redirige a Google OAuth para Calendar
+// GET /api/google-auth?perfil_id=... → redirige a Google OAuth para Workspace
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -6,6 +6,10 @@ export const dynamic = "force-dynamic";
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const SCOPES = [
   "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/gmail.compose",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/contacts",
+  "https://www.googleapis.com/auth/drive.file",
   "https://www.googleapis.com/auth/userinfo.email",
 ].join(" ");
 
