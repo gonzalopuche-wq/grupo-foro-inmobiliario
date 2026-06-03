@@ -77,6 +77,16 @@ const NAV = [
     ],
   },
   {
+    id: "portales",
+    icon: "🏡",
+    label: "Portales",
+    children: [
+      { href: "/crm/portal-inquilino",   label: "Portal Inquilino" },
+      { href: "/crm/portal-propietario", label: "Portal Propietario" },
+      { href: "/crm/portal-vendedor",    label: "Portal Vendedor" },
+    ],
+  },
+  {
     id: "actividad",
     icon: "⚡",
     label: "Actividad",
