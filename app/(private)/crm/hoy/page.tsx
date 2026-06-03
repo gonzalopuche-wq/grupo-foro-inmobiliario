@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
+import HoyIAPanel from "./HoyIAPanel";
 
 // ── tipos ─────────────────────────────────────────────────────────────────────
 interface Tarea {
@@ -299,6 +300,9 @@ export default function CrmHoyPage() {
             </button>
           </div>
         </div>
+
+        {/* ── Panel IA: 3 prioridades del día ── */}
+        <HoyIAPanel />
 
         {loading ? (
           <div style={{ textAlign: "center", color: "var(--gfi-text-muted)", padding: 48, fontFamily: "Inter,sans-serif" }}>Cargando tu agenda...</div>
