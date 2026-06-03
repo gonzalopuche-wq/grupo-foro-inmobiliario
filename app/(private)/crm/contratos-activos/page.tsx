@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../../lib/supabase";
+import GenerarContratoModal from "./GenerarContratoModal";
+import RenovarContratoModal from "./RenovarContratoModal";
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -668,7 +670,10 @@ export default function ContratosActivosPage() {
           <h1 style={s.heading}>Contratos Activos</h1>
           <p style={{ ...s.subheading, marginTop: 4 }}>Gestión de alquileres — vencimientos, ajustes y honorarios</p>
         </div>
-        <button style={s.btn} onClick={abrirNuevo}>+ Nuevo Contrato</button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <GenerarContratoModal />
+          <button style={s.btn} onClick={abrirNuevo}>+ Nuevo Contrato</button>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -820,7 +825,7 @@ export default function ContratosActivosPage() {
                         <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 2 }}>/mes</div>
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 16, marginTop: 10, flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 16, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
                       <span style={{
                         fontSize: 11,
                         color: dias < 0 ? "#b80000" : dias < 30 ? "#d4960c" : "var(--gfi-text-muted)",
@@ -837,9 +842,53 @@ export default function ContratosActivosPage() {
                           Ajuste {c.indice_ajuste} en {dAjuste} días
                         </span>
                       )}
-                      <span style={{ fontSize: 11, color: "var(--gfi-text-dim)", marginLeft: "auto" }}>
+                      <span style={{ fontSize: 11, color: "var(--gfi-text-dim)" }}>
                         Admin: ${fmt(honorariosAdmin(c))}/mes
                       </span>
+                      {/* Feature #28 + #30 — Acciones rápidas */}
+                      <div
+                        style={{ marginLeft: "auto", display: "flex", gap: 6 }}
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <GenerarContratoModal
+                          contratoInicial={{
+                            inquilino_nombre: c.inquilino_nombre,
+                            inquilino_telefono: c.inquilino_telefono,
+                            propietario_nombre: c.propietario_nombre,
+                            propietario_telefono: c.propietario_telefono,
+                            direccion: c.direccion,
+                            barrio: c.barrio,
+                            tipo_propiedad: c.tipo_propiedad,
+                            fecha_inicio: c.fecha_inicio,
+                            fecha_fin: c.fecha_fin,
+                            alquiler_inicial: c.alquiler_inicial,
+                            moneda: c.moneda,
+                            indice_ajuste: c.indice_ajuste,
+                            periodo_ajuste_meses: c.periodo_ajuste_meses,
+                            deposito_meses: c.deposito_meses,
+                          }}
+                        />
+                        {(c.estado === "vigente" || c.estado === "por_vencer" || c.estado === "vencido") && (
+                          <RenovarContratoModal
+                            contrato={c}
+                            onRenovado={() => {
+                              // Reload contracts after renewal
+                              setSelectedId(null);
+                              supabase.auth.getUser().then(({ data: { user } }) => {
+                                if (!user) return;
+                                supabase
+                                  .from("crm_contratos")
+                                  .select("*")
+                                  .eq("perfil_id", user.id)
+                                  .order("fecha_fin", { ascending: true })
+                                  .then(({ data }) => {
+                                    if (data) setContratos(data as Contrato[]);
+                                  });
+                              });
+                            }}
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -914,6 +963,45 @@ export default function ContratosActivosPage() {
                 ))}
               </div>
 
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                <GenerarContratoModal
+                  contratoInicial={{
+                    inquilino_nombre: selected.inquilino_nombre,
+                    inquilino_telefono: selected.inquilino_telefono,
+                    propietario_nombre: selected.propietario_nombre,
+                    propietario_telefono: selected.propietario_telefono,
+                    direccion: selected.direccion,
+                    barrio: selected.barrio,
+                    tipo_propiedad: selected.tipo_propiedad,
+                    fecha_inicio: selected.fecha_inicio,
+                    fecha_fin: selected.fecha_fin,
+                    alquiler_inicial: selected.alquiler_inicial,
+                    moneda: selected.moneda,
+                    indice_ajuste: selected.indice_ajuste,
+                    periodo_ajuste_meses: selected.periodo_ajuste_meses,
+                    deposito_meses: selected.deposito_meses,
+                  }}
+                />
+                {(selected.estado === "vigente" || selected.estado === "por_vencer" || selected.estado === "vencido") && (
+                  <RenovarContratoModal
+                    contrato={selected}
+                    onRenovado={() => {
+                      setSelectedId(null);
+                      supabase.auth.getUser().then(({ data: { user } }) => {
+                        if (!user) return;
+                        supabase
+                          .from("crm_contratos")
+                          .select("*")
+                          .eq("perfil_id", user.id)
+                          .order("fecha_fin", { ascending: true })
+                          .then(({ data }) => {
+                            if (data) setContratos(data as Contrato[]);
+                          });
+                      });
+                    }}
+                  />
+                )}
+              </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button style={s.btn} onClick={() => abrirEditar(selected)}>Editar</button>
                 <button style={s.btnDanger} onClick={() => { if (confirm("¿Eliminar este contrato?")) eliminar(selected.id); }}>
