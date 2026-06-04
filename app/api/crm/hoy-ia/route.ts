@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     // Propiedades recientes del corredor esta semana
     sb.from("cartera_propiedades")
-      .select("id,titulo,tipo_operacion,precio,moneda,estado,created_at")
+      .select("id,titulo,operacion,precio,moneda,estado,created_at")
       .eq("perfil_id", user.id)
       .gte("created_at", inicioSemana)
       .order("created_at", { ascending: false })
@@ -103,7 +103,7 @@ NEGOCIOS SIN ACTUALIZACIÓN EN 14+ DÍAS (${negociosRiesgo?.length ?? 0}):
 ${negociosRiesgo?.map(n => `- ID:${n.id} | "${n.titulo ?? "Sin título"}" | Etapa: ${n.etapa} | Sin actualizar hace ${Math.floor((Date.now() - new Date(n.updated_at).getTime()) / 86400000)} días`).join("\n") || "Ninguno"}
 
 PROPIEDADES NUEVAS ESTA SEMANA (${propiedadesRecientes?.length ?? 0}):
-${propiedadesRecientes?.map(p => `- ID:${p.id} | "${p.titulo ?? "Sin título"}" | ${p.tipo_operacion} | ${p.precio ? `${p.precio.toLocaleString()} ${p.moneda}` : "Sin precio"}`).join("\n") || "Ninguna"}
+${propiedadesRecientes?.map(p => `- ID:${p.id} | "${p.titulo ?? "Sin título"}" | ${p.operacion} | ${p.precio ? `${p.precio.toLocaleString()} ${p.moneda}` : "Sin precio"}`).join("\n") || "Ninguna"}
 
 Generá exactamente 3 acciones prioritarias ordenadas por urgencia. Respondé SOLO con este JSON (sin markdown, sin explicaciones):
 {
