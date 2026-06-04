@@ -27,6 +27,7 @@ interface Propiedad {
   antiguedad: number | null;
   expensas: number | null;
   descripcion: string | null;
+  fotos: string[] | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -53,7 +54,7 @@ export default function ComparadorPropiedades() {
   useEffect(() => {
     supabase
       .from("cartera_propiedades")
-      .select("id,direccion,zona,ciudad,tipo,operacion,precio,moneda,superficie_total,superficie_cubierta,ambientes,dormitorios,banos,cochera,pileta,amenities,estado,antiguedad,expensas,descripcion")
+      .select("id,direccion,zona,ciudad,tipo,operacion,precio,moneda,superficie_total,superficie_cubierta,ambientes,dormitorios,banos,cochera,pileta,amenities,estado,antiguedad,expensas,descripcion,fotos")
       .eq("estado", "activa")
       .order("precio", { ascending: false })
       .then(({ data }) => {
@@ -157,26 +158,40 @@ export default function ComparadorPropiedades() {
             ) : filtradas.map(p => {
               const sel = seleccionadas.includes(p.id);
               const lleno = seleccionadas.length >= 4 && !sel;
+              const foto = p.fotos?.[0] ?? null;
               return (
                 <div
                   key={p.id}
                   onClick={() => !lleno && toggleSeleccion(p.id)}
                   style={{
-                    padding: "12px 16px", borderBottom: "1px solid #1a1a1a",
+                    padding: "10px 16px", borderBottom: "1px solid #1a1a1a",
                     cursor: lleno ? "not-allowed" : "pointer",
                     background: sel ? "#99000015" : "transparent",
                     borderLeft: sel ? "3px solid #990000" : "3px solid transparent",
                     opacity: lleno ? 0.4 : 1,
                     transition: "background 0.15s",
+                    display: "flex", gap: 10, alignItems: "center",
                   }}
                 >
-                  <div style={{ fontSize: 13, fontWeight: 600, color: sel ? "#fff" : "#ccc" }}>{p.direccion}</div>
-                  <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
-                    {[p.tipo, p.zona, fmtMoneda(p)].filter(Boolean).join(" · ")}
+                  <div style={{
+                    width: 44, height: 44, borderRadius: 6, flexShrink: 0,
+                    background: "#1a1a1a", border: "1px solid #333", overflow: "hidden",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    {foto
+                      ? <img src={foto} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : <span style={{ fontSize: 18, opacity: 0.3 }}>🏠</span>
+                    }
                   </div>
-                  {precioM2(p) !== null && (
-                    <div style={{ fontSize: 11, color: "#666" }}>USD {precioM2(p)!.toFixed(0)}/m²</div>
-                  )}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: sel ? "#fff" : "#ccc", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.direccion}</div>
+                    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>
+                      {[p.tipo, p.zona, fmtMoneda(p)].filter(Boolean).join(" · ")}
+                    </div>
+                    {precioM2(p) !== null && (
+                      <div style={{ fontSize: 11, color: "#666" }}>USD {precioM2(p)!.toFixed(0)}/m²</div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -197,18 +212,31 @@ export default function ComparadorPropiedades() {
                   <th style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, color: "#666", fontFamily: "var(--font-display)", fontWeight: 700, width: 160, position: "sticky", left: 0, background: "var(--gfi-bg-secondary)" }}>
                     ATRIBUTO
                   </th>
-                  {comparadas.map(p => (
-                    <th key={p.id} style={{ padding: "12px 16px", textAlign: "center", minWidth: 200 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{p.direccion}</div>
-                      <div style={{ fontSize: 11, color: "#888", marginTop: 2, fontWeight: 400 }}>{[p.tipo, p.zona].filter(Boolean).join(" · ")}</div>
-                      <button
-                        onClick={() => toggleSeleccion(p.id)}
-                        style={{ marginTop: 6, background: "none", border: "1px solid #333", borderRadius: 4, color: "#888", fontSize: 11, padding: "2px 8px", cursor: "pointer" }}
-                      >
-                        Quitar
-                      </button>
-                    </th>
-                  ))}
+                  {comparadas.map(p => {
+                    const foto = p.fotos?.[0] ?? null;
+                    return (
+                      <th key={p.id} style={{ padding: "12px 16px", textAlign: "center", minWidth: 200 }}>
+                        <div style={{
+                          width: 120, height: 80, borderRadius: 8, margin: "0 auto 10px",
+                          background: "#1a1a1a", border: "1px solid #333", overflow: "hidden",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          {foto
+                            ? <img src={foto} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            : <span style={{ fontSize: 32, opacity: 0.2 }}>🏠</span>
+                          }
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{p.direccion}</div>
+                        <div style={{ fontSize: 11, color: "#888", marginTop: 2, fontWeight: 400 }}>{[p.tipo, p.zona].filter(Boolean).join(" · ")}</div>
+                        <button
+                          onClick={() => toggleSeleccion(p.id)}
+                          style={{ marginTop: 6, background: "none", border: "1px solid #333", borderRadius: 4, color: "#888", fontSize: 11, padding: "2px 8px", cursor: "pointer" }}
+                        >
+                          Quitar
+                        </button>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>

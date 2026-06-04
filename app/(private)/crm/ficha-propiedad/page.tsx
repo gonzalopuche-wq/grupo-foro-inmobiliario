@@ -14,6 +14,7 @@ interface PropiedadCartera {
   moneda: string | null;
   estado: string | null;
   perfil_id: string;
+  fotos: string[] | null;
 }
 
 interface FichaPropiedad {
@@ -37,6 +38,7 @@ interface FichaPropiedad {
   orientacion: string | null;
   antiguedad: number | null;
   amenities: string[];
+  fotos: string[];
   descripcion_larga: string;
   puntos_destacados: string[];
   nombre_corredor: string;
@@ -98,6 +100,7 @@ function fichaVacia(base?: Partial<FichaPropiedad>): FichaPropiedad {
     orientacion: null,
     antiguedad: null,
     amenities: [],
+    fotos: [],
     descripcion_larga: "",
     puntos_destacados: [],
     nombre_corredor: "",
@@ -342,6 +345,12 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
       </div>
     </div>
 
+    <!-- Fotos -->
+    ${ficha.fotos && ficha.fotos.length > 0 ? `
+    <div style="display:grid;grid-template-columns:${ficha.fotos.length === 1 ? "1fr" : ficha.fotos.length === 2 ? "1fr 1fr" : "2fr 1fr"};gap:3px;height:220px;overflow:hidden;">
+      ${ficha.fotos.slice(0, 3).map((url, i) => `<img src="${url}" alt="Foto ${i+1}" style="width:100%;height:100%;object-fit:cover;${i === 0 && ficha.fotos!.length >= 3 ? "grid-row:span 2;" : ""}" />`).join("")}
+    </div>` : ""}
+
     <!-- Título y precio -->
     <div style="padding:28px 36px 20px;border-bottom:2px solid ${ficha.color_primario}22;">
       <div style="font-family:var(--font-display);font-weight:800;font-size:22px;color:#111;line-height:1.2;margin-bottom:6px;">${ficha.titulo}</div>
@@ -417,6 +426,7 @@ export default function FichaPropiedadPage() {
     basicos: true,
     caracteristicas: false,
     amenities: false,
+    fotos: true,
     descripcion: false,
     precio: false,
     corredor: false,
@@ -461,7 +471,7 @@ export default function FichaPropiedadPage() {
     if (!auth.user) { setLoadingProps(false); return; }
     const { data } = await supabase
       .from("cartera_propiedades")
-      .select("id, descripcion, operacion, tipo, zona, precio, moneda, estado, perfil_id")
+      .select("id, descripcion, operacion, tipo, zona, precio, moneda, estado, perfil_id, fotos")
       .eq("perfil_id", auth.user.id)
       .order("id", { ascending: false });
     if (data) setPropiedades(data as PropiedadCartera[]);
@@ -479,6 +489,7 @@ export default function FichaPropiedadPage() {
       zona: prop.zona ?? "",
       precio: prop.precio ?? 0,
       moneda: prop.moneda ?? "USD",
+      fotos: prop.fotos ?? [],
     });
     setFichaActual(f);
     setMostrarSelector(false);
@@ -772,12 +783,19 @@ export default function FichaPropiedadPage() {
                     key={f.id}
                     style={{
                       ...S.card,
-                      padding: "18px 20px",
+                      overflow: "hidden",
                       display: "flex",
                       flexDirection: "column",
-                      gap: 10,
                     }}
                   >
+                    {/* Foto principal */}
+                    <div style={{ height: 120, background: "#1a1a1a", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {f.fotos?.[0]
+                        ? <img src={f.fotos[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <span style={{ fontSize: 36, opacity: 0.15 }}>🏠</span>
+                      }
+                    </div>
+                    <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
                     {/* Indicador de color */}
                     <div
                       style={{
@@ -924,6 +942,7 @@ export default function FichaPropiedadPage() {
                         ✕
                       </button>
                     </div>
+                    </div>{/* end padding div */}
                   </div>
                 ))}
               </div>
@@ -1259,7 +1278,37 @@ export default function FichaPropiedadPage() {
                   </div>
                 </Seccion>
 
-                {/* Sección 4 — Descripción */}
+                {/* Sección 4 — Fotos */}
+                <Seccion
+                  titulo="Fotos"
+                  emoji="📸"
+                  open={seccionesAbiertas.fotos}
+                  onToggle={() => toggleSeccion("fotos")}
+                >
+                  {fichaActual.fotos.length === 0 ? (
+                    <div style={{ fontSize: 13, color: "rgba(224,224,224,0.3)", padding: "8px 0" }}>
+                      Sin fotos cargadas. Las fotos se importan desde la propiedad en cartera.
+                    </div>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 8 }}>
+                      {fichaActual.fotos.map((url, i) => (
+                        <div key={i} style={{ position: "relative", aspectRatio: "4/3", borderRadius: 6, overflow: "hidden", border: "1px solid #333" }}>
+                          <img src={url} alt={`Foto ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          {i === 0 && (
+                            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,0.6)", fontSize: 9, color: "#fff", textAlign: "center", padding: "2px 0", fontFamily: "var(--font-display)", fontWeight: 700 }}>
+                              PRINCIPAL
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ fontSize: 11, color: "rgba(224,224,224,0.2)", marginTop: 10 }}>
+                    Para agregar o modificar fotos, editá la propiedad en <a href="/crm/cartera" style={{ color: "#3abab6", textDecoration: "none" }}>Cartera</a>.
+                  </div>
+                </Seccion>
+
+                {/* Sección 5 — Descripción */}
                 <Seccion
                   titulo="Descripción"
                   emoji="📝"
@@ -1725,6 +1774,19 @@ export default function FichaPropiedadPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Fotos */}
+                  {fichaActual.fotos.length > 0 && (
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: fichaActual.fotos.length === 1 ? "1fr" : fichaActual.fotos.length === 2 ? "1fr 1fr" : "2fr 1fr",
+                      gap: 3, height: 200, overflow: "hidden",
+                    }}>
+                      {fichaActual.fotos.slice(0, 3).map((url, i) => (
+                        <img key={i} src={url} alt={`Foto ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", gridRow: i === 0 && fichaActual.fotos.length >= 3 ? "span 2" : undefined }} />
+                      ))}
+                    </div>
+                  )}
 
                   {/* Título y precio */}
                   <div
@@ -2221,11 +2283,14 @@ export default function FichaPropiedadPage() {
                       background: "var(--gfi-bg-card)",
                       border: "1px solid #222",
                       borderRadius: 8,
-                      padding: "12px 16px",
+                      padding: "10px 12px",
                       cursor: "pointer",
                       textAlign: "left",
                       transition: "border-color 0.15s, background 0.15s",
                       width: "100%",
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "center",
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLButtonElement).style.borderColor =
@@ -2240,6 +2305,13 @@ export default function FichaPropiedadPage() {
                         "var(--gfi-bg-card)";
                     }}
                   >
+                    <div style={{ width: 52, height: 52, borderRadius: 6, flexShrink: 0, overflow: "hidden", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {p.fotos?.[0]
+                        ? <img src={p.fotos[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <span style={{ fontSize: 22, opacity: 0.2 }}>🏠</span>
+                      }
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
                         fontFamily: "var(--font-display)",
@@ -2324,6 +2396,7 @@ export default function FichaPropiedadPage() {
                         </span>
                       )}
                     </div>
+                    </div>{/* end flex inner */}
                   </button>
                 ))}
               </div>

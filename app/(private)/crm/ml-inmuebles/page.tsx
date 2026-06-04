@@ -15,6 +15,7 @@ interface Propiedad {
   moneda: string;
   zona: string | null;
   ciudad: string | null;
+  fotos: string[] | null;
 }
 
 interface PublicacionML {
@@ -79,7 +80,7 @@ export default function MLInmueblesPage() {
   const cargarPropiedades = async (uid: string) => {
     const { data } = await supabase
       .from("cartera_propiedades")
-      .select("id, titulo, operacion, tipo, precio, moneda, zona, ciudad")
+      .select("id, titulo, operacion, tipo, precio, moneda, zona, ciudad, fotos")
       .eq("perfil_id", uid)
       .order("created_at", { ascending: false });
     setPropiedades((data as Propiedad[]) ?? []);
@@ -339,8 +340,19 @@ export default function MLInmueblesPage() {
               const pub = publicaciones[p.id];
               const estado = pub?.ml_estado ?? "no_publicado";
               const es = ESTADO_STYLE[estado] ?? ESTADO_STYLE.no_publicado;
+              const foto = p.fotos?.[0] ?? null;
               return (
                 <div key={p.id} className="ml-prop-row">
+                  <div style={{
+                    width: 52, height: 52, borderRadius: 6, flexShrink: 0,
+                    background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)",
+                    overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    {foto
+                      ? <img src={foto} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : <span style={{ fontSize: 22, opacity: 0.25 }}>🏠</span>
+                    }
+                  </div>
                   <div className="ml-prop-info">
                     <div className="ml-prop-titulo">{p.titulo}</div>
                     <div className="ml-prop-sub">
