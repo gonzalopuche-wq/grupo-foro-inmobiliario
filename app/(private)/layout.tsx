@@ -12,50 +12,88 @@ import { WindowManagerProvider, useWindowManager } from "./components/WindowMana
 import FloatingWindow from "./components/FloatingWindow";
 import TaskBar from "./components/TaskBar";
 
-// ── Nav corredor matriculado (acceso completo) ─────────────────────────────
-const NAV_CORREDOR = [
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/actividades", label: "Actividades", icon: "⚡" },
-  { href: "/mir", label: "MIR", icon: "🔄" },
-  { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
-  { href: "/comunidad", label: "Comunidad", icon: "💬" },
-  { href: "/foro", label: "Foro", icon: "🗣️" },
-  { href: "/encuestas", label: "Encuestas", icon: "📊" },
-  { href: "/noticias", label: "Noticias", icon: "📰" },
-  { href: "/eventos", label: "Eventos", icon: "📅" },
-  { href: "/networking", label: "Networking", icon: "🤝" },
-  { href: "/canal-educativo", label: "Canal del Foro", icon: "📡" },
-  { href: "/crm", label: "CRM", icon: "👥" },
-  { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
-  { href: "/comparables", label: "Comparables", icon: "📈" },
-  { href: "/padron-gfi", label: "Padrón", icon: "📋" },
-  { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
-  { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
-  { href: "/enlaces", label: "Enlaces", icon: "🔗" },
-  { href: "/proveedores", label: "Proveedores", icon: "🏢" },
-  { href: "/beneficios", label: "Beneficios", icon: "🎁" },
-  { href: "/campanas", label: "Campañas Sponsors", icon: "📢" },
-  { href: "/perfil", label: "Mi Perfil", icon: "👤" },
-  { href: "/mi-web", label: "Mi Web", icon: "🌐" },
-  { href: "/reportes", label: "Reportes", icon: "📉" },
-  { href: "/referidos", label: "Referidos", icon: "🤝" },
-  { href: "/contratos", label: "Contratos", icon: "📄" },
-  { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
-  { href: "/soporte", label: "Soporte", icon: "🛟" },
-  { href: "/ideas", label: "Ideas", icon: "💡" },
-  { href: "/bolsa-trabajo", label: "Bolsa de Trabajo", icon: "💼" },
-  { href: "/foro/memoria", label: "Memoria Colectiva IA", icon: "🧠" },
-  { href: "/onboarding", label: "Primeros pasos", icon: "🚀" },
-  { href: "/marketplace", label: "Marketplace", icon: "🏪" },
-  { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
-  { href: "/agenda", label: "Agenda", icon: "📆" },
-  { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
-  { href: "/observatorio", label: "Observatorio", icon: "🔭" },
-  { href: "/alertas-mercado", label: "Alertas Mercado", icon: "🔔" },
-  { href: "/cursos", label: "Cursos", icon: "🎓" },
-  { href: "/credencial",    label: "Credencial Digital", icon: "🪪" },
-  { href: "/propia",        label: "Propia — Soporte",   icon: "🏢" },
+// ── Nav corredor matriculado (acceso completo) — agrupado por secciones ─────
+const NAV_GRUPOS_CORREDOR = [
+  {
+    label: "Principal",
+    items: [
+      { href: "/dashboard", label: "Dashboard", icon: "📊" },
+      { href: "/actividades", label: "Actividades", icon: "⚡" },
+      { href: "/crm", label: "CRM", icon: "👥" },
+      { href: "/mir", label: "MIR", icon: "🔄" },
+      { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
+      { href: "/agenda", label: "Agenda", icon: "📆" },
+    ],
+  },
+  {
+    label: "Herramientas",
+    items: [
+      { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
+      { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
+      { href: "/comparables", label: "Comparables", icon: "📈" },
+      { href: "/marketplace", label: "Marketplace", icon: "🏪" },
+      { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
+    ],
+  },
+  {
+    label: "Mercado",
+    items: [
+      { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
+      { href: "/observatorio", label: "Observatorio", icon: "🔭" },
+      { href: "/alertas-mercado", label: "Alertas Mercado", icon: "🔔" },
+    ],
+  },
+  {
+    label: "Comunidad",
+    items: [
+      { href: "/comunidad", label: "Comunidad", icon: "💬" },
+      { href: "/foro", label: "Foro", icon: "🗣️" },
+      { href: "/networking", label: "Networking", icon: "🤝" },
+      { href: "/eventos", label: "Eventos", icon: "📅" },
+      { href: "/noticias", label: "Noticias", icon: "📰" },
+      { href: "/encuestas", label: "Encuestas", icon: "📋" },
+      { href: "/canal-educativo", label: "Canal del Foro", icon: "📡" },
+      { href: "/foro/memoria", label: "Memoria Colectiva IA", icon: "🧠" },
+    ],
+  },
+  {
+    label: "Recursos",
+    items: [
+      { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
+      { href: "/padron-gfi", label: "Padrón", icon: "📋" },
+      { href: "/proveedores", label: "Proveedores", icon: "🏢" },
+      { href: "/enlaces", label: "Enlaces", icon: "🔗" },
+      { href: "/cursos", label: "Cursos", icon: "🎓" },
+      { href: "/bolsa-trabajo", label: "Bolsa de Trabajo", icon: "💼" },
+      { href: "/beneficios", label: "Beneficios", icon: "🎁" },
+      { href: "/campanas", label: "Campañas Sponsors", icon: "📢" },
+    ],
+  },
+  {
+    label: "Mi cuenta",
+    items: [
+      { href: "/perfil", label: "Mi Perfil", icon: "👤" },
+      { href: "/mi-web", label: "Mi Web", icon: "🌐" },
+      { href: "/credencial", label: "Credencial Digital", icon: "🪪" },
+      { href: "/reportes", label: "Reportes", icon: "📉" },
+      { href: "/referidos", label: "Referidos", icon: "🤝" },
+      { href: "/contratos", label: "Contratos", icon: "📄" },
+      { href: "/notificaciones", label: "Notificaciones", icon: "🔔" },
+    ],
+  },
+  {
+    label: "Ayuda",
+    items: [
+      { href: "/onboarding", label: "Primeros pasos", icon: "🚀" },
+      { href: "/soporte", label: "Soporte", icon: "🛟" },
+      { href: "/ideas", label: "Ideas", icon: "💡" },
+      { href: "/propia", label: "Propia — Soporte", icon: "🏢" },
+    ],
+  },
 ];
+
+// Lista plana derivada (para utilidades que necesitan todos los ítems)
+const NAV_CORREDOR = NAV_GRUPOS_CORREDOR.flatMap(g => g.items);
 
 // ── Nav colaborador (funcional a comercialización) ─────────────────────────
 const NAV_COLABORADOR = [
@@ -119,6 +157,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const [notifsNoLeidas, setNotifsNoLeidas] = useState(0);
   const [crmPendientes, setCrmPendientes] = useState(0);
   const { windows, openWindow } = useWindowManager();
+  const [navGruposAbiertos, setNavGruposAbiertos] = useState<Record<string, boolean>>({});
 
   // Tracking de visitas (fire-and-forget)
   useEffect(() => {
@@ -341,6 +380,66 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const navItems = tipoUsuario === "colaborador" ? NAV_COLABORADOR : NAV_CORREDOR;
   const isAdmin = tipoUsuario === "admin";
 
+  // Grupos del sidebar (corredor/admin usan secciones; colaborador, lista simple)
+  const navGrupos = tipoUsuario === "colaborador"
+    ? [{ label: "Plataforma", items: NAV_COLABORADOR }]
+    : NAV_GRUPOS_CORREDOR;
+  const grupoTieneActivo = (g: { items: { href: string }[] }) => g.items.some(it => isActive(it.href));
+  // "Principal" (uso diario) siempre arranca abierto; el resto, si contiene la ruta activa.
+  const grupoDefaultAbierto = (g: { label: string; items: { href: string }[] }) =>
+    g.label === "Principal" || grupoTieneActivo(g);
+  const grupoAbierto = (g: { label: string; items: { href: string }[] }) =>
+    navGruposAbiertos[g.label] ?? grupoDefaultAbierto(g);
+  const toggleGrupo = (label: string, g: { label: string; items: { href: string }[] }) =>
+    setNavGruposAbiertos(prev => ({ ...prev, [label]: !(prev[label] ?? grupoDefaultAbierto(g)) }));
+
+  // Renderiza un ítem de nav (con badges + botón ventana flotante)
+  const renderNavItem = (item: { href: string; label: string; icon: string }) => (
+    <div key={item.href} className="nav-item-row" style={{ position: "relative", display: "flex", alignItems: "center" }}>
+      <Link
+        href={item.href}
+        className={`nav-item${isActive(item.href) ? " active" : ""}`}
+        onClick={() => setMenuAbierto(false)}
+        style={{ flex: 1 }}
+      >
+        <span className="nav-item-icon">{item.icon}</span>
+        <span className="nav-item-text">{item.label}</span>
+        {item.href === "/mi-web" && leadsNoLeidos > 0 && (
+          <span className="nav-badge nav-badge--red">
+            {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
+          </span>
+        )}
+        {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
+          <span className="nav-badge nav-badge--red">
+            {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
+          </span>
+        )}
+        {item.href === "/crm" && crmPendientes > 0 && (
+          <span className="nav-badge nav-badge--orange">
+            {crmPendientes > 99 ? "99+" : crmPendientes}
+          </span>
+        )}
+      </Link>
+      <button
+        className="nav-open-win"
+        onClick={() => openWindow(item.label, item.icon, item.href)}
+        title={`Abrir ${item.label} en ventana flotante`}
+        style={{
+          position: "absolute", right: 6,
+          width: 20, height: 20, borderRadius: 4,
+          background: "var(--gfi-border-subtle)",
+          border: "1px solid #252a35",
+          color: "#8892a4", cursor: "pointer",
+          fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center",
+          transition: "opacity 0.15s",
+          flexShrink: 0,
+        }}
+      >
+        ⊞
+      </button>
+    </div>
+  );
+
   // Modo iframe interno: layout mínimo sin chrome
   if (isVentana) {
     if (loading) return (
@@ -523,6 +622,22 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           text-transform: uppercase; color: #4a5568;
           font-family: var(--font-display);
         }
+
+        /* Grupos colapsables del nav */
+        .nav-group { margin-bottom: 2px; }
+        .nav-group-toggle {
+          width: 100%; display: flex; align-items: center; justify-content: space-between;
+          background: none; border: none; cursor: pointer; text-align: left;
+          margin: 0; -webkit-tap-highlight-color: transparent;
+          transition: color 0.15s;
+        }
+        .nav-group-toggle:hover { color: #8892a4; }
+        .nav-group-toggle.has-active { color: #990000; }
+        .nav-group-chevron {
+          font-size: 9px; transition: transform 0.18s ease; opacity: 0.6;
+          transform: rotate(0deg);
+        }
+        .nav-group-chevron.open { transform: rotate(90deg); }
 
         /* Nav item */
         .nav-item {
@@ -748,52 +863,24 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             {tipoUsuario === "colaborador" && (
               <div className="sidebar-rol-badge">Colaborador</div>
             )}
-            <div className="sidebar-section-label">Plataforma</div>
-            {[...navItems].sort((a,b) => a.label.localeCompare(b.label, "es")).map(item => (
-              <div key={item.href} className="nav-item-row" style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                <Link
-                  href={item.href}
-                  className={`nav-item${isActive(item.href) ? " active" : ""}`}
-                  onClick={() => setMenuAbierto(false)}
-                  style={{ flex: 1 }}
-                >
-                  <span className="nav-item-icon">{item.icon}</span>
-                  <span className="nav-item-text">{item.label}</span>
-                  {item.href === "/mi-web" && leadsNoLeidos > 0 && (
-                    <span className="nav-badge nav-badge--red">
-                      {leadsNoLeidos > 99 ? "99+" : leadsNoLeidos}
-                    </span>
-                  )}
-                  {item.href === "/notificaciones" && notifsNoLeidas > 0 && (
-                    <span className="nav-badge nav-badge--red">
-                      {notifsNoLeidas > 99 ? "99+" : notifsNoLeidas}
-                    </span>
-                  )}
-                  {item.href === "/crm" && crmPendientes > 0 && (
-                    <span className="nav-badge nav-badge--orange">
-                      {crmPendientes > 99 ? "99+" : crmPendientes}
-                    </span>
-                  )}
-                </Link>
-                <button
-                  className="nav-open-win"
-                  onClick={() => openWindow(item.label, item.icon, item.href)}
-                  title={`Abrir ${item.label} en ventana flotante`}
-                  style={{
-                    position: "absolute", right: 6,
-                    width: 20, height: 20, borderRadius: 4,
-                    background: "var(--gfi-border-subtle)",
-                    border: "1px solid #252a35",
-                    color: "#8892a4", cursor: "pointer",
-                    fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "opacity 0.15s",
-                    flexShrink: 0,
-                  }}
-                >
-                  ⊞
-                </button>
-              </div>
-            ))}
+            {navGrupos.map(grupo => {
+              const abierto = navGrupos.length === 1 ? true : grupoAbierto(grupo);
+              const tieneActivo = grupoTieneActivo(grupo);
+              return (
+                <div key={grupo.label} className="nav-group">
+                  <button
+                    type="button"
+                    className={`sidebar-section-label nav-group-toggle${tieneActivo ? " has-active" : ""}`}
+                    onClick={() => toggleGrupo(grupo.label, grupo)}
+                    aria-expanded={abierto}
+                  >
+                    <span>{grupo.label}</span>
+                    <span className={`nav-group-chevron${abierto ? " open" : ""}`}>▸</span>
+                  </button>
+                  {abierto && grupo.items.map(item => renderNavItem(item))}
+                </div>
+              );
+            })}
 
             {isAdmin && (
               <>

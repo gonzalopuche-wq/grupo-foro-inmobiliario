@@ -6,6 +6,7 @@ import { PropiaPublicarButton } from "./PropiaPublicarButton";
 import { QRLinkButton } from "./QRLinkButton";
 import { CalculadoraRentabilidad } from "./CalculadoraRentabilidad";
 import { AnalizarPrecioButton } from "./AnalizarPrecioButton";
+import { HomeStagingIA } from "./HomeStagingIA";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -704,6 +705,11 @@ export default async function FichaPage({ params }: Props) {
           <hr className="ficha-divider" />
           <div className="ficha-section-title">Análisis de precio vs mercado</div>
           <AnalizarPrecioButton propiedadId={prop.id} moneda={prop.moneda ?? "USD"} />
+
+          {/* Home staging con IA */}
+          <hr className="ficha-divider" />
+          <div className="ficha-section-title">Home staging con IA</div>
+          <HomeStagingIA propiedadId={prop.id} fotos={fotos} />
 
           {/* Calculadora de rentabilidad */}
           <hr className="ficha-divider" />
