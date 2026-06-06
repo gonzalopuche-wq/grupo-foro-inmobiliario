@@ -46,7 +46,9 @@ export async function POST(req: NextRequest) {
   if (!propiedadId || !imagenUrl) {
     return NextResponse.json({ error: "Faltan parámetros (propiedadId, imagenUrl)" }, { status: 400 });
   }
-  if (!origenPermitido(imagenUrl)) {
+  const esDataUrl = imagenUrl.startsWith("data:image/");
+  // Se acepta un data URL (imagen generada en memoria) o una URL https de origen confiable.
+  if (!esDataUrl && !origenPermitido(imagenUrl)) {
     return NextResponse.json({ error: "URL de imagen no permitida" }, { status: 400 });
   }
 
@@ -59,21 +61,31 @@ export async function POST(req: NextRequest) {
   if (propErr || !prop) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
   if (prop.perfil_id !== user.id) return NextResponse.json({ error: "No tenés permiso sobre esta propiedad" }, { status: 403 });
 
-  // Descargar la imagen generada
-  let buffer: ArrayBuffer;
-  try {
-    const imgRes = await fetch(imagenUrl);
-    if (!imgRes.ok) return NextResponse.json({ error: "No se pudo descargar la imagen generada" }, { status: 502 });
-    buffer = await imgRes.arrayBuffer();
-  } catch {
-    return NextResponse.json({ error: "Error al descargar la imagen generada" }, { status: 502 });
+  // Obtener los bytes de la imagen — desde un data URL (en memoria) o descargando la URL
+  let buffer: Buffer | ArrayBuffer;
+  let contentType = "image/png";
+  if (esDataUrl) {
+    const m = imagenUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+    if (!m) return NextResponse.json({ error: "Data URL inválido" }, { status: 400 });
+    contentType = m[1];
+    buffer = Buffer.from(m[2], "base64");
+  } else {
+    try {
+      const imgRes = await fetch(imagenUrl);
+      if (!imgRes.ok) return NextResponse.json({ error: "No se pudo descargar la imagen generada" }, { status: 502 });
+      contentType = imgRes.headers.get("content-type")?.split(";")[0] || "image/png";
+      buffer = await imgRes.arrayBuffer();
+    } catch {
+      return NextResponse.json({ error: "Error al descargar la imagen generada" }, { status: 502 });
+    }
   }
 
   // Subir al bucket
-  const path = `${user.id}/staging-${propiedadId}-${Date.now()}.png`;
+  const ext = contentType.includes("jpeg") || contentType.includes("jpg") ? "jpg" : contentType.includes("webp") ? "webp" : "png";
+  const path = `${user.id}/staging-${propiedadId}-${Date.now()}.${ext}`;
   const { error: upErr } = await sb.storage
     .from("fotos_cartera")
-    .upload(path, buffer, { cacheControl: "3600", upsert: false, contentType: "image/png" });
+    .upload(path, buffer, { cacheControl: "3600", upsert: false, contentType });
   if (upErr) {
     return NextResponse.json({ error: `No se pudo guardar la imagen: ${upErr.message}` }, { status: 500 });
   }

@@ -180,7 +180,7 @@ export function HomeStagingIA({ propiedadId, fotos }: Props) {
                   {error}
                   {pendiente && (
                     <div style={{ marginTop: 6, fontSize: 12, opacity: 0.85 }}>
-                      El administrador debe agregar <code>REPLICATE_API_TOKEN</code> en las variables de entorno para habilitar la decoración con IA.
+                      El administrador debe agregar <code>GEMINI_API_KEY</code> en las variables de entorno para habilitar el home staging con IA.
                     </div>
                   )}
                 </div>
