@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await sb.auth.getUser(authToken);
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  let body: any;
+  let body: { propiedadId?: string; imagenUrl?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Body inválido" }, { status: 400 }); }
 
   const { propiedadId, imagenUrl } = body ?? {};

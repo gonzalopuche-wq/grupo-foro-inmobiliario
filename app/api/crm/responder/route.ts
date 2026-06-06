@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await sb.auth.getUser(authToken);
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  let body: any;
+  let body: {
+    tipo?: string; to?: string; cuerpo?: string; contacto_id?: string | null; asunto?: string;
+  };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Body inválido" }, { status: 400 }); }
 
   const { tipo, to, cuerpo, contacto_id, asunto } = body ?? {};
