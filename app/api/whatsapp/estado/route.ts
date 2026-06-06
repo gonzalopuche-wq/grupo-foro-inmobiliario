@@ -14,8 +14,9 @@ const sb = createClient(
 export async function GET(req: NextRequest) {
   const authToken = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!authToken) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  const { data: { user } } = await sb.auth.getUser(authToken);
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data, error: authErr } = await sb.auth.getUser(authToken);
+  if (authErr || !data?.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const user = data.user;
 
   const { data: perfil } = await sb.from("perfiles").select("tipo").eq("id", user.id).single();
   if (perfil?.tipo !== "admin" && perfil?.tipo !== "master") {

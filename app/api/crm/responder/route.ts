@@ -23,8 +23,9 @@ function escapeHtml(s: string) {
 export async function POST(req: NextRequest) {
   const authToken = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!authToken) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  const { data: { user } } = await sb.auth.getUser(authToken);
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data: authData, error: authErr } = await sb.auth.getUser(authToken);
+  if (authErr || !authData?.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const user = authData.user;
 
   let body: {
     tipo?: string; to?: string; cuerpo?: string; contacto_id?: string | null; asunto?: string;
@@ -87,7 +88,17 @@ export async function POST(req: NextRequest) {
     updated_at: ahora,
   });
   if (insErr) {
-    return NextResponse.json({ error: "Se intentó enviar, pero falló el registro: " + insErr.message }, { status: 500 });
+    // Si el mensaje YA se despachó por el canal, no devolvemos 500: hacerlo
+    // provocaría que el usuario reintente y se dupliquen los envíos. Reportamos
+    // ok con un aviso de que falló sólo el registro en el historial.
+    if (enviado) {
+      return NextResponse.json({
+        ok: true,
+        enviado: true,
+        aviso: "El mensaje se envió, pero no se pudo registrar en el historial.",
+      });
+    }
+    return NextResponse.json({ error: "No se pudo registrar la respuesta: " + insErr.message }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, enviado, aviso: canalAviso });

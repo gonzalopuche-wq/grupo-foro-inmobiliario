@@ -632,7 +632,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           transition: color 0.15s;
         }
         .nav-group-toggle:hover { color: #8892a4; }
-        .nav-group-toggle.has-active { color: #990000; }
+        .nav-group-toggle.has-active { color: #ef4444; }
         .nav-group-chevron {
           font-size: 9px; transition: transform 0.18s ease; opacity: 0.6;
           transform: rotate(0deg);

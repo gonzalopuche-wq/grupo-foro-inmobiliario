@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     // Sinergia Web→CRM: crear contacto + registrar consulta en el inbox unificado
     try {
-      const origenNota = `Lead automático desde la web GFI® (${new Date().toLocaleDateString("es-AR")}). Mensaje: ${mensaje || "Sin mensaje"}`;
+      const origenNota = `Lead automático desde la web GFI® (${new Date().toLocaleDateString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" })}). Mensaje: ${mensaje || "Sin mensaje"}`;
       let contactoId: string | null = null;
       const { data: contactoExistente } = await supabase
         .from("crm_contactos")

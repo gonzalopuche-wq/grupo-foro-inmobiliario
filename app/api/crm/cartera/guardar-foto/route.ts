@@ -12,11 +12,32 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Solo se permite descargar imágenes de orígenes de confianza (anti-SSRF):
+// las salidas de Replicate y el storage del propio Supabase.
+function origenPermitido(rawUrl: string): boolean {
+  let u: URL;
+  try { u = new URL(rawUrl); } catch { return false; }
+  if (u.protocol !== "https:") return false;
+  const host = u.hostname.toLowerCase();
+  const supabaseHost = (() => {
+    try { return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname.toLowerCase(); }
+    catch { return ""; }
+  })();
+  const permitidos = [
+    "replicate.delivery",
+    "replicate.com",
+  ];
+  const okReplicate = permitidos.some(d => host === d || host.endsWith("." + d));
+  const okSupabase = !!supabaseHost && (host === supabaseHost || host.endsWith(".supabase.co"));
+  return okReplicate || okSupabase;
+}
+
 export async function POST(req: NextRequest) {
   const authToken = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!authToken) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  const { data: { user } } = await sb.auth.getUser(authToken);
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data, error: authErr } = await sb.auth.getUser(authToken);
+  if (authErr || !data?.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const user = data.user;
 
   let body: { propiedadId?: string; imagenUrl?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Body inválido" }, { status: 400 }); }
@@ -24,6 +45,9 @@ export async function POST(req: NextRequest) {
   const { propiedadId, imagenUrl } = body ?? {};
   if (!propiedadId || !imagenUrl) {
     return NextResponse.json({ error: "Faltan parámetros (propiedadId, imagenUrl)" }, { status: 400 });
+  }
+  if (!origenPermitido(imagenUrl)) {
+    return NextResponse.json({ error: "URL de imagen no permitida" }, { status: 400 });
   }
 
   // Verificar propiedad y ownership
