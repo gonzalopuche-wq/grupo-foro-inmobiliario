@@ -13,31 +13,33 @@ import FloatingWindow from "./components/FloatingWindow";
 import TaskBar from "./components/TaskBar";
 
 // ── Nav corredor matriculado (acceso completo) — agrupado por secciones ─────
+// El primer grupo (fijo) son los accesos directos significativos: siempre
+// visibles, sin desplegable. El resto se consolida en grupos colapsables.
 const NAV_GRUPOS_CORREDOR = [
   {
-    label: "Principal",
+    label: "Directo",
+    fijo: true,
     items: [
       { href: "/dashboard", label: "Dashboard", icon: "📊" },
-      { href: "/actividades", label: "Actividades", icon: "⚡" },
       { href: "/crm", label: "CRM", icon: "👥" },
       { href: "/mir", label: "MIR", icon: "🔄" },
       { href: "/red-gfi", label: "Red GFI", icon: "🌐" },
+      { href: "/comunidad", label: "Comunidad", icon: "💬" },
+      { href: "/foro", label: "Foro", icon: "🗣️" },
+      { href: "/eventos", label: "Eventos", icon: "📅" },
+      { href: "/noticias", label: "Noticias", icon: "📰" },
       { href: "/agenda", label: "Agenda", icon: "📆" },
     ],
   },
   {
     label: "Herramientas",
     items: [
+      { href: "/actividades", label: "Actividades", icon: "⚡" },
       { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
       { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
       { href: "/comparables", label: "Comparables", icon: "📈" },
       { href: "/marketplace", label: "Marketplace", icon: "🏪" },
       { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
-    ],
-  },
-  {
-    label: "Mercado",
-    items: [
       { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
       { href: "/observatorio", label: "Observatorio", icon: "🔭" },
       { href: "/alertas-mercado", label: "Alertas Mercado", icon: "🔔" },
@@ -46,11 +48,7 @@ const NAV_GRUPOS_CORREDOR = [
   {
     label: "Comunidad",
     items: [
-      { href: "/comunidad", label: "Comunidad", icon: "💬" },
-      { href: "/foro", label: "Foro", icon: "🗣️" },
       { href: "/networking", label: "Networking", icon: "🤝" },
-      { href: "/eventos", label: "Eventos", icon: "📅" },
-      { href: "/noticias", label: "Noticias", icon: "📰" },
       { href: "/encuestas", label: "Encuestas", icon: "📋" },
       { href: "/canal-educativo", label: "Canal del Foro", icon: "📡" },
       { href: "/foro/memoria", label: "Memoria Colectiva IA", icon: "🧠" },
@@ -625,6 +623,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
         /* Grupos colapsables del nav */
         .nav-group { margin-bottom: 2px; }
+        .nav-group--fijo {
+          padding-bottom: 8px; margin-bottom: 6px;
+          border-bottom: 1px solid #1c2030;
+        }
         .nav-group-toggle {
           width: 100%; display: flex; align-items: center; justify-content: space-between;
           background: none; border: none; cursor: pointer; text-align: left;
@@ -864,6 +866,15 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               <div className="sidebar-rol-badge">Colaborador</div>
             )}
             {navGrupos.map(grupo => {
+              const esFijo = "fijo" in grupo && (grupo as { fijo?: boolean }).fijo === true;
+              // Los accesos directos (grupo fijo) van siempre visibles, sin desplegable.
+              if (esFijo) {
+                return (
+                  <div key={grupo.label} className="nav-group nav-group--fijo">
+                    {grupo.items.map(item => renderNavItem(item))}
+                  </div>
+                );
+              }
               const abierto = navGrupos.length === 1 ? true : grupoAbierto(grupo);
               const tieneActivo = grupoTieneActivo(grupo);
               return (
