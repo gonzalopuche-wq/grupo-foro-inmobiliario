@@ -113,7 +113,7 @@ async function processMessages(payload: any) {
             from,
             "Hola! Tu número no está vinculado a ninguna cuenta en GFI®.\n\n" +
             "Para cargar propiedades automáticamente, ingresá a tu perfil en GFI® y agregá este número en el campo «WhatsApp Negocio».\n\n" +
-            "🌐 gfi.com.ar"
+            "🌐 foroinmobiliario.com.ar"
           );
           continue;
         }
@@ -160,7 +160,7 @@ async function processMessages(payload: any) {
             const tipo = result.tipo === "ofrecido" ? "propiedad" : "búsqueda";
             await sendWhatsAppMessage(
               from,
-              `✅ Tu ${tipo} fue cargada al MIR de GFI® automáticamente.\n\nPodés verla en gfi.com.ar/mir`
+              `✅ Tu ${tipo} fue cargada al MIR de GFI® automáticamente.\n\nPodés verla en foroinmobiliario.com.ar/mir`
             );
 
             // Smart Prospecting: si es ofrecido, notificar corredores con búsquedas compatibles
@@ -310,7 +310,7 @@ Si NO es búsqueda: {"es_operacion":false}`;
 async function handleSolicitudProveedor(from: string, texto: string, sb: any) {
   const rubro = detectarRubroProveedor(texto);
   if (!rubro) {
-    await sendWhatsAppMessage(from, "🔍 No identifiqué el tipo de proveedor. Visitá gfi.com.ar/proveedores para ver todos.");
+    await sendWhatsAppMessage(from, "🔍 No identifiqué el tipo de proveedor. Visitá foroinmobiliario.com.ar/proveedores para ver todos.");
     return;
   }
 
@@ -324,7 +324,7 @@ async function handleSolicitudProveedor(from: string, texto: string, sb: any) {
   if (!proveedores || proveedores.length === 0) {
     await sendWhatsAppMessage(
       from,
-      `🔍 No encontré ${rubro.toLowerCase()}s en la Red GFI todavía.\n\n¿Conocés uno? Podés cargarlo en gfi.com.ar/proveedores y ayudar a toda la comunidad.`
+      `🔍 No encontré ${rubro.toLowerCase()}s en la Red GFI todavía.\n\n¿Conocés uno? Podés cargarlo en foroinmobiliario.com.ar/proveedores y ayudar a toda la comunidad.`
     );
     return;
   }
@@ -335,7 +335,7 @@ async function handleSolicitudProveedor(from: string, texto: string, sb: any) {
 
   await sendWhatsAppMessage(
     from,
-    `📋 Encontré ${proveedores.length} ${rubro.toLowerCase()}${proveedores.length > 1 ? "s" : ""} en la Red GFI®:\n\n${lista}\n\n_Ver todos: gfi.com.ar/proveedores_`
+    `📋 Encontré ${proveedores.length} ${rubro.toLowerCase()}${proveedores.length > 1 ? "s" : ""} en la Red GFI®:\n\n${lista}\n\n_Ver todos: foroinmobiliario.com.ar/proveedores_`
   );
 }
 
