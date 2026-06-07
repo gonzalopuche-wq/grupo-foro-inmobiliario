@@ -25,6 +25,7 @@ async function getRedesConfig(): Promise<Record<string, string>> {
     .from("perfiles")
     .select("configuracion")
     .in("tipo", ["admin", "master"])
+    .order("created_at", { ascending: true })
     .limit(1)
     .single();
   return data?.configuracion?.redes_sociales ?? {};
