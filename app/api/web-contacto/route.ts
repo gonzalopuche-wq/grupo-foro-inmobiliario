@@ -98,9 +98,10 @@ export async function POST(req: NextRequest) {
       });
     } catch { /* silenciar si la tabla no existe todavía */ }
 
-    // Sinergia Web→CRM: crear contacto en CRM automáticamente
+    // Sinergia Web→CRM: crear contacto + registrar consulta en el inbox unificado
     try {
-      const origenNota = `Lead automático desde la web GFI® (${new Date().toLocaleDateString("es-AR")}). Mensaje: ${mensaje || "Sin mensaje"}`;
+      const origenNota = `Lead automático desde la web GFI® (${new Date().toLocaleDateString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" })}). Mensaje: ${mensaje || "Sin mensaje"}`;
+      let contactoId: string | null = null;
       const { data: contactoExistente } = await supabase
         .from("crm_contactos")
         .select("id")
@@ -108,9 +109,11 @@ export async function POST(req: NextRequest) {
         .eq("email", email || "")
         .maybeSingle();
 
-      if (!contactoExistente && (email || telefono)) {
+      if (contactoExistente) {
+        contactoId = contactoExistente.id;
+      } else if (email || telefono) {
         const [primerNombre, ...resto] = nombre.trim().split(" ");
-        await supabase.from("crm_contactos").insert({
+        const { data: nuevoContacto } = await supabase.from("crm_contactos").insert({
           perfil_id: cfg.perfil_id,
           nombre: primerNombre,
           apellido: resto.join(" ") || null,
@@ -120,8 +123,24 @@ export async function POST(req: NextRequest) {
           interes: tipo === "tasacion" ? "Tasación" : "Consulta general",
           notas: origenNota,
           origen: "web_propia",
-        });
+        }).select("id").maybeSingle();
+        contactoId = nuevoContacto?.id ?? null;
       }
+
+      // Registrar la consulta entrante en el inbox unificado (crm_interacciones)
+      const cuerpoConsulta = mensaje?.trim()
+        || (tipo === "tasacion" ? `Solicitud de tasación${direccion ? ` — ${direccion}` : ""}` : "Consulta desde la web");
+      const ahora = new Date().toISOString();
+      await supabase.from("crm_interacciones").insert({
+        perfil_id: cfg.perfil_id,
+        contacto_id: contactoId,
+        tipo: "portal_lead",
+        direccion: "entrante",
+        cuerpo: cuerpoConsulta,
+        leido: false,
+        created_at: ahora,
+        updated_at: ahora,
+      });
     } catch { /* no bloquear */ }
 
     // Sinergia Web→CRM: enviar push notification al corredor

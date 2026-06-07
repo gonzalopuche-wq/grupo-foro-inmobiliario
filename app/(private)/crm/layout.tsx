@@ -15,6 +15,12 @@ const NAV = [
     exact: true,
   },
   {
+    id: "inbox",
+    icon: "📨",
+    label: "Bandeja de entrada",
+    href: "/crm/inbox",
+  },
+  {
     id: "propiedades",
     icon: "🏠",
     label: "Propiedades",
@@ -95,6 +101,12 @@ const NAV = [
     icon: "🔗",
     label: "Google Workspace",
     href: "/crm/google",
+  },
+  {
+    id: "whatsapp",
+    icon: "💬",
+    label: "WhatsApp",
+    href: "/crm/whatsapp",
   },
   {
     id: "config",

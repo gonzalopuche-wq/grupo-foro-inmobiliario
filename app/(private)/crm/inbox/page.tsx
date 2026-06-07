@@ -141,6 +141,7 @@ export default function InboxPage() {
   const [respuesta, setRespuesta] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [mensajesExtra, setMensajesExtra] = useState<MensajeChat[]>([]);
+  const [avisoEnvio, setAvisoEnvio] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // ── Leads clásicos ─────────────────────────────────────────────────────────
@@ -194,31 +195,58 @@ export default function InboxPage() {
   const enviarRespuesta = async () => {
     if (!respuesta.trim() || !seleccionado || !userId) return;
     setEnviando(true);
+    setAvisoEnvio(null);
+    const texto = respuesta.trim();
     const nuevo: MensajeChat = {
       id: Date.now().toString(),
       de: "saliente",
-      texto: respuesta.trim(),
+      texto,
       fecha: new Date().toISOString(),
     };
-    setMensajesExtra(prev => [...prev, nuevo]);
-    await supabase.from("crm_interacciones").insert({
-      perfil_id: userId,
-      contacto_id: seleccionado.contacto_id,
-      tipo: seleccionado.tipo,
-      direccion: "saliente",
-      cuerpo: respuesta.trim(),
-      leido: true,
-      created_at: nuevo.fecha,
-      updated_at: nuevo.fecha,
-    });
-    setRespuesta("");
-    setEnviando(false);
+    const destino = seleccionado.tipo === "email"
+      ? seleccionado.contacto?.email
+      : seleccionado.contacto?.telefono;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/crm/responder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token ?? ""}`,
+        },
+        body: JSON.stringify({
+          tipo: seleccionado.tipo,
+          to: destino,
+          cuerpo: texto,
+          contacto_id: seleccionado.contacto_id,
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAvisoEnvio(json.error ?? "No se pudo procesar la respuesta.");
+        setEnviando(false);
+        return;
+      }
+      // Mostrar el mensaje en el hilo
+      setMensajesExtra(prev => [...prev, nuevo]);
+      setRespuesta("");
+      // Aviso si el canal no pudo despachar (pero quedó registrado)
+      if (json.aviso) setAvisoEnvio(json.aviso);
+      else if (json.enviado === false && (seleccionado.tipo === "whatsapp" || seleccionado.tipo === "email")) {
+        setAvisoEnvio("Mensaje registrado, pero no se pudo despachar por el canal.");
+      }
+    } catch {
+      setAvisoEnvio("Error de red al enviar la respuesta.");
+    } finally {
+      setEnviando(false);
+    }
   };
 
   const abrirHilo = (ix: Interaccion) => {
     setSeleccionado(ix);
     setMensajesExtra([]);
     setRespuesta("");
+    setAvisoEnvio(null);
     if (!ix.leido) marcarLeido(ix.id);
   };
 
@@ -525,7 +553,7 @@ export default function InboxPage() {
               ) : filtradosInbox.length === 0 ? (
                 <div className="ib-empty">
                   {interacciones.length === 0
-                    ? "No hay mensajes aún.\nLas consultas de WhatsApp, email y portales aparecerán aquí cuando estén integradas."
+                    ? "No hay mensajes aún.\nLas consultas que lleguen desde tu web y portales aparecerán acá. Respondé por WhatsApp o email sin salir de esta bandeja."
                     : "No hay resultados con esos filtros."}
                 </div>
               ) : filtradosInbox.map(ix => {
@@ -615,6 +643,12 @@ export default function InboxPage() {
                     </button>
                   ))}
                 </div>
+
+                {avisoEnvio && (
+                  <div style={{ margin: "0 20px", padding: "8px 12px", background: "rgba(196,74,0,0.10)", border: "1px solid rgba(196,74,0,0.28)", borderRadius: 8, color: "#d4960c", fontSize: 12, lineHeight: 1.4 }}>
+                    {avisoEnvio}
+                  </div>
+                )}
 
                 <div className="ib-reply">
                   <textarea
