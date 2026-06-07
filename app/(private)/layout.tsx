@@ -383,9 +383,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     ? [{ label: "Plataforma", items: NAV_COLABORADOR }]
     : NAV_GRUPOS_CORREDOR;
   const grupoTieneActivo = (g: { items: { href: string }[] }) => g.items.some(it => isActive(it.href));
-  // "Principal" (uso diario) siempre arranca abierto; el resto, si contiene la ruta activa.
+  // Un grupo arranca abierto si contiene la ruta activa (el grupo "Directo" es fijo y se maneja aparte).
   const grupoDefaultAbierto = (g: { label: string; items: { href: string }[] }) =>
-    g.label === "Principal" || grupoTieneActivo(g);
+    grupoTieneActivo(g);
   const grupoAbierto = (g: { label: string; items: { href: string }[] }) =>
     navGruposAbiertos[g.label] ?? grupoDefaultAbierto(g);
   const toggleGrupo = (label: string, g: { label: string; items: { href: string }[] }) =>

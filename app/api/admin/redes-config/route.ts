@@ -11,8 +11,8 @@ const sb = createClient(
 async function esAdmin(req: NextRequest): Promise<boolean> {
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!token) return false;
-  const { data } = await sb.auth.getUser(token);
-  if (!data.user) return false;
+  const { data, error } = await sb.auth.getUser(token);
+  if (error || !data?.user) return false;
   const { data: p } = await sb.from("perfiles").select("tipo").eq("id", data.user.id).single();
   return ["admin", "master"].includes(p?.tipo ?? "");
 }
@@ -44,7 +44,13 @@ export async function POST(req: NextRequest) {
   if (!(await esAdmin(req))) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const { redes_sociales } = (await req.json()) as { redes_sociales?: Record<string, string> };
+  let body: { redes_sociales?: Record<string, string> };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Payload inválido o vacío" }, { status: 400 });
+  }
+  const { redes_sociales } = body;
   if (!redes_sociales || typeof redes_sociales !== "object" || Array.isArray(redes_sociales)) {
     return NextResponse.json({ error: "Payload inválido" }, { status: 400 });
   }
