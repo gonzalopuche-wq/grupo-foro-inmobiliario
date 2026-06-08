@@ -1,12 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-// Fuentes auto-hosteadas (sin requests a Google en runtime). Son variables, así
-// que incluyen todo el rango de pesos sin tener que enumerarlos.
-const montserrat = Montserrat({ subsets: ["latin"], display: "swap", variable: "--font-display" });
-const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-body" });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], display: "swap", variable: "--font-mono" });
 import PWAInstallBanner from "./components/PWAInstallBanner";
 import PWAUpdateToast from "./components/PWAUpdateToast";
 
@@ -43,7 +36,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${montserrat.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="es">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="mobile-web-app-capable" content="yes" />
