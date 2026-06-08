@@ -251,7 +251,10 @@ function generarPDF(propuesta: Propuesta): void {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${titulo} — ${propietario.apellido}, ${propietario.nombre}</title>
 <style>
-  
+  /* Fuentes self-hosteadas: este HTML es un documento independiente (se abre en
+     una ventana nueva y se imprime), no hereda los estilos de globals.css. */
+  @font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 300 900; font-display: swap; src: url('/fonts/montserrat.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('/fonts/inter.woff2') format('woff2'); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Inter', Arial, sans-serif;
