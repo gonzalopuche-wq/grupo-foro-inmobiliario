@@ -46,6 +46,19 @@ const securityHeaders = [
   },
 ];
 
+// Endurecimiento extra para el panel de administración: contenido sensible que
+// no debe indexarse, cachearse ni archivarse en ningún lado. La protección real
+// de los datos la dan Supabase RLS (devuelve 403 a quien no es admin) y el
+// chequeo de sesión; estos headers cierran las vías de fuga del lado servidor.
+const adminHardeningHeaders = [
+  // Ningún buscador/crawler indexa, archiva ni muestra snippets del panel.
+  { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+  // Nada de caché en navegador, proxies ni CDN para datos sensibles.
+  { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+  { key: "Pragma", value: "no-cache" },
+  { key: "Expires", value: "0" },
+];
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
@@ -53,6 +66,11 @@ const nextConfig: NextConfig = {
         // Aplicar a todas las rutas
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        // Panel admin: sin indexación ni caché (incluye /admin y subrutas)
+        source: "/admin/:path*",
+        headers: adminHardeningHeaders,
       },
     ];
   },

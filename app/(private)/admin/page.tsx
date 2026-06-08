@@ -350,8 +350,11 @@ export default function AdminPage() {
       cargarBroadcasts(); cargarFreeUntil(); cargarMirGratuito(); cargarConfiguracion(); cargarFinanzas(); cargarSocios(); cargarSoporte(); cargarRedProveedores(); cargarWa(); cargarRankingPago(); cargarLogsActividad(); cargarStatsEstrategicas(); cargarReferidos();
       const { data: den } = await supabase.from("denuncias").select("id,tipo_contenido,contenido_id,motivo,descripcion,estado,created_at").eq("estado","pendiente").order("created_at", { ascending: false }).limit(20);
       setDenuncias((den ?? []) as typeof denuncias);
-      const { data: adminSocial } = await supabase.from("perfiles").select("configuracion").in("tipo", ["admin","master"]).limit(1).single();
-      setRedesConfig(adminSocial?.configuracion?.redes_sociales ?? {});
+      const { data: { session: sess } } = await supabase.auth.getSession();
+      if (sess) {
+        const rc = await fetch("/api/admin/redes-config", { headers: { Authorization: `Bearer ${sess.access_token}` } });
+        if (rc.ok) { const j = await rc.json(); setRedesConfig(j.redes_sociales ?? {}); }
+      }
     };
     verificar();
   }, []);
@@ -598,11 +601,16 @@ export default function AdminPage() {
 
   const guardarRedes = async () => {
     setGuardandoRedes(true);
-    const { data: adminProf, error: profErr } = await supabase.from("perfiles").select("configuracion, id").in("tipo", ["admin","master"]).limit(1).single();
-    if (profErr || !adminProf) { setGuardandoRedes(false); mostrarToast("Error: no se encontró el perfil admin", "err"); return; }
-    const { error: updErr } = await supabase.from("perfiles").update({ configuracion: { ...(adminProf.configuracion ?? {}), redes_sociales: redesConfig } }).eq("id", adminProf.id);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setGuardandoRedes(false); mostrarToast("Sesión expirada, volvé a iniciar sesión", "err"); return; }
+    const res = await fetch("/api/admin/redes-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ redes_sociales: redesConfig }),
+    });
+    const json = await res.json().catch(() => ({}));
     setGuardandoRedes(false);
-    if (updErr) mostrarToast(`Error al guardar: ${updErr.message}`, "err");
+    if (!res.ok) mostrarToast(`Error al guardar: ${json.error ?? res.status}`, "err");
     else mostrarToast("Configuración de redes guardada ✓");
   };
 
