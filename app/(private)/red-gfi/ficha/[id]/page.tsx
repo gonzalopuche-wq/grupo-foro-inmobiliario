@@ -72,7 +72,7 @@ export default function FichaPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; font-family: var(--font-body); }
         .ficha-page { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }

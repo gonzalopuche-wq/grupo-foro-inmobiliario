@@ -181,7 +181,7 @@ export default function LanzamientoPage() {
   return (
     <div style={{ background: '#0a0a0a', color: '#fff', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
+        
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         .lanz-btn-primary { display:inline-block; background:#990000; color:#fff; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:14px 32px; border-radius:8px; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }

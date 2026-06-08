@@ -56,7 +56,7 @@ export default async function BlogPublicoPage({ params }: { params: Promise<{ sl
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: ${t.bg}; color: ${t.text}; font-family: 'Inter',sans-serif; }
         a { text-decoration: none; color: inherit; }

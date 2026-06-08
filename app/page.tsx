@@ -160,7 +160,7 @@ export default function LandingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Syne+Mono&family=DM+Sans:wght@300;400;500&display=swap');
+        
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         :root{
           --red:#990000;--red2:#990000;--red3:#ff3333;

@@ -170,7 +170,7 @@ export default function EstadisticasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; font-family: Inter,sans-serif; }
         .est-wrap { min-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; }

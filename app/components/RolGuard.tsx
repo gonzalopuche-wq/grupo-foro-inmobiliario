@@ -70,7 +70,7 @@ export default function RolGuard({
     return (
       <>
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400&display=swap');
+          
           .rol-guard-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 12px; }
           .rol-guard-icono { font-size: 40px; }
           .rol-guard-titulo { font-family: 'Montserrat',sans-serif; font-size: 18px; font-weight: 800; color: #fff; }

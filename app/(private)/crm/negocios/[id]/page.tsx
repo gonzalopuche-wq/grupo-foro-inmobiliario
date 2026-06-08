@@ -232,7 +232,7 @@ export default function NegocioDetallePage({ params }: { params: Promise<{ id: s
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .nd-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:18px; }
         .nd-btn { padding:7px 14px; border:none; border-radius:5px; font-family:var(--font-display); font-size:10px; font-weight:700; letter-spacing:0.08em; cursor:pointer; transition:opacity 0.15s; }
         .nd-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gfi-text-muted); font-family:var(--font-display); margin-bottom:4px; display:block; }

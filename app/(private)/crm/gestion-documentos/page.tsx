@@ -833,7 +833,7 @@ export default function GestionDocumentosPage() {
 
   return (
     <div style={{ background: "#0a0a0a", minHeight: "100vh", color: "#e0e0e0", fontFamily: "Inter, sans-serif" }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');`}</style>
+      <style>{``}</style>
 
       {/* Header */}
       <div

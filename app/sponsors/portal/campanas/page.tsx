@@ -97,7 +97,7 @@ export default function SponsorCampanasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
+        
         .sc-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
         .sc-title { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; color:#fff; }
         .btn-new { padding:10px 20px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }

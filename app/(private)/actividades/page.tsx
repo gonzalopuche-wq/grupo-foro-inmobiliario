@@ -150,7 +150,7 @@ export default function ActividadesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; }
         .act-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: var(--font-body); }
         .act-header { margin-bottom: 28px; }

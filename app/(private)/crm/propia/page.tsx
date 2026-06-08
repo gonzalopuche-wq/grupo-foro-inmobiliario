@@ -245,7 +245,7 @@ export default function PropiaPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .propia-title { font-family:var(--font-display); font-size:20px; font-weight:800; color:#fff; margin-bottom:3px; }
         .propia-sub   { font-size:12px; color:var(--gfi-text-muted); font-family:var(--font-body); margin-bottom:20px; }
         .propia-tabs { display:flex; gap:2px; margin-bottom:16px; background:var(--gfi-border-subtle); border-radius:8px; padding:3px; width:fit-content; flex-wrap:wrap; }

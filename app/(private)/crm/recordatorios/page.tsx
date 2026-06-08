@@ -635,7 +635,7 @@ export default function RecordatoriosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .rec-input:focus { border-color: rgba(153,0,0,0.5) !important; }
         .rec-card:hover { border-color: rgba(255,255,255,0.14) !important; }
         @media (max-width: 600px) {

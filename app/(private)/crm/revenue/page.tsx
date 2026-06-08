@@ -243,7 +243,7 @@ export default function RevenuePage() {
   return (
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 0 80px", fontFamily: "Inter, sans-serif", color: "#fff" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+        
         .rev-input { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 7px; color: #fff; padding: 8px 12px; font-size: 13px; font-family: Inter,sans-serif; outline: none; }
         .rev-input:focus { border-color: rgba(153,0,0,0.45); }
         .rev-select { background: #111; border: 1px solid var(--gfi-border); border-radius: 7px; color: #fff; padding: 8px 12px; font-size: 13px; font-family: Inter,sans-serif; outline: none; cursor: pointer; }

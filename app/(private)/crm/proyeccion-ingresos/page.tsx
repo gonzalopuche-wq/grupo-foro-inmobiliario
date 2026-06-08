@@ -195,7 +195,7 @@ export default function ProyeccionIngresosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .pi-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:18px; }
         .pi-input { width:100%; padding:8px 10px; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:4px; color:#fff; font-size:13px; font-family:var(--font-body); outline:none; box-sizing:border-box; }
         .pi-input:focus { border-color:rgba(153,0,0,0.5); }

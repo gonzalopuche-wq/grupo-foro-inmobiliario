@@ -251,7 +251,7 @@ function generarPDF(propuesta: Propuesta): void {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${titulo} — ${propietario.apellido}, ${propietario.nombre}</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+  
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Inter', Arial, sans-serif;

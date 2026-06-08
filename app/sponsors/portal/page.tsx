@@ -79,7 +79,7 @@ export default function SponsorPortalDashboard() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        
         .sp-hdr { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; color:#fff; margin-bottom:20px; }
         .sp-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:28px; }
         .sp-stat { background:rgba(14,14,14,.95); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:18px 20px; }

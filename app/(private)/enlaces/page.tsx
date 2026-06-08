@@ -83,7 +83,7 @@ export default function EnlacesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .enl-layout { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start; }
         .enl-side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 80px; }
         .enl-side-box { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; overflow: hidden; }

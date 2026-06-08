@@ -96,7 +96,7 @@ export default function BarriosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .bar-wrap { display: flex; flex-direction: column; gap: 20px; }
         .bar-header { }
         .bar-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }

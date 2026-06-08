@@ -492,7 +492,7 @@ export default function ReporteMensualPage() {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+        
         .rm-input { background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; }
         .rm-input:focus { border-color:rgba(153,0,0,0.45); }
         .rm-select { background:var(--gfi-bg-secondary); border:1px solid var(--gfi-border); border-radius:7px; color:#fff; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; cursor:pointer; }

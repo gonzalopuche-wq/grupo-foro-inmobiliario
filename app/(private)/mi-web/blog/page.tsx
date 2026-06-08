@@ -174,7 +174,7 @@ export default function BlogPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .blog-wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
         .blog-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
         .blog-titulos {}

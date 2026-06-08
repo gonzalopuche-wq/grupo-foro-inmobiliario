@@ -107,7 +107,7 @@ export default function TasadorIAPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
 
         .tasador-wrap { display: flex; gap: 28px; align-items: flex-start; }
         .tasador-form { flex: 0 0 440px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 24px; }

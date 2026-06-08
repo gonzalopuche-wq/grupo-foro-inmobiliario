@@ -178,7 +178,7 @@ export default function LlavesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .lv-root { display: flex; flex-direction: column; gap: 0; }
         .lv-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 14px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; gap: 10px; }
         .lv-titulo { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: #fff; }

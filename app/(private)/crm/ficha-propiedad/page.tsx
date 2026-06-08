@@ -324,7 +324,7 @@ function generarHtmlFicha(ficha: FichaPropiedad): string {
   <meta charset="UTF-8" />
   <title>${ficha.titulo} - ${ficha.logo_agencia}</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
+    
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-body); background: #fff; color: #222; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .page { max-width: 794px; margin: 0 auto; padding: 0; }
@@ -610,7 +610,7 @@ export default function FichaPropiedadPage() {
   return (
     <div style={S.page}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         * { box-sizing: border-box; }
         input, textarea, select { transition: border-color 0.15s; }
         input:focus, textarea:focus, select:focus { border-color: rgba(153,0,0,0.5) !important; outline: none; }

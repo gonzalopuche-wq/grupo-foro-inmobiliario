@@ -133,7 +133,7 @@ function LoginInner() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { min-height: 100%; background: #0a0a0a; }
         .login-root { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0a0a0a; position: relative; overflow: hidden; font-family: 'Inter', sans-serif; padding: 24px; }
