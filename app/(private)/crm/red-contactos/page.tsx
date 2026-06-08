@@ -1131,7 +1131,7 @@ export default function RedContactosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+        
         @keyframes shimmer {
           0%   { background-position: 200% 0; }
           100% { background-position: -200% 0; }

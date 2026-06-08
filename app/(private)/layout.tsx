@@ -478,7 +478,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     );
     return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 16px", fontFamily: "var(--font-body)" }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');`}</style>
+        <style>{``}</style>
         <div style={{ width: "100%", maxWidth: 480 }}>
           {/* Logo */}
           <div style={{ textAlign: "center", marginBottom: 28 }}>
@@ -577,7 +577,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        
         * { box-sizing: border-box; }
         body { margin: 0; background: #080a0c; }
 

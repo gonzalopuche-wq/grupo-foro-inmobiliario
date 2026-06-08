@@ -214,7 +214,7 @@ export default function ProduccionPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
 
         .prod-wrap { max-width: 960px; display: flex; flex-direction: column; gap: 24px; }
 

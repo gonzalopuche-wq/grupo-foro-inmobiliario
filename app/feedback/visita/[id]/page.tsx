@@ -32,7 +32,7 @@ export default async function FeedbackVisitaPage({ params }: Props) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background: #0a0a0a; color: #fff; font-family: Inter,sans-serif; min-height: 100vh; }
         .wrap { max-width: 480px; margin: 0 auto; padding: 40px 20px 60px; }

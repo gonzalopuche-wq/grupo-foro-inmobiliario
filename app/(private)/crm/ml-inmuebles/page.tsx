@@ -177,7 +177,7 @@ export default function MLInmueblesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .ml-wrap { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: Inter,sans-serif; }
         .ml-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--gfi-border-subtle); }

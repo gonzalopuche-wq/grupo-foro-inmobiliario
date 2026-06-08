@@ -265,7 +265,7 @@ export default function CrmHoyPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .hoy-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:16px; }
         .hoy-btn { padding:5px 10px; border:none; border-radius:4px; font-family:var(--font-display); font-size:10px; font-weight:700; letter-spacing:0.07em; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; }
         .hoy-section { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--gfi-text-muted); font-family:var(--font-display); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }

@@ -160,7 +160,7 @@ export default function MapaZonasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .mz-wrap { max-width: 1000px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
         .mz-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .mz-titulo span { color: #990000; }

@@ -230,7 +230,7 @@ export default function ObservatorioPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
       `}</style>
 
       <div style={{ fontFamily: "Inter,sans-serif", color: "#fff", maxWidth: 1100, margin: "0 auto" }}>

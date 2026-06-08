@@ -174,7 +174,7 @@ export default function PortalVendedorPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .pv-card { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 12px; transition: border-color 0.15s; }
         .pv-card:hover { border-color: var(--gfi-border); }
         .pv-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: Montserrat,sans-serif; border: none; transition: opacity 0.15s; }

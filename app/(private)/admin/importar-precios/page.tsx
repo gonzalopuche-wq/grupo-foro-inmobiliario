@@ -140,7 +140,7 @@ export default function ImportarPreciosPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", padding: "40px 24px", fontFamily: "Inter, sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+        
         .ip-btn { padding: 10px 22px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
         .ip-btn:hover { background: #e60000; }
         .ip-btn:disabled { opacity: 0.4; cursor: not-allowed; }

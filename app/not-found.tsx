@@ -6,7 +6,7 @@ export default function NotFound() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
+        
       `}</style>
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", textAlign: "center", padding: "0 24px" }}>
         <div style={{ fontSize: 80, fontFamily: "Montserrat,sans-serif", fontWeight: 800, color: "#990000", lineHeight: 1, marginBottom: 16 }}>404</div>

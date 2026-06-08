@@ -1254,7 +1254,7 @@ export default function CarteraPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        
 
         /* ── Base ── */
         .cart-root { display: flex; flex-direction: column; background: #080a0c; min-height: calc(100vh - 70px); }

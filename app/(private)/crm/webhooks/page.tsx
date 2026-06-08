@@ -138,7 +138,7 @@ export default function WebhooksPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .wh-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 20px; }
         .wh-input { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 7px; color: #fff; padding: 9px 12px; font-family: var(--font-body); font-size: 13px; width: 100%; outline: none; }
         .wh-input:focus { border-color: rgba(153,0,0,0.5); }

@@ -130,7 +130,7 @@ export default function AlertasMercadoPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0a0a0a; color: #fff; font-family: Inter,sans-serif; }
         .am-root { min-height: 100vh; background: #0a0a0a; padding: 0 0 60px; }

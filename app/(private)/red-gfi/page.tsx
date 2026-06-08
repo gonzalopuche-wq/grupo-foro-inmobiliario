@@ -136,7 +136,7 @@ export default function RedGFIPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .rgfi-wrap { max-width: 1400px; }
         .rgfi-header { margin-bottom: 24px; }
         .rgfi-title { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; }

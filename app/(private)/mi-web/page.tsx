@@ -261,7 +261,7 @@ export default function MiWebPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .mw-wrap { display: flex; gap: 0; min-height: calc(100vh - 70px); }
         .mw-sidebar { width: 280px; flex-shrink: 0; background: rgba(8,8,8,0.95); border-right: 1px solid var(--gfi-border-subtle); padding: 24px 0; display: flex; flex-direction: column; }
         .mw-sidebar-titulo { padding: 0 22px 20px; font-family: var(--font-display); font-size: 14px; font-weight: 800; color: #fff; border-bottom: 1px solid var(--gfi-border-subtle); margin-bottom: 8px; }

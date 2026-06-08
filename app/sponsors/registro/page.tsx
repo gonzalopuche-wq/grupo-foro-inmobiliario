@@ -24,7 +24,7 @@ export default function SponsorRegistroPage() {
   return (
     <div style={{ minHeight:"100vh", background:"#0a0a0a", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"Inter, Arial, sans-serif" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500&display=swap');
+        
         .sr-wrap{width:100%;max-width:540px}
         .sr-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
         .sr-logo img{width:40px;height:40px;border-radius:10px}

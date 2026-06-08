@@ -248,7 +248,7 @@ ${comisiones.length > 0 ? `<div class="section">
 
   return (
     <div style={{maxWidth:900,margin:'0 auto',padding:'24px 0 64px',fontFamily:'Inter,sans-serif',color:'#fff'}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');`}</style>
+      <style>{``}</style>
 
       {/* Header */}
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:28,flexWrap:'wrap',gap:12}}>

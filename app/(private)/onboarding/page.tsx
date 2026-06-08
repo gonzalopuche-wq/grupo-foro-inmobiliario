@@ -163,7 +163,7 @@ export default function OnboardingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .ob-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px; transition: border-color 0.15s; }
         .ob-card:hover { border-color: var(--gfi-border); }
         .ob-card.done { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }

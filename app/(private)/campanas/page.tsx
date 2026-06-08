@@ -137,7 +137,7 @@ export default function CampanasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        
         .camp-hdr { font-family:var(--font-display); font-size:22px; font-weight:800; color:#fff; margin-bottom:6px; }
         .camp-sub { font-size:13px; color:var(--gfi-text-muted); margin-bottom:24px; }
         .camp-sec { font-family:var(--font-display); font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--gfi-text-dim); margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.06); }

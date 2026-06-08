@@ -120,7 +120,7 @@ function DifusionInner() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .dif-wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
         .dif-header { margin-bottom: 28px; }
         .dif-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #990000; font-family: var(--font-display); margin-bottom: 6px; }

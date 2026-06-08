@@ -495,7 +495,7 @@ export default function ReportesPropietariosPage() {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+        
         .rp-input { background:var(--gfi-border-subtle); border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:8px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; width:100%; box-sizing:border-box; }
         .rp-input:focus { border-color:rgba(153,0,0,0.45); }
         .rp-textarea { background:var(--gfi-border-subtle); border:1px solid #222222; border-radius:7px; color:#e0e0e0; padding:10px 12px; font-size:13px; font-family:Inter,sans-serif; outline:none; width:100%; resize:vertical; min-height:90px; box-sizing:border-box; }

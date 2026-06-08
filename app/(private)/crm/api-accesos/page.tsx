@@ -99,7 +99,7 @@ export default function ApiAccesosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .ak-wrap { display: flex; flex-direction: column; gap: 24px; max-width: 820px; }
         .ak-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .ak-titulo span { color: #990000; }
