@@ -61,6 +61,22 @@ export async function POST(req: NextRequest) {
   if (propErr || !prop) return NextResponse.json({ error: "Propiedad no encontrada" }, { status: 404 });
   if (prop.perfil_id !== user.id) return NextResponse.json({ error: "No tenés permiso sobre esta propiedad" }, { status: 403 });
 
+  // Fast-path: si la imagen ya está en nuestro bucket bajo la carpeta del propio
+  // usuario (p.ej. un staging IA recién generado), la asociamos directo sin
+  // re-descargar ni duplicar el archivo.
+  const yaEnBucket = imagenUrl.includes(`/storage/v1/object/public/fotos_cartera/${user.id}/`);
+  if (yaEnBucket) {
+    const fotosActuales: string[] = Array.isArray(prop.fotos) ? prop.fotos : [];
+    if (!fotosActuales.includes(imagenUrl)) {
+      const { error: updErr } = await sb
+        .from("cartera_propiedades")
+        .update({ fotos: [...fotosActuales, imagenUrl], usa_home_staging: true })
+        .eq("id", propiedadId);
+      if (updErr) return NextResponse.json({ error: `No se pudo asociar la imagen: ${updErr.message}` }, { status: 500 });
+    }
+    return NextResponse.json({ ok: true, url: imagenUrl });
+  }
+
   // Obtener los bytes de la imagen — desde un data URL (en memoria) o descargando la URL
   let buffer: Buffer | ArrayBuffer;
   let contentType = "image/png";

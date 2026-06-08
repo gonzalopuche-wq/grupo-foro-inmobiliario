@@ -108,8 +108,20 @@ export async function POST(req: NextRequest) {
     }
 
     const outMime = imgPart.inlineData.mimeType || "image/png";
-    const dataUrl = `data:${outMime};base64,${imgPart.inlineData.data}`;
-    return NextResponse.json({ ok: true, url: dataUrl, estilo });
+    // Subimos la imagen generada al bucket y devolvemos su URL pública en lugar de
+    // un data URL base64: así no hay que reenviar varios MB al guardar (límite de
+    // 4.5 MB del body en Vercel) y baja el consumo de ancho de banda en el cliente.
+    const outBuffer = Buffer.from(imgPart.inlineData.data, "base64");
+    const ext = outMime.includes("jpeg") || outMime.includes("jpg") ? "jpg" : outMime.includes("webp") ? "webp" : "png";
+    const path = `${authData.user.id}/staging-ia-${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage
+      .from("fotos_cartera")
+      .upload(path, outBuffer, { cacheControl: "3600", upsert: false, contentType: outMime });
+    if (upErr) {
+      return NextResponse.json({ error: `No se pudo guardar la imagen generada: ${upErr.message}` }, { status: 500 });
+    }
+    const { data: urlData } = sb.storage.from("fotos_cartera").getPublicUrl(path);
+    return NextResponse.json({ ok: true, url: urlData.publicUrl, estilo });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Error interno";
     return NextResponse.json({ error: msg }, { status: 500 });
