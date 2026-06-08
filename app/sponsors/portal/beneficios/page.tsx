@@ -86,7 +86,7 @@ export default function SponsorBeneficiosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
+        
         .sb-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
         .sb-title { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; color:#fff; }
         .sb-sub { font-size:12px; color:rgba(255,255,255,.35); margin-bottom:20px; }

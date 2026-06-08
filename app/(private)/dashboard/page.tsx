@@ -435,7 +435,7 @@ export default function DashboardPage() {
     return (
       <>
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+          
           .colab-header { margin-bottom: 24px; }
           .colab-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 3px; }
           .colab-titulo span { color: #990000; }
@@ -491,7 +491,7 @@ export default function DashboardPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        
 
         /* ── Design Tokens ── */
         :root {

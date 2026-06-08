@@ -219,7 +219,7 @@ export default function EmprendimientosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         .emp-root { min-height: 100vh; background: #0a0a0a; color: #fff; font-family: var(--font-body); }
         .emp-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 56px; background: var(--gfi-bg-card); border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; z-index: 100; }

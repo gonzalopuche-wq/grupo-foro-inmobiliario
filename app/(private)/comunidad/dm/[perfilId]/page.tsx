@@ -307,7 +307,7 @@ export default function DMPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+        
         .dc{display:flex;flex-direction:column;height:calc(100vh - 110px);background:#0a0a0a;border-radius:10px;overflow:hidden;border:1px solid var(--gfi-border-subtle);}
         .dc-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--gfi-border-subtle);background:#0f0f0f;flex-shrink:0;}
         .dc-back{background:none;border:none;color:var(--gfi-text-muted);font-size:18px;cursor:pointer;padding:4px 8px;}

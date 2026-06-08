@@ -152,7 +152,7 @@ export default function ImportarPropiedadesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .imp-wrap { max-width: 900px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
         .imp-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .imp-titulo span { color: #990000; }

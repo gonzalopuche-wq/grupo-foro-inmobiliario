@@ -39,7 +39,7 @@ export default function SponsorSaldoPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500&display=swap');
+        
         .sl-hdr { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:800; color:#fff; margin-bottom:20px; }
         .sl-card { background:rgba(14,14,14,.95); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:28px 32px; display:inline-flex; flex-direction:column; gap:4px; margin-bottom:28px; }
         .sl-val { font-family:'Montserrat',sans-serif; font-size:42px; font-weight:800; }

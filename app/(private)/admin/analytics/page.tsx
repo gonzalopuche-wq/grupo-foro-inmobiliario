@@ -323,7 +323,7 @@ export default function AnalyticsPage() {
   return (
     <div style={{ fontFamily: "Inter,sans-serif", color: "#fff" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .an-section { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 20px 22px; margin-bottom: 18px; }
         .an-title { font-family: Montserrat,sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .an-title span { color: #990000; }

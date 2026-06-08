@@ -210,7 +210,7 @@ export default function ConversionPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "Inter,sans-serif", paddingBottom: 60 }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+        
         .per-btn { background: none; border: 1px solid var(--gfi-border); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); transition: all 0.15s; }
         .per-btn.on { background: rgba(153,0,0,0.15); border-color: rgba(153,0,0,0.4); color: #990000; }
         .per-btn:hover:not(.on) { color: var(--gfi-text-secondary); border-color: var(--gfi-text-dim); }

@@ -727,7 +727,7 @@ export default function AgendaVisitasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500&display=swap');
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }

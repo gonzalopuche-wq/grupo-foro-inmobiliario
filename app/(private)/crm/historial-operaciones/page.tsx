@@ -989,7 +989,7 @@ export default function HistorialOperacionesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+        
         *, *::before, *::after { box-sizing: border-box; }
         .ho-tab-btn { background: none; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
         .ho-tab-btn:hover { color: #fff !important; }

@@ -237,7 +237,7 @@ export default function CotizacionesPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .cot-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
         .cot-tab { padding: 9px 22px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; transition: all 0.2s; }
         .cot-tab:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }

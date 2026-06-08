@@ -172,7 +172,7 @@ export default function InstagramPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .ig-wrap { display: flex; flex-direction: column; gap: 20px; }
         .ig-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .ig-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }

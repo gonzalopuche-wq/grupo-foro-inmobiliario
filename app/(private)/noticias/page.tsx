@@ -302,7 +302,7 @@ export default function NoticiasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
 
         .not-container { display: flex; gap: 20px; height: calc(100vh - 120px); min-height: 500px; }
         .not-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow: hidden; }

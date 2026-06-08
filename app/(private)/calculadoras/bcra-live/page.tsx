@@ -195,7 +195,7 @@ export default function BCRALivePage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .bl-wrap { max-width: 960px; display: flex; flex-direction: column; gap: 20px; font-family: var(--font-body); }
         .bl-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; }
         .bl-titulo span { color: #990000; }

@@ -272,7 +272,7 @@ export default function SeguimientoPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .seg-card { background:var(--gfi-bg-card); border:1px solid var(--gfi-border-subtle); border-radius:8px; padding:16px; transition:border-color 0.15s; }
         .seg-card:hover { border-color:rgba(255,255,255,0.13); }
         .seg-input { width:100%; padding:9px 12px; background:var(--gfi-border-subtle); border:1px solid var(--gfi-border); border-radius:5px; color:#fff; font-size:13px; font-family:var(--font-body); outline:none; box-sizing:border-box; }

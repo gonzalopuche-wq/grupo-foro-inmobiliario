@@ -427,7 +427,7 @@ export default function EventosPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .ev-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: flex-start; }
         .ev-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px; }
         .ev-cal { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px; }

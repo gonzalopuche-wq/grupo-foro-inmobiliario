@@ -154,7 +154,7 @@ export default function CrmNotasPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
         .nt-wrap { max-width: 860px; display: flex; flex-direction: column; gap: 16px; }
         .nt-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px; transition: border-color 0.15s; cursor: pointer; }
         .nt-card:hover { border-color: rgba(255,255,255,0.14); }

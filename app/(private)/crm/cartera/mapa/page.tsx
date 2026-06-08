@@ -178,7 +178,7 @@ export default function MapaCarteraPage() {
   return (
     <div style={{ fontFamily: "Inter,sans-serif", color: "#fff", height: "calc(100vh - 80px)", display: "flex", flexDirection: "column" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap');
+        
         .mc-filtro-btn { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-secondary); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-family: Montserrat,sans-serif; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
         .mc-filtro-btn:hover { border-color: var(--gfi-text-dim); color: rgba(255,255,255,0.8); }
         .mc-filtro-btn.active { background: rgba(153,0,0,0.12); border-color: rgba(153,0,0,0.3); color: #990000; }

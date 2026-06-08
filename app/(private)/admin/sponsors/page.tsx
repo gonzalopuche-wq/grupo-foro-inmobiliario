@@ -193,7 +193,7 @@ export default function AdminSponsorsPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        
         .sp-wrap{display:flex;flex-direction:column;gap:20px}
         .sp-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
         .sp-titulo{font-family:var(--font-display);font-size:20px;font-weight:800;color:#fff}
