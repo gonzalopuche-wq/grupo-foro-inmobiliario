@@ -4,7 +4,14 @@
    Palette: Colores Diosas — teal · coral · gold · mauve · ocean · navy
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+/* ── Fonts ────────────────────────────────────────────────────────────────────
+   Las variables --font-display / --font-body / --font-mono las define
+   next/font/google en <html> (ver app/layout.tsx): auto-hosteadas, sin requests
+   externos en runtime. Por eso el texto que usa var(--font-*) ya no depende del
+   CDN de Google (era la causa del garble en /admin cuando el @import fallaba).
+   El @import de abajo se mantiene como fallback para las páginas que todavía
+   referencian las fuentes por su nombre literal ('Montserrat'/'Inter'); migrarlas
+   a las variables es una limpieza aparte (pendiente). */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
@@ -91,10 +98,8 @@
   --gfi-text-muted:     #445060;
   --gfi-text-dim:       #2a3040;
 
-  /* Fonts */
-  --font-display:       'Montserrat', sans-serif;
-  --font-body:          'Inter', sans-serif;
-  --font-mono:          'JetBrains Mono', 'Courier New', monospace;
+  /* Fonts — los valores de --font-display / --font-body / --font-mono los define
+     next/font/google en <html> (ver app/layout.tsx). */
 
   /* Shadows */
   --gfi-shadow-sm:      0 2px 8px rgba(0, 0, 0, 0.45);
