@@ -151,8 +151,9 @@ INSERT INTO indicadores (clave, valor, descripcion) VALUES
   ('afip_punto_venta',  1, 'Punto de venta habilitado en AFIP para WSFE.')
 ON CONFLICT (clave) DO NOTHING;
 
-INSERT INTO indicadores (clave, valor_texto, descripcion) VALUES
-  ('afip_ambiente', 'homologacion', 'Ambiente AFIP: homologacion | produccion. Arranca en homologacion.')
+-- valor=0 es solo relleno (la columna es NOT NULL); el ambiente se lee de valor_texto.
+INSERT INTO indicadores (clave, valor, valor_texto, descripcion) VALUES
+  ('afip_ambiente', 0, 'homologacion', 'Ambiente AFIP: homologacion | produccion. Arranca en homologacion.')
 ON CONFLICT (clave) DO NOTHING;
 
 -- ── RLS: solo admin/master ───────────────────────────────────────────────────
