@@ -40,9 +40,21 @@ CREATE TABLE IF NOT EXISTS facturacion_emisores (
   es_principal            boolean DEFAULT false,          -- emisor por defecto
   activo                  boolean DEFAULT true,
   cert_env                text,                           -- sufijo de AFIP_CERT_/AFIP_KEY_ (null = base AFIP_CERT/AFIP_KEY)
-  socio_id                uuid REFERENCES admin_socios(id) ON DELETE SET NULL, -- vínculo opcional con el socio
+  socio_id                uuid,                           -- vínculo opcional con el socio (FK condicional más abajo)
   created_at              timestamptz NOT NULL DEFAULT now()
 );
+
+-- FK al socio solo si existe la tabla admin_socios (migración 057). Evita romper
+-- la migración en bases donde 057 todavía no se aplicó.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'admin_socios')
+     AND NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'facturacion_emisores_socio_fk') THEN
+    ALTER TABLE facturacion_emisores
+      ADD CONSTRAINT facturacion_emisores_socio_fk
+      FOREIGN KEY (socio_id) REFERENCES admin_socios(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 COMMENT ON COLUMN facturacion_emisores.porcentaje_facturacion IS
   'Porcentaje del total a facturar por este emisor. La suma de los emisores activos debería dar 100.';
