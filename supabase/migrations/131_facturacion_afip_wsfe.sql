@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS facturacion_emisores (
                            CHECK (porcentaje_facturacion > 0 AND porcentaje_facturacion <= 100),
   es_principal            boolean DEFAULT false,          -- emisor por defecto
   activo                  boolean DEFAULT true,
+  cert_env                text,                           -- sufijo de AFIP_CERT_/AFIP_KEY_ (null = base AFIP_CERT/AFIP_KEY)
   socio_id                uuid REFERENCES admin_socios(id) ON DELETE SET NULL, -- vínculo opcional con el socio
   created_at              timestamptz NOT NULL DEFAULT now()
 );
@@ -154,3 +155,21 @@ BEGIN
       USING (perfil_id = auth.uid());
   END IF;
 END $$;
+
+-- ── Cache de tokens WSAA (válidos ~12h) ──────────────────────────────────────
+-- El backend (service role) cachea acá el token/sign de WSAA para no re-autenticar
+-- en cada emisión (AFIP rechaza pedir un token nuevo mientras el anterior siga vigente).
+CREATE TABLE IF NOT EXISTS afip_tokens (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  ambiente    text NOT NULL,                 -- 'homologacion' | 'produccion'
+  servicio    text NOT NULL DEFAULT 'wsfe',
+  cuit        text NOT NULL,
+  token       text NOT NULL,
+  sign        text NOT NULL,
+  generado_at timestamptz NOT NULL DEFAULT now(),
+  expira_at   timestamptz NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_afip_tokens_lookup ON afip_tokens(ambiente, servicio, cuit, expira_at);
+
+ALTER TABLE afip_tokens ENABLE ROW LEVEL SECURITY;
+-- Sin policies a propósito: solo el backend (service role, que ignora RLS) accede.

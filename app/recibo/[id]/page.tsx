@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import QRCode from "qrcode";
 import { supabase } from "../../lib/supabase";
+
+interface FacturaFiscal {
+  id: string; tipo_cbte: number; punto_venta: number; cbte_nro: number | null;
+  cae: string | null; cae_vto: string | null; importe_total: number;
+  emisor_razon_social: string | null; emisor_cuit: string | null; qr_payload: string | null;
+}
+const TIPO_CBTE_LABEL: Record<number, string> = { 1: "Factura A", 6: "Factura B", 11: "Factura C", 13: "Factura C" };
 
 interface DatosRecibo {
   // Suscripción
@@ -41,6 +49,8 @@ export default function ReciboPage() {
   const params = useParams();
   const id = params?.id as string;
   const [datos, setDatos] = useState<DatosRecibo | null>(null);
+  const [facturas, setFacturas] = useState<FacturaFiscal[]>([]);
+  const [qrs, setQrs] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -59,6 +69,13 @@ export default function ReciboPage() {
       ]);
 
       if (errSub || !sub) { setError("Comprobante no encontrado."); setLoading(false); return; }
+
+      // Factura(s) fiscal(es) AFIP emitida(s) para esta suscripción (si las hay)
+      const { data: fac } = await supabase
+        .from("facturas_afip")
+        .select("id, tipo_cbte, punto_venta, cbte_nro, cae, cae_vto, importe_total, emisor_razon_social, emisor_cuit, qr_payload")
+        .eq("suscripcion_id", id).eq("estado", "emitida");
+      setFacturas((fac as FacturaFiscal[]) ?? []);
 
       // Solo el dueño o admin puede ver
       const { data: perfAdmin } = await supabase.from("perfiles").select("tipo").eq("id", session.user.id).single();
@@ -90,6 +107,18 @@ export default function ReciboPage() {
     };
     cargar();
   }, [id]);
+
+  // Generar los QR de AFIP (uno por factura) a partir de su payload
+  useEffect(() => {
+    facturas.forEach(f => {
+      if (f.qr_payload && !qrs[f.id]) {
+        QRCode.toDataURL(f.qr_payload, { width: 200, margin: 1 })
+          .then(url => setQrs(prev => ({ ...prev, [f.id]: url })))
+          .catch(() => {});
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [facturas]);
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "var(--gfi-bg-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-body)", fontSize: 14, color: "var(--gfi-text-muted)" }}>
@@ -524,6 +553,26 @@ export default function ReciboPage() {
                 ✓ Pago confirmado
               </span>
             </div>
+
+            {/* Factura fiscal AFIP (si fue emitida) */}
+            {facturas.length > 0 && (
+              <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid #eee" }}>
+                <div className="recibo-concepto-titulo" style={{ marginBottom: 12 }}>Factura electrónica AFIP</div>
+                {facturas.map(f => (
+                  <div key={f.id} style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 14, flexWrap: "wrap" }}>
+                    {qrs[f.id] && <img src={qrs[f.id]} alt="QR AFIP" style={{ width: 92, height: 92 }} />}
+                    <div style={{ fontSize: 12, color: "#444", lineHeight: 1.7 }}>
+                      <div style={{ fontWeight: 700, color: "#111" }}>
+                        {TIPO_CBTE_LABEL[f.tipo_cbte] ?? "Comprobante"} {String(f.punto_venta).padStart(4, "0")}-{String(f.cbte_nro ?? 0).padStart(8, "0")}
+                      </div>
+                      {f.emisor_razon_social && <div>{f.emisor_razon_social}{f.emisor_cuit ? ` · CUIT ${f.emisor_cuit}` : ""}</div>}
+                      <div>CAE: <strong>{f.cae}</strong></div>
+                      {f.cae_vto && <div>Vto. CAE: {f.cae_vto}</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Footer */}
@@ -534,8 +583,11 @@ export default function ReciboPage() {
               foroinmobiliariomatriculados@gmail.com
             </div>
             <div className="recibo-footer-aviso">
-              Este comprobante no reemplaza la factura fiscal.<br />
-              La factura AFIP correspondiente se emite por separado.
+              {facturas.length > 0 ? (
+                <>Incluye factura electrónica AFIP con CAE.<br />Validez fiscal verificable mediante el QR.</>
+              ) : (
+                <>Este comprobante no reemplaza la factura fiscal.<br />La factura AFIP correspondiente se emite por separado.</>
+              )}
             </div>
           </div>
         </div>
