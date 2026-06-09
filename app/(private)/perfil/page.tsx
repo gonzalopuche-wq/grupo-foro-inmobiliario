@@ -65,8 +65,12 @@ const ESPECIALIDADES_OPCIONES = [
   "Administración de consorcios", "Desarrollos inmobiliarios",
 ];
 
-const CONDICIONES_IVA = [
-  "Responsable inscripto", "Monotributista", "Exento", "No responsable",
+// Se guarda el código corto de AFIP en la base; la etiqueta es solo para la UI.
+const CONDICIONES_IVA: { code: string; label: string }[] = [
+  { code: "RI", label: "Responsable inscripto" },
+  { code: "MT", label: "Monotributista" },
+  { code: "CF", label: "Consumidor final" },
+  { code: "EX", label: "Exento" },
 ];
 
 const IDIOMAS_OPCIONES = [
@@ -570,7 +574,7 @@ export default function PerfilPage() {
                   <label className="pf-label">Condición IVA</label>
                   <select className="pf-select" value={perfil.condicion_iva ?? ""} onChange={e => set("condicion_iva", e.target.value)}>
                     <option value="">Seleccioná</option>
-                    {CONDICIONES_IVA.map(c => <option key={c} value={c}>{c}</option>)}
+                    {CONDICIONES_IVA.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                   </select>
                 </div>
                 <div className="pf-field">

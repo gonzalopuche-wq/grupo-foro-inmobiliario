@@ -19,13 +19,21 @@
 -- ── Receptor: condición frente al IVA ────────────────────────────────────────
 -- 'RI' Responsable Inscripto · 'MT' Monotributo · 'CF' Consumidor Final · 'EX' Exento
 ALTER TABLE perfiles ADD COLUMN IF NOT EXISTS condicion_iva text;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'perfiles_condicion_iva_chk') THEN
+    ALTER TABLE perfiles ADD CONSTRAINT perfiles_condicion_iva_chk
+      CHECK (condicion_iva IS NULL OR condicion_iva IN ('RI','MT','CF','EX'));
+  END IF;
+END $$;
 
 -- ── Emisores (CUIT) y reparto de facturación por socio ───────────────────────
 CREATE TABLE IF NOT EXISTS facturacion_emisores (
   id                      uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   razon_social            text NOT NULL,
   cuit                    text NOT NULL,
-  condicion_iva           text NOT NULL DEFAULT 'RI',     -- emisor: típicamente RI
+  condicion_iva           text NOT NULL DEFAULT 'RI'
+                           CHECK (condicion_iva IN ('RI','MT','CF','EX')),  -- emisor: típicamente RI
   punto_venta             int  NOT NULL DEFAULT 1,        -- punto de venta habilitado en AFIP
   porcentaje_facturacion  numeric(5,2) NOT NULL DEFAULT 100
                            CHECK (porcentaje_facturacion > 0 AND porcentaje_facturacion <= 100),
@@ -38,12 +46,26 @@ CREATE TABLE IF NOT EXISTS facturacion_emisores (
 COMMENT ON COLUMN facturacion_emisores.porcentaje_facturacion IS
   'Porcentaje del total a facturar por este emisor. La suma de los emisores activos debería dar 100.';
 
+-- A lo sumo un emisor activo marcado como principal (emisor por defecto)
+CREATE UNIQUE INDEX IF NOT EXISTS uq_facturacion_emisores_principal
+  ON facturacion_emisores (es_principal)
+  WHERE (es_principal = true AND activo = true);
+
 -- ── Facturas electrónicas emitidas (CAE) ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS facturas_afip (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  emisor_id       uuid REFERENCES facturacion_emisores(id) ON DELETE SET NULL,
-  perfil_id       uuid REFERENCES perfiles(id) ON DELETE SET NULL,   -- receptor (corredor)
+  emisor_id       uuid REFERENCES facturacion_emisores(id) ON DELETE RESTRICT, -- no borrar emisor con facturas
+  perfil_id       uuid REFERENCES perfiles(id) ON DELETE RESTRICT,   -- receptor (corredor); no borrar con facturas
   suscripcion_id  uuid REFERENCES suscripciones(id) ON DELETE SET NULL,
+
+  -- Snapshot fiscal: el comprobante es inmutable. Guardamos emisor/receptor en la
+  -- propia fila para preservar trazabilidad si luego cambian/eliminan, y para que
+  -- el corredor pueda leer su factura SIN acceder a facturacion_emisores (que
+  -- contiene el % de facturación de cada socio).
+  emisor_cuit          text,
+  emisor_razon_social  text,
+  receptor_nombre      text,
+
   periodo         text NOT NULL,                          -- 'YYYY-MM'
   ambiente        text NOT NULL DEFAULT 'homologacion',   -- 'homologacion' | 'produccion'
 
@@ -75,7 +97,18 @@ CREATE TABLE IF NOT EXISTS facturas_afip (
   response_json   jsonb,
   admin_id        uuid REFERENCES auth.users(id),
   created_at      timestamptz NOT NULL DEFAULT now(),
-  emitida_at      timestamptz
+  emitida_at      timestamptz,
+
+  -- Integridad fiscal
+  CONSTRAINT chk_facturas_afip_ambiente CHECK (ambiente IN ('homologacion','produccion')),
+  CONSTRAINT chk_facturas_afip_estado   CHECK (estado IN ('pendiente','emitida','error')),
+  CONSTRAINT chk_facturas_afip_importes CHECK (importe_neto >= 0 AND importe_iva >= 0 AND importe_total >= 0),
+  CONSTRAINT chk_facturas_afip_total    CHECK (importe_total = importe_neto + importe_iva),
+  -- Si está emitida, los datos del CAE son obligatorios
+  CONSTRAINT chk_facturas_afip_emitida  CHECK (
+    estado <> 'emitida'
+    OR (cae IS NOT NULL AND cbte_nro IS NOT NULL AND cae_vto IS NOT NULL AND emitida_at IS NOT NULL)
+  )
 );
 
 CREATE INDEX IF NOT EXISTS idx_facturas_afip_periodo    ON facturas_afip(periodo);
