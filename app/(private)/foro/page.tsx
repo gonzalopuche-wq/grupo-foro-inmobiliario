@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase";
 import PerfilRapidoModal from "./PerfilRapidoModal";
 import NoticiasForoSection from "./NoticiasForoSection";
 import DenunciaModal from "../components/DenunciaModal";
+import SocialShare from "../../components/SocialShare";
 
 interface Category { id: string; name: string; slug: string; description: string; }
 interface Tag { id: string; name: string; slug: string; }
@@ -154,6 +155,9 @@ export default function ForoPage() {
       // Cargar grupos WA desde DB (con links actualizados por admin)
       const { data: grupos } = await supabase.from("whatsapp_grupos").select("nombre,wa_link,miembros,grupo_gfi").eq("activo", true).order("miembros", { ascending: false });
       if (grupos && grupos.length > 0) setWaGroups(grupos as typeof WA_GROUPS_FALLBACK);
+      // Deep-link: si la URL trae ?topic=<id>, abrir ese tema directamente (al compartir)
+      const tid = new URLSearchParams(window.location.search).get("topic");
+      if (tid) openTopicById(tid);
     };
     init();
     return () => { supabase.channel("forum_chat").unsubscribe(); };
@@ -445,6 +449,7 @@ export default function ForoPage() {
 
   const openTopic = async (t: Topic) => {
     setTopic(t); setVista("detalle"); setReplyBody("");
+    if (typeof window !== "undefined") window.history.replaceState(null, "", `/foro?topic=${t.id}`);
     await supabase.from("forum_topics").update({ view_count: t.view_count + 1 }).eq("id", t.id);
     const { data } = await supabase.from("forum_replies").select("*, perfiles(nombre,apellido,matricula)").eq("topic_id", t.id).eq("is_deleted", false).order("created_at");
     if (userId && data) {
@@ -452,6 +457,14 @@ export default function ForoPage() {
       const { data: votes } = await supabase.from("forum_reply_votes").select("reply_id,value,user_id").in("reply_id", replyIds);
       setReplies(data.map((r: any) => ({ ...r, _voteCount: (votes ?? []).filter((v: any) => v.reply_id === r.id).reduce((s: number, v: any) => s + v.value, 0), _myVote: (votes ?? []).find((v: any) => v.reply_id === r.id && v.user_id === userId)?.value ?? 0 })) as Reply[]);
     } else setReplies((data as unknown as Reply[]) ?? []);
+  };
+
+  // Abre un tema puntual a partir de su id (deep-link ?topic=<id> al compartir)
+  const openTopicById = async (id: string) => {
+    const { data } = await supabase.from("forum_topics")
+      .select("*, forum_categories(name,slug), perfiles(nombre,apellido,matricula), forum_topic_tags(forum_tags(id,name,slug))")
+      .eq("id", id).single();
+    if (data) { setMainTab("temas"); await openTopic(data as unknown as Topic); }
   };
 
   const submitTopic = async () => {
@@ -790,7 +803,7 @@ export default function ForoPage() {
 
           {mainTab === "temas" && vista === "detalle" && topic && (
             <div className="f-detalle">
-              <button className="f-back" onClick={() => { setVista("lista"); loadTopics(); }}>← Volver</button>
+              <button className="f-back" onClick={() => { setVista("lista"); if (typeof window !== "undefined") window.history.replaceState(null, "", "/foro"); loadTopics(); }}>← Volver</button>
               <div className="f-card">
                 <div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap"}}>
                   {topic.forum_categories && <span className="f-badge cat">{topic.forum_categories.name}</span>}
@@ -817,6 +830,12 @@ export default function ForoPage() {
                       ⚑ Denunciar
                     </button>
                   )}
+                </div>
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--gfi-border-subtle)" }}>
+                  <SocialShare
+                    title={topic.title}
+                    url={typeof window !== "undefined" ? `${window.location.origin}/foro?topic=${topic.id}` : ""}
+                  />
                 </div>
               </div>
               {replies.length > 0 && (

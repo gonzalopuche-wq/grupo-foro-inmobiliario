@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import SocialShare from "../../components/SocialShare";
 
 interface Noticia {
   id: string;
@@ -662,6 +663,13 @@ export default function NoticiasPage() {
                       🔗 Ver fuente original
                     </a>
                   )}
+
+                  <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--gfi-border-subtle)" }}>
+                    <SocialShare
+                      title={noticiaActiva.titulo}
+                      url={noticiaActiva.link || (typeof window !== "undefined" ? `${window.location.origin}/noticias` : "")}
+                    />
+                  </div>
 
                   {esAdmin && (
                     <div>
