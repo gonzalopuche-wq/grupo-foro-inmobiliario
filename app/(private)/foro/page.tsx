@@ -157,7 +157,7 @@ export default function ForoPage() {
       if (grupos && grupos.length > 0) setWaGroups(grupos as typeof WA_GROUPS_FALLBACK);
       // Deep-link: si la URL trae ?topic=<id>, abrir ese tema directamente (al compartir)
       const tid = new URLSearchParams(window.location.search).get("topic");
-      if (tid) openTopicById(tid);
+      if (tid) openTopicById(tid, data.user.id);
     };
     init();
     return () => { supabase.channel("forum_chat").unsubscribe(); };
@@ -447,24 +447,27 @@ export default function ForoPage() {
     supabase.from("forum_chat_messages").update({ reacciones: reacs }).eq("id", msgId);
   };
 
-  const openTopic = async (t: Topic) => {
+  // uidOverride: cuando se entra por deep-link, el estado userId aún no está seteado
+  // (closure del init), así que se pasa el id explícito para poder cargar los votos.
+  const openTopic = async (t: Topic, uidOverride?: string) => {
+    const uid = uidOverride ?? userId;
     setTopic(t); setVista("detalle"); setReplyBody("");
     if (typeof window !== "undefined") window.history.replaceState(null, "", `/foro?topic=${t.id}`);
     await supabase.from("forum_topics").update({ view_count: t.view_count + 1 }).eq("id", t.id);
     const { data } = await supabase.from("forum_replies").select("*, perfiles(nombre,apellido,matricula)").eq("topic_id", t.id).eq("is_deleted", false).order("created_at");
-    if (userId && data) {
+    if (uid && data) {
       const replyIds = data.map((r: any) => r.id);
       const { data: votes } = await supabase.from("forum_reply_votes").select("reply_id,value,user_id").in("reply_id", replyIds);
-      setReplies(data.map((r: any) => ({ ...r, _voteCount: (votes ?? []).filter((v: any) => v.reply_id === r.id).reduce((s: number, v: any) => s + v.value, 0), _myVote: (votes ?? []).find((v: any) => v.reply_id === r.id && v.user_id === userId)?.value ?? 0 })) as Reply[]);
+      setReplies(data.map((r: any) => ({ ...r, _voteCount: (votes ?? []).filter((v: any) => v.reply_id === r.id).reduce((s: number, v: any) => s + v.value, 0), _myVote: (votes ?? []).find((v: any) => v.reply_id === r.id && v.user_id === uid)?.value ?? 0 })) as Reply[]);
     } else setReplies((data as unknown as Reply[]) ?? []);
   };
 
   // Abre un tema puntual a partir de su id (deep-link ?topic=<id> al compartir)
-  const openTopicById = async (id: string) => {
+  const openTopicById = async (id: string, uid?: string) => {
     const { data } = await supabase.from("forum_topics")
       .select("*, forum_categories(name,slug), perfiles(nombre,apellido,matricula), forum_topic_tags(forum_tags(id,name,slug))")
       .eq("id", id).single();
-    if (data) { setMainTab("temas"); await openTopic(data as unknown as Topic); }
+    if (data) { setMainTab("temas"); await openTopic(data as unknown as Topic, uid); }
   };
 
   const submitTopic = async () => {

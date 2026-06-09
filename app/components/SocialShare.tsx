@@ -38,6 +38,22 @@ const ICONOS: Record<Red, { label: string; bg: string; path: string }> = {
 
 const ORDEN: Red[] = ["whatsapp", "telegram", "twitter", "facebook", "instagram"];
 
+// Copia robusta: usa la API moderna y cae a execCommand en contextos sin
+// navigator.clipboard (HTTP, navegadores viejos).
+async function copiarAlPortapapeles(texto: string): Promise<boolean> {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    try { await navigator.clipboard.writeText(texto); return true; } catch { /* fallback */ }
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = texto; ta.style.position = "fixed"; ta.style.left = "-999999px";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch { return false; }
+}
+
 export default function SocialShare({
   url,
   title,
@@ -56,7 +72,7 @@ export default function SocialShare({
     setTimeout(() => setAviso(""), 2600);
   };
 
-  const compartir = async (red: Red) => {
+  const compartir = (red: Red) => {
     const u = encodeURIComponent(url);
     const t = encodeURIComponent(title);
     const tu = encodeURIComponent(`${title} ${url}`);
@@ -74,25 +90,21 @@ export default function SocialShare({
         abrir(`https://www.facebook.com/sharer/sharer.php?u=${u}`);
         break;
       case "instagram":
-        // Instagram no permite compartir un enlace desde la web: copiamos y abrimos IG.
-        try {
-          await navigator.clipboard.writeText(url);
-          mostrarAviso("Link copiado — pegalo en tu historia o post de Instagram");
-        } catch {
-          mostrarAviso("Copiá el link y pegalo en Instagram");
-        }
+        // Instagram no permite compartir un enlace desde la web. Copiamos en segundo
+        // plano (sin await) y abrimos IG de forma síncrona, para no perder el gesto
+        // del usuario (los bloqueadores cancelarían un open tras un await).
+        copiarAlPortapapeles(url).then((ok) =>
+          mostrarAviso(ok
+            ? "Link copiado — pegalo en tu historia o post de Instagram"
+            : "Copiá el link y pegalo en Instagram"));
         abrir("https://www.instagram.com/");
         break;
     }
   };
 
   const copiarLink = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      mostrarAviso("Enlace copiado");
-    } catch {
-      mostrarAviso("No se pudo copiar el enlace");
-    }
+    const ok = await copiarAlPortapapeles(url);
+    mostrarAviso(ok ? "Enlace copiado" : "No se pudo copiar el enlace");
   };
 
   return (
