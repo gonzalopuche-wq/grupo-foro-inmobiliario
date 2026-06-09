@@ -295,7 +295,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") {
-        router.replace("/login");
+        // Si el cierre tuvo un motivo (ej: sesión tomada en otro dispositivo),
+        // lo propagamos para mostrar el mensaje y que todas las pestañas coincidan.
+        let motivo: string | null = null;
+        try { motivo = localStorage.getItem("gfi_logout_motivo"); } catch { /* ignore */ }
+        router.replace(motivo ? `/login?motivo=${motivo}` : "/login");
       }
     });
     return () => subscription.unsubscribe();
@@ -314,6 +318,55 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [userId]);
+
+  // ── Sesión única por dispositivo ──────────────────────────────────────────
+  // Si el corredor inicia sesión en otro dispositivo, perfiles.sesion_activa_id
+  // cambia y este equipo (con un id local distinto) se desconecta. Se valida al
+  // montar, cada 20s y al volver a enfocar la pestaña.
+  useEffect(() => {
+    // Solo corredores/colaboradores: el admin puede usar varios dispositivos.
+    // Se espera a que el perfil cargue para conocer el tipo real y no validar de más.
+    if (!userId || !perfil || tipoUsuario === "admin") return;
+    let desplazado = false;
+
+    const validar = async () => {
+      if (desplazado) return;
+      const localId = localStorage.getItem("gfi_sesion_id");
+      const { data, error } = await supabase
+        .from("perfiles").select("sesion_activa_id").eq("id", userId).single();
+      if (error || !data || desplazado) return;
+      const dbId = (data as { sesion_activa_id: string | null }).sesion_activa_id;
+
+      // Nadie reclamó la sesión todavía (primer uso / cuentas previas a esta
+      // función): este dispositivo la toma sin desconectar a nadie.
+      if (!dbId) {
+        const nuevo = localId ?? ((typeof crypto !== "undefined" && crypto.randomUUID)
+          ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        try { localStorage.setItem("gfi_sesion_id", nuevo); } catch { /* storage no disponible */ }
+        await supabase.from("perfiles")
+          .update({ sesion_activa_id: nuevo, sesion_activa_at: new Date().toISOString() })
+          .eq("id", userId);
+        return;
+      }
+
+      // El id activo en la BD no es el de este dispositivo → fue desplazado.
+      if (!localId || localId !== dbId) {
+        desplazado = true;
+        try {
+          localStorage.removeItem("gfi_sesion_id");
+          localStorage.setItem("gfi_logout_motivo", "otro_dispositivo");
+        } catch { /* storage no disponible */ }
+        await supabase.auth.signOut();
+        router.replace("/login?motivo=otro_dispositivo");
+      }
+    };
+
+    validar();
+    const interval = setInterval(validar, 20000);
+    const onVisible = () => { if (document.visibilityState === "visible") validar(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { clearInterval(interval); document.removeEventListener("visibilitychange", onVisible); };
+  }, [userId, perfil, tipoUsuario]);
 
   // Real-time badge for new notifications
   useEffect(() => {
@@ -366,6 +419,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const handleLogout = async () => {
+    // Liberar la sesión única antes de salir (limpio para el próximo login)
+    if (userId) {
+      await supabase.from("perfiles").update({ sesion_activa_id: null }).eq("id", userId).then(() => {}, () => {});
+    }
+    if (typeof window !== "undefined") localStorage.removeItem("gfi_sesion_id");
     await supabase.auth.signOut();
     router.push("/login");
   };
