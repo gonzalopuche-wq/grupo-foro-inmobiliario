@@ -295,7 +295,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") {
-        router.replace("/login");
+        // Si el cierre tuvo un motivo (ej: sesión tomada en otro dispositivo),
+        // lo propagamos para mostrar el mensaje y que todas las pestañas coincidan.
+        let motivo: string | null = null;
+        try { motivo = localStorage.getItem("gfi_logout_motivo"); } catch { /* ignore */ }
+        router.replace(motivo ? `/login?motivo=${motivo}` : "/login");
       }
     });
     return () => subscription.unsubscribe();
@@ -338,7 +342,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       if (!dbId) {
         const nuevo = localId ?? ((typeof crypto !== "undefined" && crypto.randomUUID)
           ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
-        localStorage.setItem("gfi_sesion_id", nuevo);
+        try { localStorage.setItem("gfi_sesion_id", nuevo); } catch { /* storage no disponible */ }
         await supabase.from("perfiles")
           .update({ sesion_activa_id: nuevo, sesion_activa_at: new Date().toISOString() })
           .eq("id", userId);
@@ -348,7 +352,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       // El id activo en la BD no es el de este dispositivo → fue desplazado.
       if (!localId || localId !== dbId) {
         desplazado = true;
-        localStorage.removeItem("gfi_sesion_id");
+        try {
+          localStorage.removeItem("gfi_sesion_id");
+          localStorage.setItem("gfi_logout_motivo", "otro_dispositivo");
+        } catch { /* storage no disponible */ }
         await supabase.auth.signOut();
         router.replace("/login?motivo=otro_dispositivo");
       }

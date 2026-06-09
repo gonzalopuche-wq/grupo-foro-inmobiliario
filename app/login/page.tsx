@@ -25,6 +25,9 @@ function LoginInner() {
     const attempts = sessionStorage.getItem("gfi_login_attempts");
     if (locked) setBloqueadoHasta(Number(locked));
     if (attempts) setIntentosFallidos(Number(attempts));
+    // Consumir el motivo de cierre (sesión tomada en otro dispositivo) para que
+    // no persista en próximos accesos.
+    try { localStorage.removeItem("gfi_logout_motivo"); } catch { /* ignore */ }
   }, []);
 
   // Countdown timer cuando está bloqueado
@@ -131,7 +134,7 @@ function LoginInner() {
       const sesionId = (typeof crypto !== "undefined" && crypto.randomUUID)
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      localStorage.setItem("gfi_sesion_id", sesionId);
+      try { localStorage.setItem("gfi_sesion_id", sesionId); } catch { /* storage no disponible */ }
       await supabase.from("perfiles")
         .update({ sesion_activa_id: sesionId, sesion_activa_at: new Date().toISOString() })
         .eq("id", data.user.id);
