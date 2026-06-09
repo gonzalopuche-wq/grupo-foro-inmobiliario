@@ -19,6 +19,19 @@
 -- ── Receptor: condición frente al IVA ────────────────────────────────────────
 -- 'RI' Responsable Inscripto · 'MT' Monotributo · 'CF' Consumidor Final · 'EX' Exento
 ALTER TABLE perfiles ADD COLUMN IF NOT EXISTS condicion_iva text;
+
+-- Normalizar valores previos (el perfil guardaba nombres completos) a códigos AFIP.
+-- Lo no reconocido se pone en NULL para no violar el CHECK.
+UPDATE perfiles SET condicion_iva = CASE
+  WHEN condicion_iva IN ('RI','MT','CF','EX')         THEN condicion_iva
+  WHEN lower(condicion_iva) LIKE 'responsable insc%'  THEN 'RI'
+  WHEN lower(condicion_iva) LIKE 'monotrib%'          THEN 'MT'
+  WHEN lower(condicion_iva) LIKE 'consumidor final%'  THEN 'CF'
+  WHEN lower(condicion_iva) LIKE 'exento%'            THEN 'EX'
+  ELSE NULL
+END
+WHERE condicion_iva IS NOT NULL;
+
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'perfiles_condicion_iva_chk') THEN
