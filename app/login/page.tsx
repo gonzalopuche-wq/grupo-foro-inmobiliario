@@ -123,6 +123,20 @@ function LoginInner() {
       return;
     }
 
+    // Sesión única por dispositivo (solo corredores/colaboradores; el admin puede
+    // usar varios dispositivos). Este equipo toma la sesión activa y desplaza
+    // cualquier otra sesión abierta del corredor en otro dispositivo (que se
+    // cerrará sola al detectar que el id de sesión cambió).
+    if (perfil.tipo !== "admin" && perfil.tipo !== "master") {
+      const sesionId = (typeof crypto !== "undefined" && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      localStorage.setItem("gfi_sesion_id", sesionId);
+      await supabase.from("perfiles")
+        .update({ sesion_activa_id: sesionId, sesion_activa_at: new Date().toISOString() })
+        .eq("id", data.user.id);
+    }
+
     if (perfil.tipo === "admin") {
       router.push("/admin");
     } else {
@@ -176,6 +190,12 @@ function LoginInner() {
           {motivoParam === "inactividad" && (
             <div style={{ fontSize: 12, color: "#d4960c", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 3, padding: "10px 14px", marginBottom: 14 }}>
               ⏱ Sesión cerrada por inactividad. Volvé a ingresar.
+            </div>
+          )}
+
+          {motivoParam === "otro_dispositivo" && (
+            <div style={{ fontSize: 12, color: "#d4960c", background: "rgba(234,179,8,0.08)", border: "1px solid rgba(234,179,8,0.25)", borderRadius: 3, padding: "10px 14px", marginBottom: 14 }}>
+              📱 Tu sesión se cerró porque ingresaste desde otro dispositivo.
             </div>
           )}
 
