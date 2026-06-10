@@ -82,6 +82,67 @@ export default function NoticiasPage() {
   const [aiFeedActivo, setAiFeedActivo] = useState<AiFeedItem | null>(null);
   const [publicandoAI, setPublicandoAI] = useState<string | null>(null);
   const [descartandoAI, setDescartandoAI] = useState<string | null>(null);
+  const [armando, setArmando] = useState(false);
+  const [iaMsg, setIaMsg] = useState("");
+
+  const blobADataUrl = (b: Blob) => new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = reject;
+    r.readAsDataURL(b);
+  });
+
+  // Arma la noticia con IA a partir de un link o de una imagen/recorte.
+  const armarConIa = async (payload: { url?: string; imagen?: string }) => {
+    setArmando(true); setIaMsg("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/noticias/armar-ia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) { setIaMsg(data.error ?? "No se pudo armar la noticia."); return; }
+      setForm(prev => ({
+        ...prev,
+        titulo: data.titulo || prev.titulo,
+        cuerpo: data.cuerpo || prev.cuerpo,
+        fuente: data.fuente || prev.fuente,
+        imagen_url: data.imagen_url || prev.imagen_url,
+        link: payload.url || prev.link,
+      }));
+      setIaMsg("✓ Listo — revisá y publicá.");
+    } catch {
+      setIaMsg("Error de red al armar la noticia.");
+    } finally { setArmando(false); }
+  };
+
+  // Lee el portapapeles: prioriza imagen (recorte de Windows), si no, un link.
+  const pegarYArmar = async () => {
+    setIaMsg("");
+    try {
+      const clip: any = navigator.clipboard;
+      if (clip?.read) {
+        const items = await clip.read();
+        for (const it of items) {
+          const tipoImg = (it.types as string[]).find(t => t.startsWith("image/"));
+          if (tipoImg) { const blob = await it.getType(tipoImg); await armarConIa({ imagen: await blobADataUrl(blob) }); return; }
+        }
+      }
+    } catch { /* sin permiso de imagen, probamos texto */ }
+    try {
+      const txt = (await navigator.clipboard.readText()).trim();
+      if (/^https?:\/\//i.test(txt)) { await armarConIa({ url: txt }); return; }
+      setIaMsg("No encontré un link ni una imagen en el portapapeles. Probá pegar con Ctrl+V acá dentro.");
+    } catch { setIaMsg("No pude leer el portapapeles. Pegá con Ctrl+V dentro del recuadro."); }
+  };
+
+  // Capta Ctrl+V de una imagen/recorte dentro del modal (sin molestar el pegado de texto).
+  const onPasteModal = async (e: React.ClipboardEvent) => {
+    const file = Array.from(e.clipboardData.files).find(f => f.type.startsWith("image/"));
+    if (file) { e.preventDefault(); await armarConIa({ imagen: await blobADataUrl(file) }); }
+  };
 
   const fetchLinkPreview = async (url: string) => {
     if (!url.startsWith("http")) return;
@@ -717,8 +778,24 @@ export default function NoticiasPage() {
       {/* Modal nueva noticia */}
       {mostrarForm && (
         <div className="not-modal-bg" onClick={e => { if (e.target === e.currentTarget) setMostrarForm(false); }}>
-          <div className="not-modal">
+          <div className="not-modal" onPaste={onPasteModal}>
             <div className="not-modal-title">Nueva <span>noticia</span></div>
+
+            {/* Armar con IA: pegar link o imagen/recorte */}
+            <div style={{ border: "1px dashed var(--gfi-red-border)", background: "rgba(153,0,0,0.04)", borderRadius: 8, padding: "12px 14px", marginBottom: 16 }}>
+              <button
+                type="button"
+                onClick={pegarYArmar}
+                disabled={armando}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--gfi-red)", color: "#fff", border: "none", borderRadius: 6, padding: "9px 16px", fontSize: 13, fontWeight: 700, cursor: armando ? "default" : "pointer", fontFamily: "var(--font-display)", opacity: armando ? 0.7 : 1 }}
+              >
+                {armando ? <span className="not-spinner" /> : "✨"} {armando ? "Armando con IA…" : "Pegar link o imagen y armar con IA"}
+              </button>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-muted)", marginTop: 8, lineHeight: 1.5 }}>
+                Copiá un <strong>link</strong> de noticia o un <strong>recorte/captura</strong> (Win+Shift+S) y tocá el botón — o pegá con <strong>Ctrl+V</strong> acá dentro. La IA completa título, cuerpo, fuente e imagen.
+              </div>
+              {iaMsg && <div style={{ fontSize: 12, color: iaMsg.startsWith("✓") ? "var(--gfi-teal-text)" : "var(--gfi-gold-text)", marginTop: 8 }}>{iaMsg}</div>}
+            </div>
 
             <div className="not-field">
               <label className="not-label">Título *</label>
@@ -741,7 +818,7 @@ export default function NoticiasPage() {
                   value={form.link}
                   onChange={e => setForm(p => ({ ...p, link: e.target.value }))}
                   onBlur={e => fetchLinkPreview(e.target.value)}
-                  onPaste={e => { const url = e.clipboardData.getData("text"); setTimeout(() => fetchLinkPreview(url), 100); }}
+                  onPaste={e => { const url = e.clipboardData.getData("text").trim(); if (/^https?:\/\//i.test(url)) armarConIa({ url }); }}
                   style={{paddingRight: fetchandoLink ? 36 : undefined}}
                 />
                 {fetchandoLink && (
