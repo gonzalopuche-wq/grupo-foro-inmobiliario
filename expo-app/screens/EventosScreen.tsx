@@ -7,11 +7,11 @@ interface Evento {
   id: string;
   titulo: string;
   descripcion: string | null;
-  fecha_inicio: string;
-  fecha_fin: string | null;
+  fecha: string;        // 'YYYY-MM-DD'
+  hora: string | null;
   lugar: string | null;
   tipo: string | null;
-  url_registro: string | null;
+  link_externo: string | null;
   imagen_url: string | null;
 }
 
@@ -22,44 +22,43 @@ export default function EventosScreen() {
   const [tab, setTab] = useState<'proximos' | 'pasados'>('proximos');
 
   const cargar = async () => {
-    const hoy = new Date().toISOString();
+    // Fecha local (Argentina UTC-3): evita que después de las 21:00 se filtre el día de hoy.
+    const hoy = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     const { data } = await supabase
       .from('eventos')
-      .select('id, titulo, descripcion, fecha_inicio, fecha_fin, lugar, tipo, url_registro, imagen_url')
-      .order('fecha_inicio', { ascending: tab === 'proximos' })
-      .filter('fecha_inicio', tab === 'proximos' ? 'gte' : 'lt', hoy)
+      .select('id, titulo, descripcion, fecha, hora, lugar, tipo, link_externo, imagen_url')
+      .order('fecha', { ascending: tab === 'proximos' })
+      .filter('fecha', tab === 'proximos' ? 'gte' : 'lt', hoy)
       .limit(30);
-    if (data) setEventos(data);
+    if (data) setEventos(data as unknown as Evento[]);
   };
 
   useEffect(() => { setLoading(true); cargar().finally(() => setLoading(false)); }, [tab]);
 
   const onRefresh = async () => { setRefreshing(true); await cargar(); setRefreshing(false); };
 
-  const formatFecha = (iso: string) => {
-    const d = new Date(iso);
-    return d.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  };
-
-  const formatHora = (iso: string) => {
-    const d = new Date(iso);
-    return d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  // La fecha es un DATE ('YYYY-MM-DD'); se ancla a mediodía para evitar corrimientos
+  // de día por zona horaria. Devuelve null si la fecha es inválida (no crashea).
+  const fechaLocal = (f: string | null) => {
+    if (!f) return null;
+    const d = new Date(`${f}T12:00:00`);
+    return isNaN(d.getTime()) ? null : d;
   };
 
   const renderItem = ({ item }: { item: Evento }) => (
     <View style={s.card}>
       <View style={s.cardDate}>
-        <Text style={s.cardDay}>{new Date(item.fecha_inicio).getDate()}</Text>
+        <Text style={s.cardDay}>{fechaLocal(item.fecha)?.getDate() ?? ''}</Text>
         <Text style={s.cardMonth}>
-          {new Date(item.fecha_inicio).toLocaleDateString('es-AR', { month: 'short' }).toUpperCase()}
+          {fechaLocal(item.fecha)?.toLocaleDateString('es-AR', { month: 'short' }).toUpperCase() ?? ''}
         </Text>
       </View>
       <View style={s.cardInfo}>
         <Text style={s.cardTit} numberOfLines={2}>{item.titulo}</Text>
-        <Text style={s.cardHora}>{formatHora(item.fecha_inicio)}{item.lugar ? `  •  ${item.lugar}` : ''}</Text>
+        <Text style={s.cardHora}>{item.hora ?? ''}{item.lugar ? `  •  ${item.lugar}` : ''}</Text>
         {item.descripcion && <Text style={s.cardDesc} numberOfLines={2}>{item.descripcion}</Text>}
-        {item.url_registro && (
-          <TouchableOpacity onPress={() => Linking.openURL(item.url_registro!)} style={s.regBtn}>
+        {item.link_externo && (
+          <TouchableOpacity onPress={() => Linking.openURL(item.link_externo!).catch(() => {})} style={s.regBtn}>
             <Text style={s.regBtnTxt}>Inscribirse</Text>
           </TouchableOpacity>
         )}

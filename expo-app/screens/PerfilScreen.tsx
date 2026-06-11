@@ -46,6 +46,23 @@ export default function PerfilScreen() {
     ]);
   };
 
+  const cambiarPassword = () => {
+    if (!email) return;
+    Alert.alert('Cambiar contraseña', `Te enviaremos un email a ${email} para restablecerla.`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Enviar', onPress: async () => {
+          const { error } = await supabase.auth.resetPasswordForEmail(email);
+          Alert.alert(error ? 'Error' : 'Listo', error ? error.message : 'Revisá tu email para continuar.');
+        },
+      },
+    ]);
+  };
+
+  const infoNotificaciones = () => {
+    Alert.alert('Notificaciones', 'Las preferencias de notificaciones se gestionan desde tu perfil en la web por ahora.');
+  };
+
   const ini = perfil ? `${perfil.nombre?.[0] ?? ''}${perfil.apellido?.[0] ?? ''}`.toUpperCase() : '?';
   const tipoBadge = perfil?.tipo === 'admin' ? 'Admin' : perfil?.tipo === 'colaborador' ? 'Colaborador' : 'Corredor';
 
@@ -84,11 +101,11 @@ export default function PerfilScreen() {
       {/* Acciones */}
       <View style={s.section}>
         <Text style={s.sectionTit}>Cuenta</Text>
-        <TouchableOpacity style={s.actionRow}>
+        <TouchableOpacity style={s.actionRow} onPress={cambiarPassword}>
           <Text style={s.actionTxt}>🔒  Cambiar contraseña</Text>
           <Text style={s.actionArrow}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={s.actionRow}>
+        <TouchableOpacity style={s.actionRow} onPress={infoNotificaciones}>
           <Text style={s.actionTxt}>🔔  Notificaciones</Text>
           <Text style={s.actionArrow}>›</Text>
         </TouchableOpacity>

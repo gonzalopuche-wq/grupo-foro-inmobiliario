@@ -5,11 +5,10 @@ import { C, F } from '../lib/theme';
 
 interface Post {
   id: string;
-  titulo: string;
-  contenido: string | null;
+  title: string;
+  body: string | null;
   created_at: string;
-  categoria: string | null;
-  respuestas_count?: number;
+  forum_categories?: { name: string } | null;
   perfiles?: { nombre: string; apellido: string };
 }
 
@@ -28,8 +27,8 @@ export default function ForoScreen() {
 
   const cargar = async () => {
     const { data } = await supabase
-      .from('forum_posts')
-      .select('id, titulo, contenido, created_at, categoria, perfiles(nombre, apellido)')
+      .from('forum_topics')
+      .select('id, title, body, created_at, forum_categories(name), perfiles(nombre, apellido)')
       .order('created_at', { ascending: false })
       .limit(40);
     if (data) setPosts(data as unknown as Post[]);
@@ -50,21 +49,22 @@ export default function ForoScreen() {
   };
 
   const renderItem = ({ item }: { item: Post }) => {
-    const catColor = CAT_COLORS[(item.categoria ?? '').toLowerCase()] ?? C.textDim;
+    const cat = item.forum_categories?.name ?? null;
+    const catColor = CAT_COLORS[(cat ?? '').toLowerCase()] ?? C.textDim;
     const p = item.perfiles;
     return (
       <TouchableOpacity style={s.post}>
         <View style={s.postHeader}>
-          {item.categoria && (
+          {cat && (
             <View style={[s.catBadge, { borderColor: catColor }]}>
-              <Text style={[s.catTxt, { color: catColor }]}>{item.categoria}</Text>
+              <Text style={[s.catTxt, { color: catColor }]}>{cat}</Text>
             </View>
           )}
           <Text style={s.postTime}>{tiempo(item.created_at)}</Text>
         </View>
-        <Text style={s.postTit} numberOfLines={2}>{item.titulo}</Text>
-        {item.contenido && (
-          <Text style={s.postPrev} numberOfLines={2}>{item.contenido}</Text>
+        <Text style={s.postTit} numberOfLines={2}>{item.title}</Text>
+        {item.body && (
+          <Text style={s.postPrev} numberOfLines={2}>{item.body}</Text>
         )}
         <Text style={s.postAutor}>
           {p ? `${p.nombre} ${p.apellido ?? ''}`.trim() : 'GFI'}

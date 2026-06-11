@@ -8,9 +8,8 @@ type Props = { navigation: NativeStackNavigationProp<any> };
 
 interface Mensaje {
   id: string;
-  contenido: string;
+  texto: string;
   created_at: string;
-  user_id: string;
   perfiles?: { nombre: string; apellido: string; foto_url: string | null };
 }
 
@@ -22,7 +21,7 @@ export default function ComunidadScreen({ navigation }: Props) {
   const cargar = async () => {
     const { data } = await supabase
       .from('mensajes_chat')
-      .select('id, contenido, created_at, user_id, perfiles(nombre, apellido, foto_url)')
+      .select('id, texto, created_at, perfiles(nombre, apellido, foto_url)')
       .order('created_at', { ascending: false })
       .limit(50);
     if (data) setMensajes(data as unknown as Mensaje[]);
@@ -55,7 +54,7 @@ export default function ComunidadScreen({ navigation }: Props) {
             <Text style={s.msgNombre}>{p?.nombre ?? 'Usuario'} {p?.apellido ?? ''}</Text>
             <Text style={s.msgTime}>{tiempo}</Text>
           </View>
-          <Text style={s.msgTxt}>{item.contenido}</Text>
+          <Text style={s.msgTxt}>{item.texto}</Text>
         </View>
       </View>
     );
