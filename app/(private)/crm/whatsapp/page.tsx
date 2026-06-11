@@ -89,8 +89,12 @@ export default function WhatsAppConfigPage() {
         body: JSON.stringify({ to: testTo.trim(), body: testMsg.trim() }),
       });
       const data = await res.json();
-      if (res.ok && data.ok) setTestResult({ ok: true, msg: "Mensaje enviado correctamente." });
-      else setTestResult({ ok: false, msg: data.error ?? "No se pudo enviar." });
+      if (res.ok && data.ok) {
+        setTestResult({ ok: true, msg: data.aviso ?? "Meta aceptó el mensaje." });
+      } else {
+        const cod = data.code ? ` (código ${data.code})` : "";
+        setTestResult({ ok: false, msg: (data.error ?? "No se pudo enviar.") + cod });
+      }
     } catch {
       setTestResult({ ok: false, msg: "Error de red." });
     } finally {

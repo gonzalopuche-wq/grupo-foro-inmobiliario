@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { sendWhatsAppMessage } from "../../../../lib/whatsapp";
+import { sendWhatsAppMessageDetailed } from "../../../../lib/whatsapp";
 
 export const dynamic = "force-dynamic";
 
@@ -29,12 +29,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Número inválido (10-15 dígitos con código de país)" }, { status: 400 });
   }
 
-  const ok = await sendWhatsAppMessage(numero, body);
-  if (!ok) {
+  const r = await sendWhatsAppMessageDetailed(numero, body);
+  if (!r.ok) {
     return NextResponse.json({
-      error: "No se pudo enviar. Verificá que WHATSAPP_PHONE_ID y WHATSAPP_ACCESS_TOKEN estén configurados.",
-    }, { status: 500 });
+      error: r.error ?? "No se pudo enviar.",
+      code: r.code,
+    }, { status: 502 });
   }
 
-  return NextResponse.json({ ok: true });
+  // Meta aceptó el mensaje (200). Que lo ACEPTE no garantiza que LLEGUE: fuera de la
+  // ventana de 24h o en modo prueba con número no permitido, no se entrega.
+  return NextResponse.json({
+    ok: true,
+    id: r.id,
+    aviso: "Meta aceptó el mensaje. Si no llega, suele ser por la ventana de 24h: el destinatario tiene que haberte escrito a vos en las últimas 24h, o necesitás una plantilla aprobada. En modo prueba, el número debe estar en la lista de destinatarios permitidos de Meta.",
+  });
 }
