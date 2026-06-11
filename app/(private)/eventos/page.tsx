@@ -93,6 +93,11 @@ export default function EventosPage() {
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
   const [eventoVer, setEventoVer] = useState<Evento | null>(null);
+  const [modalInscriptos, setModalInscriptos] = useState<Evento | null>(null);
+  const [inscriptos, setInscriptos] = useState<any[]>([]);
+  const [cargandoIns, setCargandoIns] = useState(false);
+  const [buscarPerfil, setBuscarPerfil] = useState("");
+  const [resultadosPerfil, setResultadosPerfil] = useState<any[]>([]);
   // Multi-day / recurring
   const [modoFecha, setModoFecha] = useState<"unico"|"multidia"|"recurrente">("unico");
   const [fechasRec, setFechasRec] = useState<string[]>([]);
@@ -175,6 +180,51 @@ export default function EventosPage() {
     }
     await cargarEventos(userId);
     setProcesando(null);
+  };
+
+  // ── Gestión de inscriptos (organizador / admin) ───────────────────────────
+  const abrirInscriptos = async (ev: Evento) => {
+    setModalInscriptos(ev); setInscriptos([]); setBuscarPerfil(""); setResultadosPerfil([]);
+    await cargarInscriptos(ev.id);
+  };
+  const cargarInscriptos = async (eventoId: string) => {
+    setCargandoIns(true);
+    const { data } = await supabase.from("inscripciones_eventos")
+      .select("id, perfil_id, asistio, created_at, agregado_por, perfiles(nombre, apellido, telefono, matricula)")
+      .eq("evento_id", eventoId)
+      .order("created_at", { ascending: true });
+    setInscriptos(data ?? []);
+    setCargandoIns(false);
+  };
+  const toggleAsistio = async (insId: string, valor: boolean) => {
+    setInscriptos(prev => prev.map(i => i.id === insId ? { ...i, asistio: valor } : i));
+    await supabase.from("inscripciones_eventos")
+      .update({ asistio: valor, asistio_at: valor ? new Date().toISOString() : null }).eq("id", insId);
+  };
+  const quitarInscripto = async (insId: string, eventoId: string) => {
+    if (!confirm("¿Quitar a esta persona de la lista de inscriptos?")) return;
+    await supabase.from("inscripciones_eventos").delete().eq("id", insId);
+    await cargarInscriptos(eventoId);
+    if (userId) cargarEventos(userId);
+  };
+  const buscarPerfiles = async (q: string) => {
+    setBuscarPerfil(q);
+    if (q.trim().length < 2) { setResultadosPerfil([]); return; }
+    const { data } = await supabase.from("perfiles")
+      .select("id, nombre, apellido, matricula, telefono")
+      .or(`nombre.ilike.%${q}%,apellido.ilike.%${q}%`)
+      .limit(8);
+    const yaIds = new Set(inscriptos.map(i => i.perfil_id));
+    setResultadosPerfil((data ?? []).filter((p: any) => !yaIds.has(p.id)));
+  };
+  const agregarInscripto = async (ev: Evento, perfilId: string) => {
+    const { error } = await supabase.from("inscripciones_eventos")
+      .insert({ evento_id: ev.id, perfil_id: perfilId, agregado_por: userId });
+    if (error) { mostrarToast("No se pudo agregar (¿ya está inscripto?)", "err"); return; }
+    setBuscarPerfil(""); setResultadosPerfil([]);
+    await cargarInscriptos(ev.id);
+    if (userId) cargarEventos(userId);
+    mostrarToast("Inscripto agregado");
   };
 
 
@@ -774,6 +824,12 @@ export default function EventosPage() {
                           onMouseLeave={e=>(e.currentTarget.style.color="var(--gfi-text-muted)")}>
                           Ver evento
                         </button>
+                        {(esAdmin || ev.organizador_id === userId) && (
+                          <button style={{padding:"5px 10px",background:"rgba(58,186,182,0.1)",border:"1px solid rgba(58,186,182,0.3)",borderRadius:3,color:"var(--gfi-teal-text)",fontFamily:"var(--font-display)",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
+                            onClick={()=>abrirInscriptos(ev)}>
+                            👥 Inscriptos{ev.total_inscriptos?` (${ev.total_inscriptos})`:""}
+                          </button>
+                        )}
                         {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4ab8d8",textDecoration:"none",fontFamily:"var(--font-display)",fontWeight:700}}>Unirse</a>}
                         {esAdmin&&ev.estado==="publicado"&&(
                           <button
@@ -1181,6 +1237,70 @@ export default function EventosPage() {
       )}
 
       {/* MODAL VER EVENTO */}
+      {modalInscriptos && (
+        <div onClick={e => { if (e.target === e.currentTarget) setModalInscriptos(null); }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, width: "100%", maxWidth: 560, maxHeight: "85vh", display: "flex", flexDirection: "column" }}>
+            <div style={{ padding: "18px 22px", borderBottom: "1px solid var(--gfi-border)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "var(--gfi-text-primary)" }}>Inscriptos</div>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{modalInscriptos.titulo}</div>
+                </div>
+                <button onClick={() => setModalInscriptos(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", marginTop: 8 }}>
+                {inscriptos.length} inscripto{inscriptos.length === 1 ? "" : "s"} · {inscriptos.filter(i => i.asistio).length} asistieron
+              </div>
+            </div>
+
+            {/* Agregar persona (último momento) */}
+            <div style={{ padding: "12px 22px", borderBottom: "1px solid var(--gfi-border-subtle)", position: "relative" }}>
+              <input value={buscarPerfil} onChange={e => buscarPerfiles(e.target.value)} placeholder="Agregar inscripto: buscá por nombre o apellido…"
+                style={{ width: "100%", background: "var(--gfi-bg-input)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "var(--gfi-text-primary)", padding: "8px 12px", fontSize: 13 }} />
+              {resultadosPerfil.length > 0 && (
+                <div style={{ position: "absolute", left: 22, right: 22, background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 6, marginTop: 4, zIndex: 10, maxHeight: 220, overflowY: "auto" }}>
+                  {resultadosPerfil.map(p => (
+                    <div key={p.id} onClick={() => agregarInscripto(modalInscriptos, p.id)}
+                      style={{ padding: "9px 12px", cursor: "pointer", fontSize: 13, color: "var(--gfi-text-primary)", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                      {p.apellido}, {p.nombre} {p.matricula ? <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>· Mat. {p.matricula}</span> : null}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Lista */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "6px 22px 18px" }}>
+              {cargandoIns ? (
+                <div style={{ padding: 24, textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13 }}>Cargando…</div>
+              ) : inscriptos.length === 0 ? (
+                <div style={{ padding: 24, textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13 }}>Todavía no hay inscriptos.</div>
+              ) : inscriptos.map(i => {
+                const p = Array.isArray(i.perfiles) ? i.perfiles[0] : i.perfiles;
+                const tel = (p?.telefono ?? "").replace(/\D/g, "");
+                return (
+                  <div key={i.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                    <input type="checkbox" checked={!!i.asistio} onChange={e => toggleAsistio(i.id, e.target.checked)} title="Marcar asistencia" style={{ width: 18, height: 18, cursor: "pointer", flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--gfi-text-primary)" }}>
+                        {p ? `${p.apellido ?? ""}, ${p.nombre ?? ""}`.replace(/^, |, $/g, "") : "—"}
+                        {i.agregado_por ? <span style={{ fontSize: 10, color: "var(--gfi-gold-text)", marginLeft: 6 }}>agregado</span> : null}
+                      </div>
+                      <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
+                        {[p?.telefono, p?.matricula ? `Mat. ${p.matricula}` : null].filter(Boolean).join(" · ") || "sin contacto"}
+                      </div>
+                    </div>
+                    {tel && <a href={`https://wa.me/${tel}`} target="_blank" rel="noopener noreferrer" title="WhatsApp" style={{ fontSize: 16, textDecoration: "none", flexShrink: 0 }}>💬</a>}
+                    <button onClick={() => quitarInscripto(i.id, modalInscriptos.id)} title="Quitar" style={{ background: "none", border: "none", color: "var(--gfi-red)", cursor: "pointer", fontSize: 14, flexShrink: 0 }}>✕</button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {eventoVer && (() => {
         const ev = eventoVer;
         const f = formatFecha(ev.fecha);
