@@ -20,9 +20,22 @@ const GRUPOS_MIR = new Set([
 // ── Envío de mensajes via Cloud API ──────────────────────────────────────────
 
 export async function sendWhatsAppMessage(to: string, body: string): Promise<boolean> {
+  return (await sendWhatsAppMessageDetailed(to, body)).ok;
+}
+
+// Versión detallada: lee la respuesta de Meta y devuelve el id del mensaje o el
+// error real (código + mensaje). La usa el envío de prueba del panel admin.
+// OJO: la Cloud API responde 200 (aceptado) aunque luego NO entregue por la
+// ventana de 24h — esa falla llega después como "failed" por el webhook de estados.
+export async function sendWhatsAppMessageDetailed(
+  to: string,
+  body: string,
+): Promise<{ ok: boolean; id?: string; error?: string; code?: number }> {
   const phoneId = process.env.WHATSAPP_PHONE_ID;
   const token   = process.env.WHATSAPP_ACCESS_TOKEN;
-  if (!phoneId || !token) return false;
+  if (!phoneId || !token) {
+    return { ok: false, error: "Faltan WHATSAPP_PHONE_ID / WHATSAPP_ACCESS_TOKEN en el servidor." };
+  }
   try {
     const res = await fetch(`${WA_GRAPH_URL}/${phoneId}/messages`, {
       method: "POST",
@@ -37,9 +50,15 @@ export async function sendWhatsAppMessage(to: string, body: string): Promise<boo
         text: { body },
       }),
     });
-    return res.ok;
-  } catch {
-    return false;
+    const data: any = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const err = data?.error ?? {};
+      const detalle = err?.error_data?.details ? ` — ${err.error_data.details}` : "";
+      return { ok: false, error: `${err?.message ?? `HTTP ${res.status}`}${detalle}`, code: err?.code };
+    }
+    return { ok: true, id: data?.messages?.[0]?.id };
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? "Error de red al contactar a Meta." };
   }
 }
 
