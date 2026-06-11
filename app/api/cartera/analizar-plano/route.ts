@@ -82,8 +82,11 @@ export async function POST(req: NextRequest) {
 
     // Filtrar solo claves conocidas (evita meter basura en el form)
     const datos: Record<string, any> = {};
-    for (const k of CLAVES) if (typeof json[k] === "string" && json[k].trim()) datos[k] = json[k].trim();
-    for (const k of BOOLEANS) if (json[k] === true) datos[k] = true;
+    for (const k of CLAVES) {
+      const v = json[k];
+      if (v !== null && v !== undefined && String(v).trim()) datos[k] = String(v).trim();
+    }
+    for (const k of BOOLEANS) if (json[k] === true || json[k] === "true") datos[k] = true;
 
     return NextResponse.json({ ok: true, datos });
   } catch (e: any) {

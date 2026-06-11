@@ -767,18 +767,25 @@ export default function CarteraPage() {
 
   // ── Completar desde plano / ficha / PDF con IA ────────────────────────────
   const analizarPlano = async (file: File) => {
-    setPlanoMsg(""); setAnalizandoPlano(true);
+    setPlanoMsg("");
+    // El payload (base64, ~+33%) debe quedar bajo el límite de 4.5 MB de Vercel.
+    if (file.size > 3.2 * 1024 * 1024) {
+      setPlanoMsg("El archivo es muy grande (máx. ~3 MB). Probá con una foto más liviana o un PDF más chico.");
+      return;
+    }
+    setAnalizandoPlano(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) { setPlanoMsg("No se encontró una sesión activa. Recargá la página."); return; }
       const dataUrl: string = await new Promise((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve(r.result as string);
         r.onerror = reject;
         r.readAsDataURL(file);
       });
-      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch("/api/cartera/analizar-plano", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ archivo: dataUrl }),
       });
       const data = await res.json();
