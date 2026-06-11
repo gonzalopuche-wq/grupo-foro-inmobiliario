@@ -192,8 +192,8 @@ html, body {
    texto legible. */
 select option,
 select optgroup {
-  background-color: #14181f;
-  color: #eef2f6;
+  background-color: var(--gfi-bg-card);
+  color: var(--gfi-text-primary);
 }
 
 /* ── Custom Scrollbar ────────────────────────────────────────────────────── */
