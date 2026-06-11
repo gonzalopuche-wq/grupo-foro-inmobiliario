@@ -22,7 +22,8 @@ export default function EventosScreen() {
   const [tab, setTab] = useState<'proximos' | 'pasados'>('proximos');
 
   const cargar = async () => {
-    const hoy = new Date().toISOString().slice(0, 10);
+    // Fecha local (Argentina UTC-3): evita que después de las 21:00 se filtre el día de hoy.
+    const hoy = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     const { data } = await supabase
       .from('eventos')
       .select('id, titulo, descripcion, fecha, hora, lugar, tipo, link_externo, imagen_url')
@@ -37,15 +38,19 @@ export default function EventosScreen() {
   const onRefresh = async () => { setRefreshing(true); await cargar(); setRefreshing(false); };
 
   // La fecha es un DATE ('YYYY-MM-DD'); se ancla a mediodía para evitar corrimientos
-  // de día por zona horaria.
-  const fechaLocal = (f: string) => new Date(`${f}T12:00:00`);
+  // de día por zona horaria. Devuelve null si la fecha es inválida (no crashea).
+  const fechaLocal = (f: string | null) => {
+    if (!f) return null;
+    const d = new Date(`${f}T12:00:00`);
+    return isNaN(d.getTime()) ? null : d;
+  };
 
   const renderItem = ({ item }: { item: Evento }) => (
     <View style={s.card}>
       <View style={s.cardDate}>
-        <Text style={s.cardDay}>{fechaLocal(item.fecha).getDate()}</Text>
+        <Text style={s.cardDay}>{fechaLocal(item.fecha)?.getDate() ?? ''}</Text>
         <Text style={s.cardMonth}>
-          {fechaLocal(item.fecha).toLocaleDateString('es-AR', { month: 'short' }).toUpperCase()}
+          {fechaLocal(item.fecha)?.toLocaleDateString('es-AR', { month: 'short' }).toUpperCase() ?? ''}
         </Text>
       </View>
       <View style={s.cardInfo}>
