@@ -328,6 +328,8 @@ export default function CarteraPage() {
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [paso, setPaso] = useState(1);
   const [form, setForm] = useState<any>(FORM_VACIO);
+  const [analizandoPlano, setAnalizandoPlano] = useState(false);
+  const [planoMsg, setPlanoMsg] = useState("");
   const [guardando, setGuardando] = useState(false);
 
   // Importar desde URL de portal / Tokko / CSV
@@ -761,6 +763,33 @@ export default function CarteraPage() {
     setFotosNuevas([]); setFotosExistentes(p.fotos ?? []);
     setPlanosNuevos([]); setPlanosExistentes(p.planos ?? []);
     setPaso(1); setMostrarWizard(true);
+  };
+
+  // ── Completar desde plano / ficha / PDF con IA ────────────────────────────
+  const analizarPlano = async (file: File) => {
+    setPlanoMsg(""); setAnalizandoPlano(true);
+    try {
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result as string);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/cartera/analizar-plano", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ archivo: dataUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) { setPlanoMsg(data.error ?? "No se pudo analizar el documento."); return; }
+      const n = Object.keys(data.datos ?? {}).length;
+      if (n === 0) { setPlanoMsg("No se detectaron datos en el documento."); return; }
+      setForm((prev: any) => ({ ...prev, ...data.datos }));
+      setPlanoMsg(`✓ ${n} campos completados con IA. Revisá y ajustá lo que haga falta.`);
+    } catch {
+      setPlanoMsg("Error al procesar el archivo.");
+    } finally { setAnalizandoPlano(false); }
   };
 
   // ── Guardar ───────────────────────────────────────────────────────────────
@@ -2167,6 +2196,20 @@ export default function CarteraPage() {
                       <strong>🔄 Se publicará automáticamente en el MIR</strong> como ofrecido tuyo en la red. Podés pausarla después si querés.
                     </div>
                   )}
+
+                  {/* Completar desde plano / ficha / PDF con IA */}
+                  <div style={{ border: "1px dashed var(--gfi-teal-border)", background: "rgba(26,94,92,0.06)", borderRadius: 8, padding: "12px 14px", marginBottom: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+                    <label style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--gfi-teal)", color: "#fff", borderRadius: 6, padding: "8px 14px", fontSize: 12, fontWeight: 700, cursor: analizandoPlano ? "default" : "pointer", alignSelf: "flex-start", fontFamily: "var(--font-display)", opacity: analizandoPlano ? 0.7 : 1 }}>
+                      {analizandoPlano ? <><span className="cart-spinner" />Analizando…</> : "📄 Completar desde plano / ficha / PDF (IA)"}
+                      <input type="file" accept="image/*,application/pdf" style={{ display: "none" }} disabled={analizandoPlano}
+                        onChange={e => { const f = e.target.files?.[0]; if (f) analizarPlano(f); (e.target as HTMLInputElement).value = ""; }} />
+                    </label>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", lineHeight: 1.5 }}>
+                      Subí el plano municipal, la ficha o un PDF y la IA completa dirección, superficies, ambientes y más. Revisá siempre los datos.
+                    </span>
+                    {planoMsg && <div style={{ fontSize: 12, color: planoMsg.startsWith("✓") ? "var(--gfi-teal-text)" : "var(--gfi-gold-text)" }}>{planoMsg}</div>}
+                  </div>
+
                   <div className="wiz-section">
                     <div className="wiz-section-title"><span className="wiz-section-ico">🏠</span>Información básica</div>
                     <div className="wiz-row">
