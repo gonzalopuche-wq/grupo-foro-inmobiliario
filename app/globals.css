@@ -186,6 +186,16 @@ html, body {
   color: var(--gfi-text-primary);
 }
 
+/* ── Opciones de <select> ─────────────────────────────────────────────────────
+   El popup nativo de los <select> heredaba texto claro sobre fondo claro (las
+   opciones quedaban invisibles en el tema oscuro). Se les fija fondo oscuro y
+   texto legible. */
+select option,
+select optgroup {
+  background-color: var(--gfi-bg-card);
+  color: var(--gfi-text-primary);
+}
+
 /* ── Custom Scrollbar ────────────────────────────────────────────────────── */
 * {
   scrollbar-width: thin;
