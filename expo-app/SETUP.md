@@ -76,8 +76,12 @@ Para `eas submit` necesitás una cuenta de servicio de Google Play:
 ## Push notifications (nativas)
 
 La app registra su Expo Push Token al iniciar sesión (`lib/push.ts`) y se guarda en
-la tabla `expo_push_tokens`. El cron `/api/cron/push-expo` (en la web, cada hora)
-envía un push por cada notificación nueva (`notificaciones.push_enviada`).
+la tabla `expo_push_tokens`. El cron `/api/cron/push-expo` envía un push por cada
+notificación nueva (`notificaciones.push_enviada`).
+
+> El cron corre **una vez al día** (8hs) porque el plan **Hobby de Vercel** solo
+> permite crons diarios. Para push casi en tiempo real, pasá a **Vercel Pro** y
+> cambiá el `schedule` en `vercel.json` a `*/15 * * * *` (cada 15 min) o `0 * * * *`.
 
 Para activarlas:
 

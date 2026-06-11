@@ -94,7 +94,7 @@
     },
     {
       "path": "/api/cron/push-expo",
-      "schedule": "0 * * * *"
+      "schedule": "0 8 * * *"
     }
   ]
 }
