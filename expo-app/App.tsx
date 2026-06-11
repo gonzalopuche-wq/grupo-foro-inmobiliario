@@ -10,10 +10,13 @@ import { StatusBar } from 'expo-status-bar';
 import type { Session } from '@supabase/supabase-js';
 
 import { supabase } from './lib/supabase';
+import { registrarPush } from './lib/push';
 import { C } from './lib/theme';
 
 import LoginScreen    from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import CarteraScreen  from './screens/CarteraScreen';
+import AgendaScreen   from './screens/AgendaScreen';
 import CRMScreen      from './screens/CRMScreen';
 import MIRScreen      from './screens/MIRScreen';
 import ComunidadScreen from './screens/ComunidadScreen';
@@ -48,6 +51,15 @@ function ComunidadStack() {
   );
 }
 
+function InicioStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: 'rgba(5,5,5,0.98)' }, headerTintColor: '#fff', headerTitleStyle: { fontFamily: 'Montserrat_700Bold' } }}>
+      <Stack.Screen name="Inicio" component={DashboardScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Agenda" component={AgendaScreen}    options={{ title: 'Mi agenda' }} />
+    </Stack.Navigator>
+  );
+}
+
 function MainTabs() {
   const icon = (emoji: string, focused: boolean) => (
     <View style={{ alignItems: 'center' }}>
@@ -71,8 +83,10 @@ function MainTabs() {
         tabBarLabelStyle:   { fontFamily: 'Montserrat_700Bold', fontSize: 9, letterSpacing: 0.5, marginTop: 2 },
       }}
     >
-      <Tab.Screen name="InicioTab" component={DashboardScreen}
-        options={{ title: 'Inicio', tabBarLabel: 'Inicio', tabBarIcon: ({ focused }) => icon('🏠', focused) }} />
+      <Tab.Screen name="InicioTab" component={InicioStack}
+        options={{ title: 'Inicio', tabBarLabel: 'Inicio', headerShown: false, tabBarIcon: ({ focused }) => icon('🏠', focused) }} />
+      <Tab.Screen name="CarteraTab" component={CarteraScreen}
+        options={{ title: 'Cartera', tabBarLabel: 'Cartera', tabBarIcon: ({ focused }) => icon('🏢', focused) }} />
       <Tab.Screen name="CRMTab" component={CRMScreen}
         options={{ title: 'CRM', tabBarLabel: 'CRM', tabBarIcon: ({ focused }) => icon('👥', focused) }} />
       <Tab.Screen name="MIRTab" component={MIRScreen}
@@ -108,6 +122,9 @@ export default function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
+
+  // Registrar el token de push cuando hay sesión activa.
+  useEffect(() => { if (session) registrarPush(); }, [session]);
 
   if (!fontsLoaded || session === undefined) {
     return (

@@ -73,6 +73,30 @@ Para `eas submit` necesitás una cuenta de servicio de Google Play:
 2. Descargá el JSON y guardalo como `expo-app/play-service-account.json` (ya referenciado en `eas.json`, **no lo subas al repo**).
 3. `eas submit --platform android --profile production`
 
+## Push notifications (nativas)
+
+La app registra su Expo Push Token al iniciar sesión (`lib/push.ts`) y se guarda en
+la tabla `expo_push_tokens`. El cron `/api/cron/push-expo` (en la web, cada hora)
+envía un push por cada notificación nueva (`notificaciones.push_enviada`).
+
+Para activarlas:
+
+1. Instalá las dependencias nuevas:
+   ```bash
+   cd expo-app
+   npx expo install expo-notifications expo-device
+   ```
+2. Corré en Supabase la migración **`133_push_expo.sql`** (crea `expo_push_tokens` y
+   agrega `notificaciones.push_enviada`).
+3. Las push **solo funcionan en un build real** (EAS), no en Expo Go ni en emulador.
+4. Verificá que `CRON_SECRET` esté en las variables de entorno de Vercel (ya se usa
+   en los demás crons).
+
+## Nuevas pantallas
+
+- **Cartera**: tus propiedades con foto (pestaña 🏢).
+- **Agenda**: tus tareas de CRM, con marcar como completada (desde Inicio → Agenda).
+
 ## Notas de versión
 
 - Para cada release nuevo, EAS incrementa el `versionCode` automáticamente (perfil `production` con `autoIncrement`).
