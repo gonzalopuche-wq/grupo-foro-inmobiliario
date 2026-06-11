@@ -78,15 +78,18 @@ export default function DashboardScreen({ navigation }: Props) {
       {/* Accesos rápidos */}
       <Text style={s.section}>Accesos rápidos</Text>
       <View style={s.quickRow}>
-        {[
+        {([
+          { label: 'Agenda', icon: '🗓️', direct: 'Agenda' },
+          { label: 'Cartera', icon: '🏢', tab: 'CarteraTab' },
           { label: 'CRM', icon: '👥', tab: 'CRMTab' },
           { label: 'MIR', icon: '🔄', tab: 'MIRTab' },
           { label: 'Foro', icon: '🗣️', tab: 'ComunidadTab', screen: 'Foro' },
           { label: 'Eventos', icon: '📅', tab: 'ComunidadTab', screen: 'Eventos' },
-        ].map(item => (
+        ] as Array<{ label: string; icon: string; tab?: string; screen?: string; direct?: string }>).map(item => (
           <TouchableOpacity key={item.label} style={s.quick}
             onPress={() => {
-              if (item.screen) navigation.navigate(item.tab as any, { screen: item.screen });
+              if (item.direct) navigation.navigate(item.direct as any);
+              else if (item.screen) navigation.navigate(item.tab as any, { screen: item.screen });
               else navigation.navigate(item.tab as any);
             }}>
             <Text style={s.quickIcon}>{item.icon}</Text>
@@ -127,8 +130,8 @@ const s = StyleSheet.create({
   card:       { flex: 1, backgroundColor: C.bgCard, borderRadius: 10, padding: 14, borderWidth: 1, borderColor: C.border },
   cardNum:    { fontFamily: F.heading, fontSize: 26 },
   cardLabel:  { fontFamily: F.body, fontSize: 11, color: C.textMid, marginTop: 2 },
-  quickRow:   { flexDirection: 'row', gap: 10, marginBottom: 8 },
-  quick:      { flex: 1, backgroundColor: C.bgCard, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: C.border },
+  quickRow:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 8 },
+  quick:      { width: '30%', backgroundColor: C.bgCard, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: C.border },
   quickIcon:  { fontSize: 24, marginBottom: 6 },
   quickLabel: { fontFamily: F.medium, fontSize: 11, color: C.text },
   eventoCard: { backgroundColor: C.bgCard, borderRadius: 10, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: C.border, borderLeftWidth: 3, borderLeftColor: C.red },

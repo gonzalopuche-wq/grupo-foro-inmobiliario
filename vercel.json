@@ -91,6 +91,10 @@
     {
       "path": "/api/cron/alertas-busqueda",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/push-expo",
+      "schedule": "0 8 * * *"
     }
   ]
 }
