@@ -176,54 +176,53 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       if (!auth.user) { router.push("/login"); return; }
 
       setUserId(auth.user.id);
+      const uid = auth.user.id;
 
       const { data: p } = await supabase
         .from("perfiles")
         .select("id, nombre, apellido, matricula, foto_url, tipo")
-        .eq("id", auth.user.id)
+        .eq("id", uid)
         .single();
 
-      if (p) {
-        setPerfil(p);
-        const tipo = (p.tipo === "admin" || p.tipo === "master") ? "admin" : p.tipo === "colaborador" ? "colaborador" : "corredor";
-        setTipoUsuario(tipo);
+      if (!p) { setLoading(false); return; }
 
-        // Redirigir colaborador si intenta acceder a ruta bloqueada
-        if (tipo === "colaborador") {
-          const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
-          if (bloqueada) { router.replace("/dashboard"); return; }
-        }
+      setPerfil(p);
+      const tipo = (p.tipo === "admin" || p.tipo === "master") ? "admin" : p.tipo === "colaborador" ? "colaborador" : "corredor";
+      setTipoUsuario(tipo);
+      // Mostrar la app apenas tenemos el perfil — salvo que la ruta actual esté
+      // bloqueada para un colaborador (ahí seguimos en "cargando" hasta redirigir,
+      // para no exponer contenido bloqueado ni un instante).
+      const rutaBloqueada = tipo === "colaborador" && RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
+      if (!rutaBloqueada) setLoading(false);
 
-        // Badge de leads web no leídos (solo corredor/admin)
-        if (tipo !== "colaborador") {
-          supabase.from("web_leads").select("id", { count: "exact", head: true })
-            .eq("perfil_id", auth.user.id).eq("leido", false)
-            .then(({ count }) => setLeadsNoLeidos(count ?? 0), () => {});
-        }
+      // ── Badges (no bloquean) ──────────────────────────────────────────────
+      if (tipo !== "colaborador") {
+        supabase.from("web_leads").select("id", { count: "exact", head: true })
+          .eq("perfil_id", uid).eq("leido", false)
+          .then(({ count }) => setLeadsNoLeidos(count ?? 0), () => {});
+      }
+      supabase.from("notificaciones").select("id", { count: "exact", head: true })
+        .eq("user_id", uid).eq("leida", false)
+        .then(({ count }) => setNotifsNoLeidas(count ?? 0), () => {});
 
-        // Badge de notificaciones no leídas
-        supabase.from("notificaciones").select("id", { count: "exact", head: true })
-          .eq("user_id", auth.user.id).eq("leida", false)
-          .then(({ count }) => setNotifsNoLeidas(count ?? 0), () => {});
+      const hoy = new Date().toISOString().slice(0, 10);
+      Promise.all([
+        supabase.from("crm_tareas").select("id", { count: "exact", head: true })
+          .eq("perfil_id", uid).eq("estado", "pendiente")
+          .lte("fecha_vencimiento", hoy).not("fecha_vencimiento", "is", null),
+        supabase.from("crm_recordatorios").select("id", { count: "exact", head: true })
+          .eq("perfil_id", uid).eq("completado", false)
+          .lte("fecha_recordatorio", new Date().toISOString()),
+      ]).then(([tareasRes, recsRes]) => setCrmPendientes((tareasRes.count ?? 0) + (recsRes.count ?? 0)))
+        .catch(() => {});
 
-        // Badge de tareas y recordatorios vencidos en CRM
-        const hoy = new Date().toISOString().slice(0, 10);
-        const [tareasRes, recsRes] = await Promise.all([
-          supabase.from("crm_tareas").select("id", { count: "exact", head: true })
-            .eq("perfil_id", auth.user.id).eq("estado", "pendiente")
-            .lte("fecha_vencimiento", hoy).not("fecha_vencimiento", "is", null),
-          supabase.from("crm_recordatorios").select("id", { count: "exact", head: true })
-            .eq("perfil_id", auth.user.id).eq("completado", false)
-            .lte("fecha_recordatorio", new Date().toISOString()),
-        ]);
-        setCrmPendientes((tareasRes.count ?? 0) + (recsRes.count ?? 0));
-
-        // Verificar suscripción bloqueada (solo para no-admin)
-        if (tipo !== "admin") {
+      // ── Verificar suscripción (no bloquea; el overlay aparece al resolver) ─
+      if (tipo !== "admin") {
+        (async () => {
           const { data: sub } = await supabase
             .from("suscripciones")
             .select("estado, fecha_vencimiento")
-            .eq("perfil_id", auth.user.id)
+            .eq("perfil_id", uid)
             .order("creado_at", { ascending: false })
             .limit(1)
             .maybeSingle();
@@ -243,10 +242,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               const precioBase = Number(get("precio_corredor_usd") ?? 15);
               const precioColab = Number(get("precio_colaborador_usd") ?? 5);
               if (p.tipo === "colaborador") {
-                // Los colaboradores no pagan — su acceso lo gestiona el CI
                 setPrecioUsd(0);
               } else {
-                // Contar colaboradores activos del corredor
                 const { count: nColabs } = await supabase
                   .from("colaboradores")
                   .select("id", { count: "exact", head: true })
@@ -270,12 +267,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           } else if (enPendiente) {
             setSuscripcionWarning("pendiente");
           }
-        }
+        })();
       }
-      setLoading(false);
     };
     init();
-  }, [pathname]);
+    // Corre una sola vez (antes dependía de [pathname] y recargaba todo en cada navegación).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Guard de rutas para colaboradores — corre en cada navegación con el tipo ya cargado.
+  useEffect(() => {
+    if (tipoUsuario === "colaborador") {
+      const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
+      if (bloqueada) { setLoading(true); router.replace("/dashboard"); }
+      else setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, tipoUsuario]);
 
   // Clear leads badge when user is viewing the mi-web section
   useEffect(() => {
