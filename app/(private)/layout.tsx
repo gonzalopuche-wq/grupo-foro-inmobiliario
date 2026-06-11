@@ -189,9 +189,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       setPerfil(p);
       const tipo = (p.tipo === "admin" || p.tipo === "master") ? "admin" : p.tipo === "colaborador" ? "colaborador" : "corredor";
       setTipoUsuario(tipo);
-      // Mostrar la app apenas tenemos el perfil. Lo demás (badges, suscripción)
-      // carga en segundo plano sin bloquear el render.
-      setLoading(false);
+      // Mostrar la app apenas tenemos el perfil — salvo que la ruta actual esté
+      // bloqueada para un colaborador (ahí seguimos en "cargando" hasta redirigir,
+      // para no exponer contenido bloqueado ni un instante).
+      const rutaBloqueada = tipo === "colaborador" && RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
+      if (!rutaBloqueada) setLoading(false);
 
       // ── Badges (no bloquean) ──────────────────────────────────────────────
       if (tipo !== "colaborador") {
@@ -277,7 +279,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (tipoUsuario === "colaborador") {
       const bloqueada = RUTAS_SOLO_CORREDOR.some(r => pathname === r || pathname.startsWith(r + "/"));
-      if (bloqueada) router.replace("/dashboard");
+      if (bloqueada) { setLoading(true); router.replace("/dashboard"); }
+      else setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, tipoUsuario]);
