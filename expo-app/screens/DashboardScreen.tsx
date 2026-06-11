@@ -29,7 +29,7 @@ export default function DashboardScreen({ navigation }: Props) {
       supabase.from('crm_contactos').select('id', { count: 'exact', head: true }).eq('perfil_id', uid),
       supabase.from('crm_tareas').select('id', { count: 'exact', head: true }).eq('perfil_id', uid).eq('estado', 'pendiente'),
       supabase.from('cartera_propiedades').select('id', { count: 'exact', head: true }).eq('perfil_id', uid).neq('estado', 'retirada'),
-      supabase.from('eventos').select('id, titulo, fecha_inicio, lugar').gte('fecha_inicio', new Date().toISOString()).order('fecha_inicio').limit(3),
+      supabase.from('eventos').select('id, titulo, fecha, hora, lugar').gte('fecha', new Date().toISOString().slice(0, 10)).order('fecha').limit(3),
     ]);
 
     if (perfilRes.data) setPerfil(perfilRes.data);
@@ -103,8 +103,8 @@ export default function DashboardScreen({ navigation }: Props) {
             <View key={ev.id} style={s.eventoCard}>
               <Text style={s.eventoTit}>{ev.titulo}</Text>
               <Text style={s.eventoSub}>
-                {new Date(ev.fecha_inicio).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
-                {ev.lugar ? `  •  ${ev.lugar}` : ''}
+                {new Date(`${ev.fecha}T12:00:00`).toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
+                {ev.hora ? `  •  ${ev.hora}` : ''}{ev.lugar ? `  •  ${ev.lugar}` : ''}
               </Text>
             </View>
           ))}

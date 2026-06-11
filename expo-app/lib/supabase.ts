@@ -2,10 +2,21 @@ import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 
-// Reemplazá estos valores con los de tu proyecto Supabase
-// Los encontrás en: Supabase Dashboard → Settings → API
-export const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
-export const SUPABASE_ANON_KEY = 'TU_ANON_KEY';
+// Las credenciales se leen de variables de entorno EXPO_PUBLIC_* (Expo las inyecta
+// en el build). Configuralas en un `.env` local (ver .env.example) y como variables
+// de entorno en EAS para los builds de Google Play.
+//   EXPO_PUBLIC_SUPABASE_URL
+//   EXPO_PUBLIC_SUPABASE_ANON_KEY
+// Son los mismos valores públicos que usa la web (NEXT_PUBLIC_SUPABASE_*).
+export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
+export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn(
+    '[GFI] Faltan EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_ANON_KEY. ' +
+    'Copiá .env.example a .env y completalos (o seteálos en EAS).'
+  );
+}
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
