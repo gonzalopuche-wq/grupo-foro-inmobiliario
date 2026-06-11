@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../lib/supabase";
+import { etiquetaTipoPropiedad } from "../../lib/tipoPropiedad";
 
 const OPS_OFRECIDO = [
   { value: "venta", label: "Venta" },
@@ -339,10 +340,10 @@ export default function MirPage() {
       let titulo = "";
       if (c.publicacion_tipo === "ofrecido") {
         const of = ofrecidos.find(o => o.id === c.publicacion_id);
-        titulo = of ? `${of.tipo_propiedad} · ${of.ciudad}` : "Ofrecido";
+        titulo = of ? `${etiquetaTipoPropiedad(of.tipo_propiedad)} · ${of.ciudad}` : "Ofrecido";
       } else {
         const bu = busquedas.find(b => b.id === c.publicacion_id);
-        titulo = bu ? `${bu.tipo_propiedad} · ${bu.ciudad}` : "Búsqueda";
+        titulo = bu ? `${etiquetaTipoPropiedad(bu.tipo_propiedad)} · ${bu.ciudad}` : "Búsqueda";
       }
       const { count } = await supabase.from("mir_mensajes")
         .select("*", { count: "exact", head: true })
@@ -529,7 +530,7 @@ export default function MirPage() {
     };
 
     const carteraDatos = {
-      titulo: `${formO.tipo_propiedad} en ${formO.ciudad}`,
+      titulo: `${etiquetaTipoPropiedad(formO.tipo_propiedad)} en ${formO.ciudad}`,
       operacion: OP_TO_CARTERA[formO.operacion] ?? "Venta",
       tipo: formO.tipo_propiedad,
       zona: formO.zona || null, ciudad: formO.ciudad,
@@ -897,16 +898,16 @@ export default function MirPage() {
               <div key={o.id} className={`mir-card${esPropia ? " propia" : ""}${esUrgente ? " urgente-card" : ""}`}>
                 {esUrgente && <div className="mir-urgente-badge">⚡ URGENTE</div>}
                 <div className="mir-card-top">
-                  <div className="mir-card-titulo">{o.tipo_propiedad}</div>
+                  <div className="mir-card-titulo">{etiquetaTipoPropiedad(o.tipo_propiedad)}</div>
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[o.operacion]}</span>
                 </div>
                 {o.precio && <div className="mir-precio">{formatPeso(o.precio, o.moneda)}</div>}
                 <div className="mir-zona">📍 {[o.zona, o.ciudad].filter(Boolean).join(" · ")}</div>
                 <div className="mir-detalles">
-                  {o.dormitorios && <span className="mir-det">🛏 {o.dormitorios} dorm.</span>}
-                  {o.banos && <span className="mir-det">🚿 {o.banos} baños</span>}
-                  {o.superficie_cubierta && <span className="mir-det">📐 {o.superficie_cubierta}m² cub.</span>}
-                  {o.superficie_total && <span className="mir-det">📏 {o.superficie_total}m² tot.</span>}
+                  {o.dormitorios ? <span className="mir-det">🛏 {o.dormitorios} dorm.</span> : null}
+                  {o.banos ? <span className="mir-det">🚿 {o.banos} baños</span> : null}
+                  {o.superficie_cubierta ? <span className="mir-det">📐 {o.superficie_cubierta}m² cub.</span> : null}
+                  {o.superficie_total ? <span className="mir-det">📏 {o.superficie_total}m² tot.</span> : null}
                   {o.antiguedad && <span className="mir-det">🏗 {o.antiguedad.replace(/_/g," ")}</span>}
                 </div>
                 {extras.length > 0 && <div className="mir-extras">{extras.map((e,i) => <span key={i} className="mir-extra">{e}</span>)}</div>}
@@ -955,7 +956,7 @@ export default function MirPage() {
               <div key={b.id} className={`mir-card${esPropia ? " propia" : ""}${esUrgente ? " urgente-card" : ""}`}>
                 {esUrgente && <div className="mir-urgente-badge">⚡ URGENTE</div>}
                 <div className="mir-card-top">
-                  <div className="mir-card-titulo">{b.tipo_propiedad}</div>
+                  <div className="mir-card-titulo">{etiquetaTipoPropiedad(b.tipo_propiedad)}</div>
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[b.operacion]}</span>
                 </div>
                 {(b.presupuesto_min || b.presupuesto_max) && (
@@ -967,9 +968,9 @@ export default function MirPage() {
                 )}
                 <div className="mir-zona">📍 {[b.zona, b.ciudad].filter(Boolean).join(" · ")}</div>
                 <div className="mir-detalles">
-                  {b.dormitorios_min && <span className="mir-det">🛏 {b.dormitorios_min}{b.dormitorios_max ? `-${b.dormitorios_max}` : "+"} dorm.</span>}
-                  {b.banos_min && <span className="mir-det">🚿 {b.banos_min}+ baños</span>}
-                  {b.superficie_min && <span className="mir-det">📐 {b.superficie_min}{b.superficie_max ? `-${b.superficie_max}` : "+"}m²</span>}
+                  {b.dormitorios_min ? <span className="mir-det">🛏 {b.dormitorios_min}{b.dormitorios_max ? `-${b.dormitorios_max}` : "+"} dorm.</span> : null}
+                  {b.banos_min ? <span className="mir-det">🚿 {b.banos_min}+ baños</span> : null}
+                  {b.superficie_min ? <span className="mir-det">📐 {b.superficie_min}{b.superficie_max ? `-${b.superficie_max}` : "+"}m²</span> : null}
                   {b.antiguedad && <span className="mir-det">🏗 {b.antiguedad.replace(/_/g," ")}</span>}
                 </div>
                 {extras.length > 0 && <div className="mir-extras">{extras.map((e,i) => <span key={i} className="mir-extra">{e}</span>)}</div>}
@@ -1015,14 +1016,14 @@ export default function MirPage() {
                   <div className="mir-match-lados">
                     <div className="mir-match-lado">
                       <div className="mir-match-lado-titulo">Ofrecido</div>
-                      <div className="mir-match-info">{of?.tipo_propiedad} · {of?.ciudad}</div>
+                      <div className="mir-match-info">{etiquetaTipoPropiedad(of?.tipo_propiedad)} · {of?.ciudad}</div>
                       <div className="mir-match-sub">{OP_LABEL[of?.operacion ?? ""]}{of?.precio ? ` · ${formatPeso(of.precio, of.moneda)}` : ""}</div>
                       {esDuenioOf && <div className="mir-match-sub" style={{color:"#990000",marginTop:4}}>Es tuyo</div>}
                     </div>
                     <div className="mir-match-sep"/>
                     <div className="mir-match-lado">
                       <div className="mir-match-lado-titulo">Busqueda</div>
-                      <div className="mir-match-info">{bu?.tipo_propiedad} · {bu?.ciudad}</div>
+                      <div className="mir-match-info">{etiquetaTipoPropiedad(bu?.tipo_propiedad)} · {bu?.ciudad}</div>
                       <div className="mir-match-sub">{OP_LABEL[bu?.operacion ?? ""]}{bu?.presupuesto_max ? ` · hasta ${formatPeso(bu.presupuesto_max, bu.moneda)}` : ""}</div>
                       {!esDuenioOf && <div className="mir-match-sub" style={{color:"#990000",marginTop:4}}>Es tuya</div>}
                     </div>
@@ -1209,7 +1210,7 @@ export default function MirPage() {
               {modalInteres.tipo === "me_interesa" ? "Me interesa" : "Tengo"} <span style={{color:"#990000"}}>esta publicacion</span>
             </div>
             <div style={{fontSize:12,color:"var(--gfi-text-muted)",marginBottom:16}}>
-              {modalInteres.pub.tipo_propiedad} · {modalInteres.pub.ciudad}
+              {etiquetaTipoPropiedad(modalInteres.pub.tipo_propiedad)} · {modalInteres.pub.ciudad}
               {(modalInteres.pub as Ofrecido).precio ? ` · ${formatPeso((modalInteres.pub as Ofrecido).precio!, modalInteres.pub.moneda)}` : ""}
             </div>
             <div style={{marginBottom:14}}>
