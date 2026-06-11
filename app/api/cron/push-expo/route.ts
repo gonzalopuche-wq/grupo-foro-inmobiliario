@@ -31,6 +31,11 @@ export async function GET(req: NextRequest) {
 
   // Tokens de los usuarios involucrados
   const userIds = [...new Set(notis.map((n) => n.user_id).filter(Boolean))];
+  if (userIds.length === 0) {
+    await sb.from("notificaciones").update({ push_enviada: true }).in("id", notis.map((n) => n.id));
+    return NextResponse.json({ ok: true, notificaciones: notis.length, push: 0, enviadas: 0 });
+  }
+
   const { data: tokens } = await sb
     .from("expo_push_tokens")
     .select("perfil_id, token")
@@ -57,8 +62,9 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Enviar a Expo en lotes de 100
+  // Enviar a Expo en lotes de 100. Las notis cuyo lote falla NO se marcan, para reintentar.
   let enviadas = 0;
+  const idsFallidos = new Set<string>();
   for (let i = 0; i < mensajes.length; i += 100) {
     const lote = mensajes.slice(i, i + 100);
     if (lote.length === 0) continue;
@@ -69,11 +75,18 @@ export async function GET(req: NextRequest) {
         body: JSON.stringify(lote),
       });
       if (res.ok) enviadas += lote.length;
-    } catch { /* se reintenta en el próximo cron solo si no marcamos enviada */ }
+      else lote.forEach((m) => idsFallidos.add(m.data.notiId));
+    } catch {
+      lote.forEach((m) => idsFallidos.add(m.data.notiId));
+    }
   }
 
-  // Marcar todas como despachadas (incluso las de usuarios sin token, para no reintentar)
-  await sb.from("notificaciones").update({ push_enviada: true }).in("id", notis.map((n) => n.id));
+  // Marcar como despachadas las que no fallaron (las que no tenían token también
+  // se marcan, para no reintentar para siempre).
+  const idsAMarcar = notis.map((n) => n.id).filter((id) => !idsFallidos.has(id));
+  if (idsAMarcar.length > 0) {
+    await sb.from("notificaciones").update({ push_enviada: true }).in("id", idsAMarcar);
+  }
 
   return NextResponse.json({ ok: true, notificaciones: notis.length, push: mensajes.length, enviadas });
 }

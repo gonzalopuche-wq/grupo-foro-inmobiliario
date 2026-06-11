@@ -42,14 +42,15 @@ export default function AgendaScreen() {
 
   const completar = async (id: string) => {
     setTareas(prev => prev.filter(t => t.id !== id));
-    await supabase.from('crm_tareas')
+    const { error } = await supabase.from('crm_tareas')
       .update({ estado: 'completada', fecha_completada: new Date().toISOString() })
       .eq('id', id);
+    if (error) await cargar(); // revertir: vuelve a traer la lista real
   };
 
   const fechaTxt = (f: string | null) => {
     if (!f) return null;
-    const d = new Date(`${f}T12:00:00`);
+    const d = new Date(f.includes('T') ? f : `${f}T12:00:00`);
     if (isNaN(d.getTime())) return null;
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
     const dd = new Date(d); dd.setHours(0, 0, 0, 0);

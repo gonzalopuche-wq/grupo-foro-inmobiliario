@@ -23,6 +23,27 @@ BEGIN
   END IF;
 END $$;
 
+-- Registro del token vía función SECURITY DEFINER: permite reasignar el token al
+-- usuario actual aunque en ese dispositivo lo hubiera registrado otro usuario antes
+-- (la policy de la tabla sigue siendo estricta "solo lo propio").
+CREATE OR REPLACE FUNCTION registrar_push_token(p_token text, p_plataforma text)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'No autenticado';
+  END IF;
+  INSERT INTO expo_push_tokens (perfil_id, token, plataforma, usado_at)
+  VALUES (auth.uid(), p_token, p_plataforma, now())
+  ON CONFLICT (token) DO UPDATE
+    SET perfil_id = auth.uid(), plataforma = EXCLUDED.plataforma, usado_at = now();
+END;
+$$;
+GRANT EXECUTE ON FUNCTION registrar_push_token(text, text) TO authenticated;
+
 -- Marca para no reenviar push de la misma notificación.
 ALTER TABLE notificaciones ADD COLUMN IF NOT EXISTS push_enviada boolean NOT NULL DEFAULT false;
 CREATE INDEX IF NOT EXISTS idx_notificaciones_push_pend ON notificaciones(push_enviada) WHERE push_enviada = false;

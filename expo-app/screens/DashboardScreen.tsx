@@ -131,7 +131,7 @@ const s = StyleSheet.create({
   cardNum:    { fontFamily: F.heading, fontSize: 26 },
   cardLabel:  { fontFamily: F.body, fontSize: 11, color: C.textMid, marginTop: 2 },
   quickRow:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 8 },
-  quick:      { width: '31%', backgroundColor: C.bgCard, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: C.border },
+  quick:      { width: '30%', backgroundColor: C.bgCard, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: C.border },
   quickIcon:  { fontSize: 24, marginBottom: 6 },
   quickLabel: { fontFamily: F.medium, fontSize: 11, color: C.text },
   eventoCard: { backgroundColor: C.bgCard, borderRadius: 10, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: C.border, borderLeftWidth: 3, borderLeftColor: C.red },

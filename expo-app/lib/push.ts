@@ -42,10 +42,14 @@ export async function registrarPush(): Promise<void> {
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user || !token) return;
 
-    await supabase.from('expo_push_tokens').upsert(
-      { perfil_id: auth.user.id, token, plataforma: Platform.OS, usado_at: new Date().toISOString() },
-      { onConflict: 'token' }
-    );
+    // Vía RPC SECURITY DEFINER: reasigna el token al usuario actual aunque en este
+    // dispositivo lo hubiera registrado otro usuario antes (la tabla sigue siendo
+    // "solo lo propio" para acceso directo).
+    const { error } = await supabase.rpc('registrar_push_token', {
+      p_token: token,
+      p_plataforma: Platform.OS,
+    });
+    if (error) console.warn('[push] no se pudo guardar el token', error.message);
   } catch (e) {
     console.warn('[push] no se pudo registrar el token', e);
   }
