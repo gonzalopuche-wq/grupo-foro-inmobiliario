@@ -84,7 +84,10 @@ export function etiquetaTipoPropiedad(tipo?: string | null): string {
   const k = tipo.toString().trim().toLowerCase();
   if (!k) return "Propiedad";
   if (TIPO_PROPIEDAD_LABELS[k]) return TIPO_PROPIEDAD_LABELS[k];
-  // Fallback prolijo: snake_case → palabras, capitalizar cada una.
+  // Fallback prolijo: snake_case → palabras, capitalizar la inicial de cada una.
   const limpio = k.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
-  return limpio.replace(/\b\p{L}/gu, (c) => c.toUpperCase()) || "Propiedad";
+  return limpio
+    .split(" ")
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+    .join(" ") || "Propiedad";
 }
