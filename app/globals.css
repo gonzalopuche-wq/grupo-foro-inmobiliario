@@ -55,18 +55,18 @@
 }
 /* ── Design Tokens ────────────────────────────────────────────────────────── */
 :root {
-  /* Background layers — dark with subtle navy undertone */
-  --gfi-bg-primary:     #090b0e;
-  --gfi-bg-secondary:   #0e1318;
-  --gfi-bg-card:        #121820;
-  --gfi-bg-elevated:    #182028;
-  --gfi-bg-hover:       #1c2530;
-  --gfi-bg-input:       #0c1018;
+  /* Background layers — graphite profundo, neutro y señorial */
+  --gfi-bg-primary:     #08090b;
+  --gfi-bg-secondary:   #0e1013;
+  --gfi-bg-card:        #14161b;
+  --gfi-bg-elevated:    #1b1e25;
+  --gfi-bg-hover:       #20242c;
+  --gfi-bg-input:       #0b0d11;
 
-  /* Borders — teal-tinted dark */
-  --gfi-border:         #243038;
-  --gfi-border-subtle:  #1a2530;
-  --gfi-border-bright:  #304050;
+  /* Borders — sobrios, neutros */
+  --gfi-border:         #272c34;
+  --gfi-border-subtle:  #1b1f26;
+  --gfi-border-bright:  #39414d;
 
   /* Accent — Dark Red (primary brand) */
   --gfi-red:            #990000;
@@ -74,7 +74,14 @@
   --gfi-red-soft:       rgba(153, 0, 0, 0.12);
   --gfi-red-border:     rgba(153, 0, 0, 0.35);
   --gfi-red-glow:       rgba(153, 0, 0, 0.18);
-  --gfi-red-gradient:   linear-gradient(135deg, #990000 0%, #b80000 100%);
+  --gfi-red-gradient:   linear-gradient(135deg, #7d0000 0%, #a30000 55%, #b81414 100%);
+
+  /* Accent — Champagne / oro viejo (detalle señorial: hairlines, secciones premium) */
+  --gfi-champagne:        #c0a468;
+  --gfi-champagne-bright: #d8bd84;
+  --gfi-champagne-soft:   rgba(192, 164, 104, 0.12);
+  --gfi-champagne-border: rgba(192, 164, 104, 0.32);
+  --gfi-champagne-line:   linear-gradient(90deg, rgba(192,164,104,0.55) 0%, rgba(192,164,104,0.10) 60%, transparent 100%);
 
   /* Accent — Teal (success, confirmation, USD prices) */
   --gfi-teal:           #1a5e5c;
@@ -132,33 +139,35 @@
   --gfi-blue-soft:      rgba(20, 96, 122, 0.25);
 
   /* Typography */
-  --gfi-text-primary:   #eef2f6;
-  --gfi-text-secondary: #7a8898;
-  --gfi-text-muted:     #445060;
-  --gfi-text-dim:       #2a3040;
+  --gfi-text-primary:   #f1f4f8;
+  --gfi-text-secondary: #828ea0;
+  --gfi-text-muted:     #4a5564;
+  --gfi-text-dim:       #2c3340;
 
   /* Fonts */
   --font-display:       'Montserrat', sans-serif;
   --font-body:          'Inter', sans-serif;
   --font-mono:          'JetBrains Mono', 'Courier New', monospace;
+  /* Serif señorial para títulos destacados (stack de sistema: sin requests, sin riesgo de "sopa de símbolos") */
+  --font-serif:         'Hoefler Text', 'Georgia', 'Times New Roman', serif;
 
-  /* Shadows */
-  --gfi-shadow-sm:      0 2px 8px rgba(0, 0, 0, 0.45);
-  --gfi-shadow-md:      0 8px 24px rgba(0, 0, 0, 0.55);
-  --gfi-shadow-lg:      0 16px 48px rgba(0, 0, 0, 0.65);
-  --gfi-shadow-red:     0 4px 20px rgba(153, 0, 0, 0.28);
-  --gfi-shadow-red-lg:  0 8px 40px rgba(153, 0, 0, 0.35);
+  /* Shadows — en capas (premium): contacto nítido + halo ambiental suave */
+  --gfi-shadow-sm:      0 1px 2px rgba(0, 0, 0, 0.40), 0 2px 8px rgba(0, 0, 0, 0.30);
+  --gfi-shadow-md:      0 2px 4px rgba(0, 0, 0, 0.40), 0 10px 30px rgba(0, 0, 0, 0.48);
+  --gfi-shadow-lg:      0 4px 10px rgba(0, 0, 0, 0.45), 0 24px 60px rgba(0, 0, 0, 0.58);
+  --gfi-shadow-red:     0 4px 20px rgba(153, 0, 0, 0.26);
+  --gfi-shadow-red-lg:  0 8px 40px rgba(153, 0, 0, 0.34);
   --gfi-shadow-teal:    0 4px 20px rgba(26, 94, 92, 0.22);
 
   /* Transitions */
   --gfi-transition:     all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   --gfi-transition-fast: all 0.12s ease;
 
-  /* Border radius */
-  --gfi-radius-sm:      4px;
-  --gfi-radius-md:      8px;
-  --gfi-radius-lg:      12px;
-  --gfi-radius-xl:      16px;
+  /* Border radius — más ajustados, arquitectónicos y sólidos */
+  --gfi-radius-sm:      3px;
+  --gfi-radius-md:      6px;
+  --gfi-radius-lg:      9px;
+  --gfi-radius-xl:      13px;
 }
 
 /* ── Reset ────────────────────────────────────────────────────────────────── */
@@ -178,6 +187,15 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+/* Título señorial opcional: tipografía serif elegante para los headings que la
+   pidan (clase utilitaria, no rompe nada existente). */
+.gfi-title-serif {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 /* ── Selection ────────────────────────────────────────────────────────────── */
@@ -199,24 +217,24 @@ select optgroup {
 /* ── Custom Scrollbar ────────────────────────────────────────────────────── */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #1a5e5c #0e1318;
+  scrollbar-color: #39414d #0e1013;
 }
 *::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 *::-webkit-scrollbar-track {
-  background: #0e1318;
+  background: #0e1013;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(26, 94, 92, 0.55);
-  border-radius: 2px;
+  background: #2f3640;
+  border-radius: 3px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: #3abab6;
+  background: var(--gfi-champagne);
 }
 *::-webkit-scrollbar-corner {
-  background: #0e1318;
+  background: #0e1013;
 }
 
 /* ── Global Animations ───────────────────────────────────────────────────── */
@@ -263,12 +281,15 @@ select optgroup {
 
 /* Card */
 .gfi-card {
-  background: var(--gfi-bg-card);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 0%, transparent 22%),
+    var(--gfi-bg-card);
   border: 1px solid var(--gfi-border);
   border-radius: var(--gfi-radius-lg);
   padding: 20px 24px;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--gfi-shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.035);
   transition: var(--gfi-transition);
 }
 .gfi-card::before {
@@ -276,18 +297,25 @@ select optgroup {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.012) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.014) 0%, transparent 55%);
   pointer-events: none;
 }
 .gfi-card:hover {
   border-color: var(--gfi-border-bright);
-  box-shadow: var(--gfi-shadow-md);
+  box-shadow: var(--gfi-shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .gfi-card--red-top::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
+  top: 0; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, var(--gfi-red) 0%, rgba(153, 0, 0, 0.12) 70%, transparent 100%);
+}
+/* Variante señorial: hairline dorado champagne arriba */
+.gfi-card--gold-top::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: var(--gfi-champagne-line);
 }
 
 /* Button */
@@ -313,12 +341,22 @@ select optgroup {
 .gfi-btn--primary {
   background: var(--gfi-red-gradient);
   color: #fff;
-  border-color: transparent;
-  box-shadow: var(--gfi-shadow-red);
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: var(--gfi-shadow-red), inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 .gfi-btn--primary:hover {
-  box-shadow: var(--gfi-shadow-red-lg);
+  box-shadow: var(--gfi-shadow-red-lg), inset 0 1px 0 rgba(255, 255, 255, 0.20);
   transform: translateY(-1px);
+}
+/* Botón señorial: contorno dorado champagne sobre fondo sobrio */
+.gfi-btn--gold {
+  background: transparent;
+  color: var(--gfi-champagne-bright);
+  border-color: var(--gfi-champagne-border);
+}
+.gfi-btn--gold:hover {
+  background: var(--gfi-champagne-soft);
+  border-color: var(--gfi-champagne);
 }
 .gfi-btn--secondary {
   background: transparent;
@@ -387,8 +425,8 @@ select optgroup {
   transition: var(--gfi-transition);
 }
 .gfi-input:focus {
-  border-color: var(--gfi-teal-bright);
-  box-shadow: 0 0 0 3px rgba(26, 94, 92, 0.18);
+  border-color: var(--gfi-champagne-border);
+  box-shadow: 0 0 0 3px rgba(192, 164, 104, 0.12);
 }
 .gfi-input::placeholder {
   color: var(--gfi-text-muted);
@@ -417,8 +455,8 @@ select optgroup {
   transition: var(--gfi-transition);
 }
 .gfi-select:focus {
-  border-color: var(--gfi-teal-bright);
-  box-shadow: 0 0 0 3px rgba(26, 94, 92, 0.18);
+  border-color: var(--gfi-champagne-border);
+  box-shadow: 0 0 0 3px rgba(192, 164, 104, 0.12);
 }
 
 /* Table */
@@ -471,17 +509,25 @@ select optgroup {
   font-weight: 800;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: var(--gfi-text-muted);
+  color: var(--gfi-text-secondary);
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
 }
+.gfi-section-title::before {
+  content: '';
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--gfi-champagne);
+  flex-shrink: 0;
+}
 .gfi-section-title::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, var(--gfi-border) 0%, transparent 100%);
+  background: linear-gradient(90deg, var(--gfi-border-bright) 0%, transparent 100%);
 }
 
 /* Skeleton */
