@@ -39,7 +39,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
     .eq("id", cfg.perfil_id)
     .maybeSingle();
 
-  const nombre = perfil ? `${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim() : "el corredor";
+  const nombre = (perfil ? `${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim() : "") || "el corredor";
 
   return corsJson({
     ok: true,

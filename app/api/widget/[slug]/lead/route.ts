@@ -26,8 +26,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     return corsJson({ error: "Demasiadas solicitudes. Intentá más tarde." }, { status: 429 });
   }
 
-  let body: { nombre?: string; telefono?: string; email?: string; mensaje?: string };
+  let body: any;
   try { body = await req.json(); } catch { return corsJson({ error: "Body inválido" }, { status: 400 }); }
+  if (!body || typeof body !== "object") return corsJson({ error: "Body inválido" }, { status: 400 });
   const nombre = (body.nombre ?? "").toString().trim().slice(0, 120);
   const telefono = (body.telefono ?? "").toString().trim().slice(0, 40) || null;
   const email = (body.email ?? "").toString().trim().slice(0, 160) || null;

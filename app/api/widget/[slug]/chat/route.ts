@@ -14,7 +14,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { persistSession: false } },
 );
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Fallback para que el constructor no tire al iniciar si falta la env (igual el
+// handler corta con 503 antes de usarlo).
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || "missing" });
 const MODEL = "claude-haiku-4-5-20251001";
 
 interface Mensaje { role: "user" | "assistant"; content: string; }
@@ -33,10 +35,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     return corsJson({ error: "Chat no disponible." }, { status: 503 });
   }
 
-  let body: { pregunta?: string; historial?: Mensaje[] };
+  let body: any;
   try { body = await req.json(); } catch { return corsJson({ error: "Body inválido" }, { status: 400 }); }
+  if (!body || typeof body !== "object") return corsJson({ error: "Body inválido" }, { status: 400 });
   const pregunta = (body.pregunta ?? "").toString().slice(0, 1000).trim();
-  const historial = Array.isArray(body.historial) ? body.historial.slice(-10) : [];
+  const historial: Mensaje[] = Array.isArray(body.historial) ? body.historial.slice(-10) : [];
   if (!pregunta) return corsJson({ error: "Falta la pregunta" }, { status: 400 });
 
   // Resolver corredor por slug (web activa + chatbot activo)
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
 
   const { data: perfil } = await supabase
     .from("perfiles").select("nombre, apellido").eq("id", cfg.perfil_id).maybeSingle();
-  const nombreCorredor = perfil ? `${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim() : "el corredor";
+  const nombreCorredor = (perfil ? `${perfil.nombre ?? ""} ${perfil.apellido ?? ""}`.trim() : "") || "el corredor";
 
   const { data: propiedades } = await supabase
     .from("cartera_propiedades")
