@@ -36,10 +36,19 @@ CREATE TABLE IF NOT EXISTS crm_listas_items (
   miembro_id   uuid REFERENCES perfiles(id) ON DELETE CASCADE,
   created_at   timestamptz NOT NULL DEFAULT now(),
   -- Exactamente uno de los dos: o es un contacto del CRM, o es un miembro GFI.
-  CONSTRAINT crm_listas_items_target CHECK ((contacto_id IS NOT NULL) <> (miembro_id IS NOT NULL)),
-  -- FK compuesta: el ítem solo puede apuntar a una lista del MISMO dueño.
-  FOREIGN KEY (lista_id, perfil_id) REFERENCES crm_listas(id, perfil_id) ON DELETE CASCADE
+  CONSTRAINT crm_listas_items_target CHECK ((contacto_id IS NOT NULL) <> (miembro_id IS NOT NULL))
 );
+
+-- FK compuesta (en ALTER aparte, máxima compatibilidad): el ítem solo puede
+-- apuntar a una lista del MISMO dueño, así nadie asigna a listas ajenas.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'crm_listas_items_lista_fk') THEN
+    ALTER TABLE crm_listas_items
+      ADD CONSTRAINT crm_listas_items_lista_fk
+      FOREIGN KEY (lista_id, perfil_id) REFERENCES crm_listas(id, perfil_id) ON DELETE CASCADE;
+  END IF;
+END $$;
 
 ALTER TABLE crm_listas_items ENABLE ROW LEVEL SECURITY;
 DO $$
