@@ -145,14 +145,15 @@ function ContactosContent() {
       .insert({ perfil_id: userId, nombre: nuevaListaNombre.trim(), color: nuevaListaColor, orden: listas.length })
       .select("id,nombre,color,orden").single();
     setGuardandoLista(false);
-    if (error || !data) return;
+    if (error || !data) { alert("No se pudo crear la lista: " + (error?.message ?? "error desconocido")); return; }
     setListas(prev => [...prev, data as Lista]);
     setNuevaListaNombre("");
   }
 
   async function eliminarLista(id: string) {
     if (!confirm("¿Eliminar esta lista? Se quita de todos los contactos (no los borra).")) return;
-    await supabase.from("crm_listas").delete().eq("id", id);
+    const { error } = await supabase.from("crm_listas").delete().eq("id", id);
+    if (error) { alert("No se pudo eliminar la lista: " + error.message); return; }
     setListas(prev => prev.filter(l => l.id !== id));
     setItemsPorContacto(prev => {
       const next: Record<string, string[]> = {};

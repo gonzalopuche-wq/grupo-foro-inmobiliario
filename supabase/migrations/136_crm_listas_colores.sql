@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS crm_listas (
   nombre      text NOT NULL,
   color       text NOT NULL DEFAULT '#6366F1',
   orden       integer NOT NULL DEFAULT 0,
-  created_at  timestamptz NOT NULL DEFAULT now()
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  -- Habilita la FK compuesta desde crm_listas_items (impide asignar a listas ajenas).
+  UNIQUE (id, perfil_id)
 );
 
 ALTER TABLE crm_listas ENABLE ROW LEVEL SECURITY;
@@ -28,13 +30,15 @@ CREATE INDEX IF NOT EXISTS idx_crm_listas_perfil ON crm_listas(perfil_id);
 -- Asignación: una persona (contacto del CRM o miembro GFI) en una lista.
 CREATE TABLE IF NOT EXISTS crm_listas_items (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  lista_id     uuid NOT NULL REFERENCES crm_listas(id) ON DELETE CASCADE,
+  lista_id     uuid NOT NULL,
   perfil_id    uuid NOT NULL REFERENCES perfiles(id) ON DELETE CASCADE,   -- dueño (para RLS)
   contacto_id  uuid REFERENCES crm_contactos(id) ON DELETE CASCADE,
   miembro_id   uuid REFERENCES perfiles(id) ON DELETE CASCADE,
   created_at   timestamptz NOT NULL DEFAULT now(),
   -- Exactamente uno de los dos: o es un contacto del CRM, o es un miembro GFI.
-  CONSTRAINT crm_listas_items_target CHECK ((contacto_id IS NOT NULL) <> (miembro_id IS NOT NULL))
+  CONSTRAINT crm_listas_items_target CHECK ((contacto_id IS NOT NULL) <> (miembro_id IS NOT NULL)),
+  -- FK compuesta: el ítem solo puede apuntar a una lista del MISMO dueño.
+  FOREIGN KEY (lista_id, perfil_id) REFERENCES crm_listas(id, perfil_id) ON DELETE CASCADE
 );
 
 ALTER TABLE crm_listas_items ENABLE ROW LEVEL SECURITY;
