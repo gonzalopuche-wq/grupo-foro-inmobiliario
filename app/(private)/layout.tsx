@@ -29,6 +29,11 @@ const NAV_GRUPOS_CORREDOR = [
       { href: "/eventos", label: "Eventos", icon: "📅" },
       { href: "/noticias", label: "Noticias", icon: "📰" },
       { href: "/agenda", label: "Agenda", icon: "📆" },
+      { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
+      { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
+      { href: "/comparables", label: "Comparables", icon: "📈" },
+      { href: "/padron-gfi", label: "Padrón", icon: "📋" },
+      { href: "/proveedores", label: "Proveedores", icon: "🏢" },
     ],
   },
   {
@@ -36,10 +41,7 @@ const NAV_GRUPOS_CORREDOR = [
     items: [
       { href: "/actividades", label: "Actividades", icon: "⚡" },
       { href: "/tasaciones", label: "Tasaciones IA", icon: "🏠" },
-      { href: "/calculadoras", label: "Calculadoras", icon: "🧮" },
-      { href: "/comparables", label: "Comparables", icon: "📈" },
       { href: "/marketplace", label: "Marketplace", icon: "🏪" },
-      { href: "/cotizaciones", label: "Cotizaciones", icon: "💱" },
       { href: "/estadisticas-mercado", label: "Estadísticas", icon: "📊" },
       { href: "/observatorio", label: "Observatorio", icon: "🔭" },
       { href: "/alertas-mercado", label: "Alertas Mercado", icon: "🔔" },
@@ -58,8 +60,6 @@ const NAV_GRUPOS_CORREDOR = [
     label: "Recursos",
     items: [
       { href: "/biblioteca", label: "Biblioteca", icon: "📚" },
-      { href: "/padron-gfi", label: "Padrón", icon: "📋" },
-      { href: "/proveedores", label: "Proveedores", icon: "🏢" },
       { href: "/enlaces", label: "Enlaces", icon: "🔗" },
       { href: "/cursos", label: "Cursos", icon: "🎓" },
       { href: "/bolsa-trabajo", label: "Bolsa de Trabajo", icon: "💼" },
