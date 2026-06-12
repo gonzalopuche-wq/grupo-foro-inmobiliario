@@ -1442,7 +1442,8 @@ export default function CarteraPage() {
 
         /* ── Wizard content ── */
         .wiz-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0d1017; }
-        .wiz-main-header { padding: 20px 28px 16px; border-bottom: 1px solid #252a35; flex-shrink: 0; background: linear-gradient(90deg, rgba(153,0,0,0.05) 0%, transparent 60%); }
+        .wiz-main-header { padding: 20px 56px 16px 28px; border-bottom: 1px solid #252a35; flex-shrink: 0; background: linear-gradient(90deg, rgba(153,0,0,0.05) 0%, transparent 60%); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+        .wiz-btn-guardar-top { flex-shrink: 0; }
         .wiz-paso-label { font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: 0.20em; text-transform: uppercase; color: rgba(153,0,0,0.7); margin-bottom: 4px; }
         .wiz-paso-titulo { font-family: var(--font-display); font-size: 22px; font-weight: 900; color: #f0f4f8; }
         .wiz-paso-sub { font-size: 12px; color: #8892a4; margin-top: 3px; font-family: var(--font-body); }
@@ -1511,6 +1512,29 @@ export default function CarteraPage() {
         .wiz-mir-info strong { color: rgba(153,0,0,0.80); }
         .cart-spinner { display: inline-block; width: 9px; height: 9px; border: 2px solid var(--gfi-text-dim); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 5px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Responsive: el wizard tiene que ser usable en el celular ───────── */
+        @media (max-width: 768px) {
+          .wiz-bg { flex-direction: column; }
+          /* El sidebar de pasos pasa a ser una barra horizontal arriba */
+          .wiz-sidebar { width: 100%; flex-direction: row; align-items: center; gap: 4px;
+            overflow-x: auto; padding: 10px 48px 10px 12px; border-right: none;
+            border-bottom: 1px solid #252a35; -webkit-overflow-scrolling: touch; }
+          .wiz-sidebar-title, .wiz-progress-wrap, .wiz-step-info { display: none; }
+          .wiz-step { padding: 4px; flex-shrink: 0; }
+          .wiz-main-header { padding: 14px 16px 12px; }
+          .wiz-paso-titulo { font-size: 18px; }
+          .wiz-paso-sub { display: none; }
+          .wiz-body { padding: 14px 16px; }
+          .wiz-footer { padding: 12px 16px; gap: 8px; position: sticky; bottom: 0; }
+          .wiz-row, .wiz-row-3, .wiz-row-4 { grid-template-columns: 1fr 1fr; }
+          .wiz-btn-cerrar { top: 10px; right: 10px; }
+        }
+        @media (max-width: 440px) {
+          .wiz-row, .wiz-row-3, .wiz-row-4 { grid-template-columns: 1fr; }
+          .wiz-btn-next { padding: 8px 16px; }
+          .wiz-btn-prev { padding: 8px 12px; }
+        }
       `}</style>
 
       {toastGuardado && (
@@ -2159,7 +2183,7 @@ export default function CarteraPage() {
       </div>
 
       {/* ══════════════════════════════════════════════════
-          WIZARD — 6 PASOS
+          WIZARD — 7 PASOS
       ══════════════════════════════════════════════════ */}
       {mostrarWizard && (
         <div className="wiz-bg">
@@ -2188,9 +2212,19 @@ export default function CarteraPage() {
           {/* Contenido */}
           <div className="wiz-main">
             <div className="wiz-main-header">
-              <div className="wiz-paso-label">Paso {paso} de 7</div>
-              <div className="wiz-paso-titulo">{PASOS[paso-1].label}</div>
-              <div className="wiz-paso-sub">{PASOS[paso-1].sub}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="wiz-paso-label">Paso {paso} de 7</div>
+                <div className="wiz-paso-titulo">{PASOS[paso-1].label}</div>
+                <div className="wiz-paso-sub">{PASOS[paso-1].sub}</div>
+              </div>
+              {/* Guardar siempre disponible: no hace falta llegar al paso 7 (clave al editar) */}
+              <button className="wiz-btn-next wiz-btn-guardar-top" onClick={guardar}
+                disabled={!form.titulo?.trim() || guardando || subiendoFotos || subiendoPlanos}
+                title={!form.titulo?.trim() ? "Completá el título primero" : ""}>
+                {guardando || subiendoFotos || subiendoPlanos
+                  ? <><span className="cart-spinner" />Guardando…</>
+                  : editandoId ? "💾 Guardar cambios" : "💾 Guardar"}
+              </button>
             </div>
 
             <div className="wiz-body">
