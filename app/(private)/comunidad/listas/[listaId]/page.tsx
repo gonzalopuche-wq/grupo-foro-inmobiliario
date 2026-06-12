@@ -133,9 +133,13 @@ export default function ListaPage() {
 
   const cambiarColor = async (color: string) => {
     if (!lista) return;
+    const colorAnterior = lista.color;
     setLista({ ...lista, color });
     const { error } = await supabase.from("listas_distribucion").update({ color }).eq("id", lista.id);
-    if (error) showToast("No se pudo cambiar el color");
+    if (error) {
+      setLista(prev => prev ? { ...prev, color: colorAnterior } : null);
+      showToast("No se pudo cambiar el color");
+    }
   };
 
   const colegasNoAgregados = busquedaAgregar.trim()
@@ -170,7 +174,7 @@ export default function ListaPage() {
             <span style={{ fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 2 }}>Color</span>
             {COLORES_LISTA.map(c => (
               <button key={c} type="button" onClick={() => cambiarColor(c)} aria-label={`Color ${c}`}
-                style={{ width: 18, height: 18, borderRadius: "50%", background: c, border: "none", cursor: "pointer", outline: (lista?.color ?? "") === c ? "2px solid #fff" : "none", outlineOffset: 1 }} />
+                style={{ width: 18, height: 18, borderRadius: "50%", background: c, border: "none", cursor: "pointer", outline: (lista?.color ?? "#3b82f6") === c ? "2px solid #fff" : "none", outlineOffset: 1 }} />
             ))}
           </div>
         </div>

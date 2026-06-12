@@ -5,4 +5,4 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 ALTER TABLE listas_distribucion
-  ADD COLUMN IF NOT EXISTS color text NOT NULL DEFAULT '#6366F1';
+  ADD COLUMN IF NOT EXISTS color text NOT NULL DEFAULT '#3b82f6';

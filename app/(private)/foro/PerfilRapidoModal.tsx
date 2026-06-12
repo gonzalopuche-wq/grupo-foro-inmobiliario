@@ -50,8 +50,8 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
       if (data) setPerfil(data as PerfilPublico);
       setLoading(false);
 
-      // Verificar si ya está en el CRM + cargar listas
-      if (miUserId) {
+      // Verificar si ya está en el CRM + cargar listas (no para el propio perfil)
+      if (miUserId && miUserId !== perfilId) {
         const [{ data: crm }, { data: ls }, { data: its }] = await Promise.all([
           supabase.from("crm_contactos").select("id").eq("perfil_id", miUserId).eq("corredor_ref_id", perfilId).maybeSingle(),
           supabase.from("crm_listas").select("id,nombre,color").eq("perfil_id", miUserId).order("orden"),
@@ -70,7 +70,7 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
     const ya = miembroListaIds.has(listaId);
     setMiembroListaIds(prev => { const n = new Set(prev); if (ya) n.delete(listaId); else n.add(listaId); return n; });
     if (ya) {
-      const { error } = await supabase.from("crm_listas_items").delete().eq("lista_id", listaId).eq("miembro_id", perfilId);
+      const { error } = await supabase.from("crm_listas_items").delete().eq("lista_id", listaId).eq("miembro_id", perfilId).eq("perfil_id", miUserId);
       if (error) { setMiembroListaIds(prev => { const n = new Set(prev); n.add(listaId); return n; }); mostrarToast("No se pudo quitar"); }
     } else {
       const { error } = await supabase.from("crm_listas_items").insert({ lista_id: listaId, perfil_id: miUserId, miembro_id: perfilId });
