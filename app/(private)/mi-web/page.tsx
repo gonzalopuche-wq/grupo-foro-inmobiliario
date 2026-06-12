@@ -77,6 +77,11 @@ interface Config {
   google_analytics: string;
   script_header: string;
   script_footer: string;
+  chatbot_activo: boolean;
+  chatbot_color: string;
+  chatbot_bienvenida: string;
+  chatbot_posicion: string;
+  chatbot_notif_whatsapp: boolean;
 }
 
 const CONFIG_VACIA: Config = {
@@ -92,6 +97,8 @@ const CONFIG_VACIA: Config = {
   instagram: "", facebook: "", twitter: "", linkedin: "", tiktok: "", whatsapp: "",
   limite_propiedades_home: "6",
   google_analytics: "", script_header: "", script_footer: "",
+  chatbot_activo: false, chatbot_color: "#6366F1", chatbot_bienvenida: "",
+  chatbot_posicion: "br", chatbot_notif_whatsapp: false,
 };
 
 const Toggle = ({ label, value, onChange, desc }: { label: string; value: boolean; onChange: (v: boolean) => void; desc?: string }) => (
@@ -117,6 +124,7 @@ export default function MiWebPage() {
   const [tieneConfig, setTieneConfig] = useState(false);
   const [matricula, setMatricula] = useState("");
   const [loading, setLoading] = useState(true);
+  const [snippetCopiado, setSnippetCopiado] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -179,6 +187,11 @@ export default function MiWebPage() {
           google_analytics: cfg.google_analytics ?? "",
           script_header: cfg.script_header ?? "",
           script_footer: cfg.script_footer ?? "",
+          chatbot_activo: cfg.chatbot_activo ?? false,
+          chatbot_color: cfg.chatbot_color ?? "#6366F1",
+          chatbot_bienvenida: cfg.chatbot_bienvenida ?? "",
+          chatbot_posicion: cfg.chatbot_posicion ?? "br",
+          chatbot_notif_whatsapp: cfg.chatbot_notif_whatsapp ?? false,
         });
       } else {
         // Sugerir slug basado en matrícula
@@ -232,6 +245,11 @@ export default function MiWebPage() {
       google_analytics: config.google_analytics || null,
       script_header: config.script_header || null,
       script_footer: config.script_footer || null,
+      chatbot_activo: config.chatbot_activo,
+      chatbot_color: config.chatbot_color || "#6366F1",
+      chatbot_bienvenida: config.chatbot_bienvenida || null,
+      chatbot_posicion: config.chatbot_posicion || "br",
+      chatbot_notif_whatsapp: config.chatbot_notif_whatsapp,
       updated_at: new Date().toISOString(),
     };
 
@@ -754,6 +772,73 @@ export default function MiWebPage() {
                   <label className="mw-label">Script antes del &lt;/body&gt;</label>
                   <textarea className="mw-textarea" value={config.script_footer} onChange={e => set("script_footer", e.target.value)} placeholder="<!-- Pegá tu script acá -->" rows={4} style={{ fontFamily: "monospace", fontSize: 12 }} />
                 </div>
+              </div>
+
+              {/* ── Chatbot Web Embebible ── */}
+              <div className="mw-card">
+                <div className="mw-card-titulo">🤖 Chatbot Web con IA</div>
+                <div className="mw-paso-desc" style={{ marginBottom: 14 }}>
+                  Una burbuja de chat con IA que responde consultas sobre tus propiedades publicadas y capta leads. Pegás un código en cualquier web (la tuya, WordPress, Wix, etc.) y listo.
+                </div>
+
+                <Toggle label="Activar chatbot" desc="Cuando está activo, el código de abajo muestra la burbuja en tu web" value={config.chatbot_activo} onChange={v => set("chatbot_activo", v)} />
+
+                {config.chatbot_activo && (
+                  <>
+                    <div className="mw-row" style={{ marginTop: 16 }}>
+                      <div className="mw-field">
+                        <label className="mw-label">Color del chatbot</label>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <input type="color" value={config.chatbot_color} onChange={e => set("chatbot_color", e.target.value)}
+                            style={{ width: 40, height: 40, borderRadius: 8, border: "1px solid var(--gfi-border)", cursor: "pointer", padding: 2, background: "transparent" }} />
+                          <input className="mw-color-input" value={config.chatbot_color} onChange={e => set("chatbot_color", e.target.value)} style={{ width: 100 }} />
+                        </div>
+                      </div>
+                      <div className="mw-field">
+                        <label className="mw-label">Posición en la pantalla</label>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          {[["br", "Abajo derecha"], ["bl", "Abajo izquierda"]].map(([val, lbl]) => (
+                            <button key={val} type="button" onClick={() => set("chatbot_posicion", val)}
+                              style={{ flex: 1, padding: "9px 10px", borderRadius: 4, border: `1px solid ${config.chatbot_posicion === val ? "#990000" : "var(--gfi-border)"}`, background: config.chatbot_posicion === val ? "rgba(200,0,0,0.1)" : "transparent", color: config.chatbot_posicion === val ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                              {lbl}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mw-field">
+                      <label className="mw-label">Mensaje de bienvenida<small>(opcional)</small></label>
+                      <input className="mw-input" value={config.chatbot_bienvenida} onChange={e => set("chatbot_bienvenida", e.target.value)} placeholder="¡Hola! ¿En qué puedo ayudarte hoy?" maxLength={280} />
+                    </div>
+
+                    <Toggle label="Avisarme por WhatsApp" desc="Recibí un WhatsApp cuando alguien deja sus datos por el chatbot" value={config.chatbot_notif_whatsapp} onChange={v => set("chatbot_notif_whatsapp", v)} />
+
+                    {/* Código para instalar */}
+                    {(() => {
+                      const slugFinal = config.slug || (matricula ? `mat${matricula}` : "");
+                      const snippet = `<!-- Chatbot GFI® — pegá esto antes de </body> -->\n<script src="https://www.foroinmobiliario.com.ar/widget/chatbot.js" data-slug="${slugFinal}" defer></script>`;
+                      return (
+                        <div className="mw-field" style={{ marginTop: 16 }}>
+                          <label className="mw-label">Código para instalar en tu web</label>
+                          {!config.activa && (
+                            <div style={{ fontSize: 11, color: "#d4960c", marginBottom: 8 }}>
+                              ⚠️ Tu web tiene que estar <b>activa</b> (Paso 1) para que el chatbot funcione.
+                            </div>
+                          )}
+                          <textarea className="mw-textarea" readOnly value={snippet} rows={3} onClick={e => (e.target as HTMLTextAreaElement).select()} style={{ fontFamily: "monospace", fontSize: 12 }} />
+                          <button type="button" className="mw-btn-upload" style={{ marginTop: 8 }}
+                            onClick={() => { navigator.clipboard?.writeText(snippet); setSnippetCopiado(true); setTimeout(() => setSnippetCopiado(false), 2000); }}>
+                            {snippetCopiado ? "✓ Copiado" : "📋 Copiar código"}
+                          </button>
+                          <div className="mw-hint" style={{ marginTop: 8 }}>
+                            Pegalo antes de <code>&lt;/body&gt;</code> de cualquier página HTML, o en el campo "Script antes del &lt;/body&gt;" de arriba si usás tu web GFI®.
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </>
+                )}
               </div>
             </>
           )}
