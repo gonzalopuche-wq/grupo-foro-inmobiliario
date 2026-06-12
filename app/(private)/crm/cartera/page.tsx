@@ -2219,8 +2219,8 @@ export default function CarteraPage() {
               </div>
               {/* Guardar siempre disponible: no hace falta llegar al paso 7 (clave al editar) */}
               <button className="wiz-btn-next wiz-btn-guardar-top" onClick={guardar}
-                disabled={!form.titulo || guardando || subiendoFotos || subiendoPlanos}
-                title={!form.titulo ? "Completá el título primero" : ""}>
+                disabled={!form.titulo?.trim() || guardando || subiendoFotos || subiendoPlanos}
+                title={!form.titulo?.trim() ? "Completá el título primero" : ""}>
                 {guardando || subiendoFotos || subiendoPlanos
                   ? <><span className="cart-spinner" />Guardando…</>
                   : editandoId ? "💾 Guardar cambios" : "💾 Guardar"}
