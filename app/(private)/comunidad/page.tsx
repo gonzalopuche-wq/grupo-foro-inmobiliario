@@ -21,7 +21,7 @@ interface DMChat {
 
 interface Lista {
   id: string; nombre: string; descripcion: string | null;
-  activa: boolean; created_at: string;
+  activa: boolean; created_at: string; color?: string | null;
   _miembros?: number;
 }
 
@@ -281,7 +281,7 @@ export default function ComunidadPage() {
       onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
       onMouseOut={e => (e.currentTarget.style.background = "transparent")}
     >
-      <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--gfi-border-subtle)", border: "1px solid rgba(255,255,255,0.09)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, background: l.color ? `${l.color}22` : "var(--gfi-border-subtle)", border: `1px solid ${l.color ? `${l.color}66` : "rgba(255,255,255,0.09)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
         📢
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>

@@ -9,6 +9,11 @@ interface Colega {
   matricula: string | null; foto_url: string | null;
 }
 
+const COLORES_LISTA = [
+  "#a0846b", "#8b5cf6", "#c084fc", "#a3e635", "#f97316",
+  "#d946ef", "#c0b94d", "#3b82f6", "#14b8a6", "#ef4444",
+];
+
 export default function NuevaListaPage() {
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
@@ -16,6 +21,7 @@ export default function NuevaListaPage() {
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set());
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [color, setColor] = useState(COLORES_LISTA[7]);
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -53,7 +59,7 @@ export default function NuevaListaPage() {
     setGuardando(true); setError(null);
     const { data: lista, error: errLista } = await supabase
       .from("listas_distribucion")
-      .insert({ creador_id: userId, nombre: nombre.trim(), descripcion: descripcion.trim() || null })
+      .insert({ creador_id: userId, nombre: nombre.trim(), descripcion: descripcion.trim() || null, color })
       .select("id")
       .single();
     if (errLista || !lista) { setError(errLista?.message ?? "Error al crear la lista."); setGuardando(false); return; }
@@ -106,6 +112,15 @@ export default function NuevaListaPage() {
             placeholder="Breve descripción del grupo"
             style={{ width: "100%", padding: "9px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif", boxSizing: "border-box" }}
           />
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <label style={{ display: "block", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>Color</label>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {COLORES_LISTA.map(c => (
+              <button key={c} type="button" onClick={() => setColor(c)} aria-label={`Color ${c}`}
+                style={{ width: 26, height: 26, borderRadius: "50%", background: c, border: "none", cursor: "pointer", outline: color === c ? "2px solid #fff" : "none", outlineOffset: 2 }} />
+            ))}
+          </div>
         </div>
       </div>
 
