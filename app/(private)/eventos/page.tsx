@@ -23,6 +23,8 @@ interface Evento {
   organizador_id: string | null;
   estado: string;
   destacado: boolean;
+  gasto?: number | null;
+  finanzas_pasadas?: boolean;
   media?: MediaItem[] | null;
   inscripto?: boolean;
   total_inscriptos?: number;
@@ -93,6 +95,17 @@ export default function EventosPage() {
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [toast, setToast] = useState<{msg: string; tipo: "ok"|"err"} | null>(null);
   const [eventoVer, setEventoVer] = useState<Evento | null>(null);
+  const [modalInscriptos, setModalInscriptos] = useState<Evento | null>(null);
+  const [inscriptos, setInscriptos] = useState<any[]>([]);
+  const [cargandoIns, setCargandoIns] = useState(false);
+  const [buscarPerfil, setBuscarPerfil] = useState("");
+  const [resultadosPerfil, setResultadosPerfil] = useState<any[]>([]);
+  const [miPerfil, setMiPerfil] = useState<any>(null);
+  const [modalInscribir, setModalInscribir] = useState<Evento | null>(null);
+  const [formInscribir, setFormInscribir] = useState({ nombre: "", apellido: "", matricula: "", email: "", telefono: "", inmobiliaria: "" });
+  const [inscribiendo, setInscribiendo] = useState(false);
+  const [gastoEvento, setGastoEvento] = useState("");
+  const [pasandoFin, setPasandoFin] = useState(false);
   // Multi-day / recurring
   const [modoFecha, setModoFecha] = useState<"unico"|"multidia"|"recurrente">("unico");
   const [fechasRec, setFechasRec] = useState<string[]>([]);
@@ -103,12 +116,31 @@ export default function EventosPage() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) { window.location.href = "/"; return; }
       setUserId(data.user.id);
-      const { data: p } = await supabase.from("perfiles").select("tipo").eq("id", data.user.id).single();
+      const { data: p } = await supabase.from("perfiles")
+        .select("id, tipo, nombre, apellido, matricula, telefono, email, inmobiliaria")
+        .eq("id", data.user.id).single();
       if (p?.tipo === "admin" || p?.tipo === "master") setEsAdmin(true);
+      if (p) setMiPerfil(p);
       await cargarEventos(data.user.id);
     };
     init();
   }, []);
+
+  // Búsqueda de perfiles para agregar inscriptos (con debounce).
+  useEffect(() => {
+    if (buscarPerfil.trim().length < 2) { setResultadosPerfil([]); return; }
+    let activo = true;
+    const t = setTimeout(async () => {
+      const q = buscarPerfil.trim();
+      const { data } = await supabase.from("perfiles")
+        .select("id, nombre, apellido, matricula, telefono")
+        .or(`nombre.ilike.%${q}%,apellido.ilike.%${q}%`).limit(8);
+      if (!activo) return;
+      const yaIds = new Set(inscriptos.map(i => i.perfil_id));
+      setResultadosPerfil((data ?? []).filter((p: any) => !yaIds.has(p.id)));
+    }, 300);
+    return () => { activo = false; clearTimeout(t); };
+  }, [buscarPerfil, inscriptos]);
 
   const cargarEventos = async (uid: string) => {
     setLoading(true);
@@ -175,6 +207,111 @@ export default function EventosPage() {
     }
     await cargarEventos(userId);
     setProcesando(null);
+  };
+
+  // ── Inscripción con formulario (completa/actualiza el perfil del Foro) ─────
+  const setFI = (k: string, v: string) => setFormInscribir(prev => ({ ...prev, [k]: v }));
+  const abrirInscribir = (ev: Evento) => {
+    const p = miPerfil ?? {};
+    setFormInscribir({
+      nombre: p.nombre ?? "", apellido: p.apellido ?? "", matricula: p.matricula ?? "",
+      email: p.email ?? "", telefono: p.telefono ?? "", inmobiliaria: p.inmobiliaria ?? "",
+    });
+    setModalInscribir(ev);
+  };
+  const confirmarInscripcion = async (ev: Evento) => {
+    if (!userId) return;
+    if (!formInscribir.nombre.trim() || !formInscribir.apellido.trim()) { mostrarToast("Completá nombre y apellido", "err"); return; }
+    setInscribiendo(true);
+    const updates: any = {
+      nombre: formInscribir.nombre.trim(),
+      apellido: formInscribir.apellido.trim(),
+      matricula: formInscribir.matricula.trim() || null,
+      email: formInscribir.email.trim() || null,
+      telefono: formInscribir.telefono.trim() || null,
+      inmobiliaria: formInscribir.inmobiliaria.trim() || null,
+    };
+    await supabase.from("perfiles").update(updates).eq("id", userId); // mantiene la base del Foro al día
+    setMiPerfil((prev: any) => ({ ...(prev ?? {}), ...updates }));
+    const { error } = await supabase.from("inscripciones_eventos").insert({ evento_id: ev.id, perfil_id: userId });
+    setInscribiendo(false);
+    if (error) { mostrarToast("No se pudo inscribir", "err"); return; }
+    setModalInscribir(null);
+    await cargarEventos(userId);
+    mostrarToast("¡Inscripto! Tus datos quedaron actualizados.");
+  };
+
+  // ── Gestión de inscriptos (organizador / admin) ───────────────────────────
+  const abrirInscriptos = async (ev: Evento) => {
+    setModalInscriptos(ev); setInscriptos([]); setBuscarPerfil(""); setResultadosPerfil([]);
+    setGastoEvento(ev.gasto != null ? String(ev.gasto) : "");
+    await cargarInscriptos(ev.id);
+  };
+  const cargarInscriptos = async (eventoId: string) => {
+    setCargandoIns(true);
+    const { data } = await supabase.from("inscripciones_eventos")
+      .select("id, perfil_id, asistio, pago, monto_pagado, created_at, agregado_por, perfiles(nombre, apellido, telefono, matricula)")
+      .eq("evento_id", eventoId)
+      .order("created_at", { ascending: true });
+    setInscriptos(data ?? []);
+    setCargandoIns(false);
+  };
+  const toggleAsistio = async (insId: string, valor: boolean) => {
+    setInscriptos(prev => prev.map(i => i.id === insId ? { ...i, asistio: valor } : i));
+    const { error } = await supabase.from("inscripciones_eventos")
+      .update({ asistio: valor, asistio_at: valor ? new Date().toISOString() : null }).eq("id", insId);
+    if (error) {
+      setInscriptos(prev => prev.map(i => i.id === insId ? { ...i, asistio: !valor } : i));
+      mostrarToast("No se pudo actualizar la asistencia", "err");
+    }
+  };
+  const togglePago = async (insId: string, valor: boolean) => {
+    setInscriptos(prev => prev.map(i => i.id === insId ? { ...i, pago: valor } : i));
+    const { error } = await supabase.from("inscripciones_eventos").update({ pago: valor }).eq("id", insId);
+    if (error) {
+      setInscriptos(prev => prev.map(i => i.id === insId ? { ...i, pago: !valor } : i));
+      mostrarToast("No se pudo actualizar el pago", "err");
+    }
+  };
+  const guardarMontoPagado = async (insId: string, valor: string) => {
+    const monto = valor.trim() === "" ? null : parseFloat(valor.replace(/[^\d.]/g, ""));
+    setInscriptos(prev => prev.map(i => i.id === insId ? { ...i, monto_pagado: monto } : i));
+    await supabase.from("inscripciones_eventos").update({ monto_pagado: monto }).eq("id", insId);
+  };
+  const quitarInscripto = async (insId: string, eventoId: string) => {
+    if (!confirm("¿Quitar a esta persona de la lista de inscriptos?")) return;
+    const { error } = await supabase.from("inscripciones_eventos").delete().eq("id", insId);
+    if (error) { mostrarToast("No se pudo quitar al inscripto", "err"); return; }
+    await cargarInscriptos(eventoId);
+    if (userId) cargarEventos(userId);
+  };
+  const agregarInscripto = async (ev: Evento, perfilId: string) => {
+    const { error } = await supabase.from("inscripciones_eventos")
+      .insert({ evento_id: ev.id, perfil_id: perfilId, agregado_por: userId });
+    if (error) { mostrarToast("No se pudo agregar (¿ya está inscripto?)", "err"); return; }
+    setBuscarPerfil(""); setResultadosPerfil([]);
+    await cargarInscriptos(ev.id);
+    if (userId) cargarEventos(userId);
+    mostrarToast("Inscripto agregado");
+  };
+  const guardarGasto = async (ev: Evento, valor: string) => {
+    const gasto = valor.trim() === "" ? null : parseFloat(valor.replace(/[^\d.]/g, ""));
+    await supabase.from("eventos").update({ gasto }).eq("id", ev.id);
+    setModalInscriptos(prev => prev ? { ...prev, gasto } : prev);
+  };
+  const pasarAFinanzas = async (ev: Evento, recaudado: number, gasto: number) => {
+    if (ev.finanzas_pasadas) { mostrarToast("Este evento ya se pasó a finanzas", "err"); return; }
+    if (recaudado <= 0 && gasto <= 0) { mostrarToast("No hay montos para registrar", "err"); return; }
+    setPasandoFin(true);
+    const filas: any[] = [];
+    if (recaudado > 0) filas.push({ tipo: "ingreso", categoria: "Eventos", concepto: `Recaudado: ${ev.titulo}`, monto: recaudado, moneda: ev.moneda ?? "ARS", referencia: `evento:${ev.id}` });
+    if (gasto > 0) filas.push({ tipo: "gasto", categoria: "Eventos", concepto: `Gasto: ${ev.titulo}`, monto: gasto, moneda: ev.moneda ?? "ARS", referencia: `evento:${ev.id}` });
+    const { error } = await supabase.from("admin_finanzas").insert(filas);
+    if (error) { setPasandoFin(false); mostrarToast("No se pudo pasar a finanzas (solo admin)", "err"); return; }
+    await supabase.from("eventos").update({ finanzas_pasadas: true }).eq("id", ev.id);
+    setPasandoFin(false);
+    setModalInscriptos(prev => prev ? { ...prev, finanzas_pasadas: true } : prev);
+    mostrarToast("Saldo registrado en finanzas generales");
   };
 
 
@@ -758,8 +895,9 @@ export default function EventosPage() {
                           <button className={`ev-btn-ins ${ev.inscripto?"inscripto":lleno?"lleno":"libre"}`}
                             onClick={()=>{
                               if (lleno && !ev.inscripto) return;
-                              if (!ev.inscripto && ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
-                              toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0);
+                              if (ev.inscripto) { toggleInscripcion(ev.id,true,ev.capacidad,ev.total_inscriptos??0); return; }
+                              if (ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
+                              abrirInscribir(ev);
                             }}
                             disabled={lleno&&!ev.inscripto}>
                             {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
@@ -774,6 +912,12 @@ export default function EventosPage() {
                           onMouseLeave={e=>(e.currentTarget.style.color="var(--gfi-text-muted)")}>
                           Ver evento
                         </button>
+                        {(esAdmin || ev.organizador_id === userId) && (
+                          <button style={{padding:"5px 10px",background:"rgba(58,186,182,0.1)",border:"1px solid rgba(58,186,182,0.3)",borderRadius:3,color:"var(--gfi-teal-text)",fontFamily:"var(--font-display)",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}}
+                            onClick={()=>abrirInscriptos(ev)}>
+                            👥 Inscriptos{ev.total_inscriptos?` (${ev.total_inscriptos})`:""}
+                          </button>
+                        )}
                         {ev.link_reunion&&!pasado&&<a href={ev.link_reunion} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"#4ab8d8",textDecoration:"none",fontFamily:"var(--font-display)",fontWeight:700}}>Unirse</a>}
                         {esAdmin&&ev.estado==="publicado"&&(
                           <button
@@ -1181,6 +1325,172 @@ export default function EventosPage() {
       )}
 
       {/* MODAL VER EVENTO */}
+      {modalInscriptos && (
+        <div onClick={e => { if (e.target === e.currentTarget) setModalInscriptos(null); }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border)", borderRadius: 12, width: "100%", maxWidth: 560, maxHeight: "85vh", display: "flex", flexDirection: "column" }}>
+            <div style={{ padding: "18px 22px", borderBottom: "1px solid var(--gfi-border)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "var(--gfi-text-primary)" }}>Inscriptos</div>
+                  <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: 2 }}>{modalInscriptos.titulo}</div>
+                </div>
+                <button onClick={() => setModalInscriptos(null)} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>×</button>
+              </div>
+              <div style={{ fontSize: 12, color: "var(--gfi-text-secondary)", marginTop: 8 }}>
+                {inscriptos.length} inscripto{inscriptos.length === 1 ? "" : "s"} · {inscriptos.filter(i => i.asistio).length} asistieron
+              </div>
+            </div>
+
+            {/* Agregar persona (último momento) */}
+            <div style={{ padding: "12px 22px", borderBottom: "1px solid var(--gfi-border-subtle)", position: "relative" }}>
+              <input value={buscarPerfil} onChange={e => setBuscarPerfil(e.target.value)} placeholder="Agregar inscripto: buscá por nombre o apellido…"
+                style={{ width: "100%", background: "var(--gfi-bg-input)", border: "1px solid var(--gfi-border)", borderRadius: 6, color: "var(--gfi-text-primary)", padding: "8px 12px", fontSize: 13 }} />
+              {resultadosPerfil.length > 0 && (
+                <div style={{ position: "absolute", left: 22, right: 22, background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border)", borderRadius: 6, marginTop: 4, zIndex: 10, maxHeight: 220, overflowY: "auto" }}>
+                  {resultadosPerfil.map(p => (
+                    <div key={p.id} onClick={() => agregarInscripto(modalInscriptos, p.id)}
+                      style={{ padding: "9px 12px", cursor: "pointer", fontSize: 13, color: "var(--gfi-text-primary)", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                      {p.apellido}, {p.nombre} {p.matricula ? <span style={{ color: "var(--gfi-text-muted)", fontSize: 11 }}>· Mat. {p.matricula}</span> : null}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Lista */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "6px 22px 18px" }}>
+              {cargandoIns ? (
+                <div style={{ padding: 24, textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13 }}>Cargando…</div>
+              ) : inscriptos.length === 0 ? (
+                <div style={{ padding: 24, textAlign: "center", color: "var(--gfi-text-muted)", fontSize: 13 }}>Todavía no hay inscriptos.</div>
+              ) : inscriptos.map(i => {
+                const p = Array.isArray(i.perfiles) ? i.perfiles[0] : i.perfiles;
+                const tel = (p?.telefono ?? "").replace(/\D/g, "");
+                return (
+                  <div key={i.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <input type="checkbox" checked={!!i.asistio} onChange={e => toggleAsistio(i.id, e.target.checked)} title="Marcar asistencia" style={{ width: 18, height: 18, cursor: "pointer", flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--gfi-text-primary)" }}>
+                          {p ? `${p.apellido ?? ""}, ${p.nombre ?? ""}`.replace(/^, |, $/g, "") : "—"}
+                          {i.agregado_por ? <span style={{ fontSize: 10, color: "var(--gfi-gold-text)", marginLeft: 6 }}>agregado</span> : null}
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--gfi-text-muted)" }}>
+                          {[p?.telefono, p?.matricula ? `Mat. ${p.matricula}` : null].filter(Boolean).join(" · ") || "sin contacto"}
+                        </div>
+                      </div>
+                      {tel && <a href={`https://wa.me/${tel}`} target="_blank" rel="noopener noreferrer" title="WhatsApp" style={{ fontSize: 16, textDecoration: "none", flexShrink: 0 }}>💬</a>}
+                      <button onClick={() => quitarInscripto(i.id, modalInscriptos.id)} title="Quitar" style={{ background: "none", border: "none", color: "var(--gfi-red)", cursor: "pointer", fontSize: 14, flexShrink: 0 }}>✕</button>
+                    </div>
+                    {/* Pago: casilla de verificación (acreditado) + monto transferido */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6, paddingLeft: 30 }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: i.pago ? "var(--gfi-teal-text)" : "var(--gfi-text-muted)", cursor: "pointer", whiteSpace: "nowrap" }}>
+                        <input type="checkbox" checked={!!i.pago} onChange={e => togglePago(i.id, e.target.checked)} style={{ width: 14, height: 14, cursor: "pointer" }} />
+                        {i.pago ? "✓ Acreditado" : "Pago acreditado"}
+                      </label>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <span style={{ fontSize: 11, color: "var(--gfi-text-dim)" }}>$</span>
+                        <input type="text" inputMode="decimal" defaultValue={i.monto_pagado != null ? String(i.monto_pagado) : ""}
+                          onBlur={e => { if ((e.target.value.trim() || "0") !== String(i.monto_pagado ?? "")) guardarMontoPagado(i.id, e.target.value); }}
+                          placeholder="monto transferido"
+                          style={{ width: 130, background: "var(--gfi-bg-input)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "var(--gfi-text-primary)", padding: "5px 8px", fontSize: 12 }} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Finanzas del evento: recaudado + gasto → saldo general */}
+            {(() => {
+              const recaudado = inscriptos.reduce((s, i) => s + (i.pago ? Number(i.monto_pagado ?? 0) : 0), 0);
+              const gasto = gastoEvento.trim() === "" ? 0 : parseFloat(gastoEvento.replace(/[^\d.]/g, "")) || 0;
+              const saldo = recaudado - gasto;
+              const mon = modalInscriptos.moneda ?? "ARS";
+              const fmt = (n: number) => n.toLocaleString("es-AR", { maximumFractionDigits: 2 });
+              return (
+                <div style={{ borderTop: "1px solid var(--gfi-border)", padding: "14px 22px", background: "var(--gfi-bg-card)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, color: "var(--gfi-text-muted)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>Gasto del evento</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ fontSize: 12, color: "var(--gfi-text-dim)" }}>$</span>
+                      <input type="text" inputMode="decimal" value={gastoEvento}
+                        onChange={e => setGastoEvento(e.target.value)}
+                        onBlur={e => guardarGasto(modalInscriptos, e.target.value)}
+                        placeholder="0" disabled={!!modalInscriptos.finanzas_pasadas}
+                        style={{ width: 150, background: "var(--gfi-bg-input)", border: "1px solid var(--gfi-border)", borderRadius: 5, color: "var(--gfi-text-primary)", padding: "6px 9px", fontSize: 13 }} />
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginTop: 12, fontSize: 13 }}>
+                    <div><span style={{ color: "var(--gfi-text-muted)" }}>Recaudado</span><div style={{ color: "var(--gfi-teal-text)", fontWeight: 700, fontSize: 15 }}>$ {fmt(recaudado)}</div></div>
+                    <div><span style={{ color: "var(--gfi-text-muted)" }}>Gasto</span><div style={{ color: "#f87171", fontWeight: 700, fontSize: 15 }}>$ {fmt(gasto)}</div></div>
+                    <div style={{ textAlign: "right" }}><span style={{ color: "var(--gfi-text-muted)" }}>Saldo</span><div style={{ color: saldo >= 0 ? "var(--gfi-teal-text)" : "#f87171", fontWeight: 800, fontSize: 15 }}>$ {fmt(saldo)} {mon}</div></div>
+                  </div>
+                  {esAdmin && (
+                    modalInscriptos.finanzas_pasadas ? (
+                      <div style={{ marginTop: 12, textAlign: "center", fontSize: 11, color: "var(--gfi-teal-text)", fontWeight: 700 }}>✓ Ya registrado en finanzas generales</div>
+                    ) : (
+                      <button onClick={() => pasarAFinanzas(modalInscriptos, recaudado, gasto)} disabled={pasandoFin}
+                        style={{ width: "100%", marginTop: 12, padding: "9px", background: "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", cursor: pasandoFin ? "not-allowed" : "pointer", opacity: pasandoFin ? 0.6 : 1 }}>
+                        {pasandoFin ? "Registrando…" : "💰 Pasar saldo a finanzas generales"}
+                      </button>
+                    )
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL INSCRIBIRSE — formulario que actualiza la base del Foro */}
+      {modalInscribir && (
+        <div onClick={e => { if (e.target === e.currentTarget && !inscribiendo) setModalInscribir(null); }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 3100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div className="ev-modal" style={{ maxWidth: 480 }}>
+            <div className="ev-modal-titulo">Inscribirme a <span>{modalInscribir.titulo}</span></div>
+            <p style={{ fontSize: 12, color: "var(--gfi-text-muted)", marginTop: -10, marginBottom: 16 }}>
+              Confirmá tus datos. Si algo cambió, se actualiza también en tu perfil del Foro.
+            </p>
+            <div className="ev-row2">
+              <div className="ev-field">
+                <label className="ev-label">Nombre *</label>
+                <input className="ev-input" value={formInscribir.nombre} onChange={e => setFI("nombre", e.target.value)} />
+              </div>
+              <div className="ev-field">
+                <label className="ev-label">Apellido *</label>
+                <input className="ev-input" value={formInscribir.apellido} onChange={e => setFI("apellido", e.target.value)} />
+              </div>
+            </div>
+            <div className="ev-row2">
+              <div className="ev-field">
+                <label className="ev-label">Matrícula</label>
+                <input className="ev-input" value={formInscribir.matricula} onChange={e => setFI("matricula", e.target.value)} />
+              </div>
+              <div className="ev-field">
+                <label className="ev-label">Celular</label>
+                <input className="ev-input" value={formInscribir.telefono} onChange={e => setFI("telefono", e.target.value)} placeholder="Ej: 341..." />
+              </div>
+            </div>
+            <div className="ev-field">
+              <label className="ev-label">Email</label>
+              <input className="ev-input" type="email" value={formInscribir.email} onChange={e => setFI("email", e.target.value)} />
+            </div>
+            <div className="ev-field">
+              <label className="ev-label">Inmobiliaria</label>
+              <input className="ev-input" value={formInscribir.inmobiliaria} onChange={e => setFI("inmobiliaria", e.target.value)} />
+            </div>
+            <div className="ev-modal-actions">
+              <button className="ev-btn-cancel" onClick={() => setModalInscribir(null)} disabled={inscribiendo}>Cancelar</button>
+              <button className="ev-btn-guardar" onClick={() => confirmarInscripcion(modalInscribir)} disabled={inscribiendo}>
+                {inscribiendo ? "Inscribiendo…" : "Confirmar inscripción"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {eventoVer && (() => {
         const ev = eventoVer;
         const f = formatFecha(ev.fecha);
@@ -1308,8 +1618,10 @@ export default function EventosPage() {
                         disabled={lleno&&!ev.inscripto}
                         onClick={()=>{
                           if (lleno && !ev.inscripto) return;
-                          if (!ev.inscripto && ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
-                          toggleInscripcion(ev.id,!!ev.inscripto,ev.capacidad,ev.total_inscriptos??0);
+                          if (ev.inscripto) { toggleInscripcion(ev.id,true,ev.capacidad,ev.total_inscriptos??0); return; }
+                          if (ev.link_externo) window.open(ev.link_externo,"_blank","noopener,noreferrer");
+                          setEventoVer(null);
+                          abrirInscribir(ev);
                         }}>
                         {ev.inscripto?"✓ Inscripto":lleno?"Completo":"Inscribirse"}
                       </button>
