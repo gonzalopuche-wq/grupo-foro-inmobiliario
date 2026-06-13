@@ -41,8 +41,9 @@ const MEDIA_OK = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
 export async function POST(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  const { data: { user } } = await sb.auth.getUser(token);
-  if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const { data, error: authError } = await sb.auth.getUser(token);
+  const user = data?.user;
+  if (authError || !user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   // Vision es más cara: límite más conservador que la descripción de texto plano.
   if (!rateLimit(`mide-descripcion:${user.id}`, 12, 60 * 60 * 1000)) {

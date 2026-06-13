@@ -9,7 +9,7 @@ import { TONOS, areaAmbiente, superficieTotal } from '../lib/types';
 import { apiPost } from '../lib/api';
 
 export default function DescripcionScreen() {
-  const { current, setCampo, guardar } = useRelevamientos();
+  const { current, guardar } = useRelevamientos();
   const [tono, setTono] = useState(current?.tono ?? 'profesional');
   const [loading, setLoading] = useState(false);
   const [texto, setTexto] = useState(current?.descripcionIa ?? '');
@@ -47,10 +47,15 @@ export default function DescripcionScreen() {
     }
   };
 
-  const guardarTexto = () => {
-    setCampo({ descripcionIa: texto, tono });
-    guardar();
-    Alert.alert('Guardado', 'Descripción guardada en el relevamiento.');
+  const guardarTexto = async () => {
+    if (!current) return;
+    const updated = { ...current, descripcionIa: texto, tono };
+    try {
+      await guardar(updated);
+      Alert.alert('Guardado', 'Descripción guardada en el relevamiento.');
+    } catch {
+      Alert.alert('Error', 'No se pudo guardar la descripción.');
+    }
   };
 
   return (

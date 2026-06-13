@@ -14,7 +14,22 @@ interface Props {
 function NumField({
   label, value, onChange, onMedir,
 }: { label: string; value: number; onChange: (v: number) => void; onMedir?: () => void }) {
-  const set = (v: number) => onChange(Math.max(0, Math.round(v * 100) / 100));
+  // Estado local de texto: deja escribir "0", "0." y decimales sin que el
+  // redondeo numérico borre lo que el usuario está tipeando.
+  const [local, setLocal] = React.useState(String(value ?? ''));
+
+  // Sincroniza cuando el valor cambia desde afuera (steppers, medición con cámara).
+  React.useEffect(() => {
+    if (parseFloat(local.replace(',', '.')) !== value) setLocal(String(value ?? ''));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const set = (v: number) => {
+    const r = Math.max(0, Math.round(v * 100) / 100);
+    setLocal(String(r));
+    onChange(r);
+  };
+
   return (
     <View style={s.numWrap}>
       <Text style={s.numLabel}>{label}</Text>
@@ -22,8 +37,12 @@ function NumField({
         <TouchableOpacity style={s.stepBtn} onPress={() => set(value - 0.1)}><Text style={s.stepTxt}>−</Text></TouchableOpacity>
         <TextInput
           style={s.numInput}
-          value={value ? String(value) : ''}
-          onChangeText={(t) => set(parseFloat(t.replace(',', '.')) || 0)}
+          value={local}
+          onChangeText={(t) => {
+            setLocal(t);
+            const parsed = parseFloat(t.replace(',', '.'));
+            if (!Number.isNaN(parsed)) onChange(Math.max(0, Math.round(parsed * 100) / 100));
+          }}
           keyboardType="decimal-pad"
           selectTextOnFocus
         />

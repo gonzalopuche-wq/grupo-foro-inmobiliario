@@ -23,7 +23,13 @@ export default function MedicionScreen({ navigation }: Props) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={() => { guardar(); Alert.alert('Guardado', 'Relevamiento guardado.'); }} hitSlop={10}>
+        <TouchableOpacity
+          onPress={async () => {
+            try { await guardar(); Alert.alert('Guardado', 'Relevamiento guardado.'); }
+            catch { Alert.alert('Error', 'No se pudo guardar el relevamiento.'); }
+          }}
+          hitSlop={10}
+        >
           <Text style={s.guardar}>Guardar</Text>
         </TouchableOpacity>
       ),
@@ -49,9 +55,9 @@ export default function MedicionScreen({ navigation }: Props) {
 
   const borrar = (id: string) => setAmbientes(ambientes.filter((a) => a.id !== id));
 
-  const irA = (pantalla: 'Plano' | 'Tour3D' | 'Descripcion') => {
+  const irA = async (pantalla: 'Plano' | 'Tour3D' | 'Descripcion') => {
     if (ambientes.length === 0) { Alert.alert('Agregá al menos un ambiente primero.'); return; }
-    guardar();
+    try { await guardar(); } catch { /* se navega igual; el usuario puede reintentar Guardar */ }
     navigation.navigate(pantalla);
   };
 

@@ -17,6 +17,7 @@ export default function Tour3DScreen() {
   const radius = useRef(14);
   const last = useRef({ x: 0, y: 0 });
   const rafRef = useRef<number | null>(null);
+  const activeRef = useRef(true);
 
   const pan = useRef(
     PanResponder.create({
@@ -38,7 +39,13 @@ export default function Tour3DScreen() {
     radius.current = Math.min(40, Math.max(3, radius.current * factor));
   };
 
-  useEffect(() => () => { if (rafRef.current != null) cancelAnimationFrame(rafRef.current); }, []);
+  useEffect(() => {
+    activeRef.current = true;
+    return () => {
+      activeRef.current = false;
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   if (!current || ambientes.length === 0) {
     return <View style={s.center}><Text style={s.emptyTxt}>No hay ambientes para mostrar en 3D.</Text></View>;
@@ -102,6 +109,19 @@ export default function Tour3DScreen() {
     }
 
     const render = () => {
+      // Al desmontar: cortar el loop y liberar GPU (geometrías, materiales, renderer).
+      if (!activeRef.current) {
+        scene.traverse((obj) => {
+          if (obj instanceof THREE.Mesh) {
+            obj.geometry.dispose();
+            const mat = obj.material;
+            if (Array.isArray(mat)) mat.forEach((m) => m.dispose());
+            else mat.dispose();
+          }
+        });
+        renderer.dispose();
+        return;
+      }
       rafRef.current = requestAnimationFrame(render);
       const r = radius.current;
       const sinPhi = Math.sin(phi.current);

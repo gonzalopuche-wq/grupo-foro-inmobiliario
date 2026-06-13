@@ -45,7 +45,7 @@ interface Ctx {
   abrir: (id: string) => void;
   setCampo: (patch: Partial<Relevamiento>) => void;
   setAmbientes: (ambientes: Ambiente[]) => void;
-  guardar: () => Promise<void>;
+  guardar: (updated?: Relevamiento) => Promise<void>;
   eliminar: (id: string) => Promise<void>;
 }
 
@@ -94,30 +94,33 @@ export function RelevamientoProvider({ children }: { children: React.ReactNode }
     setCurrent((c) => (c ? { ...c, ambientes } : c));
   }, []);
 
-  const guardar = useCallback(async () => {
-    setCurrent((c) => {
-      if (!c) return c;
-      const total = superficieTotal(c.ambientes);
-      supabase
-        .from('mide_relevamientos')
-        .update({
-          titulo: c.titulo,
-          direccion: c.direccion ?? null,
-          tipo: c.tipo ?? null,
-          operacion: c.operacion ?? null,
-          alto_techo: c.altoTecho,
-          ambientes: ambientesParaDB(c.ambientes),
-          superficie_total: total,
-          descripcion_ia: c.descripcionIa ?? null,
-          tono: c.tono ?? 'profesional',
-        })
-        .eq('id', c.id)
-        .then(() => {
-          setRelevamientos((prev) => prev.map((r) => (r.id === c.id ? c : r)));
-        });
-      return c;
-    });
-  }, []);
+  // Persiste el relevamiento. Función async pura (sin efectos dentro de un
+  // updater de estado): podés pasarle un objeto `updated` para evitar leer
+  // estado obsoleto cuando guardás justo después de un setCampo/setAmbientes.
+  const guardar = useCallback(async (updated?: Relevamiento) => {
+    const active = updated ?? current;
+    if (!active) return;
+    if (updated) setCurrent(updated);
+
+    const total = superficieTotal(active.ambientes);
+    const { error } = await supabase
+      .from('mide_relevamientos')
+      .update({
+        titulo: active.titulo,
+        direccion: active.direccion ?? null,
+        tipo: active.tipo ?? null,
+        operacion: active.operacion ?? null,
+        alto_techo: active.altoTecho,
+        ambientes: ambientesParaDB(active.ambientes),
+        superficie_total: total,
+        descripcion_ia: active.descripcionIa ?? null,
+        tono: active.tono ?? 'profesional',
+      })
+      .eq('id', active.id);
+    if (error) throw error;
+
+    setRelevamientos((prev) => prev.map((r) => (r.id === active.id ? active : r)));
+  }, [current]);
 
   const eliminar = useCallback(async (id: string) => {
     await supabase.from('mide_relevamientos').delete().eq('id', id);
