@@ -1,0 +1,15 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+
+# Secrets — NO commitear
+.env
+.env.local
+play-service-account.json
+
+# Build artifacts
+*.apk
+*.aab
+*.keystore

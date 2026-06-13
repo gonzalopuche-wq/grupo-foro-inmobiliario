@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Sub-apps Expo (toolchain propio, no se lintean con la config de Next):
+    "mide-app/**",
   ]),
 ]);
 

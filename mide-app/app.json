@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "GFI MIDE",
+    "slug": "gfi-mide",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "gfimide",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0a"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.gfi.mide",
+      "infoPlist": {
+        "NSCameraUsageDescription": "GFI MIDE usa la cámara para medir ambientes y tomar fotos del recorrido.",
+        "NSMotionUsageDescription": "GFI MIDE usa los sensores de movimiento para medir distancias con la cámara."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "backgroundColor": "#0a0a0a"
+      },
+      "package": "com.gfi.mide",
+      "versionCode": 1,
+      "permissions": ["android.permission.CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "GFI MIDE usa la cámara para medir ambientes y tomar fotos del recorrido."
+        }
+      ]
+    ]
+  }
+}
