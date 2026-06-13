@@ -162,9 +162,9 @@ export default function ActividadesPage() {
         .act-sidebar-title { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-dim); margin-bottom: 8px; padding: 0 2px; }
         .act-filter-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; cursor: pointer; font-family: var(--font-body); font-size: 13px; color: var(--gfi-text-secondary); transition: all 0.15s; text-align: left; }
         .act-filter-btn:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
-        .act-filter-btn.active { border-color: #990000; background: rgba(200,0,0,0.08); color: #fff; }
+        .act-filter-btn.active { border-color: #990000; background: rgba(153,0,0,0.08); color: #fff; }
         .act-filter-count { margin-left: auto; font-size: 11px; font-weight: 700; font-family: var(--font-display); background: var(--gfi-border); padding: 2px 8px; border-radius: 10px; }
-        .act-filter-btn.active .act-filter-count { background: rgba(200,0,0,0.25); }
+        .act-filter-btn.active .act-filter-count { background: rgba(153,0,0,0.25); }
         .act-feed { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
         .act-item { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.15s; }
         .act-item:hover { border-color: var(--gfi-border); }
@@ -172,24 +172,24 @@ export default function ActividadesPage() {
         .act-icon-interaccion { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2); }
         .act-icon-tarea { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2); }
         .act-icon-contacto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
-        .act-icon-negocio { background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.2); }
+        .act-icon-negocio { background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.2); }
         .act-body { flex: 1; min-width: 0; }
         .act-item-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
         .act-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; }
         .act-badge-interaccion { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; }
         .act-badge-tarea { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; }
         .act-badge-contacto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #3abab6; }
-        .act-badge-negocio { background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); color: #ff6666; }
+        .act-badge-negocio { background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.25); color: #ff6666; }
         .act-item-title { font-size: 14px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
         .act-item-sub { font-size: 12px; color: var(--gfi-text-muted); margin-top: 3px; line-height: 1.4; }
         .act-item-desc { font-size: 12px; color: var(--gfi-text-secondary); margin-top: 4px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .act-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
         .act-date { font-size: 11px; color: var(--gfi-text-dim); white-space: nowrap; }
-        .act-link { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(200,0,0,0.7); text-decoration: none; padding: 4px 10px; border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; transition: all 0.15s; }
-        .act-link:hover { color: #990000; border-color: rgba(200,0,0,0.5); background: rgba(200,0,0,0.06); }
+        .act-link { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(153,0,0,0.7); text-decoration: none; padding: 4px 10px; border: 1px solid rgba(153,0,0,0.2); border-radius: 4px; transition: all 0.15s; }
+        .act-link:hover { color: #990000; border-color: rgba(153,0,0,0.5); background: rgba(153,0,0,0.06); }
         .act-empty { text-align: center; padding: 60px 20px; color: var(--gfi-text-dim); font-size: 14px; font-style: italic; }
         .act-loading { display: flex; align-items: center; justify-content: center; padding: 60px; }
-        .act-spinner { width: 32px; height: 32px; border: 2px solid rgba(200,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .act-spinner { width: 32px; height: 32px; border: 2px solid rgba(153,0,0,0.2); border-top-color: #990000; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .act-venc-ok { color: #3abab6; font-size: 11px; font-weight: 600; }
         .act-venc-warn { color: #d4960c; font-size: 11px; font-weight: 600; }
@@ -232,7 +232,7 @@ export default function ActividadesPage() {
             {/* Feed */}
             <section className="act-feed">
               {error && (
-                <div style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 6, padding: "12px 16px", fontSize: 13, color: "rgba(255,100,100,0.8)" }}>
+                <div style={{ background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 6, padding: "12px 16px", fontSize: 13, color: "rgba(255,100,100,0.8)" }}>
                   {error}
                 </div>
               )}

@@ -74,13 +74,13 @@ export default function NoticiasForoSection({ userId }: Props) {
       <style>{`
         .nf-topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
         .nf-btn-nueva { padding: 9px 18px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
-        .nf-btn-nueva:hover { background: #e60000; }
+        .nf-btn-nueva:hover { background: #b80000; }
         .nf-ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); border-radius: 6px; padding: 10px 16px; font-size: 12px; color: #4ade80; font-family: var(--font-body); }
         .nf-item { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 16px 20px; cursor: pointer; transition: all 0.2s; display: flex; gap: 14px; }
-        .nf-item:hover { border-color: rgba(200,0,0,0.2); }
+        .nf-item:hover { border-color: rgba(153,0,0,0.2); }
         .nf-item.dest { border-color: rgba(234,179,8,0.2); }
-        .nf-item-img { width: 80px; height: 80px; border-radius: 5px; object-fit: cover; flex-shrink: 0; background: rgba(200,0,0,0.06); }
-        .nf-item-placeholder { width: 80px; height: 80px; border-radius: 5px; background: rgba(200,0,0,0.06); border: 1px solid rgba(200,0,0,0.12); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .nf-item-img { width: 80px; height: 80px; border-radius: 5px; object-fit: cover; flex-shrink: 0; background: rgba(153,0,0,0.06); }
+        .nf-item-placeholder { width: 80px; height: 80px; border-radius: 5px; background: rgba(153,0,0,0.06); border: 1px solid rgba(153,0,0,0.12); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; }
         .nf-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
         .nf-item-fuente { font-size: 9px; color: #990000; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
         .nf-item-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -91,7 +91,7 @@ export default function NoticiasForoSection({ userId }: Props) {
 
         /* Modal */
         .nf-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
-        .nf-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; width: 100%; max-width: 640px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .nf-modal { background: #0f0f0f; border: 1px solid rgba(153,0,0,0.2); border-radius: 8px; width: 100%; max-width: 640px; max-height: 85vh; overflow-y: auto; position: relative; }
         .nf-modal::-webkit-scrollbar { width: 4px; }
         .nf-modal::-webkit-scrollbar-thumb { background: var(--gfi-border); }
         .nf-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 8px 8px 0 0; }
@@ -101,10 +101,10 @@ export default function NoticiasForoSection({ userId }: Props) {
         .nf-modal-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 10px; }
         .nf-modal-meta { font-size: 11px; color: var(--gfi-text-muted); margin-bottom: 18px; }
         .nf-modal-cuerpo { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; font-family: var(--font-body); white-space: pre-wrap; word-break: break-word; }
-        .nf-modal-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
-        .nf-modal-link:hover { background: rgba(200,0,0,0.15); color: #fff; }
+        .nf-modal-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
+        .nf-modal-link:hover { background: rgba(153,0,0,0.15); color: #fff; }
         .nf-modal-cerrar { position: absolute; top: 12px; right: 14px; background: rgba(0,0,0,0.6); border: 1px solid var(--gfi-border); border-radius: 50%; width: 30px; height: 30px; color: var(--gfi-text-secondary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
-        .nf-modal-cerrar:hover { background: rgba(200,0,0,0.3); color: #fff; }
+        .nf-modal-cerrar:hover { background: rgba(153,0,0,0.3); color: #fff; }
 
         /* Form */
         .nf-form { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 20px 24px; }
@@ -112,10 +112,10 @@ export default function NoticiasForoSection({ userId }: Props) {
         .nf-form-title span { color: #990000; }
         .nf-label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .nf-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); margin-bottom: 12px; }
-        .nf-input:focus { border-color: rgba(200,0,0,0.5); }
+        .nf-input:focus { border-color: rgba(153,0,0,0.5); }
         .nf-input::placeholder { color: var(--gfi-text-dim); }
         .nf-textarea { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; resize: vertical; min-height: 100px; font-family: var(--font-body); margin-bottom: 12px; }
-        .nf-textarea:focus { border-color: rgba(200,0,0,0.5); }
+        .nf-textarea:focus { border-color: rgba(153,0,0,0.5); }
         .nf-aviso { font-size: 11px; color: var(--gfi-text-dim); background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 4px; padding: 8px 12px; margin-bottom: 14px; }
         .nf-form-actions { display: flex; gap: 10px; justify-content: flex-end; }
         .nf-btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }

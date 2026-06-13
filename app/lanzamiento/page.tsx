@@ -185,7 +185,7 @@ export default function LanzamientoPage() {
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         .lanz-btn-primary { display:inline-block; background:#990000; color:#fff; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:14px 32px; border-radius:8px; transition:background 0.2s,transform 0.2s,box-shadow 0.2s; }
-        .lanz-btn-primary:hover { background:#e60000; transform:translateY(-2px); box-shadow:0 8px 24px rgba(153,0,0,0.4); }
+        .lanz-btn-primary:hover { background:#b80000; transform:translateY(-2px); box-shadow:0 8px 24px rgba(153,0,0,0.4); }
         .lanz-btn-outline { display:inline-block; background:transparent; color:#fff; font-family:'Montserrat',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; padding:13px 32px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); transition:border-color 0.2s,background 0.2s,transform 0.2s; }
         .lanz-btn-outline:hover { border-color:rgba(255,255,255,0.6); background:rgba(255,255,255,0.05); transform:translateY(-2px); }
         .mod-card { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:24px; transition:border-color 0.25s,background 0.25s,transform 0.25s; }

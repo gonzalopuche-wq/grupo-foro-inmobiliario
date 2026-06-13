@@ -195,7 +195,7 @@ export default function CrmTareasPage() {
         .t-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--gfi-text-dim); cursor: pointer; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
         .t-check.done { background: #3abab6; border-color: #3abab6; }
         .t-input { width: 100%; padding: 9px 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; box-sizing: border-box; }
-        .t-input:focus { border-color: rgba(200,0,0,0.5); }
+        .t-input:focus { border-color: rgba(153,0,0,0.5); }
         .t-select { width: 100%; padding: 9px 11px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
         .t-btn { padding: 9px 16px; border: none; border-radius: 5px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
         .t-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }

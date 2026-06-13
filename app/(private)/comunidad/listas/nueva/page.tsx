@@ -77,7 +77,7 @@ export default function NuevaListaPage() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -149,11 +149,11 @@ export default function NuevaListaPage() {
             <div
               key={c.id}
               onClick={() => toggleSeleccionado(c.id)}
-              style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", background: sel ? "rgba(200,0,0,0.06)" : "transparent", transition: "background 0.15s" }}
+              style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", cursor: "pointer", borderBottom: "1px solid var(--gfi-border-subtle)", background: sel ? "rgba(153,0,0,0.06)" : "transparent", transition: "background 0.15s" }}
               onMouseOver={e => { if (!sel) e.currentTarget.style.background = "var(--gfi-bg-card)"; }}
               onMouseOut={e => { if (!sel) e.currentTarget.style.background = "transparent"; }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: "50%", background: sel ? "rgba(200,0,0,0.2)" : "rgba(255,255,255,0.06)", border: sel ? "1px solid rgba(200,0,0,0.4)" : "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: sel ? "#990000" : "var(--gfi-text-muted)", flexShrink: 0, overflow: "hidden" }}>
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: sel ? "rgba(153,0,0,0.2)" : "rgba(255,255,255,0.06)", border: sel ? "1px solid rgba(153,0,0,0.4)" : "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: sel ? "#990000" : "var(--gfi-text-muted)", flexShrink: 0, overflow: "hidden" }}>
                 {c.foto_url ? <img src={c.foto_url} alt={c.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials(c)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -173,7 +173,7 @@ export default function NuevaListaPage() {
         )}
       </div>
 
-      {error && <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 6, fontSize: 12, color: "#ff8080", fontFamily: "Inter,sans-serif" }}>{error}</div>}
+      {error && <div style={{ marginBottom: 12, padding: "10px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 6, fontSize: 12, color: "#ff8080", fontFamily: "Inter,sans-serif" }}>{error}</div>}
 
       <button
         onClick={guardar}

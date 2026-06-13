@@ -47,14 +47,14 @@ export default function NoticiasWidget() {
         .nw-section { margin-bottom: 20px; }
         .nw-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .nw-titulo { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gfi-text-muted); }
-        .nw-ver-todas { font-size: 10px; color: rgba(200,0,0,0.7); font-family: var(--font-display); font-weight: 700; text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
+        .nw-ver-todas { font-size: 10px; color: rgba(153,0,0,0.7); font-family: var(--font-display); font-weight: 700; text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
         .nw-ver-todas:hover { color: #990000; }
         .nw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
         .nw-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; overflow: hidden; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; }
-        .nw-card:hover { border-color: rgba(200,0,0,0.25); transform: translateY(-2px); }
+        .nw-card:hover { border-color: rgba(153,0,0,0.25); transform: translateY(-2px); }
         .nw-card.dest { border-color: rgba(234,179,8,0.2); }
         .nw-card-img { width: 100%; height: 100px; object-fit: cover; display: block; }
-        .nw-card-noimg { width: 100%; height: 60px; background: rgba(200,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 22px; border-bottom: 1px solid var(--gfi-border-subtle); }
+        .nw-card-noimg { width: 100%; height: 60px; background: rgba(153,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 22px; border-bottom: 1px solid var(--gfi-border-subtle); }
         .nw-card-body { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
         .nw-card-fuente { font-size: 9px; color: #990000; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
         .nw-card-titulo { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: #fff; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -64,7 +64,7 @@ export default function NoticiasWidget() {
         @keyframes nw-pulse { 0%,100%{opacity:0.5}50%{opacity:1} }
         /* Modal */
         .nw-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
-        .nw-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; width: 100%; max-width: 640px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .nw-modal { background: #0f0f0f; border: 1px solid rgba(153,0,0,0.2); border-radius: 8px; width: 100%; max-width: 640px; max-height: 85vh; overflow-y: auto; position: relative; }
         .nw-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 8px 8px 0 0; }
         .nw-modal-img { width: 100%; height: 220px; object-fit: cover; border-radius: 8px 8px 0 0; display: block; }
         .nw-modal-body { padding: 24px 28px; }
@@ -72,10 +72,10 @@ export default function NoticiasWidget() {
         .nw-modal-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 10px; }
         .nw-modal-fecha { font-size: 11px; color: var(--gfi-text-muted); margin-bottom: 18px; }
         .nw-modal-cuerpo { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; font-family: var(--font-body); white-space: pre-wrap; }
-        .nw-modal-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
-        .nw-modal-link:hover { background: rgba(200,0,0,0.15); color: #fff; }
+        .nw-modal-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
+        .nw-modal-link:hover { background: rgba(153,0,0,0.15); color: #fff; }
         .nw-modal-cerrar { position: absolute; top: 12px; right: 14px; background: rgba(0,0,0,0.6); border: 1px solid var(--gfi-border); border-radius: 50%; width: 30px; height: 30px; color: var(--gfi-text-secondary); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
-        .nw-modal-cerrar:hover { background: rgba(200,0,0,0.3); color: #fff; }
+        .nw-modal-cerrar:hover { background: rgba(153,0,0,0.3); color: #fff; }
       `}</style>
 
       <div className="nw-section">

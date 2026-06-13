@@ -44,7 +44,7 @@ export default function WindowGrid({ onClose }: { onClose: () => void }) {
               cursor: "pointer", transition: "border-color 0.15s",
               position: "relative",
             }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(200,0,0,0.4)")}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(153,0,0,0.4)")}
             onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)")}
           >
             {/* Preview */}

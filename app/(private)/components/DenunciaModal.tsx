@@ -81,7 +81,7 @@ export default function DenunciaModal({ tipoContenido, contenidoId, onClose, onS
               </label>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {MOTIVOS.map(m => (
-                  <label key={m.value} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", background: motivo === m.value ? "rgba(200,0,0,0.1)" : "var(--gfi-bg-card)", border: "1px solid", borderColor: motivo === m.value ? "rgba(200,0,0,0.4)" : "var(--gfi-border-subtle)", borderRadius: 8, cursor: "pointer", transition: "all 0.1s" }}>
+                  <label key={m.value} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", background: motivo === m.value ? "rgba(153,0,0,0.1)" : "var(--gfi-bg-card)", border: "1px solid", borderColor: motivo === m.value ? "rgba(153,0,0,0.4)" : "var(--gfi-border-subtle)", borderRadius: 8, cursor: "pointer", transition: "all 0.1s" }}>
                     <input type="radio" name="motivo" value={m.value} checked={motivo === m.value} onChange={() => setMotivo(m.value)} style={{ accentColor: "#990000" }} />
                     <span style={{ fontSize: 14 }}>{m.icon}</span>
                     <span style={{ fontSize: 13, color: motivo === m.value ? "#fff" : "var(--gfi-text-secondary)" }}>{m.label}</span>

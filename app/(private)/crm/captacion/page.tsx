@@ -233,7 +233,7 @@ export default function PropuestaCaptacionPage() {
                   <button key={op} onClick={() => setForm(f => ({ ...f, operacion: op }))} style={{
                     flex: 1, padding: "9px 0", borderRadius: 8,
                     border: `1px solid ${form.operacion === op ? "#990000" : "var(--gfi-border)"}`,
-                    background: form.operacion === op ? "rgba(200,0,0,0.12)" : "transparent",
+                    background: form.operacion === op ? "rgba(153,0,0,0.12)" : "transparent",
                     color: form.operacion === op ? "#fff" : "var(--gfi-text-muted)",
                     fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: 600,
                     cursor: "pointer", textTransform: "capitalize",
@@ -290,7 +290,7 @@ export default function PropuestaCaptacionPage() {
             disabled={generando}
             style={{
               width: "100%", padding: "14px 0",
-              background: generando ? "rgba(200,0,0,0.3)" : "#990000",
+              background: generando ? "rgba(153,0,0,0.3)" : "#990000",
               color: "#fff", border: "none", borderRadius: 10,
               fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700,
               letterSpacing: "0.05em", cursor: generando ? "not-allowed" : "pointer",
@@ -303,7 +303,7 @@ export default function PropuestaCaptacionPage() {
           {error && (
             <div style={{
               marginTop: 12, padding: "12px 16px", borderRadius: 8,
-              background: "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)",
+              background: "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)",
               color: "#ff6b6b", fontFamily: "Inter,sans-serif", fontSize: 13,
             }}>
               {error}

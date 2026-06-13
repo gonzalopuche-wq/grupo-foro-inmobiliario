@@ -124,7 +124,7 @@ export default function TasadorIAPage() {
         .form-textarea:focus { border-color: rgba(153,0,0,0.4); }
         .form-textarea::placeholder { color: var(--gfi-text-dim); }
         .btn-tasar { width: 100%; padding: 14px; background: #990000; border: none; border-radius: 6px; color: #fff; font-family: Montserrat,sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; margin-top: 16px; }
-        .btn-tasar:hover:not(:disabled) { background: #e60000; }
+        .btn-tasar:hover:not(:disabled) { background: #b80000; }
         .btn-tasar:disabled { opacity: 0.6; cursor: not-allowed; }
         .resultado-card { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
         .section-header { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gfi-text-dim); margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }

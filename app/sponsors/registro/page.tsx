@@ -30,7 +30,7 @@ export default function SponsorRegistroPage() {
         .sr-logo img{width:40px;height:40px;border-radius:10px}
         .sr-logo-txt{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:0.04em}
         .sr-logo-txt span{color:#990000}
-        .sr-card{background:#0f0f0f;border:1px solid rgba(200,0,0,0.2);border-radius:10px;padding:32px;position:relative;overflow:hidden}
+        .sr-card{background:#0f0f0f;border:1px solid rgba(153,0,0,0.2);border-radius:10px;padding:32px;position:relative;overflow:hidden}
         .sr-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#990000 40%,transparent)}
         .sr-titulo{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:#fff;margin-bottom:4px}
         .sr-titulo span{color:#990000}
@@ -40,15 +40,15 @@ export default function SponsorRegistroPage() {
         .field{display:flex;flex-direction:column;gap:5px}
         .field label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35)}
         .field input,.field select,.field textarea{padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:5px;color:#fff;font-size:13px;outline:none;font-family:'Inter',sans-serif;transition:border-color 0.2s;width:100%;box-sizing:border-box}
-        .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(200,0,0,0.4)}
+        .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(153,0,0,0.4)}
         .field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,0.2)}
         .field select{background:#0f0f0f}
         .field textarea{resize:vertical;min-height:80px}
         .sr-nota{font-size:11px;color:rgba(255,255,255,0.25);line-height:1.6;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:4px;margin-top:4px}
         .sr-btn{width:100%;padding:13px;background:#990000;border:none;border-radius:5px;color:#fff;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;margin-top:20px;transition:background 0.2s}
-        .sr-btn:hover:not(:disabled){background:#e60000}
+        .sr-btn:hover:not(:disabled){background:#b80000}
         .sr-btn:disabled{opacity:0.6;cursor:not-allowed}
-        .sr-error{color:#ff6666;font-size:12px;text-align:center;margin-top:10px;padding:8px 12px;background:rgba(200,0,0,0.08);border-radius:4px;border:1px solid rgba(200,0,0,0.2)}
+        .sr-error{color:#ff6666;font-size:12px;text-align:center;margin-top:10px;padding:8px 12px;background:rgba(153,0,0,0.08);border-radius:4px;border:1px solid rgba(153,0,0,0.2)}
         .sr-ok{text-align:center;padding:32px 0}
         .sr-ok-icon{font-size:40px;margin-bottom:12px}
         .sr-ok-titulo{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:8px}

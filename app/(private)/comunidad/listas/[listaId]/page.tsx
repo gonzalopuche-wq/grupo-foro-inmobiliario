@@ -150,7 +150,7 @@ export default function ListaPage() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -187,7 +187,7 @@ export default function ListaPage() {
           </button>
           <button
             onClick={() => setConfirmEliminar(true)}
-            style={{ padding: "6px 12px", background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 6, color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
+            style={{ padding: "6px 12px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 6, color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
           >
             Eliminar
           </button>
@@ -223,7 +223,7 @@ export default function ListaPage() {
         <span style={{ fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--gfi-text-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Destinatarios</span>
         <button
           onClick={() => setMostrarAgregar(v => !v)}
-          style={{ padding: "5px 12px", background: mostrarAgregar ? "rgba(200,0,0,0.1)" : "var(--gfi-border-subtle)", border: `1px solid ${mostrarAgregar ? "rgba(200,0,0,0.3)" : "var(--gfi-border)"}`, borderRadius: 6, color: mostrarAgregar ? "#990000" : "var(--gfi-text-secondary)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
+          style={{ padding: "5px 12px", background: mostrarAgregar ? "rgba(153,0,0,0.1)" : "var(--gfi-border-subtle)", border: `1px solid ${mostrarAgregar ? "rgba(153,0,0,0.3)" : "var(--gfi-border)"}`, borderRadius: 6, color: mostrarAgregar ? "#990000" : "var(--gfi-text-secondary)", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em" }}
         >
           {mostrarAgregar ? "Cancelar" : "+ Agregar"}
         </button>
@@ -274,7 +274,7 @@ export default function ListaPage() {
           </div>
         ) : miembros.map(m => (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", borderBottom: "1px solid var(--gfi-border-subtle)" }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
               {m.foto_url ? <img src={m.foto_url} alt={m.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials(m)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>

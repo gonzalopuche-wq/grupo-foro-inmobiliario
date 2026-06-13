@@ -339,7 +339,7 @@ export default function ComparablesPage() {
             </select>
             <button
               className="cmp-select"
-              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#990000":"var(--gfi-text-secondary)",borderColor:mostrarFiltrosAvanzados?"rgba(200,0,0,0.4)":"var(--gfi-border)"}}
+              style={{cursor:"pointer",color:mostrarFiltrosAvanzados?"#990000":"var(--gfi-text-secondary)",borderColor:mostrarFiltrosAvanzados?"rgba(153,0,0,0.4)":"var(--gfi-border)"}}
               onClick={()=>setMostrarFiltrosAvanzados(v=>!v)}
             >
               {mostrarFiltrosAvanzados?"▲ Menos filtros":"▼ Más filtros"}

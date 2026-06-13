@@ -83,7 +83,7 @@ export default function PWAInstallBanner() {
   return (
     <div id="pwa-install-banner" style={{
       position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
-      background: "#141414", border: "1px solid rgba(200,0,0,0.3)",
+      background: "#141414", border: "1px solid rgba(153,0,0,0.3)",
       borderRadius: 12, padding: "14px 16px",
       display: "flex", alignItems: "center", gap: 12,
       boxShadow: "0 8px 32px rgba(0,0,0,0.7)",

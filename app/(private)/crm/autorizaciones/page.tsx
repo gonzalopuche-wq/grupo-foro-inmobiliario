@@ -190,7 +190,7 @@ export default function AutorizacionesPage() {
         .field-label { font-family: Montserrat,sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; }
         .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 20px; border-radius: 5px; font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; z-index: 999; }
         .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
-        .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
+        .toast.err { background: rgba(153,0,0,0.15); border: 1px solid rgba(153,0,0,0.35); color: #ff6666; }
       `}</style>
 
       {/* Header */}
@@ -228,7 +228,7 @@ export default function AutorizacionesPage() {
           <button key={f} onClick={() => setFiltro(f)} style={{
             padding: "6px 16px", borderRadius: 20, border: "1px solid",
             borderColor: filtro === f ? "#990000" : "var(--gfi-border)",
-            background: filtro === f ? "rgba(200,0,0,0.1)" : "transparent",
+            background: filtro === f ? "rgba(153,0,0,0.1)" : "transparent",
             color: filtro === f ? "#fff" : "var(--gfi-text-muted)",
             cursor: "pointer", fontSize: 11, fontWeight: 600,
           }}>
@@ -242,7 +242,7 @@ export default function AutorizacionesPage() {
         <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--gfi-text-dim)", fontSize: 13 }}>
           No hay autorizaciones registradas.
           <br /><br />
-          <button onClick={() => { setForm({ ...EMPTY }); setModal("nuevo"); }} style={{ background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", color: "#990000", borderRadius: 5, padding: "10px 20px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
+          <button onClick={() => { setForm({ ...EMPTY }); setModal("nuevo"); }} style={{ background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", borderRadius: 5, padding: "10px 20px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
             Registrar primera autorización
           </button>
         </div>

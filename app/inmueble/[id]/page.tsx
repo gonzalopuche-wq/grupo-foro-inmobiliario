@@ -273,7 +273,7 @@ export default async function InmueblePage({ params }: Props) {
         .mapa-wrap { border-radius: 8px; overflow: hidden; margin-top: 16px; border: 1px solid rgba(255,255,255,0.1); }
         .mapa-wrap iframe { display: block; width: 100%; height: 280px; border: none; filter: invert(0.85) hue-rotate(180deg); }
         .agente-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .agente-foto { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: rgba(200,0,0,0.15); border: 2px solid rgba(200,0,0,0.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden; }
+        .agente-foto { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: rgba(153,0,0,0.15); border: 2px solid rgba(153,0,0,0.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden; }
         .agente-info { flex: 1; min-width: 0; }
         .agente-nombre { font-family: 'Montserrat',sans-serif; font-size: 15px; font-weight: 800; color: #fff; }
         .agente-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 3px; }

@@ -358,7 +358,7 @@ export default function GrupoChatPage() {
 
   const renderTxt = (t: string) => t.split(/(https?:\/\/\S+)/g).map((p,i) => p.match(/^https?:\/\//) ? <a key={i} href={p} target="_blank" rel="noopener noreferrer" style={{color:"#4ab8d8",textDecoration:"underline",wordBreak:"break-all"}} onClick={e=>e.stopPropagation()}>{p}</a> : <span key={i}>{p}</span>);
 
-  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:300}}><div style={{width:28,height:28,border:"2px solid rgba(200,0,0,0.3)",borderTopColor:"#990000",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
+  if (loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:300}}><div style={{width:28,height:28,border:"2px solid rgba(153,0,0,0.3)",borderTopColor:"#990000",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
 
   return (
     <>
@@ -481,7 +481,7 @@ export default function GrupoChatPage() {
                     <div className="gc-av">{p?.foto_url ? <img src={p.foto_url} alt={p.nombre}/> : initials(p)}</div>
                     <div className="gc-bw">
                       {/* Identidad COCIR */}
-                      {!mio && !elim && <div className="gc-id"><span className="gc-id-n">{fullName(p)}</span><span className="gc-id-m" style={!p?.matricula?{color:"rgba(200,0,0,0.35)"}:{}}>{p?.matricula ? `Mat. ${p.matricula}` : "Sin matrícula"}</span></div>}
+                      {!mio && !elim && <div className="gc-id"><span className="gc-id-n">{fullName(p)}</span><span className="gc-id-m" style={!p?.matricula?{color:"rgba(153,0,0,0.35)"}:{}}>{p?.matricula ? `Mat. ${p.matricula}` : "Sin matrícula"}</span></div>}
                       {mio && !elim && <div className="gc-id"><span className="gc-id-m" style={{color:"rgba(255,255,255,0.18)"}}>{userPerfil?.matricula ? `Mat. ${userPerfil.matricula}` : "Sin matrícula"}</span><span className="gc-id-n" style={{color:"var(--gfi-text-muted)"}}>Vos</span></div>}
 
                       <div className="gc-b" onClick={e => { e.stopPropagation(); if (!elim) setMenuId(menuId===m.id?null:m.id); }}>
@@ -523,14 +523,14 @@ export default function GrupoChatPage() {
                                   return (
                                     <div key={i} style={{marginTop:4,background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:12,overflow:"hidden",width:260}}>
                                       {/* Header */}
-                                      <div style={{background:"rgba(200,0,0,0.12)",borderBottom:"1px solid rgba(200,0,0,0.15)",padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
+                                      <div style={{background:"rgba(153,0,0,0.12)",borderBottom:"1px solid rgba(153,0,0,0.15)",padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
                                         {a.url
-                                          ? <img src={a.url} alt={a.nombre} referrerPolicy="no-referrer" style={{width:42,height:42,borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(200,0,0,0.3)"}}/>
-                                          : <div style={{width:42,height:42,borderRadius:"50%",background:"rgba(200,0,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"rgba(200,0,0,0.7)",fontWeight:800,fontFamily:"Montserrat,sans-serif"}}>{a.nombre.split(",").map((p:string)=>p.trim().charAt(0)).join("").slice(0,2).toUpperCase()}</div>
+                                          ? <img src={a.url} alt={a.nombre} referrerPolicy="no-referrer" style={{width:42,height:42,borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(153,0,0,0.3)"}}/>
+                                          : <div style={{width:42,height:42,borderRadius:"50%",background:"rgba(153,0,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"rgba(153,0,0,0.7)",fontWeight:800,fontFamily:"Montserrat,sans-serif"}}>{a.nombre.split(",").map((p:string)=>p.trim().charAt(0)).join("").slice(0,2).toUpperCase()}</div>
                                         }
                                         <div style={{flex:1,minWidth:0}}>
                                           <div style={{fontSize:13,fontWeight:700,color:"#fff",fontFamily:"Montserrat,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.nombre}</div>
-                                          {a.contacto_matricula && <div style={{fontSize:10,color:"rgba(200,0,0,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.05em"}}>Mat. {a.contacto_matricula}</div>}
+                                          {a.contacto_matricula && <div style={{fontSize:10,color:"rgba(153,0,0,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.05em"}}>Mat. {a.contacto_matricula}</div>}
                                         </div>
                                       </div>
                                       {/* Info */}
@@ -566,8 +566,8 @@ export default function GrupoChatPage() {
                                   const miVoto = Object.entries(a.encuesta_votos??{}).find(([,vs])=>(vs as string[]).includes(userId??""))?.[0];
                                   return (
                                     <div key={i} style={{marginTop:4,background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:12,overflow:"hidden",width:260}}>
-                                      <div style={{background:"rgba(200,0,0,0.12)",borderBottom:"1px solid rgba(200,0,0,0.15)",padding:"10px 14px"}}>
-                                        <div style={{fontSize:10,color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",marginBottom:4}}>📊 ENCUESTA</div>
+                                      <div style={{background:"rgba(153,0,0,0.12)",borderBottom:"1px solid rgba(153,0,0,0.15)",padding:"10px 14px"}}>
+                                        <div style={{fontSize:10,color:"rgba(153,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",marginBottom:4}}>📊 ENCUESTA</div>
                                         <div style={{fontSize:13,fontWeight:700,color:"#fff",fontFamily:"Montserrat,sans-serif"}}>{a.encuesta_pregunta}</div>
                                       </div>
                                       <div style={{padding:"10px 12px",display:"flex",flexDirection:"column",gap:6}}>
@@ -577,8 +577,8 @@ export default function GrupoChatPage() {
                                           const sel=miVoto===oi.toString();
                                           return (
                                             <button key={oi} onClick={e=>{e.stopPropagation();votarEncuesta(m.id,i,oi);}}
-                                              style={{background:sel?"rgba(200,0,0,0.15)":"var(--gfi-border-subtle)",border:`1px solid ${sel?"rgba(200,0,0,0.4)":"rgba(255,255,255,0.09)"}`,borderRadius:6,padding:"7px 10px",cursor:"pointer",textAlign:"left",position:"relative",overflow:"hidden"}}>
-                                              <div style={{position:"absolute",left:0,top:0,height:"100%",width:`${pct}%`,background:sel?"rgba(200,0,0,0.2)":"rgba(255,255,255,0.06)",transition:"width 0.4s"}}/>
+                                              style={{background:sel?"rgba(153,0,0,0.15)":"var(--gfi-border-subtle)",border:`1px solid ${sel?"rgba(153,0,0,0.4)":"rgba(255,255,255,0.09)"}`,borderRadius:6,padding:"7px 10px",cursor:"pointer",textAlign:"left",position:"relative",overflow:"hidden"}}>
+                                              <div style={{position:"absolute",left:0,top:0,height:"100%",width:`${pct}%`,background:sel?"rgba(153,0,0,0.2)":"rgba(255,255,255,0.06)",transition:"width 0.4s"}}/>
                                               <div style={{position:"relative",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                                                 <span style={{fontSize:12,color:"#fff",fontFamily:"Inter,sans-serif"}}>{op}</span>
                                                 <span style={{fontSize:10,color:"rgba(255,255,255,0.45)",fontFamily:"Montserrat,sans-serif",fontWeight:600}}>{pct}%</span>
@@ -596,10 +596,10 @@ export default function GrupoChatPage() {
                                   const calLink=a.evento_fecha?`https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(a.evento_titulo??"")}&dates=${a.evento_fecha.replace(/-/g,"")}/${a.evento_fecha.replace(/-/g,"")}&details=${encodeURIComponent(a.evento_descripcion??"")}`:null;
                                   return (
                                     <div key={i} style={{marginTop:4,background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:12,overflow:"hidden",width:260}}>
-                                      <div style={{background:"rgba(200,0,0,0.12)",borderBottom:"1px solid rgba(200,0,0,0.2)",padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
-                                        <div style={{width:42,height:42,borderRadius:10,background:"rgba(200,0,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>📅</div>
+                                      <div style={{background:"rgba(153,0,0,0.12)",borderBottom:"1px solid rgba(153,0,0,0.2)",padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+                                        <div style={{width:42,height:42,borderRadius:10,background:"rgba(153,0,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>📅</div>
                                         <div style={{flex:1,minWidth:0}}>
-                                          <div style={{fontSize:10,color:"rgba(200,0,0,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",marginBottom:2}}>EVENTO GFI®</div>
+                                          <div style={{fontSize:10,color:"rgba(153,0,0,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.1em",marginBottom:2}}>EVENTO GFI®</div>
                                           <div style={{fontSize:13,fontWeight:700,color:"#fff",fontFamily:"Montserrat,sans-serif",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.evento_titulo}</div>
                                           {fecha&&<div style={{fontSize:11,color:"var(--gfi-text-secondary)",marginTop:1,textTransform:"capitalize"}}>{fecha}</div>}
                                         </div>
@@ -607,7 +607,7 @@ export default function GrupoChatPage() {
                                       {a.evento_descripcion&&<div style={{padding:"8px 14px",fontSize:12,color:"var(--gfi-text-secondary)",fontFamily:"Inter,sans-serif"}}>{a.evento_descripcion}</div>}
                                       <div style={{display:"flex",borderTop:"1px solid rgba(255,255,255,0.06)"}}>
                                         <a href="/eventos" onClick={e=>e.stopPropagation()}
-                                          style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:5,background:"rgba(200,0,0,0.08)",padding:"8px 10px",textDecoration:"none",color:"#990000",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700}}>
+                                          style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:5,background:"rgba(153,0,0,0.08)",padding:"8px 10px",textDecoration:"none",color:"#990000",fontSize:11,fontFamily:"Montserrat,sans-serif",fontWeight:700}}>
                                           Ver en GFI
                                         </a>
                                         {calLink&&(
@@ -651,10 +651,10 @@ export default function GrupoChatPage() {
 
         {/* Input */}
         <div className="gc-ia">
-          {replyMsg && <div className="gc-rb"><span style={{fontSize:12,color:"rgba(200,0,0,0.6)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>↩</span><span className="gc-rb-t">{fullName(replyMsg.perfiles)}: {replyMsg.texto??"🎙 Audio"}</span><button style={{background:"none",border:"none",color:"var(--gfi-text-muted)",cursor:"pointer",fontSize:16,padding:0}} onClick={()=>setReplyMsg(null)}>×</button></div>}
+          {replyMsg && <div className="gc-rb"><span style={{fontSize:12,color:"rgba(153,0,0,0.6)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>↩</span><span className="gc-rb-t">{fullName(replyMsg.perfiles)}: {replyMsg.texto??"🎙 Audio"}</span><button style={{background:"none",border:"none",color:"var(--gfi-text-muted)",cursor:"pointer",fontSize:16,padding:0}} onClick={()=>setReplyMsg(null)}>×</button></div>}
           {adjuntos.length>0 && <div className="gc-thumbs">{adjuntos.map((a,i)=><div key={i} className="gc-thumb">{a.tipo==="imagen"?<img src={a.url} alt={a.nombre}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{a.tipo==="video"?"🎬":"📎"}</div>}<button className="gc-thumb-x" onClick={()=>setAdjuntos(prev=>prev.filter((_,j)=>j!==i))}>×</button></div>)}</div>}
           {grabando && (
-            <div style={{display:"flex",flexDirection:"column",gap:10,padding:"12px 14px",background:"rgba(200,0,0,0.08)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:8}}>
+            <div style={{display:"flex",flexDirection:"column",gap:10,padding:"12px 14px",background:"rgba(153,0,0,0.08)",border:"1px solid rgba(153,0,0,0.25)",borderRadius:8}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <div className="gc-adot"/>
                 <span style={{fontSize:13,color:"rgba(255,255,255,0.8)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Grabando... {fmtSeg(audioSeg)}</span>
@@ -673,7 +673,7 @@ export default function GrupoChatPage() {
               </div>
               <div style={{display:"flex",gap:8}}>
                 <button onClick={enviarAudio} disabled={subiendoAudio} style={{flex:1,padding:"12px",background:"#990000",border:"none",borderRadius:8,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:13,fontWeight:800,cursor:"pointer"}}>{subiendoAudio?"Enviando...":"➤ Enviar audio"}</button>
-                <button onClick={cancelarAudio} style={{padding:"12px 16px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:8,color:"rgba(200,0,0,0.6)",fontSize:16,cursor:"pointer"}}>✕</button>
+                <button onClick={cancelarAudio} style={{padding:"12px 16px",background:"transparent",border:"1px solid rgba(153,0,0,0.2)",borderRadius:8,color:"rgba(153,0,0,0.6)",fontSize:16,cursor:"pointer"}}>✕</button>
               </div>
             </div>
           )}
@@ -727,7 +727,7 @@ export default function GrupoChatPage() {
                 .filter(op => !op.soloForo || grupo?.va_al_mir)
                 .map(({icon,label,action})=>(
                 <button key={label} onClick={action} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,background:"var(--gfi-border-subtle)",border:"1px solid var(--gfi-border)",borderRadius:12,padding:"12px 6px",cursor:"pointer"}}>
-                  <div style={{width:46,height:46,borderRadius:"50%",background:"rgba(200,0,0,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{icon}</div>
+                  <div style={{width:46,height:46,borderRadius:"50%",background:"rgba(153,0,0,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{icon}</div>
                   <span style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontFamily:"Montserrat,sans-serif",fontWeight:600,textAlign:"center"}}>{label}</span>
                 </button>
               ))}
@@ -756,11 +756,11 @@ export default function GrupoChatPage() {
                   <button key={mm.id} onClick={()=>compartirContacto(mm)} style={{width:"100%",display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"none",border:"none",borderBottom:"1px solid var(--gfi-border-subtle)",cursor:"pointer",textAlign:"left"}}>
                     {mm.foto_url
                       ?<img src={mm.foto_url} alt={mm.nombre??"?"} referrerPolicy="no-referrer" style={{width:40,height:40,borderRadius:"50%",objectFit:"cover",flexShrink:0}}/>
-                      :<div style={{width:40,height:40,borderRadius:"50%",background:"rgba(200,0,0,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:800,color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",flexShrink:0}}>{`${mm.nombre?.charAt(0)??""}${mm.apellido?.charAt(0)??""}`.toUpperCase()}</div>
+                      :<div style={{width:40,height:40,borderRadius:"50%",background:"rgba(153,0,0,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:800,color:"rgba(153,0,0,0.7)",fontFamily:"Montserrat,sans-serif",flexShrink:0}}>{`${mm.nombre?.charAt(0)??""}${mm.apellido?.charAt(0)??""}`.toUpperCase()}</div>
                     }
                     <div>
                       <div style={{fontSize:13,fontWeight:600,color:"#fff",fontFamily:"Inter,sans-serif"}}>{mm.apellido}, {mm.nombre}</div>
-                      {mm.matricula&&<div style={{fontSize:10,color:"rgba(200,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Mat. {mm.matricula}</div>}
+                      {mm.matricula&&<div style={{fontSize:10,color:"rgba(153,0,0,0.7)",fontFamily:"Montserrat,sans-serif",fontWeight:700}}>Mat. {mm.matricula}</div>}
                     </div>
                   </button>
                 ))

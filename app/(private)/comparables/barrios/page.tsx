@@ -104,12 +104,12 @@ export default function BarriosPage() {
         .bar-sub { font-size: 13px; color: var(--gfi-text-muted); margin-top: 4px; }
         .bar-controles { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
         .bar-search { flex: 1; min-width: 180px; padding: 9px 12px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); }
-        .bar-search:focus { border-color: rgba(200,0,0,0.4); }
+        .bar-search:focus { border-color: rgba(153,0,0,0.4); }
         .bar-search::placeholder { color: var(--gfi-text-dim); }
         .bar-select { padding: 9px 10px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); font-size: 12px; outline: none; font-family: var(--font-body); cursor: pointer; }
         .bar-chips { display: flex; gap: 6px; flex-wrap: wrap; }
         .bar-chip { padding: 6px 14px; border-radius: 20px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); transition: all 0.2s; }
-        .bar-chip.activo { background: rgba(200,0,0,0.1); border-color: rgba(200,0,0,0.4); color: #ff6666; }
+        .bar-chip.activo { background: rgba(153,0,0,0.1); border-color: rgba(153,0,0,0.4); color: #ff6666; }
         .bar-chip:hover:not(.activo) { border-color: var(--gfi-text-dim); color: var(--gfi-text-primary); }
         .bar-count { font-size: 11px; color: var(--gfi-text-dim); white-space: nowrap; align-self: center; }
         /* Tabla */
@@ -120,7 +120,7 @@ export default function BarriosPage() {
         .bar-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.15s; cursor: pointer; }
         .bar-tabla tbody tr:last-child { border-bottom: none; }
         .bar-tabla tbody tr:hover { background: rgba(255,255,255,0.025); }
-        .bar-tabla tbody tr.expandido-row { background: rgba(200,0,0,0.04); border-bottom: none; }
+        .bar-tabla tbody tr.expandido-row { background: rgba(153,0,0,0.04); border-bottom: none; }
         .bar-tabla td { padding: 12px 14px; font-size: 13px; color: rgba(255,255,255,0.75); vertical-align: middle; }
         .bar-barrio-name { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 13px; }
         .bar-zona-badge { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); }
@@ -128,7 +128,7 @@ export default function BarriosPage() {
         .bar-precio-alq { font-family: var(--font-display); font-weight: 700; color: #a78bfa; }
         /* Detail card */
         .bar-detail-row td { padding: 0 14px 14px; }
-        .bar-detail { background: rgba(200,0,0,0.04); border: 1px solid rgba(200,0,0,0.15); border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+        .bar-detail { background: rgba(153,0,0,0.04); border: 1px solid rgba(153,0,0,0.15); border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
         .bar-detail-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 2px; }
         .bar-detail-value { font-size: 13px; color: var(--gfi-text-primary); }
         .bar-empty { padding: 60px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; }

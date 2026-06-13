@@ -76,7 +76,7 @@ const FUENTE_LABEL: Record<string, string> = {
 }
 const FUENTE_COLOR: Record<string, string> = {
   gfi: '#990000', gfi_red: '#990000', gfi_portal: '#990000',
-  zonaprop: '#e60000', argenprop: '#f5a623',
+  zonaprop: '#b80000', argenprop: '#f5a623',
   mercadolibre: '#ffe600', kiteprop: '#3b82f6', tokko: '#8b5cf6',
   propia: '#3abab6', propia_red: '#3abab6',
 }

@@ -5,7 +5,7 @@ import { supabase } from "../../lib/supabase";
 
 // ── Configuración de portales ──────────────────────────────────────────────
 const PORTALES = [
-  { id: "gfi_red",      label: "Red GFI",       color: "#990000", bg: "rgba(200,0,0,0.14)", textColor: "#fff" },
+  { id: "gfi_red",      label: "Red GFI",       color: "#990000", bg: "rgba(153,0,0,0.14)", textColor: "#fff" },
   { id: "gfi_portal",   label: "Portal GFI",    color: "#ff4444", bg: "rgba(255,68,68,0.10)", textColor: "#fff" },
   { id: "kiteprop",     label: "Kiteprop",      color: "#7c3aed", bg: "rgba(124,58,237,0.12)", textColor: "#fff" },
   { id: "tokko",        label: "Tokko Broker",  color: "#0ea5e9", bg: "rgba(14,165,233,0.12)", textColor: "#fff" },
@@ -335,7 +335,7 @@ export default function PropiedadesMercadoPage() {
       <style>{`
         .pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
         .pm-input { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: #fff; padding: 8px 12px; font-size: 12px; font-family: var(--font-body); outline: none; width: 100%; }
-        .pm-input:focus { border-color: rgba(200,0,0,0.5); }
+        .pm-input:focus { border-color: rgba(153,0,0,0.5); }
         .pm-input::placeholder { color: var(--gfi-text-dim); }
         .pm-select { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 5px; color: rgba(255,255,255,0.8); padding: 8px 12px; font-size: 12px; font-family: var(--font-body); outline: none; width: 100%; cursor: pointer; }
         .pm-select option { background: #1a1a1a; color: #fff; }
@@ -359,8 +359,8 @@ export default function PropiedadesMercadoPage() {
           onClick={() => setFilters(f => ({ ...f, portalesActivos: [] }))}
           style={{
             padding: "6px 14px", borderRadius: 20,
-            background: filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.15)" : "var(--gfi-border-subtle)",
-            border: `1px solid ${filters.portalesActivos.length === 0 ? "rgba(200,0,0,0.4)" : "var(--gfi-border)"}`,
+            background: filters.portalesActivos.length === 0 ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)",
+            border: `1px solid ${filters.portalesActivos.length === 0 ? "rgba(153,0,0,0.4)" : "var(--gfi-border)"}`,
             color: filters.portalesActivos.length === 0 ? "#990000" : "var(--gfi-text-secondary)",
             cursor: "pointer", fontSize: 12, fontFamily: "var(--font-body)",
           }}
@@ -429,7 +429,7 @@ export default function PropiedadesMercadoPage() {
           <button
             onClick={() => setFilters(defaultFilters)}
             style={{
-              background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)",
+              background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)",
               borderRadius: 5, color: "#990000", cursor: "pointer",
               fontSize: 11, fontFamily: "var(--font-body)", padding: "8px 12px",
             }}
@@ -442,8 +442,8 @@ export default function PropiedadesMercadoPage() {
       {/* Panel admin: sincronización */}
       {esAdmin && (
         <div style={{
-          background: "rgba(200,0,0,0.05)",
-          border: "1px solid rgba(200,0,0,0.2)",
+          background: "rgba(153,0,0,0.05)",
+          border: "1px solid rgba(153,0,0,0.2)",
           borderRadius: 8, padding: "14px 18px",
           marginBottom: 24, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
         }}>
@@ -464,8 +464,8 @@ export default function PropiedadesMercadoPage() {
             disabled={syncing}
             style={{
               padding: "8px 18px", borderRadius: 5,
-              background: syncing ? "var(--gfi-border-subtle)" : "rgba(200,0,0,0.15)",
-              border: "1px solid rgba(200,0,0,0.3)",
+              background: syncing ? "var(--gfi-border-subtle)" : "rgba(153,0,0,0.15)",
+              border: "1px solid rgba(153,0,0,0.3)",
               color: syncing ? "var(--gfi-text-muted)" : "#990000",
               cursor: syncing ? "not-allowed" : "pointer",
               fontSize: 12, fontFamily: "var(--font-display)",
@@ -473,7 +473,7 @@ export default function PropiedadesMercadoPage() {
               display: "flex", alignItems: "center", gap: 8,
             }}
           >
-            {syncing && <span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(200,0,0,0.4)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
+            {syncing && <span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid rgba(153,0,0,0.4)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
             {syncing ? "Sincronizando..." : "⟳ Sincronizar"}
           </button>
           {syncResultado && (

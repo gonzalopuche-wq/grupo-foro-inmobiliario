@@ -201,7 +201,7 @@ export default function AdminSponsorsPage() {
         .sp-sub{font-size:13px;color:var(--gfi-text-muted);margin-top:4px}
         .sp-tabs{display:flex;gap:4px;background:var(--gfi-border-subtle);border-radius:6px;padding:4px;width:fit-content}
         .sp-tab{padding:7px 18px;border-radius:4px;border:none;background:transparent;color:var(--gfi-text-muted);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;position:relative}
-        .sp-tab.activo{background:rgba(200,0,0,0.15);color:#fff;border:1px solid rgba(200,0,0,0.3)}
+        .sp-tab.activo{background:rgba(153,0,0,0.15);color:#fff;border:1px solid rgba(153,0,0,0.3)}
         .sp-tab-badge{position:absolute;top:-4px;right:-4px;background:#990000;color:#fff;font-size:8px;font-weight:800;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
         .sp-stats{display:flex;gap:10px;flex-wrap:wrap}
         .sp-stat{background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:6px;padding:12px 18px;text-align:center;min-width:90px}
@@ -210,11 +210,11 @@ export default function AdminSponsorsPage() {
         .sp-stat-label{font-size:9px;color:var(--gfi-text-muted);font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
         .sp-filtros{display:flex;gap:6px;flex-wrap:wrap}
         .sp-filtro-btn{padding:6px 14px;border-radius:4px;border:1px solid var(--gfi-border);background:transparent;color:var(--gfi-text-muted);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
-        .sp-filtro-btn.activo{border-color:rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000}
+        .sp-filtro-btn.activo{border-color:rgba(153,0,0,0.4);background:rgba(153,0,0,0.1);color:#990000}
         .sp-btn-nuevo{padding:10px 20px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
         .sp-grid{display:flex;flex-direction:column;gap:10px}
         .sp-card{background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:8px;overflow:hidden}
-        .sp-card.activa{border-color:rgba(34,197,94,0.2)} .sp-card.vencida{border-color:rgba(245,158,11,0.25)} .sp-card.suspendida{border-color:rgba(200,0,0,0.2)}
+        .sp-card.activa{border-color:rgba(34,197,94,0.2)} .sp-card.vencida{border-color:rgba(245,158,11,0.25)} .sp-card.suspendida{border-color:rgba(153,0,0,0.2)}
         .sp-card-top{padding:16px 20px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
         .sp-logo{width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--gfi-border);flex-shrink:0}
         .sp-logo-ph{width:48px;height:48px;border-radius:8px;background:var(--gfi-border-subtle);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -223,14 +223,14 @@ export default function AdminSponsorsPage() {
         .sp-badge-estado{font-size:8px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
         .sp-badge-estado.activa{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#3abab6}
         .sp-badge-estado.vencida{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#d4960c}
-        .sp-badge-estado.suspendida{background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.3);color:#ff6666}
+        .sp-badge-estado.suspendida{background:rgba(153,0,0,0.1);border:1px solid rgba(153,0,0,0.3);color:#ff6666}
         .sp-badge-estado.sin-estado,.sp-badge-estado.pendiente{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);color:var(--gfi-text-muted)}
         .sp-destacado{color:#d4960c;font-size:14px}
         .sp-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
         .sp-meta-item{font-size:11px;color:var(--gfi-text-muted)}
         .sp-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.6;margin-top:6px;font-style:italic}
         .sp-nota-admin{font-size:11px;color:rgba(245,158,11,0.6);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:4px;padding:6px 10px;margin-top:6px}
-        .sp-beneficio{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,0.65);background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5}
+        .sp-beneficio{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:rgba(255,255,255,0.65);background:rgba(153,0,0,0.06);border:1px solid rgba(153,0,0,0.2);border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5}
         .sp-beneficio strong{font-family:var(--font-display);font-size:8px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#990000;margin-right:4px;flex-shrink:0}
         .sp-interesados-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);font-family:var(--font-display);font-size:9px;font-weight:700;color:#3abab6;margin-top:6px;cursor:pointer;transition:background 0.2s}
         .sp-interesados-chip:hover{background:rgba(34,197,94,0.18)}
@@ -249,41 +249,41 @@ export default function AdminSponsorsPage() {
         .sp-btn-extender{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#3abab6}
         .sp-btn-extender:hover{background:rgba(34,197,94,0.2)}
         .sp-btn-activar{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#3abab6}
-        .sp-btn-suspender{background:rgba(200,0,0,0.1);border-color:rgba(200,0,0,0.3);color:#ff6666}
+        .sp-btn-suspender{background:rgba(153,0,0,0.1);border-color:rgba(153,0,0,0.3);color:#ff6666}
         .sp-btn-star{background:transparent;border-color:rgba(234,179,8,0.3);color:#d4960c}
-        .sp-btn-beneficios{background:rgba(200,0,0,0.08);border-color:rgba(200,0,0,0.3);color:#990000}
-        .sp-btn-beneficios:hover{background:rgba(200,0,0,0.18)}
+        .sp-btn-beneficios{background:rgba(153,0,0,0.08);border-color:rgba(153,0,0,0.3);color:#990000}
+        .sp-btn-beneficios:hover{background:rgba(153,0,0,0.18)}
         .sp-venc{font-size:10px;padding:4px 8px;border-radius:3px;font-family:var(--font-body)}
         .sp-venc.ok{background:rgba(34,197,94,0.07);color:rgba(34,197,94,0.7)}
         .sp-venc.pronto{background:rgba(245,158,11,0.1);color:#d4960c}
-        .sp-venc.vencido{background:rgba(200,0,0,0.07);color:rgba(200,0,0,0.7)}
+        .sp-venc.vencido{background:rgba(153,0,0,0.07);color:rgba(153,0,0,0.7)}
         .sp-empty{padding:48px;text-align:center;color:var(--gfi-text-dim);font-size:13px;font-style:italic;background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:6px}
         .sp-spin-wrap{padding:48px;display:flex;justify-content:center}
-        .sp-spin{width:28px;height:28px;border:2px solid rgba(200,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
+        .sp-spin{width:28px;height:28px;border:2px solid rgba(153,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
         /* Solicitudes */
         .sol-card{background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:8px;padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
         .sol-card.pendiente{border-color:rgba(245,158,11,0.25)}
         .sol-card.aprobada{border-color:rgba(34,197,94,0.15);opacity:0.6}
-        .sol-card.rechazada{border-color:rgba(200,0,0,0.1);opacity:0.45}
+        .sol-card.rechazada{border-color:rgba(153,0,0,0.1);opacity:0.45}
         .sol-empresa{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff}
         .sol-rubro{font-size:9px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gfi-text-muted);margin-left:8px}
         .sol-meta{font-size:11px;color:var(--gfi-text-muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
         .sol-desc{font-size:12px;color:var(--gfi-text-secondary);margin-top:6px;line-height:1.5}
-        .sol-msg{font-size:11px;color:var(--gfi-text-muted);margin-top:6px;padding:7px 10px;background:var(--gfi-bg-card);border-radius:4px;border-left:2px solid rgba(200,0,0,0.3);font-style:italic}
+        .sol-msg{font-size:11px;color:var(--gfi-text-muted);margin-top:6px;padding:7px 10px;background:var(--gfi-bg-card);border-radius:4px;border-left:2px solid rgba(153,0,0,0.3);font-style:italic}
         .sol-acciones{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
         .sol-btn-aprobar{padding:7px 14px;border-radius:3px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#3abab6;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
         .sol-btn-aprobar:hover{background:rgba(34,197,94,0.22)}
-        .sol-btn-rechazar{padding:7px 14px;border-radius:3px;background:transparent;border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.6);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer}
+        .sol-btn-rechazar{padding:7px 14px;border-radius:3px;background:transparent;border:1px solid rgba(153,0,0,0.2);color:rgba(153,0,0,0.6);font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer}
         .sol-estado-badge{font-size:9px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px}
         .sol-estado-badge.pendiente{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#d4960c}
         .sol-estado-badge.aprobada{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#3abab6}
-        .sol-estado-badge.rechazada{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:rgba(200,0,0,0.7)}
+        .sol-estado-badge.rechazada{background:rgba(153,0,0,0.08);border:1px solid rgba(153,0,0,0.2);color:rgba(153,0,0,0.7)}
         /* Beneficios modal */
         .ben-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
         .ben-item{background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:6px;overflow:hidden}
         .ben-item.inactivo{opacity:0.5}
-        .ben-item-img{width:100%;height:100px;object-fit:cover;display:block;background:rgba(200,0,0,0.07)}
+        .ben-item-img{width:100%;height:100px;object-fit:cover;display:block;background:rgba(153,0,0,0.07)}
         .ben-item-body{padding:10px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
         .ben-item-info{flex:1;min-width:0}
         .ben-item-titulo{font-family:var(--font-display);font-size:13px;font-weight:800;color:#fff}
@@ -292,12 +292,12 @@ export default function AdminSponsorsPage() {
         .ben-item-chip{font-size:9px;font-family:var(--font-display);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px}
         .ben-item-chip.activo{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);color:#3abab6}
         .ben-item-chip.inactivo{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);color:var(--gfi-text-muted)}
-        .ben-item-chip.freq{background:rgba(200,0,0,0.08);border:1px solid rgba(200,0,0,0.2);color:#990000}
+        .ben-item-chip.freq{background:rgba(153,0,0,0.08);border:1px solid rgba(153,0,0,0.2);color:#990000}
         .ben-item-chip.venc{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:#d4960c}
         .ben-item-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
         /* Modals */
         .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;z-index:400;padding:24px}
-        .modal{background:#0f0f0f;border:1px solid rgba(200,0,0,0.25);border-radius:8px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative}
+        .modal{background:#0f0f0f;border:1px solid rgba(153,0,0,0.25);border-radius:8px;padding:28px 30px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative}
         .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#990000,transparent);border-radius:8px 8px 0 0}
         .modal-titulo{font-family:var(--font-display);font-size:16px;font-weight:800;color:#fff;margin-bottom:20px}
         .modal-titulo span{color:#990000}
@@ -306,7 +306,7 @@ export default function AdminSponsorsPage() {
         .field{display:flex;flex-direction:column;gap:5px}
         .field label{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--gfi-text-muted)}
         .field input,.field select,.field textarea{padding:9px 12px;background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:var(--font-body);transition:border-color 0.2s;width:100%}
-        .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(200,0,0,0.4)}
+        .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(153,0,0,0.4)}
         .field input::placeholder,.field textarea::placeholder{color:var(--gfi-text-dim)}
         .field select{background:#0f0f0f} .field textarea{resize:vertical;min-height:80px}
         .field-check{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:4px;cursor:pointer}
@@ -319,7 +319,7 @@ export default function AdminSponsorsPage() {
         .btn-save:disabled{opacity:0.6;cursor:not-allowed}
         .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:var(--font-display);font-size:12px;font-weight:700;z-index:999}
         .toast.ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#3abab6}
-        .toast.err{background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.35);color:#ff6666}
+        .toast.err{background:rgba(153,0,0,0.15);border:1px solid rgba(153,0,0,0.35);color:#ff6666}
         @media(max-width:600px){.sp-card-top{flex-direction:column}.sp-acciones{flex-direction:row;flex-wrap:wrap}.modal-grid{grid-template-columns:1fr}.modal-grid .full{grid-column:1}}
       `}</style>
 
@@ -505,7 +505,7 @@ export default function AdminSponsorsPage() {
                     </div>
                     <div className="ben-item-actions">
                       <button className="sp-btn sp-btn-editar" style={{fontSize:8}} onClick={()=>{setFormBen({titulo:b.titulo,descripcion:b.descripcion??"",imagen_url:b.imagen_url??"",vigente_desde:b.vigente_desde,vigente_hasta:b.vigente_hasta??"",activo:b.activo,republica_frecuencia:b.republica_frecuencia});setEditandoBenId(b.id);setMostrarFormBen(true);}}>✏️</button>
-                      <button className="sp-btn" style={{fontSize:8,background:b.activo?"rgba(200,0,0,0.1)":"rgba(34,197,94,0.1)",borderColor:b.activo?"rgba(200,0,0,0.3)":"rgba(34,197,94,0.3)",color:b.activo?"#ff6666":"#3abab6"}} onClick={()=>toggleActivoBeneficio(b)}>{b.activo?"⏸":"▶"}</button>
+                      <button className="sp-btn" style={{fontSize:8,background:b.activo?"rgba(153,0,0,0.1)":"rgba(34,197,94,0.1)",borderColor:b.activo?"rgba(153,0,0,0.3)":"rgba(34,197,94,0.3)",color:b.activo?"#ff6666":"#3abab6"}} onClick={()=>toggleActivoBeneficio(b)}>{b.activo?"⏸":"▶"}</button>
                       <button className="sp-btn sp-btn-suspender" style={{fontSize:8}} onClick={()=>eliminarBeneficio(b.id)}>🗑</button>
                     </div>
                   </div>
@@ -515,7 +515,7 @@ export default function AdminSponsorsPage() {
 
             {/* Formulario agregar/editar beneficio */}
             {mostrarFormBen ? (
-              <div style={{background:"var(--gfi-bg-card)",border:"1px solid rgba(200,0,0,0.2)",borderRadius:6,padding:"16px",marginTop:8}}>
+              <div style={{background:"var(--gfi-bg-card)",border:"1px solid rgba(153,0,0,0.2)",borderRadius:6,padding:"16px",marginTop:8}}>
                 <div style={{fontFamily:"var(--font-display)",fontSize:11,fontWeight:700,color:"var(--gfi-text-secondary)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:12}}>
                   {editandoBenId?"Editar beneficio":"Nuevo beneficio"}
                 </div>
@@ -538,7 +538,7 @@ export default function AdminSponsorsPage() {
                 </div>
               </div>
             ) : (
-              <button style={{width:"100%",padding:"10px",background:"rgba(200,0,0,0.1)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:5,color:"#990000",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",cursor:"pointer",marginTop:4}} onClick={()=>{setFormBen(FORM_BEN_VACIO);setEditandoBenId(null);setMostrarFormBen(true);}}>+ Agregar beneficio</button>
+              <button style={{width:"100%",padding:"10px",background:"rgba(153,0,0,0.1)",border:"1px dashed rgba(153,0,0,0.3)",borderRadius:5,color:"#990000",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",cursor:"pointer",marginTop:4}} onClick={()=>{setFormBen(FORM_BEN_VACIO);setEditandoBenId(null);setMostrarFormBen(true);}}>+ Agregar beneficio</button>
             )}
 
             <div className="modal-actions">

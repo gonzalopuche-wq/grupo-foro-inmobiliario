@@ -34,7 +34,7 @@ interface Evento {
 }
 
 const TIPOS: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  gfi:      { label: "GFI®",         color: "#990000",  bg: "rgba(200,0,0,0.12)",      border: "rgba(200,0,0,0.3)" },
+  gfi:      { label: "GFI®",         color: "#990000",  bg: "rgba(153,0,0,0.12)",      border: "rgba(153,0,0,0.3)" },
   cocir:    { label: "COCIR",        color: "#d4960c",  bg: "rgba(249,115,22,0.1)",    border: "rgba(249,115,22,0.3)" },
   cir:      { label: "CIR",          color: "#818cf8",  bg: "rgba(99,102,241,0.1)",    border: "rgba(99,102,241,0.3)" },
   comercial:{ label: "Comercial",    color: "#d4960c",  bg: "rgba(234,179,8,0.1)",     border: "rgba(234,179,8,0.3)" },
@@ -571,18 +571,18 @@ export default function EventosPage() {
         .ev-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .ev-cal-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: #fff; }
         .ev-cal-nav { width: 28px; height: 28px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-        .ev-cal-nav:hover { border-color: rgba(200,0,0,0.4); color: #fff; }
+        .ev-cal-nav:hover { border-color: rgba(153,0,0,0.4); color: #fff; }
         .ev-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
         .ev-cal-dow { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gfi-text-dim); text-align: center; padding: 4px 0; }
         .ev-cal-dia { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 11px; font-family: var(--font-display); font-weight: 600; cursor: pointer; transition: all 0.15s; color: var(--gfi-text-muted); position: relative; border: 1px solid transparent; }
         .ev-cal-dia:hover { background: rgba(255,255,255,0.06); color: #fff; }
-        .ev-cal-dia.hoy { color: #990000; font-weight: 800; border-color: rgba(200,0,0,0.3); }
+        .ev-cal-dia.hoy { color: #990000; font-weight: 800; border-color: rgba(153,0,0,0.3); }
         .ev-cal-dia.con-eventos::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #990000; }
-        .ev-cal-dia.seleccionado { background: rgba(200,0,0,0.15); border-color: #990000; color: #fff; }
+        .ev-cal-dia.seleccionado { background: rgba(153,0,0,0.15); border-color: #990000; color: #fff; }
         .ev-cal-dia.vacio { cursor: default; }
         .ev-cal-dia.vacio:hover { background: transparent; }
         .ev-cal-limpiar { width: 100%; margin-top: 8px; padding: 6px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-muted); font-size: 10px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-        .ev-cal-limpiar:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-secondary); }
+        .ev-cal-limpiar:hover { border-color: rgba(153,0,0,0.3); color: var(--gfi-text-secondary); }
         .ev-leyenda { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 14px 16px; }
         .ev-leyenda-titulo { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gfi-text-dim); margin-bottom: 10px; }
         .ev-leyenda-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; transition: opacity 0.15s; }
@@ -594,16 +594,16 @@ export default function EventosPage() {
         .ev-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
         .ev-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
         .ev-filtro { padding: 7px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; cursor: pointer; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); transition: all 0.2s; }
-        .ev-filtro:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }
-        .ev-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
+        .ev-filtro:hover { border-color: rgba(153,0,0,0.3); color: var(--gfi-text-primary); }
+        .ev-filtro.activo { border-color: #990000; color: #fff; background: rgba(153,0,0,0.08); }
         .ev-btn-nuevo { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
-        .ev-btn-nuevo:hover { background: #e60000; }
+        .ev-btn-nuevo:hover { background: #b80000; }
         .ev-lista { display: flex; flex-direction: column; gap: 12px; }
         .ev-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow: hidden; display: flex; transition: border-color 0.2s; }
-        .ev-card:hover { border-color: rgba(200,0,0,0.2); }
+        .ev-card:hover { border-color: rgba(153,0,0,0.2); }
         .ev-card.pasado { opacity: 0.5; }
-        .ev-card.destacado { border-color: rgba(200,0,0,0.3); }
-        .ev-fecha-col { width: 72px; flex-shrink: 0; background: rgba(200,0,0,0.08); border-right: 1px solid rgba(200,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 12px 8px; }
+        .ev-card.destacado { border-color: rgba(153,0,0,0.3); }
+        .ev-fecha-col { width: 72px; flex-shrink: 0; background: rgba(153,0,0,0.08); border-right: 1px solid rgba(153,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 12px 8px; }
         .ev-fecha-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #990000; line-height: 1; }
         .ev-fecha-mes { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--gfi-text-muted); }
         .ev-fecha-anio { font-size: 9px; color: var(--gfi-text-dim); }
@@ -621,12 +621,12 @@ export default function EventosPage() {
         .ev-acciones { padding: 14px 16px; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; min-width: 130px; flex-shrink: 0; border-left: 1px solid var(--gfi-border-subtle); }
         .ev-btn-ins { padding: 8px 14px; border: none; border-radius: 3px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .ev-btn-ins.libre { background: #990000; color: #fff; }
-        .ev-btn-ins.libre:hover { background: #e60000; }
+        .ev-btn-ins.libre:hover { background: #b80000; }
         .ev-btn-ins.inscripto { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #3abab6; }
         .ev-btn-ins.inscripto:hover { background: rgba(34,197,94,0.2); }
         .ev-btn-ins.lleno { background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); color: var(--gfi-text-dim); cursor: not-allowed; }
         .ev-btn-ins:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ev-btn-cancelar-ev { padding: 5px 10px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .ev-btn-cancelar-ev { padding: 5px 10px; background: transparent; border: 1px solid rgba(153,0,0,0.2); border-radius: 3px; color: rgba(153,0,0,0.6); font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .ev-btn-cancelar-ev:hover { border-color: #990000; color: #990000; }
         .ev-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.15); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -634,18 +634,18 @@ export default function EventosPage() {
         .ev-loading { padding: 48px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; }
         /* Modal */
         .ev-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
-        .ev-modal { background: #0f0f0f; border: 1px solid rgba(200,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .ev-modal { background: #0f0f0f; border: 1px solid rgba(153,0,0,0.2); border-radius: 8px; padding: 28px 32px; width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; position: relative; }
         .ev-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 8px 8px 0 0; }
         .ev-modal-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .ev-modal-titulo span { color: #990000; }
         .ev-field { margin-bottom: 14px; }
         .ev-label { display: block; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; }
         .ev-input { width: 100%; padding: 9px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); transition: border-color 0.2s; }
-        .ev-input:focus { border-color: rgba(200,0,0,0.4); }
+        .ev-input:focus { border-color: rgba(153,0,0,0.4); }
         .ev-input::placeholder { color: var(--gfi-text-dim); }
         .ev-select { width: 100%; padding: 9px 13px; background: #0f0f0f; border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); }
         .ev-textarea { width: 100%; padding: 9px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); resize: vertical; min-height: 80px; transition: border-color 0.2s; }
-        .ev-textarea:focus { border-color: rgba(200,0,0,0.4); }
+        .ev-textarea:focus { border-color: rgba(153,0,0,0.4); }
         .ev-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .ev-tipos-grid { display: flex; flex-wrap: wrap; gap: 8px; }
         .ev-tipo-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--gfi-border); background: transparent; color: var(--gfi-text-muted); font-size: 11px; font-weight: 700; font-family: var(--font-display); cursor: pointer; transition: all 0.15s; }
@@ -656,12 +656,12 @@ export default function EventosPage() {
         .ev-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--gfi-border-subtle); padding-top: 16px; }
         .ev-btn-cancel { padding: 9px 20px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .ev-btn-guardar { padding: 9px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .ev-btn-guardar:hover { background: #e60000; }
+        .ev-btn-guardar:hover { background: #b80000; }
         .ev-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .ev-seccion-titulo { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-dim); margin: 16px 0 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; }
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 5px; font-family: var(--font-display); font-size: 12px; font-weight: 700; z-index: 999; animation: toastIn 0.3s ease; }
         .toast.ok { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); color: #3abab6; }
-        .toast.err { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.35); color: #ff6666; }
+        .toast.err { background: rgba(153,0,0,0.15); border: 1px solid rgba(153,0,0,0.35); color: #ff6666; }
         @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         @media (max-width: 860px) { .ev-layout { grid-template-columns: 1fr; } .ev-sidebar { position: static; } }
         @media (max-width: 600px) { .ev-card { flex-direction: column; } .ev-acciones { flex-direction: row; border-left: none; border-top: 1px solid var(--gfi-border-subtle); } .ev-row2 { grid-template-columns: 1fr; } }
@@ -814,7 +814,7 @@ export default function EventosPage() {
                               </div>
                             )}
                             {ev.destacado && (
-                              <div style={{position:"absolute",top:7,left:7,background:"rgba(200,0,0,0.9)",padding:"2px 7px",borderRadius:20,fontSize:9,fontFamily:"var(--font-display)",fontWeight:700,color:"#fff"}}>⭐</div>
+                              <div style={{position:"absolute",top:7,left:7,background:"rgba(153,0,0,0.9)",padding:"2px 7px",borderRadius:20,fontSize:9,fontFamily:"var(--font-display)",fontWeight:700,color:"#fff"}}>⭐</div>
                             )}
                           </div>
                         );
@@ -868,7 +868,7 @@ export default function EventosPage() {
                           ) : (
                             <span className="ev-meta-item">🕐 {f.dia} · {f.hora}hs</span>
                           )}
-                          {ev.recurrencia_desc && <span className="ev-meta-item" style={{ color: "rgba(200,0,0,0.7)" }}>↻ {ev.recurrencia_desc}</span>}
+                          {ev.recurrencia_desc && <span className="ev-meta-item" style={{ color: "rgba(153,0,0,0.7)" }}>↻ {ev.recurrencia_desc}</span>}
                           {ev.lugar&&<span className="ev-meta-item">📍 {ev.lugar}</span>}
                         </div>
                         {ev.descripcion&&<div className="ev-desc">{ev.descripcion}</div>}
@@ -904,7 +904,7 @@ export default function EventosPage() {
                           </button>
                         )}
                         {ev.inscripto&&ev.link_externo&&!pasado&&(
-                          <a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(200,0,0,0.7)",textDecoration:"none",fontFamily:"var(--font-display)",fontWeight:700}}>🔗 Link inscripción</a>
+                          <a href={ev.link_externo} target="_blank" rel="noopener noreferrer" style={{fontSize:10,color:"rgba(153,0,0,0.7)",textDecoration:"none",fontFamily:"var(--font-display)",fontWeight:700}}>🔗 Link inscripción</a>
                         )}
                         <button style={{padding:"5px 10px",background:"transparent",border:"1px solid var(--gfi-border)",borderRadius:3,color:"var(--gfi-text-muted)",fontFamily:"var(--font-display)",fontSize:8,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",transition:"all 0.15s"}}
                           onClick={()=>setEventoVer(ev)}
@@ -930,7 +930,7 @@ export default function EventosPage() {
                         {esAdmin&&ev.estado==="publicado"&&eventoRedesResult[ev.id]&&(
                           <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
                             {eventoRedesResult[ev.id].map(r => (
-                              <span key={r.red} style={{fontSize:8,fontFamily:"var(--font-display)",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(200,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(200,0,0,0.3)"}`,color:r.ok?"#3abab6":"#f87171"}}>
+                              <span key={r.red} style={{fontSize:8,fontFamily:"var(--font-display)",fontWeight:700,padding:"2px 5px",borderRadius:3,letterSpacing:"0.06em",textTransform:"uppercase",background:r.ok?"rgba(34,197,94,0.12)":"rgba(153,0,0,0.12)",border:`1px solid ${r.ok?"rgba(34,197,94,0.3)":"rgba(153,0,0,0.3)"}`,color:r.ok?"#3abab6":"#f87171"}}>
                                 {r.red} {r.ok ? "✓" : "✗"}
                               </span>
                             ))}
@@ -962,13 +962,13 @@ export default function EventosPage() {
 
             {!mostrarParser ? (
               <button type="button"
-                style={{width:"100%",padding:"10px 14px",background:"rgba(200,0,0,0.06)",border:"1px dashed rgba(200,0,0,0.3)",borderRadius:6,color:"rgba(200,0,0,0.8)",fontFamily:"var(--font-display)",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",marginBottom:16}}
+                style={{width:"100%",padding:"10px 14px",background:"rgba(153,0,0,0.06)",border:"1px dashed rgba(153,0,0,0.3)",borderRadius:6,color:"rgba(153,0,0,0.8)",fontFamily:"var(--font-display)",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer",marginBottom:16}}
                 onClick={() => setMostrarParser(true)}>
                 Pegar texto de WhatsApp / mail — autocompletar con IA
               </button>
             ) : (
-              <div style={{background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:16,marginBottom:16}}>
-                <div style={{fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:8}}>
+              <div style={{background:"rgba(153,0,0,0.04)",border:"1px solid rgba(153,0,0,0.15)",borderRadius:6,padding:16,marginBottom:16}}>
+                <div style={{fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(153,0,0,0.7)",marginBottom:8}}>
                   Parser IA — Pega el texto del evento
                 </div>
                 <textarea
@@ -1043,7 +1043,7 @@ export default function EventosPage() {
                   { key: "recurrente", label: "Sesiones / clases" },
                 ].map(op => (
                   <button key={op.key} type="button"
-                    style={{ flex: 1, padding: "8px 6px", background: modoFecha === op.key ? "rgba(200,0,0,0.12)" : "var(--gfi-bg-card)", border: `1px solid ${modoFecha === op.key ? "rgba(200,0,0,0.5)" : "var(--gfi-border)"}`, borderRadius: 4, color: modoFecha === op.key ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
+                    style={{ flex: 1, padding: "8px 6px", background: modoFecha === op.key ? "rgba(153,0,0,0.12)" : "var(--gfi-bg-card)", border: `1px solid ${modoFecha === op.key ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, borderRadius: 4, color: modoFecha === op.key ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}
                     onClick={() => setModoFecha(op.key as "unico"|"multidia"|"recurrente")}>
                     {op.label}
                   </button>
@@ -1088,7 +1088,7 @@ export default function EventosPage() {
                   {fechasRec.length > 0 && (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {fechasRec.map(f => (
-                        <div key={f} style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 4, padding: "4px 10px", fontSize: 12, color: "var(--gfi-text-primary)", display: "flex", alignItems: "center", gap: 6 }}>
+                        <div key={f} style={{ background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 4, padding: "4px 10px", fontSize: 12, color: "var(--gfi-text-primary)", display: "flex", alignItems: "center", gap: 6 }}>
                           {new Date(f + "T12:00:00").toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" })}
                           <button type="button" onClick={() => setFechasRec(p => p.filter(x => x !== f))} style={{ background: "transparent", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 13, lineHeight: 1, padding: 0 }}>×</button>
                         </div>
@@ -1161,10 +1161,10 @@ export default function EventosPage() {
               <label className="ev-label">Fotos (flyer, lugar, etc.) — varias a la vez</label>
               <label
                 style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",background:"var(--gfi-bg-card)",border:"2px dashed var(--gfi-border)",borderRadius:6,cursor:"pointer",transition:"all 0.2s"}}
-                onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(200,0,0,0.5)"; }}
+                onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(153,0,0,0.5)"; }}
                 onDragLeave={e => { e.currentTarget.style.borderColor = "var(--gfi-border)"; }}
                 onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = "var(--gfi-border)"; if (e.dataTransfer.files) subirFotos(e.dataTransfer.files); }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(200,0,0,0.3)"}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(153,0,0,0.3)"}
                 onMouseLeave={e => e.currentTarget.style.borderColor = "var(--gfi-border)"}
               >
                 <input type="file" accept="image/*" multiple style={{display:"none"}} onChange={e => e.target.files && subirFotos(e.target.files)} />
@@ -1234,11 +1234,11 @@ export default function EventosPage() {
                       </div>
                       {/* Botón quitar */}
                       <button type="button"
-                        style={{position:"absolute",top:4,right:4,background:"rgba(200,0,0,0.85)",border:"none",borderRadius:"50%",width:22,height:22,color:"#fff",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2,fontWeight:700}}
+                        style={{position:"absolute",top:4,right:4,background:"rgba(153,0,0,0.85)",border:"none",borderRadius:"50%",width:22,height:22,color:"#fff",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2,fontWeight:700}}
                         onClick={() => quitarMedia(i)}>&times;</button>
                       {/* Primera foto = portada */}
                       {i === 0 && m.tipo === "foto" && (
-                        <div style={{position:"absolute",top:4,left:4,background:"rgba(200,0,0,0.85)",padding:"2px 6px",borderRadius:3,fontSize:8,color:"#fff",fontFamily:"var(--font-display)",fontWeight:700}}>
+                        <div style={{position:"absolute",top:4,left:4,background:"rgba(153,0,0,0.85)",padding:"2px 6px",borderRadius:3,fontSize:8,color:"#fff",fontFamily:"var(--font-display)",fontWeight:700}}>
                           PORTADA
                         </div>
                       )}
@@ -1318,7 +1318,7 @@ export default function EventosPage() {
             )}
 
             <button
-              style={{position:"fixed",top:16,right:16,width:36,height:36,borderRadius:"50%",background:"rgba(200,0,0,0.9)",border:"none",color:"#fff",fontSize:18,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
+              style={{position:"fixed",top:16,right:16,width:36,height:36,borderRadius:"50%",background:"rgba(153,0,0,0.9)",border:"none",color:"#fff",fontSize:18,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10}}
               onClick={() => setLightbox(null)}>&times;</button>
           </div>
         </div>
@@ -1629,7 +1629,7 @@ export default function EventosPage() {
                   )}
                   {ev.link_externo&&(
                     <a href={ev.link_externo} target="_blank" rel="noopener noreferrer"
-                      style={{padding:"9px 16px",border:"1px solid rgba(200,0,0,0.3)",borderRadius:3,color:"#990000",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
+                      style={{padding:"9px 16px",border:"1px solid rgba(153,0,0,0.3)",borderRadius:3,color:"#990000",fontFamily:"var(--font-display)",fontSize:10,fontWeight:700,textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase"}}>
                       🔗 Link inscripción
                     </a>
                   )}

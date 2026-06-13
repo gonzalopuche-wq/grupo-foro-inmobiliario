@@ -567,7 +567,7 @@ export default function AdminMirPage() {
               padding: "3px 10px", borderRadius: 3, cursor: "pointer", fontSize: 10,
               fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.06em",
               border: `1px solid ${sortCol === key ? "#990000" : "var(--gfi-border)"}`,
-              background: sortCol === key ? "rgba(200,0,0,0.12)" : "transparent",
+              background: sortCol === key ? "rgba(153,0,0,0.12)" : "transparent",
               color: sortCol === key ? "#fff" : "var(--gfi-text-muted)",
             }}>
               {label}{sortCol === key ? (sortDir === "asc" ? " ↑" : " ↓") : ""}

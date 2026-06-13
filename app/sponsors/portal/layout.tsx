@@ -31,7 +31,7 @@ export default function SponsorPortalLayout({ children }: { children: React.Reac
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#080808" }}>
-      <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin .7s linear infinite" }} />
+      <div style={{ width: 24, height: 24, border: "2px solid rgba(153,0,0,.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin .7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -50,7 +50,7 @@ export default function SponsorPortalLayout({ children }: { children: React.Reac
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {sponsor?.logo_url
             ? <img src={sponsor.logo_url} style={{ width: 32, height: 32, borderRadius: 6, objectFit: "contain", background: "rgba(255,255,255,.06)" }} alt="" />
-            : <div style={{ width: 32, height: 32, borderRadius: 6, background: "rgba(200,0,0,.12)", border: "1px solid rgba(200,0,0,.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>🏢</div>
+            : <div style={{ width: 32, height: 32, borderRadius: 6, background: "rgba(153,0,0,.12)", border: "1px solid rgba(153,0,0,.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>🏢</div>
           }
           <div>
             <div style={{ fontFamily: "'Montserrat',sans-serif", fontSize: 13, fontWeight: 800, color: "#fff" }}>{sponsor?.nombre}</div>
@@ -73,7 +73,7 @@ export default function SponsorPortalLayout({ children }: { children: React.Reac
                 display: "flex", alignItems: "center", gap: 10, padding: "10px 16px",
                 fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: activo ? 600 : 400,
                 color: activo ? "#fff" : "rgba(255,255,255,.4)",
-                background: activo ? "rgba(200,0,0,.08)" : "transparent",
+                background: activo ? "rgba(153,0,0,.08)" : "transparent",
                 borderLeft: activo ? "2px solid #990000" : "2px solid transparent",
                 textDecoration: "none", transition: "all .15s",
               }}>

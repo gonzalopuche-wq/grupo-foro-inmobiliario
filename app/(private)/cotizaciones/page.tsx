@@ -240,9 +240,9 @@ export default function CotizacionesPage() {
         
         .cot-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
         .cot-tab { padding: 9px 22px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; transition: all 0.2s; }
-        .cot-tab:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }
-        .cot-tab.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
-        .dolar-ref-widget { background: var(--gfi-bg-card); border: 1px solid rgba(200,0,0,0.35); border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden; }
+        .cot-tab:hover { border-color: rgba(153,0,0,0.3); color: var(--gfi-text-primary); }
+        .cot-tab.activo { border-color: #990000; color: #fff; background: rgba(153,0,0,0.08); }
+        .dolar-ref-widget { background: var(--gfi-bg-card); border: 1px solid rgba(153,0,0,0.35); border-radius: 8px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; position: relative; overflow: hidden; }
         .dolar-ref-widget::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, #990000 60%, transparent); }
         .dolar-ref-left { display: flex; flex-direction: column; gap: 3px; }
         .dolar-ref-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #990000; }
@@ -264,7 +264,7 @@ export default function CotizacionesPage() {
         .cot-tabla tbody tr { border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.15s; }
         .cot-tabla tbody tr:last-child { border-bottom: none; }
         .cot-tabla tbody tr:hover { background: var(--gfi-bg-secondary); }
-        .cot-tabla tbody tr.destacado { background: rgba(200,0,0,0.04); }
+        .cot-tabla tbody tr.destacado { background: rgba(153,0,0,0.04); }
         .cot-tabla td { padding: 13px 16px; font-size: 13px; }
         .cot-tabla td:not(:first-child) { text-align: right; font-family: var(--font-display); font-weight: 700; }
         .cot-nombre { font-weight: 600; color: #fff; }
@@ -279,8 +279,8 @@ export default function CotizacionesPage() {
         .cot-val-num { font-family: var(--font-display); font-size: 15px; font-weight: 800; margin-top: 3px; }
         .prov-grid { display: flex; flex-direction: column; gap: 12px; }
         .prov-card { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; transition: border-color 0.2s; }
-        .prov-card:hover { border-color: rgba(200,0,0,0.2); }
-        .prov-card.referencia { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.04); }
+        .prov-card:hover { border-color: rgba(153,0,0,0.2); }
+        .prov-card.referencia { border-color: rgba(153,0,0,0.4); background: rgba(153,0,0,0.04); }
         .prov-ref-badge { font-family: var(--font-display); font-size: 8px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; background: #990000; color: #fff; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
         .prov-info { display: flex; flex-direction: column; gap: 8px; flex: 1; }
         .prov-nombre { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #fff; }
@@ -297,22 +297,22 @@ export default function CotizacionesPage() {
         .prov-acciones { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
         .prov-btn-wa { padding: 8px 18px; background: rgba(37,211,102,0.12); border: 1px solid rgba(37,211,102,0.3); border-radius: 3px; color: #25d366; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
         .prov-btn-wa:hover { background: rgba(37,211,102,0.2); }
-        .prov-btn-actualizar { padding: 8px 18px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-        .prov-btn-actualizar:hover { background: rgba(200,0,0,0.2); color: #fff; }
+        .prov-btn-actualizar { padding: 8px 18px; background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.3); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .prov-btn-actualizar:hover { background: rgba(153,0,0,0.2); color: #fff; }
         .prov-empty { padding: 48px; text-align: center; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; }
         .match-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .match-filtros { display: flex; gap: 8px; flex-wrap: wrap; }
         .match-filtro { padding: 6px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); cursor: pointer; transition: all 0.2s; }
-        .match-filtro:hover { border-color: rgba(200,0,0,0.3); color: var(--gfi-text-primary); }
-        .match-filtro.activo { border-color: #990000; color: #fff; background: rgba(200,0,0,0.08); }
+        .match-filtro:hover { border-color: rgba(153,0,0,0.3); color: var(--gfi-text-primary); }
+        .match-filtro.activo { border-color: #990000; color: #fff; background: rgba(153,0,0,0.08); }
         .match-btn-pub { padding: 9px 20px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
-        .match-btn-pub:hover { background: #e60000; }
+        .match-btn-pub:hover { background: #b80000; }
         .match-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .match-col-titulo { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; padding: 10px 16px; border-radius: 4px 4px 0 0; }
         .match-col-titulo.venta { background: rgba(34,197,94,0.1); color: #3abab6; border: 1px solid rgba(34,197,94,0.2); border-bottom: none; }
-        .match-col-titulo.compra { background: rgba(200,0,0,0.08); color: #990000; border: 1px solid rgba(200,0,0,0.2); border-bottom: none; }
+        .match-col-titulo.compra { background: rgba(153,0,0,0.08); color: #990000; border: 1px solid rgba(153,0,0,0.2); border-bottom: none; }
         .match-pub { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; padding: 14px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
-        .match-pub.propia { border-color: rgba(200,0,0,0.25); background: rgba(200,0,0,0.04); }
+        .match-pub.propia { border-color: rgba(153,0,0,0.25); background: rgba(153,0,0,0.04); }
         .match-pub-info { flex: 1; }
         .match-pub-monto { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; }
         .match-pub-monto span { color: #990000; }
@@ -320,25 +320,25 @@ export default function CotizacionesPage() {
         .match-pub-corredor { font-size: 12px; color: var(--gfi-text-secondary); margin-top: 6px; font-weight: 500; }
         .match-pub-precio { font-size: 11px; color: #d4960c; margin-top: 2px; }
         .match-btn-eliminar { padding: 6px 10px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-size: 11px; cursor: pointer; }
-        .match-btn-eliminar:hover { border-color: rgba(200,0,0,0.4); color: #ff4444; }
-        .match-nota { font-size: 11px; color: var(--gfi-text-dim); text-align: center; padding: 8px; background: rgba(200,0,0,0.05); border: 1px solid rgba(200,0,0,0.1); border-radius: 4px; }
+        .match-btn-eliminar:hover { border-color: rgba(153,0,0,0.4); color: #ff4444; }
+        .match-nota { font-size: 11px; color: var(--gfi-text-dim); text-align: center; padding: 8px; background: rgba(153,0,0,0.05); border: 1px solid rgba(153,0,0,0.1); border-radius: 4px; }
         .match-empty { padding: 24px 16px; text-align: center; color: var(--gfi-text-dim); font-size: 12px; font-style: italic; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 6px; margin-top: 8px; }
         .fn-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
-        .fn-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 36px; width: 100%; max-width: 460px; position: relative; }
+        .fn-modal { background: #0f0f0f; border: 1px solid rgba(153,0,0,0.25); border-radius: 6px; padding: 36px; width: 100%; max-width: 460px; position: relative; }
         .fn-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .fn-modal h2 { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin-bottom: 20px; }
         .fn-modal h2 span { color: #990000; }
         .fn-field { margin-bottom: 14px; }
         .fn-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; font-family: var(--font-display); }
         .fn-input { width: 100%; padding: 10px 14px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; transition: border-color 0.2s; font-family: var(--font-body); }
-        .fn-input:focus { border-color: rgba(200,0,0,0.5); }
+        .fn-input:focus { border-color: rgba(153,0,0,0.5); }
         .fn-input::placeholder { color: var(--gfi-text-dim); }
         .fn-select { width: 100%; padding: 10px 14px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); }
         .fn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .fn-modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
         .fn-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .fn-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .fn-btn-guardar:hover { background: #e60000; }
+        .fn-btn-guardar:hover { background: #b80000; }
         .fn-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 4px; animation: skpulse 1.5s ease-in-out infinite; display: inline-block; }
         @keyframes skpulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }

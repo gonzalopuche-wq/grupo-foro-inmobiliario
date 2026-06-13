@@ -43,8 +43,8 @@ export function PostRedesButton({ propiedadId }: Props) {
       <button
         onClick={() => setAbierto(true)}
         style={{
-          padding: "8px 16px", borderRadius: 5, border: "1px solid rgba(200,0,0,0.35)",
-          background: "rgba(200,0,0,0.1)", color: "#fff", cursor: "pointer",
+          padding: "8px 16px", borderRadius: 5, border: "1px solid rgba(153,0,0,0.35)",
+          background: "rgba(153,0,0,0.1)", color: "#fff", cursor: "pointer",
           fontFamily: "var(--font-display)", fontSize: 10, fontWeight: 700,
           letterSpacing: "0.1em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6,
         }}
@@ -75,7 +75,7 @@ export function PostRedesButton({ propiedadId }: Props) {
                   <button key={r} onClick={() => { setRed(r); setResultado(null); }} style={{
                     padding: "8px 16px", borderRadius: 20, border: "1px solid",
                     borderColor: red === r ? "#990000" : "var(--gfi-border)",
-                    background: red === r ? "rgba(200,0,0,0.12)" : "transparent",
+                    background: red === r ? "rgba(153,0,0,0.12)" : "transparent",
                     color: red === r ? "#fff" : "var(--gfi-text-muted)",
                     cursor: "pointer", fontSize: 12, fontWeight: 600,
                   }}>
@@ -87,7 +87,7 @@ export function PostRedesButton({ propiedadId }: Props) {
 
             <button onClick={generar} disabled={generando} style={{
               width: "100%", padding: "12px", borderRadius: 6, border: "none",
-              background: generando ? "rgba(200,0,0,0.4)" : "#990000",
+              background: generando ? "rgba(153,0,0,0.4)" : "#990000",
               color: "#fff", cursor: generando ? "not-allowed" : "pointer",
               fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700,
               letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20,

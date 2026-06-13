@@ -447,7 +447,7 @@ export default function DashboardPage() {
           .colab-seccion { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gfi-text-dim); margin-bottom: 12px; }
           .colab-accesos { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; }
           .colab-acceso { background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; padding: 18px 14px; text-align: center; text-decoration: none; transition: border-color 0.15s, background 0.15s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-          .colab-acceso:hover { border-color: rgba(200,0,0,0.35); background: rgba(200,0,0,0.04); }
+          .colab-acceso:hover { border-color: rgba(153,0,0,0.35); background: rgba(153,0,0,0.04); }
           .colab-acceso-ico { font-size: 24px; }
           .colab-acceso-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: #fff; }
           .colab-acceso-desc { font-size: 10px; color: var(--gfi-text-muted); font-family: var(--font-body); }
@@ -1184,7 +1184,7 @@ export default function DashboardPage() {
         <div className="db-panel" style={{background:"var(--gfi-bg-card)",border:"1px solid var(--gfi-border-subtle)",borderRadius:8,padding:"18px 20px",marginTop:0}}>
           <div className="db-panel-titulo" style={{fontFamily:"var(--font-display)",fontSize:11,fontWeight:800,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
             Últimas publicaciones sociales
-            <a href="/noticias" style={{fontSize:9,fontWeight:700,color:"rgba(200,0,0,0.7)",textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase",padding:"3px 8px",border:"1px solid rgba(200,0,0,0.2)",borderRadius:3}}>Ver noticias</a>
+            <a href="/noticias" style={{fontSize:9,fontWeight:700,color:"rgba(153,0,0,0.7)",textDecoration:"none",letterSpacing:"0.1em",textTransform:"uppercase",padding:"3px 8px",border:"1px solid rgba(153,0,0,0.2)",borderRadius:3}}>Ver noticias</a>
           </div>
           {loadingSocialPosts ? (
             <div style={{color:"var(--gfi-text-dim)",fontSize:12,fontStyle:"italic"}}>Cargando...</div>

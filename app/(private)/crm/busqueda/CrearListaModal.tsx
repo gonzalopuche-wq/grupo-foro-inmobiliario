@@ -106,7 +106,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
 
   const s: Record<string, any> = {
     bg: { position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:300,display:'flex',alignItems:'center',justifyContent:'center',padding:16 },
-    modal: { background:'#0f0f0f',border:'1px solid rgba(200,0,0,0.2)',borderRadius:12,width:'100%',maxWidth:480 },
+    modal: { background:'#0f0f0f',border:'1px solid rgba(153,0,0,0.2)',borderRadius:12,width:'100%',maxWidth:480 },
     header: { display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 20px',borderBottom:'1px solid var(--gfi-border-subtle)' },
     body: { padding:20 },
     label: { fontSize:10,color:'var(--gfi-text-muted)',display:'block',marginBottom:6,fontFamily:'Montserrat,sans-serif',fontWeight:700,letterSpacing:'0.1em',textTransform:'uppercase' as const },
@@ -162,7 +162,7 @@ export default function CrearListaModal({ propiedades, onClose, onCreada }: Crea
                 placeholder="Ej: Búsqueda entre U$D 80.000 y U$D 100.000" />
             </div>
 
-            <div style={{background:'rgba(200,0,0,0.05)',border:'1px solid rgba(200,0,0,0.15)',borderRadius:8,padding:14,marginBottom:14}}>
+            <div style={{background:'rgba(153,0,0,0.05)',border:'1px solid rgba(153,0,0,0.15)',borderRadius:8,padding:14,marginBottom:14}}>
               <div style={{display:'flex',alignItems:'flex-start',gap:10,marginBottom:notificarCliente?12:0}}>
                 <input type="checkbox" id="notif" checked={notificarCliente} onChange={e => setNotificarCliente(e.target.checked)}
                   style={{marginTop:2,accentColor:'#990000'}} />

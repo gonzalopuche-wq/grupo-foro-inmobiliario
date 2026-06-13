@@ -564,7 +564,7 @@ export default function ForoPage() {
           <video key={i} src={adj.url} controls style={{ maxWidth: 260, borderRadius: 6, display: "block", border: "1px solid var(--gfi-border)" }} onClick={e => e.stopPropagation()} />
         );
         if (adj.tipo === "audio") return (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "8px 10px" }} onClick={e => e.stopPropagation()}>
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 8, padding: "8px 10px" }} onClick={e => e.stopPropagation()}>
             <span style={{ fontSize: 18 }}>🎙</span>
             <audio controls style={{ flex: 1, height: 32, minWidth: 0 }}>
               <source src={adj.url} type={adj.nombre?.endsWith(".mp4") ? "audio/mp4" : adj.nombre?.endsWith(".ogg") ? "audio/ogg" : "audio/webm"} />
@@ -978,7 +978,7 @@ export default function ForoPage() {
                             {fullName(m.perfiles)}{m.perfiles?.matricula && <span style={{ color: "var(--gfi-text-muted)", fontWeight: 400 }}> · {m.perfiles.matricula}</span>}
                           </div>
                         )}
-                        <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(200,0,0,0.5)" : "rgba(200,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "var(--gfi-text-dim)" : "var(--gfi-border)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
+                        <div style={{ background: eliminado ? "transparent" : esMio ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.06)", border: eliminado ? "1px solid rgba(255,255,255,0.06)" : esMio ? `1px solid ${chatMenuId === m.id ? "rgba(153,0,0,0.5)" : "rgba(153,0,0,0.25)"}` : `1px solid ${chatMenuId === m.id ? "var(--gfi-text-dim)" : "var(--gfi-border)"}`, borderRadius: esMio ? "12px 12px 3px 12px" : "12px 12px 12px 3px", padding: "8px 12px", transition: "border-color 0.15s" }}>
                           {m.reply && !eliminado && (
                             <div style={{ background: "var(--gfi-border-subtle)", borderLeft: "2px solid #990000", borderRadius: "0 4px 4px 0", padding: "4px 8px", marginBottom: 6, fontSize: 11, color: "var(--gfi-text-secondary)" }}>
                               <div style={{ fontSize: 9, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 2 }}>{(m.reply as any).perfiles?.nombre ?? ""}</div>
@@ -991,7 +991,7 @@ export default function ForoPage() {
                             <div onClick={e => e.stopPropagation()}>
                               <textarea ref={chatEditRef} value={chatEditText} onChange={e => setChatEditText(e.target.value)}
                                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); editarChatMsg(m.id); } if (e.key === "Escape") { setChatEditId(null); setChatEditText(""); } }}
-                                style={{ width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid rgba(200,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, padding: "6px 8px", outline: "none", resize: "none", minHeight: 60, fontFamily: "Inter,sans-serif" }} autoFocus />
+                                style={{ width: "100%", background: "var(--gfi-border-subtle)", border: "1px solid rgba(153,0,0,0.4)", borderRadius: 4, color: "#fff", fontSize: 12, padding: "6px 8px", outline: "none", resize: "none", minHeight: 60, fontFamily: "Inter,sans-serif" }} autoFocus />
                               <div style={{ display: "flex", gap: 6, marginTop: 5, justifyContent: "flex-end" }}>
                                 <button onClick={() => { setChatEditId(null); setChatEditText(""); }} style={{ fontSize: 10, background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 3, color: "var(--gfi-text-muted)", padding: "3px 8px", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>Cancelar</button>
                                 <button onClick={() => editarChatMsg(m.id)} style={{ fontSize: 10, background: "#990000", border: "none", borderRadius: 3, color: "#fff", padding: "3px 8px", cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 700 }}>Guardar</button>
@@ -1016,7 +1016,7 @@ export default function ForoPage() {
                           <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4, justifyContent: esMio ? "flex-end" : "flex-start" }}>
                             {Object.entries(m.reacciones).map(([emoji, users]) => (
                               <button key={emoji} onClick={e => { e.stopPropagation(); reaccionarChat(m.id, emoji); }}
-                                style={{ background: (users as string[]).includes(userId ?? "") ? "rgba(200,0,0,0.15)" : "rgba(255,255,255,0.06)", border: (users as string[]).includes(userId ?? "") ? "1px solid rgba(200,0,0,0.3)" : "1px solid var(--gfi-border)", borderRadius: 12, padding: "2px 7px", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                                style={{ background: (users as string[]).includes(userId ?? "") ? "rgba(153,0,0,0.15)" : "rgba(255,255,255,0.06)", border: (users as string[]).includes(userId ?? "") ? "1px solid rgba(153,0,0,0.3)" : "1px solid var(--gfi-border)", borderRadius: 12, padding: "2px 7px", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
                                 {emoji} <span style={{ fontSize: 10, color: "var(--gfi-text-secondary)" }}>{(users as string[]).length}</span>
                               </button>
                             ))}
@@ -1031,7 +1031,7 @@ export default function ForoPage() {
 
               {/* Reply preview */}
               {chatReplyMsg && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(200,0,0,0.06)", borderTop: "1px solid rgba(200,0,0,0.15)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: "rgba(153,0,0,0.06)", borderTop: "1px solid rgba(153,0,0,0.15)" }}>
                   <div style={{ borderLeft: "2px solid #990000", paddingLeft: 8, flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 9, color: "#990000", fontFamily: "var(--font-display)", fontWeight: 700, marginBottom: 2 }}>Respondiendo a {fullName(chatReplyMsg.perfiles)}</div>
                     <div style={{ fontSize: 11, color: "var(--gfi-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{chatReplyMsg.body}</div>
@@ -1056,7 +1056,7 @@ export default function ForoPage() {
                       <button onClick={() => setChatAdjuntos(prev => prev.filter((_, j) => j !== i))} style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 14, padding: "0 2px", lineHeight: 1 }}>×</button>
                     </div>
                   ))}
-                  {subiendoChatAdj && <div style={{ width: 14, height: 14, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
+                  {subiendoChatAdj && <div style={{ width: 14, height: 14, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />}
                 </div>
               )}
 
@@ -1089,7 +1089,7 @@ export default function ForoPage() {
                     <button onClick={enviarAudio} disabled={subiendoAudio} style={{padding:"5px 12px",background:"#990000",border:"none",borderRadius:4,color:"#fff",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer",flexShrink:0}}>
                       {subiendoAudio ? "Enviando..." : "Enviar"}
                     </button>
-                    <button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(200,0,0,0.2)",borderRadius:4,color:"rgba(200,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button>
+                    <button onClick={cancelarAudio} style={{padding:"5px 8px",background:"transparent",border:"1px solid rgba(153,0,0,0.2)",borderRadius:4,color:"rgba(153,0,0,0.5)",fontSize:14,cursor:"pointer",flexShrink:0}}>✕</button>
                   </div>
                 )}
                 {!grabando && !audioUrl && (
@@ -1103,7 +1103,7 @@ export default function ForoPage() {
                     <input ref={chatFileDocRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.ppt,.pptx,.zip" multiple style={{ display: "none" }} onChange={e => manejarChatArchivos(e.target.files)} />
                     <button onClick={() => chatFileDocRef.current?.click()} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Documentos">📎</button>
                     {/* Grabar audio in-app */}
-                    <button onClick={iniciarGrabacion} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Grabar audio" style={{color:"rgba(200,0,0,0.7)"}}>🎙</button>
+                    <button onClick={iniciarGrabacion} disabled={subiendoChatAdj} className="f-chat-adj-btn" title="Grabar audio" style={{color:"rgba(153,0,0,0.7)"}}>🎙</button>
                     <input ref={chatInputRef} placeholder="Escribí un mensaje..." value={chatInput}
                       style={{ flex: 1, padding: "9px 12px", background: "var(--gfi-border-subtle)", border: "1px solid var(--gfi-border)", borderRadius: 4, color: "#fff", fontSize: 13, outline: "none", fontFamily: "Inter,sans-serif" }}
                       onChange={e => {
@@ -1166,7 +1166,7 @@ export default function ForoPage() {
       {mostrarModalEvento && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 500, padding: 20 }}
           onClick={e => { if (e.target === e.currentTarget) setMostrarModalEvento(false); }}>
-          <div style={{ background: "var(--gfi-bg-primary)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
+          <div style={{ background: "var(--gfi-bg-primary)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 8, padding: "28px 32px", width: "100%", maxWidth: 560, maxHeight: "90vh", overflowY: "auto", position: "relative" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#990000,transparent)", borderRadius: "8px 8px 0 0" }} />
             <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, color: "#fff", marginBottom: 6 }}>Proponer <span style={{ color: "#990000" }}>evento</span></div>
             <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", background: "var(--gfi-bg-card)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 4, padding: "10px 14px", marginBottom: 16 }}>💡 Tu propuesta será revisada por el admin antes de publicarse en el módulo de Eventos.</div>

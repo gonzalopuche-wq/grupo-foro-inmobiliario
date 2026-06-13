@@ -146,7 +146,7 @@ export default function CampanasPage() {
         .camp-card:hover { border-color:rgba(255,255,255,.14); }
         .camp-card.adherido { border-color:rgba(34,197,94,.25); background:rgba(34,197,94,.03); }
         .camp-logo { width:44px; height:44px; border-radius:8px; object-fit:contain; background:rgba(255,255,255,.06); padding:4px; flex-shrink:0; }
-        .camp-logo-ph { width:44px; height:44px; border-radius:8px; background:rgba(200,0,0,.12); border:1px solid rgba(200,0,0,.2); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+        .camp-logo-ph { width:44px; height:44px; border-radius:8px; background:rgba(153,0,0,.12); border:1px solid rgba(153,0,0,.2); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
         .camp-sponsor-row { display:flex; align-items:center; gap:10px; }
         .camp-sponsor-nom { font-family:var(--font-display); font-size:11px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:.06em; text-transform:uppercase; }
         .camp-titulo { font-family:var(--font-display); font-size:15px; font-weight:800; color:#fff; line-height:1.3; }
@@ -156,9 +156,9 @@ export default function CampanasPage() {
         .camp-costo { font-size:11px; color:rgba(255,255,255,.35); }
         .camp-costo strong { color:#990000; }
         .camp-input { width:100%; padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; font-family:var(--font-body); box-sizing:border-box; }
-        .camp-input:focus { border-color:rgba(200,0,0,.4); }
+        .camp-input:focus { border-color:rgba(153,0,0,.4); }
         .btn-sumar { padding:11px; background:#990000; border:none; border-radius:4px; color:#fff; font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; width:100%; }
-        .btn-sumar:hover:not(:disabled) { background:#e60000; }
+        .btn-sumar:hover:not(:disabled) { background:#b80000; }
         .btn-sumar:disabled { opacity:.5; cursor:not-allowed; }
         .camp-link-box { background:rgba(34,197,94,.06); border:1px solid rgba(34,197,94,.2); border-radius:6px; padding:12px 14px; }
         .camp-link-url { font-family:var(--font-body); font-size:11px; color:rgba(34,197,94,.8); word-break:break-all; margin-bottom:8px; }
@@ -169,7 +169,7 @@ export default function CampanasPage() {
         .camp-stat-label { font-size:10px; color:rgba(255,255,255,.35); }
         .toast { position:fixed; bottom:28px; right:28px; padding:12px 20px; border-radius:5px; font-family:var(--font-display); font-size:12px; font-weight:700; z-index:999; }
         .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#3abab6; }
-        .toast.err { background:rgba(200,0,0,.15); border:1px solid rgba(200,0,0,.35); color:#ff6666; }
+        .toast.err { background:rgba(153,0,0,.15); border:1px solid rgba(153,0,0,.35); color:#ff6666; }
       `}</style>
 
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -181,7 +181,7 @@ export default function CampanasPage() {
 
         {/* Declarar admins */}
         {!cantAdmins && (
-          <div style={{ background: "rgba(200,0,0,.06)", border: "1px solid rgba(200,0,0,.2)", borderRadius: 8, padding: "16px 20px", marginBottom: 24 }}>
+          <div style={{ background: "rgba(153,0,0,.06)", border: "1px solid rgba(153,0,0,.2)", borderRadius: 8, padding: "16px 20px", marginBottom: 24 }}>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
               ¿Cuántos consorcios o propiedades administrás?
             </div>

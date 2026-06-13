@@ -109,7 +109,7 @@ export default function ModeracionPage() {
         .mod-tab { padding: 8px 18px; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--gfi-text-muted); font-family: Montserrat,sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .mod-tab.active { color: #fff; border-bottom-color: #990000; }
         .mod-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; box-sizing: border-box; }
-        .mod-input:focus { outline: none; border-color: rgba(200,0,0,0.5); }
+        .mod-input:focus { outline: none; border-color: rgba(153,0,0,0.5); }
       `}</style>
 
       {/* Header */}
@@ -182,7 +182,7 @@ export default function ModeracionPage() {
                 {d.estado === "pendiente" && (
                   <button
                     onClick={() => { setDenunciaActiva(d); setResolucionNotas(""); setAccionTomada(""); }}
-                    style={{ padding: "7px 14px", background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 6, color: "#990000", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "var(--font-display)" }}>
+                    style={{ padding: "7px 14px", background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 6, color: "#990000", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", fontFamily: "var(--font-display)" }}>
                     Revisar
                   </button>
                 )}

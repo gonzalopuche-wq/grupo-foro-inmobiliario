@@ -44,7 +44,7 @@ export default function NuevoDMPage() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -82,7 +82,7 @@ export default function NuevoDMPage() {
             onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
             onMouseOut={e => (e.currentTarget.style.background = "transparent")}
           >
-            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
+            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden" }}>
               {c.foto_url ? <img src={c.foto_url} alt={c.nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials(c)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
