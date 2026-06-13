@@ -708,7 +708,7 @@ export default function AgendaPage() {
                       <a href="https://calendar.google.com" target="_blank" rel="noopener noreferrer" style={{padding:'5px 12px',background:'rgba(66,133,244,0.08)',border:'1px solid rgba(66,133,244,0.2)',borderRadius:6,color:'#7aa4f7',fontSize:11,textDecoration:'none',fontFamily:'Montserrat,sans-serif',fontWeight:700,display:'flex',alignItems:'center',gap:5}}>
                         <GoogleLogo/> Abrir GCal
                       </a>
-                      <button onClick={()=>desvincularCalendario(gcalCals[gcalActivo].id)} style={{padding:'5px 12px',background:'none',border:'1px solid var(--gfi-border)',borderRadius:6,color:'rgba(200,0,0,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Desvincular</button>
+                      <button onClick={()=>desvincularCalendario(gcalCals[gcalActivo].id)} style={{padding:'5px 12px',background:'none',border:'1px solid var(--gfi-border)',borderRadius:6,color:'rgba(153,0,0,0.5)',fontSize:11,cursor:'pointer',fontFamily:'Montserrat,sans-serif',fontWeight:700}}>Desvincular</button>
                     </div>
                   </div>
                   <iframe key={gcalCals[gcalActivo].id} src={buildEmbedUrl(gcalCals[gcalActivo].embedUrl)} className="gcal-iframe" title={gcalCals[gcalActivo].nombre} sandbox="allow-scripts allow-same-origin allow-popups allow-forms"/>
@@ -833,7 +833,7 @@ export default function AgendaPage() {
                           </a>
                         )}
                         {item.fuente==='agenda'&&(
-                          <button onClick={()=>eliminarCita(item)} style={{padding:'6px 10px',background:'none',border:'1px solid var(--gfi-border)',borderRadius:7,color:'rgba(200,0,0,0.5)',cursor:'pointer',fontSize:11}}>✕</button>
+                          <button onClick={()=>eliminarCita(item)} style={{padding:'6px 10px',background:'none',border:'1px solid var(--gfi-border)',borderRadius:7,color:'rgba(153,0,0,0.5)',cursor:'pointer',fontSize:11}}>✕</button>
                         )}
                       </div>
                     </div>

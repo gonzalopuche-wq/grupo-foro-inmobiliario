@@ -302,7 +302,7 @@ export default function DMPage() {
 
   const renderTxt = (t: string) => t.split(/(https?:\/\/\S+)/g).map((p, i) => p.match(/^https?:\/\//) ? <a key={i} href={p} target="_blank" rel="noopener noreferrer" style={{ color: "#4ab8d8", textDecoration: "underline", wordBreak: "break-all" }} onClick={e => e.stopPropagation()}>{p}</a> : <span key={i}>{p}</span>);
 
-  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}><div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
+  if (loading) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}><div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
 
   return (
     <>
@@ -312,12 +312,12 @@ export default function DMPage() {
         .dc-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--gfi-border-subtle);background:#0f0f0f;flex-shrink:0;}
         .dc-back{background:none;border:none;color:var(--gfi-text-muted);font-size:18px;cursor:pointer;padding:4px 8px;}
         .dc-back:hover{color:#fff;}
-        .dc-av{width:38px;height:38px;border-radius:50%;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:13px;font-weight:800;color:#990000;flex-shrink:0;overflow:hidden;}
+        .dc-av{width:38px;height:38px;border-radius:50%;background:rgba(153,0,0,0.1);border:1px solid rgba(153,0,0,0.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:13px;font-weight:800;color:#990000;flex-shrink:0;overflow:hidden;}
         .dc-av img{width:100%;height:100%;object-fit:cover;}
         .dc-hn{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fff;}
         .dc-hs{font-size:10px;color:var(--gfi-text-muted);margin-top:1px;}
         .dc-sb{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:6px;color:var(--gfi-text-muted);cursor:pointer;font-size:14px;padding:6px 10px;transition:all 0.15s;}
-        .dc-sb.on{background:rgba(200,0,0,0.1);border-color:rgba(200,0,0,0.3);color:#990000;}
+        .dc-sb.on{background:rgba(153,0,0,0.1);border-color:rgba(153,0,0,0.3);color:#990000;}
         .dc-si{padding:10px 16px;background:var(--gfi-bg-card);border:none;border-bottom:1px solid var(--gfi-border-subtle);color:#fff;font-size:13px;outline:none;font-family:var(--font-body);width:100%;box-sizing:border-box;}
         .dc-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:2px;}
         .dc-msgs::-webkit-scrollbar{width:3px;}
@@ -326,16 +326,16 @@ export default function DMPage() {
         .dc-day span{font-size:10px;font-family:var(--font-display);font-weight:700;color:var(--gfi-text-dim);background:var(--gfi-border-subtle);border:1px solid var(--gfi-border-subtle);border-radius:20px;padding:3px 12px;display:inline-block;}
         .dc-m{display:flex;gap:8px;padding:3px 0;position:relative;}
         .dc-m.me{flex-direction:row-reverse;}
-        .dc-mav{width:30px;height:30px;border-radius:8px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.15);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:10px;font-weight:800;color:#990000;flex-shrink:0;overflow:hidden;align-self:flex-end;}
+        .dc-mav{width:30px;height:30px;border-radius:8px;background:rgba(153,0,0,0.1);border:1px solid rgba(153,0,0,0.15);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:10px;font-weight:800;color:#990000;flex-shrink:0;overflow:hidden;align-self:flex-end;}
         .dc-mav img{width:100%;height:100%;object-fit:cover;}
         .dc-bw{max-width:74%;display:flex;flex-direction:column;}
         .dc-m.me .dc-bw{align-items:flex-end;}
         .dc-b{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:12px 12px 12px 3px;padding:8px 12px;position:relative;cursor:pointer;}
-        .dc-m.me .dc-b{background:rgba(200,0,0,0.09);border-color:rgba(200,0,0,0.18);border-radius:12px 12px 3px 12px;}
+        .dc-m.me .dc-b{background:rgba(153,0,0,0.09);border-color:rgba(153,0,0,0.18);border-radius:12px 12px 3px 12px;}
         .dc-b:hover{border-color:rgba(255,255,255,0.15);}
-        .dc-m.me .dc-b:hover{border-color:rgba(200,0,0,0.3);}
-        .dc-rp{background:var(--gfi-border-subtle);border-left:2px solid rgba(200,0,0,0.4);border-radius:4px;padding:4px 8px;margin-bottom:5px;}
-        .dc-rp-a{font-size:10px;font-family:var(--font-display);font-weight:700;color:rgba(200,0,0,0.6);margin-bottom:1px;}
+        .dc-m.me .dc-b:hover{border-color:rgba(153,0,0,0.3);}
+        .dc-rp{background:var(--gfi-border-subtle);border-left:2px solid rgba(153,0,0,0.4);border-radius:4px;padding:4px 8px;margin-bottom:5px;}
+        .dc-rp-a{font-size:10px;font-family:var(--font-display);font-weight:700;color:rgba(153,0,0,0.6);margin-bottom:1px;}
         .dc-rp-t{font-size:11px;color:var(--gfi-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
         .dc-txt{font-size:13px;color:rgba(255,255,255,0.85);font-family:var(--font-body);line-height:1.5;word-break:break-word;white-space:pre-wrap;}
         .dc-del{font-size:11px;color:var(--gfi-text-dim);font-style:italic;}
@@ -346,7 +346,7 @@ export default function DMPage() {
         .dc-edit-badge{font-size:9px;color:rgba(255,255,255,0.18);font-style:italic;}
         .dc-reacs{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
         .dc-reac{background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:12px;padding:2px 7px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;}
-        .dc-reac.mia{background:rgba(200,0,0,0.12);border-color:rgba(200,0,0,0.28);}
+        .dc-reac.mia{background:rgba(153,0,0,0.12);border-color:rgba(153,0,0,0.28);}
         .dc-menu{position:absolute;background:#1e1e1e;border:1px solid var(--gfi-border);border-radius:12px;padding:8px 6px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.6);min-width:170px;}
         .dc-menu-emojis{display:flex;gap:2px;padding:2px 4px 6px;border-bottom:1px solid var(--gfi-border-subtle);margin-bottom:2px;flex-wrap:wrap;max-width:220px;}
         .dc-menu-emojis button{background:none;border:none;cursor:pointer;font-size:19px;padding:2px 3px;border-radius:6px;}
@@ -356,25 +356,25 @@ export default function DMPage() {
         .dc-mb.r{color:#ff6060;}
         .dc-mb.r:hover{background:rgba(255,0,0,0.07);}
         .dc-ia{border-top:1px solid rgba(255,255,255,0.06);padding:10px 14px;display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:#0f0f0f;}
-        .dc-rb{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.15);border-radius:5px;}
+        .dc-rb{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(153,0,0,0.06);border:1px solid rgba(153,0,0,0.15);border-radius:5px;}
         .dc-rb-t{flex:1;font-size:11px;color:var(--gfi-text-muted);font-family:var(--font-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
         .dc-adb{width:34px;height:34px;background:var(--gfi-border-subtle);border:1px solid rgba(255,255,255,0.09);border-radius:6px;color:var(--gfi-text-secondary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
-        .dc-adb:hover{border-color:rgba(200,0,0,0.35);color:#990000;}
-        .dc-adb-on{border-color:rgba(200,0,0,0.5) !important;color:#990000 !important;background:rgba(200,0,0,0.1) !important;}
+        .dc-adb:hover{border-color:rgba(153,0,0,0.35);color:#990000;}
+        .dc-adb-on{border-color:rgba(153,0,0,0.5) !important;color:#990000 !important;background:rgba(153,0,0,0.1) !important;}
         .dc-adj-menu-btn:hover{background:rgba(255,255,255,0.08) !important;}
         .dc-ta{flex:1;padding:9px 12px;background:var(--gfi-border-subtle);border:1px solid rgba(255,255,255,0.09);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:var(--font-body);resize:none;line-height:1.5;max-height:120px;overflow-y:auto;}
-        .dc-ta:focus{border-color:rgba(200,0,0,0.35);}
+        .dc-ta:focus{border-color:rgba(153,0,0,0.35);}
         .dc-ta::placeholder{color:var(--gfi-text-dim);}
         .dc-send{padding:9px 16px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-        .dc-send:hover{background:#e60000;}
+        .dc-send:hover{background:#b80000;}
         .dc-send:disabled{opacity:0.45;cursor:not-allowed;}
         .dc-thumbs{display:flex;gap:6px;flex-wrap:wrap;}
         .dc-thumb{position:relative;width:56px;height:56px;border-radius:6px;overflow:hidden;background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);}
         .dc-thumb img{width:100%;height:100%;object-fit:cover;}
         .dc-thumb-x{position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-        .dc-a-audio{display:flex;align-items:center;gap:8px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.15);border-radius:8px;padding:8px 10px;margin-top:4px;}
+        .dc-a-audio{display:flex;align-items:center;gap:8px;background:rgba(153,0,0,0.06);border:1px solid rgba(153,0,0,0.15);border-radius:8px;padding:8px 10px;margin-top:4px;}
         .dc-a-doc{display:flex;align-items:center;gap:8px;background:var(--gfi-border-subtle);border:1px solid rgba(255,255,255,0.09);border-radius:6px;padding:7px 10px;margin-top:4px;text-decoration:none;}
-        .dc-edit-i{width:100%;padding:7px 10px;background:var(--gfi-border-subtle);border:1px solid rgba(200,0,0,0.3);border-radius:4px;color:#fff;font-size:12px;font-family:var(--font-body);outline:none;resize:none;box-sizing:border-box;}
+        .dc-edit-i{width:100%;padding:7px 10px;background:var(--gfi-border-subtle);border:1px solid rgba(153,0,0,0.3);border-radius:4px;color:#fff;font-size:12px;font-family:var(--font-body);outline:none;resize:none;box-sizing:border-box;}
         .dc-adot{width:10px;height:10px;border-radius:50%;background:#990000;animation:pdot 1s ease-in-out infinite;flex-shrink:0;}
         @keyframes pdot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
         @keyframes spin{to{transform:rotate(360deg);}}
@@ -474,10 +474,10 @@ export default function DMPage() {
 
         {/* Input */}
         <div className="dc-ia">
-          {replyMsg && <div className="dc-rb"><span style={{ fontSize: 12, color: "rgba(200,0,0,0.6)", fontFamily: "var(--font-display)", fontWeight: 700 }}>↩</span><span className="dc-rb-t">{fullName(replyMsg.perfiles)}: {replyMsg.texto ?? "🎙 Audio"}</span><button style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 16, padding: 0 }} onClick={() => setReplyMsg(null)}>×</button></div>}
+          {replyMsg && <div className="dc-rb"><span style={{ fontSize: 12, color: "rgba(153,0,0,0.6)", fontFamily: "var(--font-display)", fontWeight: 700 }}>↩</span><span className="dc-rb-t">{fullName(replyMsg.perfiles)}: {replyMsg.texto ?? "🎙 Audio"}</span><button style={{ background: "none", border: "none", color: "var(--gfi-text-muted)", cursor: "pointer", fontSize: 16, padding: 0 }} onClick={() => setReplyMsg(null)}>×</button></div>}
           {adjuntos.length > 0 && <div className="dc-thumbs">{adjuntos.map((a, i) => <div key={i} className="dc-thumb">{a.tipo === "imagen" ? <img src={a.url} alt={a.nombre} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{a.tipo === "video" ? "🎬" : "📎"}</div>}<button className="dc-thumb-x" onClick={() => setAdjuntos(prev => prev.filter((_, j) => j !== i))}>×</button></div>)}</div>}
           {grabando && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 14px", background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "12px 14px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div className="dc-adot" />
                 <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Grabando... {fmtSeg(audioSeg)}</span>
@@ -496,7 +496,7 @@ export default function DMPage() {
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={enviarAudio} disabled={subiendoAudio} style={{ flex: 1, padding: "12px", background: "#990000", border: "none", borderRadius: 8, color: "#fff", fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{subiendoAudio ? "Enviando..." : "➤ Enviar audio"}</button>
-                <button onClick={cancelarAudio} style={{ padding: "12px 16px", background: "transparent", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 8, color: "rgba(200,0,0,0.6)", fontSize: 16, cursor: "pointer" }}>✕</button>
+                <button onClick={cancelarAudio} style={{ padding: "12px 16px", background: "transparent", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 8, color: "rgba(153,0,0,0.6)", fontSize: 16, cursor: "pointer" }}>✕</button>
               </div>
             </div>
           )}

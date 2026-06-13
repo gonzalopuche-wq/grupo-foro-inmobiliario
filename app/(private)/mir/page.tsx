@@ -684,7 +684,7 @@ export default function MirPage() {
           {yaTengo ? "✓ Enviado" : "Tengo"}
         </button>
         {cantIntereses(pub.id) > 0 && (
-          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.25)", color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
+          <span style={{ padding: "5px 10px", borderRadius: 20, background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.25)", color: "#990000", fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700 }}>
             {cantIntereses(pub.id)} nuevo{cantIntereses(pub.id) !== 1 ? "s" : ""}
           </span>
         )}
@@ -873,7 +873,7 @@ export default function MirPage() {
               Filtrar {cantFiltrosActivos > 0 && <span className="mir-filtro-badge">{cantFiltrosActivos}</span>}
             </button>
             {cantFiltrosActivos > 0 && (
-              <button style={{background:"none",border:"none",color:"rgba(200,0,0,0.7)",fontSize:11,cursor:"pointer",fontFamily:"var(--font-display)",fontWeight:700}} onClick={() => setFiltro(FILTRO_VACIO)}>
+              <button style={{background:"none",border:"none",color:"rgba(153,0,0,0.7)",fontSize:11,cursor:"pointer",fontFamily:"var(--font-display)",fontWeight:700}} onClick={() => setFiltro(FILTRO_VACIO)}>
                 Limpiar filtros
               </button>
             )}
@@ -1224,7 +1224,7 @@ export default function MirPage() {
                 onChange={e => setMsgInteres(e.target.value)}
               />
             </div>
-            <div style={{fontSize:11,color:"var(--gfi-text-dim)",marginBottom:16,background:"rgba(200,0,0,0.04)",border:"1px solid rgba(200,0,0,0.1)",borderRadius:4,padding:"8px 12px"}}>
+            <div style={{fontSize:11,color:"var(--gfi-text-dim)",marginBottom:16,background:"rgba(153,0,0,0.04)",border:"1px solid rgba(153,0,0,0.1)",borderRadius:4,padding:"8px 12px"}}>
               Se abrira un chat directo con el corredor titular de la publicacion.
             </div>
             <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
@@ -1245,8 +1245,8 @@ export default function MirPage() {
             <div className="fn-field">
               <label className="fn-label">Operacion *</label>
               {esColaborador && (
-                <div style={{background:"rgba(200,0,0,0.05)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
-                  <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
+                <div style={{background:"rgba(153,0,0,0.05)",border:"1px solid rgba(153,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
+                  <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(153,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
                   <div style={{marginBottom:10}}>
                     <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>Tu nombre completo *</label>
                     <input
@@ -1259,7 +1259,7 @@ export default function MirPage() {
                   <div>
                     <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
                     <select
-                      style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formO.ci_responsable_id?"rgba(200,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
+                      style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formO.ci_responsable_id?"rgba(153,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
                       value={formO.ci_responsable_id}
                       onChange={e => setFormO(p => ({...p, ci_responsable_id: e.target.value}))}
                     >
@@ -1349,8 +1349,8 @@ export default function MirPage() {
             <div className="fn-field">
               <label className="fn-label">Operacion *</label>
               {esColaborador && (
-                <div style={{background:"rgba(200,0,0,0.05)",border:"1px solid rgba(200,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
-                  <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(200,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
+                <div style={{background:"rgba(153,0,0,0.05)",border:"1px solid rgba(153,0,0,0.15)",borderRadius:6,padding:"12px 14px",marginBottom:12}}>
+                  <div style={{fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"rgba(153,0,0,0.7)",marginBottom:10}}>⚠️ Publicación como colaborador — datos obligatorios</div>
                   <div style={{marginBottom:10}}>
                     <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>Tu nombre completo *</label>
                     <input
@@ -1363,7 +1363,7 @@ export default function MirPage() {
                   <div>
                     <label style={{display:"block",fontSize:9,fontFamily:"Montserrat,sans-serif",fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",color:"var(--gfi-text-muted)",marginBottom:5}}>C.I. responsable (matriculado) *</label>
                     <select
-                      style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formB.ci_responsable_id?"rgba(200,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
+                      style={{width:"100%",padding:"8px 11px",background:"rgba(12,12,12,0.95)",border:`1px solid ${!formB.ci_responsable_id?"rgba(153,0,0,0.3)":"rgba(255,255,255,0.09)"}`,borderRadius:3,color:"#fff",fontSize:13,outline:"none",fontFamily:"Inter,sans-serif"}}
                       value={formB.ci_responsable_id}
                       onChange={e => setFormB(p => ({...p, ci_responsable_id: e.target.value}))}
                     >

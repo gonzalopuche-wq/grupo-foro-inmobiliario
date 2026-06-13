@@ -42,7 +42,7 @@ function estadoBadge(cocirEstado: string | null, estado: string) {
   if (s.includes("activ") || s.includes("habili") || s.includes("vigente"))
     return { texto: "ACTIVO", color: "#3abab6", bg: "rgba(58,186,182,0.12)", border: "rgba(58,186,182,0.4)" };
   if (s.includes("suspen") || s.includes("inhab"))
-    return { texto: "SUSPENDIDO", color: "#d05050", bg: "rgba(200,0,0,0.12)", border: "rgba(200,0,0,0.4)" };
+    return { texto: "SUSPENDIDO", color: "#d05050", bg: "rgba(153,0,0,0.12)", border: "rgba(153,0,0,0.4)" };
   if (s.includes("baja") || s.includes("cancela"))
     return { texto: "BAJA", color: "#888", bg: "rgba(136,136,136,0.12)", border: "rgba(136,136,136,0.4)" };
   return { texto: (estado ?? "SIN ESTADO").toUpperCase(), color: "#d4960c", bg: "rgba(212,150,12,0.12)", border: "rgba(212,150,12,0.4)" };

@@ -34,7 +34,7 @@ const CATEGORIAS: Record<string, { label: string; color: string; bg: string }> =
   marketing:   { label: "Marketing",    color: "#fb923c", bg: "rgba(251,146,60,0.1)" },
   financiero:  { label: "Financiero",   color: "#4ade80", bg: "rgba(74,222,128,0.1)" },
   general:     { label: "General",      color: "#94a3b8", bg: "rgba(148,163,184,0.1)" },
-  cocir:       { label: "COCIR",        color: "#990000", bg: "rgba(200,0,0,0.1)" },
+  cocir:       { label: "COCIR",        color: "#990000", bg: "rgba(153,0,0,0.1)" },
 };
 
 const NIVELES: Record<string, string> = {
@@ -132,7 +132,7 @@ export default function CursosPage() {
         .curso-card { background: var(--gfi-bg-secondary); border: 1px solid var(--gfi-border-subtle); border-radius: 14px; overflow: hidden; transition: all 0.2s; cursor: pointer; }
         .curso-card:hover { border-color: rgba(255,255,255,0.14); background: var(--gfi-border-subtle); }
         .cur-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 6px; color: #fff; font-size: 13px; font-family: Inter,sans-serif; box-sizing: border-box; }
-        .cur-input:focus { outline: none; border-color: rgba(200,0,0,0.5); }
+        .cur-input:focus { outline: none; border-color: rgba(153,0,0,0.5); }
       `}</style>
 
       {/* Header */}
@@ -154,14 +154,14 @@ export default function CursosPage() {
 
       {/* Filtros */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <button onClick={() => setFiltroVista("todos")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "todos" ? "#990000" : "var(--gfi-border)", background: filtroVista === "todos" ? "rgba(200,0,0,0.15)" : "transparent", color: filtroVista === "todos" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Todos</button>
-        <button onClick={() => setFiltroVista("mis")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "mis" ? "#990000" : "var(--gfi-border)", background: filtroVista === "mis" ? "rgba(200,0,0,0.15)" : "transparent", color: filtroVista === "mis" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Mis cursos</button>
+        <button onClick={() => setFiltroVista("todos")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "todos" ? "#990000" : "var(--gfi-border)", background: filtroVista === "todos" ? "rgba(153,0,0,0.15)" : "transparent", color: filtroVista === "todos" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Todos</button>
+        <button onClick={() => setFiltroVista("mis")} style={{ padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid", borderColor: filtroVista === "mis" ? "#990000" : "var(--gfi-border)", background: filtroVista === "mis" ? "rgba(153,0,0,0.15)" : "transparent", color: filtroVista === "mis" ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer" }}>Mis cursos</button>
         <div style={{ width: 1, background: "var(--gfi-border)", margin: "0 4px" }} />
         {["todas", ...Object.keys(CATEGORIAS)].map(cat => (
           <button key={cat} onClick={() => setFiltroCategoria(cat)} style={{
             padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, border: "1px solid",
             borderColor: filtroCategoria === cat ? (CATEGORIAS[cat]?.color ?? "#990000") : "var(--gfi-border)",
-            background: filtroCategoria === cat ? (CATEGORIAS[cat]?.bg ?? "rgba(200,0,0,0.15)") : "transparent",
+            background: filtroCategoria === cat ? (CATEGORIAS[cat]?.bg ?? "rgba(153,0,0,0.15)") : "transparent",
             color: filtroCategoria === cat ? (CATEGORIAS[cat]?.color ?? "#fff") : "rgba(255,255,255,0.45)",
             cursor: "pointer",
           }}>

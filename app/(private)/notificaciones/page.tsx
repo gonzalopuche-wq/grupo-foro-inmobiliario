@@ -257,7 +257,7 @@ export default function NotificacionesPage() {
                       const allOn = MODULOS_CONFIG.every(m => config[m.key]?.[c.key])
                       toggleTodoCanal(c.key, !allOn)
                     }}
-                    style={{ fontSize: 9, color: 'rgba(200,0,0,0.7)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', marginTop: 2 }}
+                    style={{ fontSize: 9, color: 'rgba(153,0,0,0.7)', fontFamily: 'Montserrat,sans-serif', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', marginTop: 2 }}
                   >
                     {MODULOS_CONFIG.every(m => config[m.key]?.[c.key]) ? 'Desact. todo' : 'Act. todo'}
                   </button>

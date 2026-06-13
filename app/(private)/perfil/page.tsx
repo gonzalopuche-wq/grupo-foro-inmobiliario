@@ -1098,7 +1098,7 @@ export default function PerfilPage() {
                           <span style={{ fontSize: 18 }}>{b.ico}</span>
                           <div>
                             <div style={{ fontSize: 12, color: "var(--gfi-text-primary)", fontWeight: 500 }}>{b.label}</div>
-                            <div style={{ fontSize: 10, color: "rgba(200,0,0,0.7)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Bonifica suscripción</div>
+                            <div style={{ fontSize: 10, color: "rgba(153,0,0,0.7)", fontFamily: "var(--font-display)", fontWeight: 700 }}>Bonifica suscripción</div>
                           </div>
                         </div>
                       ))}
@@ -1117,7 +1117,7 @@ export default function PerfilPage() {
           {seccion === "reputacion" && (
             <div className="pf-section">
               <div className="pf-section-title">⭐ <span>Reputación e Insignias</span></div>
-              <div className="pf-section-sub">Tu puntaje y reconocimientos en la red GFI®. El lema: <strong style={{color:"rgba(200,0,0,0.7)"}}>El que aporta, gana.</strong></div>
+              <div className="pf-section-sub">Tu puntaje y reconocimientos en la red GFI®. El lema: <strong style={{color:"rgba(153,0,0,0.7)"}}>El que aporta, gana.</strong></div>
 
               {/* Stats grid */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 20 }}>

@@ -290,7 +290,7 @@ export default function MiWebPage() {
         .mw-progress-txt { font-size: 10px; color: var(--gfi-text-muted); font-family: var(--font-display); margin-top: 6px; }
         .mw-paso-item { display: flex; align-items: center; gap: 14px; padding: 12px 22px; cursor: pointer; transition: background 0.15s; position: relative; }
         .mw-paso-item:hover { background: var(--gfi-bg-card); }
-        .mw-paso-item.activo { background: rgba(200,0,0,0.06); border-left: 2px solid #990000; }
+        .mw-paso-item.activo { background: rgba(153,0,0,0.06); border-left: 2px solid #990000; }
         .mw-paso-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 11px; font-weight: 800; flex-shrink: 0; transition: all 0.2s; }
         .mw-paso-num.completado { background: #3abab6; color: #fff; }
         .mw-paso-num.activo { background: #990000; color: #fff; }
@@ -313,15 +313,15 @@ export default function MiWebPage() {
         .mw-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 6px; font-family: var(--font-display); }
         .mw-label small { font-size: 10px; color: var(--gfi-text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 6px; }
         .mw-input { width: 100%; padding: 10px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; transition: border-color 0.2s; }
-        .mw-input:focus { border-color: rgba(200,0,0,0.5); }
+        .mw-input:focus { border-color: rgba(153,0,0,0.5); }
         .mw-input::placeholder { color: var(--gfi-text-dim); }
         .mw-textarea { width: 100%; padding: 10px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; resize: vertical; min-height: 80px; }
-        .mw-textarea:focus { border-color: rgba(200,0,0,0.5); }
+        .mw-textarea:focus { border-color: rgba(153,0,0,0.5); }
         .mw-textarea::placeholder { color: var(--gfi-text-dim); }
         .mw-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .mw-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
         .mw-hint { font-size: 11px; color: var(--gfi-text-dim); margin-top: 5px; line-height: 1.5; }
-        .mw-url-preview { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(200,0,0,0.06); border: 1px solid rgba(200,0,0,0.15); border-radius: 6px; margin-top: 10px; }
+        .mw-url-preview { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(153,0,0,0.06); border: 1px solid rgba(153,0,0,0.15); border-radius: 6px; margin-top: 10px; }
         .mw-url-txt { font-size: 12px; color: var(--gfi-text-secondary); font-family: var(--font-body); }
         .mw-url-link { font-size: 12px; color: "#990000"; font-family: var(--font-body); word-break: break-all; }
         /* Plantillas */
@@ -343,7 +343,7 @@ export default function MiWebPage() {
         .mw-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--gfi-border-subtle); }
         .mw-btn-prev { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .mw-btn-next { padding: 10px 24px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .mw-btn-next:hover { background: #e60000; }
+        .mw-btn-next:hover { background: #b80000; }
         .mw-btn-guardar { padding: 10px 24px; background: #3abab6; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .mw-spinner { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -743,7 +743,7 @@ export default function MiWebPage() {
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {[3, 4, 6, 8, 9, 12].map(n => (
                       <button key={n} type="button"
-                        style={{ padding: "7px 14px", borderRadius: 4, border: `1px solid ${parseInt(config.limite_propiedades_home) === n ? "#990000" : "var(--gfi-border)"}`, background: parseInt(config.limite_propiedades_home) === n ? "rgba(200,0,0,0.1)" : "transparent", color: parseInt(config.limite_propiedades_home) === n ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                        style={{ padding: "7px 14px", borderRadius: 4, border: `1px solid ${parseInt(config.limite_propiedades_home) === n ? "#990000" : "var(--gfi-border)"}`, background: parseInt(config.limite_propiedades_home) === n ? "rgba(153,0,0,0.1)" : "transparent", color: parseInt(config.limite_propiedades_home) === n ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
                         onClick={() => set("limite_propiedades_home", n.toString())}>
                         {n}
                       </button>
@@ -799,7 +799,7 @@ export default function MiWebPage() {
                         <div style={{ display: "flex", gap: 8 }}>
                           {[["br", "Abajo derecha"], ["bl", "Abajo izquierda"]].map(([val, lbl]) => (
                             <button key={val} type="button" onClick={() => set("chatbot_posicion", val)}
-                              style={{ flex: 1, padding: "9px 10px", borderRadius: 4, border: `1px solid ${config.chatbot_posicion === val ? "#990000" : "var(--gfi-border)"}`, background: config.chatbot_posicion === val ? "rgba(200,0,0,0.1)" : "transparent", color: config.chatbot_posicion === val ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
+                              style={{ flex: 1, padding: "9px 10px", borderRadius: 4, border: `1px solid ${config.chatbot_posicion === val ? "#990000" : "var(--gfi-border)"}`, background: config.chatbot_posicion === val ? "rgba(153,0,0,0.1)" : "transparent", color: config.chatbot_posicion === val ? "#fff" : "var(--gfi-text-muted)", fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
                               {lbl}
                             </button>
                           ))}

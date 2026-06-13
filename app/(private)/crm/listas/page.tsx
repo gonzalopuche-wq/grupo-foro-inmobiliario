@@ -67,7 +67,7 @@ export default function ListasPage() {
     linkText: { color:'#990000', fontSize:11, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const },
     acciones: { display:'flex', flexDirection:'column' as const, gap:6, flexShrink:0 },
     btnVer: { background:'var(--gfi-border-subtle)', border:'1px solid var(--gfi-border)', color:'#fff', padding:'7px 14px', borderRadius:6, fontSize:11, fontWeight:700, fontFamily:'Montserrat,sans-serif', cursor:'pointer', textDecoration:'none', textAlign:'center' as const },
-    btnDel: { background:'none', border:'none', color:'rgba(200,0,0,0.6)', fontSize:11, cursor:'pointer', textAlign:'center' as const },
+    btnDel: { background:'none', border:'none', color:'rgba(153,0,0,0.6)', fontSize:11, cursor:'pointer', textAlign:'center' as const },
   }
 
   if (cargando) return (

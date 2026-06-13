@@ -160,7 +160,7 @@ export default function CrmNotasPage() {
         .nt-card:hover { border-color: rgba(255,255,255,0.14); }
         .nt-card.fijada { border-left: 3px solid #d4960c; }
         .nt-input { width: 100%; padding: 9px 11px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; box-sizing: border-box; }
-        .nt-input:focus { border-color: rgba(200,0,0,0.5); }
+        .nt-input:focus { border-color: rgba(153,0,0,0.5); }
         .nt-select { width: 100%; padding: 9px 11px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
         .nt-btn { padding: 8px 14px; border: none; border-radius: 5px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.15s; }
         .nt-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
@@ -251,7 +251,7 @@ export default function CrmNotasPage() {
                     {n.contenido}
                   </div>
                   {esLarga && (
-                    <div style={{ marginTop: 6, fontSize: 11, color: "rgba(200,0,0,0.7)", fontFamily: "Inter,sans-serif" }}>
+                    <div style={{ marginTop: 6, fontSize: 11, color: "rgba(153,0,0,0.7)", fontFamily: "Inter,sans-serif" }}>
                       {abierta ? "▲ Ver menos" : "▼ Ver más"}
                     </div>
                   )}

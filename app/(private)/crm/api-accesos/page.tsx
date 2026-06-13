@@ -201,7 +201,7 @@ export default function ApiAccesosPage() {
           <div className="ak-card-titulo">Keys activas ({activas.length})</div>
           {loading ? (
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 0", color: "var(--gfi-text-muted)", fontSize: 12 }}>
-              <div style={{ width: 16, height: 16, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+              <div style={{ width: 16, height: 16, border: "2px solid rgba(153,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
               Cargando…
             </div>
           ) : activas.length === 0 ? (

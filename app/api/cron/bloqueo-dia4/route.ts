@@ -152,11 +152,11 @@ export async function GET(req: NextRequest) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
     <tr>
       <td align="center">
-        <table width="580" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid rgba(200,0,0,0.3);border-radius:10px;overflow:hidden;max-width:580px;width:100%;">
+        <table width="580" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid rgba(153,0,0,0.3);border-radius:10px;overflow:hidden;max-width:580px;width:100%;">
           
           <!-- Header -->
           <tr>
-            <td style="background:#0d0d0d;padding:24px 32px;border-bottom:1px solid rgba(200,0,0,0.2);">
+            <td style="background:#0d0d0d;padding:24px 32px;border-bottom:1px solid rgba(153,0,0,0.2);">
               <span style="font-family:'Montserrat',Arial,sans-serif;font-size:18px;font-weight:800;color:#fff;">
                 GFI<span style="color:#990000;">®</span>
               </span>
@@ -169,7 +169,7 @@ export async function GET(req: NextRequest) {
           <!-- Alerta -->
           <tr>
             <td style="padding:0;">
-              <div style="background:rgba(200,0,0,0.08);border-bottom:1px solid rgba(200,0,0,0.2);padding:16px 32px;display:flex;align-items:center;gap:10px;">
+              <div style="background:rgba(153,0,0,0.08);border-bottom:1px solid rgba(153,0,0,0.2);padding:16px 32px;display:flex;align-items:center;gap:10px;">
                 <span style="font-size:24px;">⚠️</span>
                 <span style="font-family:'Montserrat',Arial,sans-serif;font-size:13px;font-weight:700;color:#990000;letter-spacing:0.05em;">
                   TU ACCESO FUE SUSPENDIDO
@@ -213,7 +213,7 @@ export async function GET(req: NextRequest) {
               </table>
 
               <!-- Montos -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.15);border-radius:8px;margin-bottom:28px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:rgba(153,0,0,0.06);border:1px solid rgba(153,0,0,0.15);border-radius:8px;margin-bottom:28px;">
                 <tr>
                   <td style="padding:16px 24px;">
                     <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'Montserrat',Arial,sans-serif;">

@@ -111,7 +111,7 @@ export default function PlantillasPage() {
     sub: { margin: '4px 0 0', fontSize: 12, color: 'var(--gfi-text-muted)' },
     btnNuevo: { display: 'flex', alignItems: 'center', gap: 8, background: '#990000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' },
     filtros: { display: 'flex', gap: 6, flexWrap: 'wrap' as const, marginBottom: 20 },
-    chip: (activo: boolean) => ({ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activo ? '#990000' : 'var(--gfi-border)'}`, background: activo ? 'rgba(200,0,0,0.1)' : 'transparent', color: activo ? '#fff' : 'var(--gfi-text-muted)', fontSize: 11, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' } as React.CSSProperties),
+    chip: (activo: boolean) => ({ padding: '6px 14px', borderRadius: 20, border: `1px solid ${activo ? '#990000' : 'var(--gfi-border)'}`, background: activo ? 'rgba(153,0,0,0.1)' : 'transparent', color: activo ? '#fff' : 'var(--gfi-text-muted)', fontSize: 11, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer' } as React.CSSProperties),
     card: { background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border)', borderRadius: 10, padding: '16px 20px', marginBottom: 10 } as React.CSSProperties,
     badge: (tipo: string) => ({ display: 'inline-block', padding: '2px 9px', borderRadius: 10, fontSize: 10, fontFamily: 'Montserrat,sans-serif', fontWeight: 700, letterSpacing: '0.08em', background: TIPOS[tipo]?.bg ?? 'rgba(255,255,255,0.06)', color: TIPOS[tipo]?.color ?? 'var(--gfi-text-muted)' } as React.CSSProperties),
   }
@@ -173,7 +173,7 @@ export default function PlantillasPage() {
                   {copiado === p.id ? '¡Copiado!' : 'Copiar'}
                 </button>
                 <button onClick={() => abrirEditar(p)} style={{ background: 'none', border: 'none', color: 'var(--gfi-text-muted)', fontSize: 12, cursor: 'pointer', padding: '5px 8px' }}>Editar</button>
-                <button onClick={() => eliminar(p.id)} style={{ background: 'none', border: 'none', color: 'rgba(200,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '5px 8px' }}>Eliminar</button>
+                <button onClick={() => eliminar(p.id)} style={{ background: 'none', border: 'none', color: 'rgba(153,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '5px 8px' }}>Eliminar</button>
               </div>
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, whiteSpace: 'pre-wrap', background: 'rgba(0,0,0,0.2)', padding: '10px 14px', borderRadius: 6 }}>
@@ -196,7 +196,7 @@ export default function PlantillasPage() {
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {TIPO_LIST.map(t => (
                   <button key={t} onClick={() => setForm(f => ({ ...f, tipo: t }))}
-                    style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${form.tipo === t ? '#990000' : 'var(--gfi-border)'}`, background: form.tipo === t ? 'rgba(200,0,0,0.12)' : 'transparent', color: form.tipo === t ? '#fff' : 'var(--gfi-text-muted)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
+                    style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${form.tipo === t ? '#990000' : 'var(--gfi-border)'}`, background: form.tipo === t ? 'rgba(153,0,0,0.12)' : 'transparent', color: form.tipo === t ? '#fff' : 'var(--gfi-text-muted)', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'Montserrat,sans-serif' }}>
                     {TIPOS[t]?.label}
                   </button>
                 ))}

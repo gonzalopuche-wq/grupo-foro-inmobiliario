@@ -508,7 +508,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   if (isVentana) {
     if (loading) return (
       <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 24, height: 24, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -552,7 +552,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Alert */}
-          <div style={{ background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.25)", borderRadius: 8, padding: "16px 20px", marginBottom: 20, textAlign: "center" }}>
+          <div style={{ background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.25)", borderRadius: 8, padding: "16px 20px", marginBottom: 20, textAlign: "center" }}>
             <div style={{ fontSize: 22, marginBottom: 8 }}>🔒</div>
             <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: "#fff", letterSpacing: "0.04em", marginBottom: 6 }}>Acceso pausado por falta de pago</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}>
@@ -619,7 +619,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               <button
                 onClick={declararPago}
                 disabled={pagoEnviando}
-                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(200,0,0,0.4)" : "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
+                style={{ marginTop: 16, width: "100%", padding: "12px", background: pagoEnviando ? "rgba(153,0,0,0.4)" : "#990000", border: "none", borderRadius: 5, color: "#fff", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", cursor: pagoEnviando ? "not-allowed" : "pointer" }}
               >
                 {pagoEnviando ? "Enviando..." : "Registrar pago"}
               </button>

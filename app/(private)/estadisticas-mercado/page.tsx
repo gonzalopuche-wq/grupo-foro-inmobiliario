@@ -67,7 +67,7 @@ function BarChart({ data, colorKey }: { data: { label: string; value: number; co
             <div style={{
               height: "100%", borderRadius: 4,
               width: `${(d.value / max) * 100}%`,
-              background: d.color ?? "rgba(200,0,0,0.7)",
+              background: d.color ?? "rgba(153,0,0,0.7)",
               transition: "width 0.5s ease",
               display: "flex", alignItems: "center", paddingLeft: 8,
             }}>
@@ -256,7 +256,7 @@ export default function EstadisticasMercadoPage() {
               padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600,
               border: "1px solid",
               borderColor: periodo === p ? "#990000" : "var(--gfi-border)",
-              background: periodo === p ? "rgba(200,0,0,0.15)" : "transparent",
+              background: periodo === p ? "rgba(153,0,0,0.15)" : "transparent",
               color: periodo === p ? "#fff" : "rgba(255,255,255,0.45)",
               cursor: "pointer", fontFamily: "var(--font-display)",
             }}>
@@ -331,7 +331,7 @@ export default function EstadisticasMercadoPage() {
               <h3 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--gfi-text-primary)" }}>
                 Negocios cargados por mes
               </h3>
-              <BarChart data={negociosMes.map(m => ({ label: m.mes, value: m.cantidad, color: "rgba(200,0,0,0.65)" }))} />
+              <BarChart data={negociosMes.map(m => ({ label: m.mes, value: m.cantidad, color: "rgba(153,0,0,0.65)" }))} />
             </div>
 
             {/* Propiedades por zona */}

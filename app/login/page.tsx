@@ -168,7 +168,7 @@ function LoginInner() {
         .login-input::placeholder { color: rgba(255,255,255,0.18); }
         .login-input:focus { border-color: rgba(192,164,104,0.55); box-shadow: 0 0 0 3px rgba(192,164,104,0.12); }
         .login-input:-webkit-autofill, .login-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #141414 inset; -webkit-text-fill-color: #ffffff; }
-        .login-error { font-size: 12px; color: #ff6b6b; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; padding: 10px 14px; margin-bottom: 14px; }
+        .login-error { font-size: 12px; color: #ff6b6b; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.2); border-radius: 4px; padding: 10px 14px; margin-bottom: 14px; }
         .login-btn { width: 100%; padding: 14px; margin-top: 8px; background: linear-gradient(135deg, #7d0000 0%, #a30000 60%, #b81414 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 6px 22px rgba(153,0,0,0.3); }
         .login-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 10px 30px rgba(153,0,0,0.4); }
         .login-btn:disabled { opacity: 0.65; cursor: not-allowed; }

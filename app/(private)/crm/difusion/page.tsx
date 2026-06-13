@@ -131,12 +131,12 @@ function DifusionInner() {
         .dif-card-header { padding: 16px 18px; border-bottom: 1px solid var(--gfi-border-subtle); display: flex; align-items: center; justify-content: space-between; }
         .dif-card-titulo { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff; }
         .dif-search { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 12px; outline: none; font-family: var(--font-body); box-sizing: border-box; }
-        .dif-search:focus { border-color: rgba(200,0,0,0.4); }
+        .dif-search:focus { border-color: rgba(153,0,0,0.4); }
         .dif-search::placeholder { color: var(--gfi-text-dim); }
         .dif-list { overflow-y: auto; max-height: 420px; }
         .dif-contacto { display: flex; align-items: center; gap: 10px; padding: 10px 18px; cursor: pointer; border-bottom: 1px solid var(--gfi-border-subtle); transition: background 0.15s; }
         .dif-contacto:hover { background: var(--gfi-bg-card); }
-        .dif-contacto.sel { background: rgba(200,0,0,0.06); }
+        .dif-contacto.sel { background: rgba(153,0,0,0.06); }
         .dif-checkbox { width: 16px; height: 16px; border-radius: 3px; border: 1.5px solid var(--gfi-text-dim); background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
         .dif-checkbox.checked { background: #990000; border-color: #990000; }
         .dif-nombre { font-size: 13px; color: #fff; font-family: var(--font-body); flex: 1; }
@@ -146,13 +146,13 @@ function DifusionInner() {
         .dif-btn-toggle { padding: 5px 10px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 4px; color: var(--gfi-text-secondary); font-size: 10px; font-family: var(--font-display); font-weight: 700; cursor: pointer; letter-spacing: 0.08em; transition: all 0.15s; }
         .dif-btn-toggle:hover { border-color: var(--gfi-text-dim); color: rgba(255,255,255,0.8); }
         .dif-textarea { width: 100%; padding: 12px 14px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); box-sizing: border-box; resize: vertical; line-height: 1.6; }
-        .dif-textarea:focus { border-color: rgba(200,0,0,0.4); }
+        .dif-textarea:focus { border-color: rgba(153,0,0,0.4); }
         .dif-textarea::placeholder { color: var(--gfi-text-dim); }
         .dif-vars { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .dif-var-chip { padding: 4px 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.25); border-radius: 4px; font-size: 11px; color: #990000; font-family: var(--font-display); font-weight: 700; cursor: pointer; transition: background 0.15s; }
-        .dif-var-chip:hover { background: rgba(200,0,0,0.18); }
+        .dif-var-chip { padding: 4px 10px; background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.25); border-radius: 4px; font-size: 11px; color: #990000; font-family: var(--font-display); font-weight: 700; cursor: pointer; transition: background 0.15s; }
+        .dif-var-chip:hover { background: rgba(153,0,0,0.18); }
         .dif-btn-enviar { width: 100%; padding: 13px; background: #990000; border: none; border-radius: 4px; color: #fff; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
-        .dif-btn-enviar:hover:not(:disabled) { background: #e60000; }
+        .dif-btn-enviar:hover:not(:disabled) { background: #b80000; }
         .dif-btn-enviar:disabled { opacity: 0.5; cursor: not-allowed; }
         .dif-reporte { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); border-radius: 8px; padding: 20px; margin-top: 16px; }
         .dif-reporte-titulo { font-family: var(--font-display); font-size: 14px; font-weight: 800; color: #3abab6; margin-bottom: 6px; }

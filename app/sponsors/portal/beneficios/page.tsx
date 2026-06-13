@@ -95,7 +95,7 @@ export default function SponsorBeneficiosPage() {
         .sb-field { display:flex; flex-direction:column; gap:6px; }
         .sb-label { font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.35); }
         .sb-input { padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; font-family:'Inter',sans-serif; }
-        .sb-input:focus { border-color:rgba(200,0,0,.4); }
+        .sb-input:focus { border-color:rgba(153,0,0,.4); }
         .sb-select { padding:10px 13px; background:#0f0f0f; border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; }
         .sb-textarea { padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:4px; color:#fff; font-size:13px; outline:none; resize:vertical; min-height:80px; font-family:'Inter',sans-serif; }
         .sb-card { background:rgba(14,14,14,.95); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:18px 20px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:10px; }
@@ -106,7 +106,7 @@ export default function SponsorBeneficiosPage() {
         .btn-cancel { padding:10px 18px; background:transparent; border:1px solid rgba(255,255,255,.14); border-radius:4px; color:rgba(255,255,255,.4); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; cursor:pointer; }
         .toast { position:fixed; bottom:28px; right:28px; padding:12px 20px; border-radius:5px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; z-index:999; }
         .toast.ok { background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.35); color:#3abab6; }
-        .toast.err { background:rgba(200,0,0,.15); border:1px solid rgba(200,0,0,.35); color:#ff6666; }
+        .toast.err { background:rgba(153,0,0,.15); border:1px solid rgba(153,0,0,.35); color:#ff6666; }
       `}</style>
 
       <div className="sb-hdr">

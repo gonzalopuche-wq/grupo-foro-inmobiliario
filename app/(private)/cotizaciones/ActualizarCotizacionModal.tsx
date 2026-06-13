@@ -214,7 +214,7 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
     <>
       <style>{`
         .act-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 24px; }
-        .act-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 500px; position: relative; max-height: 92vh; overflow-y: auto; }
+        .act-modal { background: #0f0f0f; border: 1px solid rgba(153,0,0,0.25); border-radius: 6px; padding: 28px 30px; width: 100%; max-width: 500px; position: relative; max-height: 92vh; overflow-y: auto; }
         .act-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .act-titulo { font-family: var(--font-display); font-size: 15px; font-weight: 800; margin-bottom: 3px; }
         .act-titulo span { color: #990000; }
@@ -225,14 +225,14 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
         .act-admin-tabs { display: flex; gap: 0; border: 1px solid var(--gfi-border); border-radius: 4px; overflow: hidden; margin-bottom: 18px; }
         .act-admin-tab { flex: 1; padding: 8px; background: transparent; border: none; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; border-right: 1px solid var(--gfi-border); display: flex; align-items: center; justify-content: center; gap: 6px; }
         .act-admin-tab:last-child { border-right: none; }
-        .act-admin-tab.active { background: rgba(200,0,0,0.12); color: #990000; }
+        .act-admin-tab.active { background: rgba(153,0,0,0.12); color: #990000; }
         .act-admin-tab-badge { background: #990000; color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 8px; }
 
         /* Modos */
         .act-modos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px; }
         .act-modo-btn { padding: 10px 6px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; cursor: pointer; text-align: center; transition: all 0.2s; }
-        .act-modo-btn:hover { border-color: rgba(200,0,0,0.3); }
-        .act-modo-btn.activo { border-color: #990000; background: rgba(200,0,0,0.08); }
+        .act-modo-btn:hover { border-color: rgba(153,0,0,0.3); }
+        .act-modo-btn.activo { border-color: #990000; background: rgba(153,0,0,0.08); }
         .act-modo-icon { font-size: 18px; margin-bottom: 5px; }
         .act-modo-label { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gfi-text-secondary); }
         .act-modo-btn.activo .act-modo-label { color: #fff; }
@@ -242,7 +242,7 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
         .act-upload-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
         .act-btn-file { position: relative; overflow: hidden; padding: 9px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-align: center; }
         .act-btn-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-        .act-btn-paste { padding: 9px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .act-btn-paste { padding: 9px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.25); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .act-btn-paste:disabled { opacity: 0.5; cursor: not-allowed; }
         .act-paste-hint { font-size: 10px; color: rgba(255,255,255,0.18); }
 
@@ -253,13 +253,13 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
 
         /* Texto libre */
         .act-textarea { width: 100%; padding: 10px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); resize: vertical; min-height: 90px; transition: border-color 0.2s; margin-bottom: 10px; }
-        .act-textarea:focus { border-color: rgba(200,0,0,0.4); }
+        .act-textarea:focus { border-color: rgba(153,0,0,0.4); }
         .act-textarea::placeholder { color: var(--gfi-text-dim); }
         .act-texto-hint { font-size: 10px; color: var(--gfi-text-dim); margin-bottom: 10px; }
 
         /* Botón analizar */
-        .act-btn-analizar { width: 100%; padding: 10px; background: rgba(200,0,0,0.1); border: 1px solid rgba(200,0,0,0.3); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; }
-        .act-btn-analizar:hover:not(:disabled) { background: rgba(200,0,0,0.2); color: #fff; }
+        .act-btn-analizar { width: 100%; padding: 10px; background: rgba(153,0,0,0.1); border: 1px solid rgba(153,0,0,0.3); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; }
+        .act-btn-analizar:hover:not(:disabled) { background: rgba(153,0,0,0.2); color: #fff; }
         .act-btn-analizar:disabled { opacity: 0.5; cursor: not-allowed; }
         .act-extraido { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 4px; padding: 9px 12px; font-size: 12px; color: #3abab6; margin-bottom: 14px; }
 
@@ -267,20 +267,20 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
         .act-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
         .act-field label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .act-input { width: 100%; padding: 10px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 14px; outline: none; font-family: var(--font-body); transition: border-color 0.2s; }
-        .act-input:focus { border-color: rgba(200,0,0,0.5); }
+        .act-input:focus { border-color: rgba(153,0,0,0.5); }
         .act-input::placeholder { color: var(--gfi-text-dim); }
 
         /* Error */
-        .act-error { font-size: 12px; color: #ff4444; background: rgba(200,0,0,0.07); border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; padding: 9px 12px; margin-bottom: 12px; }
+        .act-error { font-size: 12px; color: #ff4444; background: rgba(153,0,0,0.07); border: 1px solid rgba(153,0,0,0.2); border-radius: 3px; padding: 9px 12px; margin-bottom: 12px; }
 
         /* Acciones */
         .act-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--gfi-border-subtle); }
         .act-btn-cancel { padding: 9px 18px; background: transparent; border: 1px solid rgba(255,255,255,0.14); border-radius: 3px; color: rgba(255,255,255,0.45); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .act-btn-save { padding: 9px 22px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .act-btn-save:hover:not(:disabled) { background: #e60000; }
+        .act-btn-save:hover:not(:disabled) { background: #b80000; }
         .act-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
-        .act-btn-sugerir { padding: 9px 22px; background: transparent; border: 1px solid rgba(200,0,0,0.35); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .act-btn-sugerir:hover:not(:disabled) { background: rgba(200,0,0,0.1); }
+        .act-btn-sugerir { padding: 9px 22px; background: transparent; border: 1px solid rgba(153,0,0,0.35); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+        .act-btn-sugerir:hover:not(:disabled) { background: rgba(153,0,0,0.1); }
         .act-btn-sugerir:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* Sugerencias */
@@ -296,8 +296,8 @@ export default function ActualizarCotizacionModal({ proveedor, userId, esAdmin, 
         .sug-acciones { display: flex; gap: 8px; }
         .sug-btn-ap { padding: 6px 14px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .sug-btn-ap:hover { background: rgba(34,197,94,0.2); }
-        .sug-btn-re { padding: 6px 14px; background: transparent; border: 1px solid rgba(200,0,0,0.25); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .sug-btn-re:hover { background: rgba(200,0,0,0.1); }
+        .sug-btn-re { padding: 6px 14px; background: transparent; border: 1px solid rgba(153,0,0,0.25); border-radius: 3px; color: #990000; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .sug-btn-re:hover { background: rgba(153,0,0,0.1); }
         .sug-empty { text-align: center; padding: 32px; color: var(--gfi-text-dim); font-size: 13px; font-style: italic; }
 
         /* Enviado */

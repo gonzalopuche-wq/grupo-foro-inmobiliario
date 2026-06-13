@@ -149,12 +149,12 @@ export default function ProveedoresPage() {
         .pv-titulo span{color:#990000}
         .pv-sub{font-size:13px;color:var(--gfi-text-muted);margin-top:4px}
         .pv-btn-agregar{padding:10px 20px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
-        .pv-btn-agregar:hover{background:#e60000}
+        .pv-btn-agregar:hover{background:#b80000}
         .pv-barra{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
         .pv-search-wrap{flex:1;min-width:200px;position:relative}
         .pv-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gfi-text-dim)}
         .pv-search{width:100%;padding:9px 12px 9px 34px;background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:var(--font-body)}
-        .pv-search:focus{border-color:rgba(200,0,0,0.4)}
+        .pv-search:focus{border-color:rgba(153,0,0,0.4)}
         .pv-search::placeholder{color:var(--gfi-text-dim)}
         .pv-select{padding:9px 12px;background:var(--gfi-bg-card);border:1px solid var(--gfi-border);border-radius:4px;color:var(--gfi-text-secondary);font-size:12px;outline:none;font-family:var(--font-body);cursor:pointer}
         .pv-count{font-size:11px;color:var(--gfi-text-dim);white-space:nowrap}
@@ -165,10 +165,10 @@ export default function ProveedoresPage() {
         .pv-card-left{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
         .pv-card-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
         .pv-card-nombre{font-family:var(--font-display);font-size:15px;font-weight:800;color:#fff}
-        .pv-rubro-badge{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.25);color:#990000;flex-shrink:0}
+        .pv-rubro-badge{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(153,0,0,0.1);border:1px solid rgba(153,0,0,0.25);color:#990000;flex-shrink:0}
         .pv-card-meta{display:flex;gap:14px;flex-wrap:wrap}
         .pv-meta-item{font-size:12px;color:rgba(255,255,255,0.45)}
-        .pv-notas{font-size:12px;color:var(--gfi-text-secondary);line-height:1.6;font-style:italic;background:var(--gfi-bg-card);border-left:2px solid rgba(200,0,0,0.3);padding:8px 12px;border-radius:0 4px 4px 0}
+        .pv-notas{font-size:12px;color:var(--gfi-text-secondary);line-height:1.6;font-style:italic;background:var(--gfi-bg-card);border-left:2px solid rgba(153,0,0,0.3);padding:8px 12px;border-radius:0 4px 4px 0}
         .pv-referenciado{font-size:11px;color:var(--gfi-text-muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
         .pv-referenciado strong{color:var(--gfi-text-secondary)}
         .pv-resenas-bar{display:flex;align-items:center;gap:8px}
@@ -180,8 +180,8 @@ export default function ProveedoresPage() {
         .pv-btn-resena:hover{border-color:var(--gfi-text-muted);color:#fff}
         .pv-btn-editar{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.45)}
         .pv-btn-editar:hover{border-color:var(--gfi-text-muted);color:#fff}
-        .pv-btn-eliminar{background:transparent;border:1px solid rgba(200,0,0,0.25);color:rgba(200,0,0,0.6)}
-        .pv-btn-eliminar:hover{background:rgba(200,0,0,0.1);color:#ff4444;border-color:#ff4444}
+        .pv-btn-eliminar{background:transparent;border:1px solid rgba(153,0,0,0.25);color:rgba(153,0,0,0.6)}
+        .pv-btn-eliminar:hover{background:rgba(153,0,0,0.1);color:#ff4444;border-color:#ff4444}
         .pv-btn-expandir{background:transparent;border:none;color:var(--gfi-text-dim);cursor:pointer;padding:4px 8px;transition:color 0.2s;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em}
         .pv-btn-expandir:hover{color:var(--gfi-text-secondary)}
         .pv-detalle{border-top:1px solid rgba(255,255,255,0.06);padding:14px 20px;background:rgba(0,0,0,0.15);animation:fadeIn 0.2s ease}
@@ -190,7 +190,7 @@ export default function ProveedoresPage() {
         .pv-resenas-lista{display:flex;flex-direction:column;gap:8px}
         .pv-resena-item{background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:4px;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
         .pv-resena-item.positiva{border-left:2px solid rgba(34,197,94,0.4)}
-        .pv-resena-item.negativa{border-left:2px solid rgba(200,0,0,0.4)}
+        .pv-resena-item.negativa{border-left:2px solid rgba(153,0,0,0.4)}
         .pv-resena-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
         .pv-resena-autor{font-size:11px;color:var(--gfi-text-secondary)}
         .pv-resena-tipo{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;font-family:var(--font-display)}
@@ -200,10 +200,10 @@ export default function ProveedoresPage() {
         .pv-sin-resenas{font-size:12px;color:var(--gfi-text-dim);font-style:italic}
         .pv-empty{padding:64px 32px;text-align:center;color:var(--gfi-text-dim);font-size:14px;font-style:italic;background:var(--gfi-bg-card);border:1px solid var(--gfi-border-subtle);border-radius:6px}
         .pv-spinner{display:flex;align-items:center;justify-content:center;padding:48px}
-        .pv-spin{width:28px;height:28px;border:2px solid rgba(200,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
+        .pv-spin{width:28px;height:28px;border:2px solid rgba(153,0,0,0.2);border-top-color:#990000;border-radius:50%;animation:spin 0.7s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
         .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;z-index:400;padding:24px}
-        .modal{background:#0f0f0f;border:1px solid rgba(200,0,0,0.25);border-radius:6px;padding:28px 30px;width:100%;max-width:520px;position:relative;max-height:92vh;overflow-y:auto}
+        .modal{background:#0f0f0f;border:1px solid rgba(153,0,0,0.25);border-radius:6px;padding:28px 30px;width:100%;max-width:520px;position:relative;max-height:92vh;overflow-y:auto}
         .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#990000,transparent);border-radius:6px 6px 0 0}
         .modal-titulo{font-family:var(--font-display);font-size:16px;font-weight:800;color:#fff;margin-bottom:20px}
         .modal-titulo span{color:#990000}
@@ -212,7 +212,7 @@ export default function ProveedoresPage() {
         .field{display:flex;flex-direction:column;gap:5px}
         .field label{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--gfi-text-muted)}
         .field input,.field select,.field textarea{padding:9px 12px;background:var(--gfi-border-subtle);border:1px solid var(--gfi-border);border-radius:4px;color:#fff;font-size:13px;outline:none;font-family:var(--font-body);transition:border-color 0.2s;width:100%}
-        .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(200,0,0,0.4)}
+        .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(153,0,0,0.4)}
         .field input::placeholder,.field textarea::placeholder{color:var(--gfi-text-dim)}
         .field select{background:#0f0f0f}
         .field textarea{resize:vertical;min-height:90px}
@@ -220,45 +220,45 @@ export default function ProveedoresPage() {
         .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--gfi-border-subtle)}
         .btn-cancel{padding:9px 18px;background:transparent;border:1px solid rgba(255,255,255,0.14);border-radius:4px;color:rgba(255,255,255,0.45);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
         .btn-save{padding:9px 22px;background:#990000;border:none;border-radius:4px;color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
-        .btn-save:hover:not(:disabled){background:#e60000}
+        .btn-save:hover:not(:disabled){background:#b80000}
         .btn-save:disabled{opacity:0.6;cursor:not-allowed}
         .resena-toggle{display:flex;gap:8px;margin-bottom:12px}
         .resena-toggle-btn{flex:1;padding:10px;border-radius:4px;border:1px solid var(--gfi-border);background:transparent;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
         .resena-toggle-btn.pos.activo{border-color:rgba(34,197,94,0.5);background:rgba(34,197,94,0.1);color:#3abab6}
-        .resena-toggle-btn.neg.activo{border-color:rgba(200,0,0,0.5);background:rgba(200,0,0,0.1);color:#ff4444}
+        .resena-toggle-btn.neg.activo{border-color:rgba(153,0,0,0.5);background:rgba(153,0,0,0.1);color:#ff4444}
         .resena-toggle-btn:not(.activo){color:var(--gfi-text-muted)}
         .toast{position:fixed;bottom:28px;right:28px;padding:12px 20px;border-radius:5px;font-family:var(--font-display);font-size:12px;font-weight:700;z-index:999;animation:toastIn 0.3s ease}
         .toast.ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#3abab6}
-        .toast.err{background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.35);color:#ff6666}
+        .toast.err{background:rgba(153,0,0,0.15);border:1px solid rgba(153,0,0,0.35);color:#ff6666}
         @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:600px){.pv-card-main{flex-direction:column}.pv-card-right{flex-direction:row;align-items:center;flex-wrap:wrap}.modal-grid{grid-template-columns:1fr}.modal-grid .full{grid-column:1}}
         .pv-seccion-label{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gfi-text-dim);margin-bottom:10px;display:flex;align-items:center;gap:8px}
         .pv-seccion-label::after{content:'';flex:1;height:1px;background:var(--gfi-border-subtle)}
         .pv-sponsors-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
-        .pv-sponsor-card{background:var(--gfi-bg-card);border:1px solid rgba(200,0,0,0.25);border-radius:8px;overflow:hidden;transition:border-color 0.2s;position:relative}
-        .pv-sponsor-card:hover{border-color:rgba(200,0,0,0.5)}
+        .pv-sponsor-card{background:var(--gfi-bg-card);border:1px solid rgba(153,0,0,0.25);border-radius:8px;overflow:hidden;transition:border-color 0.2s;position:relative}
+        .pv-sponsor-card:hover{border-color:rgba(153,0,0,0.5)}
         .pv-sponsor-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#990000 40%,transparent)}
         .pv-sponsor-inner{padding:18px 20px;display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
         .pv-sponsor-logo{width:56px;height:56px;border-radius:8px;object-fit:cover;background:var(--gfi-border-subtle);flex-shrink:0;border:1px solid var(--gfi-border)}
-        .pv-sponsor-logo-placeholder{width:56px;height:56px;border-radius:8px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+        .pv-sponsor-logo-placeholder{width:56px;height:56px;border-radius:8px;background:rgba(153,0,0,0.1);border:1px solid rgba(153,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
         .pv-sponsor-body{flex:1;min-width:0}
         .pv-sponsor-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
         .pv-sponsor-nombre{font-family:var(--font-display);font-size:15px;font-weight:800;color:#fff}
-        .pv-sponsor-badge{font-family:var(--font-display);font-size:8px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(200,0,0,0.15);border:1px solid rgba(200,0,0,0.4);color:#990000}
+        .pv-sponsor-badge{font-family:var(--font-display);font-size:8px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(153,0,0,0.15);border:1px solid rgba(153,0,0,0.4);color:#990000}
         .pv-sponsor-desc{font-size:12px;color:var(--gfi-text-secondary);line-height:1.6;margin-bottom:10px}
         .pv-sponsor-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-        .pv-sponsor-web{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:rgba(200,0,0,0.1);border:1px solid rgba(200,0,0,0.3);border-radius:4px;color:#990000;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-decoration:none;text-transform:uppercase;transition:all 0.2s;white-space:nowrap}
-        .pv-sponsor-web:hover{background:rgba(200,0,0,0.2)}
+        .pv-sponsor-web{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:rgba(153,0,0,0.1);border:1px solid rgba(153,0,0,0.3);border-radius:4px;color:#990000;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.1em;text-decoration:none;text-transform:uppercase;transition:all 0.2s;white-space:nowrap}
+        .pv-sponsor-web:hover{background:rgba(153,0,0,0.2)}
         .pv-sponsor-venc{font-size:10px;color:var(--gfi-text-dim);font-family:var(--font-body)}
         .pv-sponsor-venc.pronto{color:#d4960c}
         .pv-destacado-star{color:#d4960c;font-size:14px}
-        .pv-sponsor-beneficio{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.2);border-radius:5px;margin-top:8px;margin-bottom:4px}
+        .pv-sponsor-beneficio{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;background:rgba(153,0,0,0.06);border:1px solid rgba(153,0,0,0.2);border-radius:5px;margin-top:8px;margin-bottom:4px}
         .pv-sponsor-beneficio-icon{font-size:15px;flex-shrink:0;line-height:1.4}
         .pv-sponsor-beneficio-body{display:flex;flex-direction:column;gap:2px}
         .pv-sponsor-beneficio-label{font-family:var(--font-display);font-size:8px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:#990000}
         .pv-sponsor-beneficio-texto{font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5}
-        .pv-btn-interes{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:4px;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:1px solid rgba(200,0,0,0.4);background:rgba(200,0,0,0.1);color:#990000;white-space:nowrap}
-        .pv-btn-interes:hover:not(:disabled){background:rgba(200,0,0,0.2)}
+        .pv-btn-interes{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:4px;font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:1px solid rgba(153,0,0,0.4);background:rgba(153,0,0,0.1);color:#990000;white-space:nowrap}
+        .pv-btn-interes:hover:not(:disabled){background:rgba(153,0,0,0.2)}
         .pv-btn-interes.registrado{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);color:#3abab6}
         .pv-btn-interes:disabled{opacity:0.5;cursor:not-allowed}
       `}</style>
@@ -367,7 +367,7 @@ export default function ProveedoresPage() {
                     <div className="pv-referenciado">
                       <span>Referenciado por</span>
                       <strong>{p.perfiles ? `${p.perfiles.apellido}, ${p.perfiles.nombre}${p.perfiles.matricula ? ` · Mat. ${p.perfiles.matricula}` : ""}` : "—"}</strong>
-                      {esPropio && <span style={{fontSize:9,color:"#990000",fontWeight:700,background:"rgba(200,0,0,0.1)",border:"1px solid rgba(200,0,0,0.25)",padding:"1px 6px",borderRadius:10,fontFamily:"var(--font-display)",letterSpacing:"0.08em"}}>TU REFERIDO</span>}
+                      {esPropio && <span style={{fontSize:9,color:"#990000",fontWeight:700,background:"rgba(153,0,0,0.1)",border:"1px solid rgba(153,0,0,0.25)",padding:"1px 6px",borderRadius:10,fontFamily:"var(--font-display)",letterSpacing:"0.08em"}}>TU REFERIDO</span>}
                     </div>
                     {(p.total_resenas ?? 0) > 0 && (
                       <div className="pv-resenas-bar">
@@ -442,7 +442,7 @@ export default function ProveedoresPage() {
               <button className={`resena-toggle-btn neg${!formResena.positiva?" activo":""}`} onClick={()=>setFormResena(f=>({...f,positiva:false}))}>👎 Negativa</button>
             </div>
             <div className="field"><label>Comentario (opcional)</label><textarea placeholder="Contá tu experiencia..." value={formResena.comentario} onChange={e=>setFormResena(f=>({...f,comentario:e.target.value}))} style={{minHeight:80}}/></div>
-            {!formResena.positiva&&<div style={{fontSize:11,color:"#ff6666",padding:"8px 12px",background:"rgba(200,0,0,0.07)",borderRadius:4,border:"1px solid rgba(200,0,0,0.2)",marginTop:8}}>⚠️ Con 3 reseñas negativas el proveedor se da de baja automáticamente.</div>}
+            {!formResena.positiva&&<div style={{fontSize:11,color:"#ff6666",padding:"8px 12px",background:"rgba(153,0,0,0.07)",borderRadius:4,border:"1px solid rgba(153,0,0,0.2)",marginTop:8}}>⚠️ Con 3 reseñas negativas el proveedor se da de baja automáticamente.</div>}
             <div className="modal-actions">
               <button className="btn-cancel" onClick={()=>setMostrarResena(null)}>Cancelar</button>
               <button className="btn-save" onClick={()=>enviarResena(mostrarResena)} disabled={enviandoResena}>{enviandoResena?"Enviando...":"Enviar reseña"}</button>

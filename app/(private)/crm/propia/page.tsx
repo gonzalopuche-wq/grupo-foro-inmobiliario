@@ -264,7 +264,7 @@ export default function PropiaPage() {
         .propia-banner { background:rgba(74,184,216,0.07); border:1px solid rgba(74,184,216,0.18); border-radius:10px; padding:16px 20px; margin-bottom:20px; }
         .propia-banner-t { font-family:var(--font-display); font-size:13px; font-weight:800; color:#4ab8d8; margin-bottom:6px; }
         .propia-banner-d { font-size:12px; color:rgba(255,255,255,0.45); font-family:var(--font-body); line-height:1.6; }
-        .propia-err { background:rgba(200,0,0,0.08); border:1px solid rgba(200,0,0,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:#f87171; font-family:var(--font-body); margin-bottom:16px; }
+        .propia-err { background:rgba(153,0,0,0.08); border:1px solid rgba(153,0,0,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:#f87171; font-family:var(--font-body); margin-bottom:16px; }
         .propia-ok  { background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:#3abab6; font-family:var(--font-body); margin-bottom:16px; }
         .propia-meta { font-size:12px; color:var(--gfi-text-muted); font-family:var(--font-body); margin-bottom:12px; }
         .propia-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }

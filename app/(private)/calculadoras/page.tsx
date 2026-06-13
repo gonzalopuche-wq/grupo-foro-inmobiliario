@@ -284,7 +284,7 @@ export default function CalculadorasPage() {
         .c-field { margin-bottom: 12px; }
         .c-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .c-input { width: 100%; padding: 11px 13px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 16px; font-family: var(--font-body); outline: none; transition: border-color 0.2s; box-sizing: border-box; }
-        .c-input:focus { border-color: rgba(200,0,0,0.5); }
+        .c-input:focus { border-color: rgba(153,0,0,0.5); }
         .c-input::placeholder { color: var(--gfi-text-dim); }
         .c-select { width: 100%; padding: 11px 13px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border); border-radius: 4px; color: #fff; font-size: 14px; font-family: var(--font-body); outline: none; }
         /* Mini gráfico */

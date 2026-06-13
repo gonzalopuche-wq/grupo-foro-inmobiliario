@@ -109,7 +109,7 @@ export default function ActivarNotificaciones({ userId }: { userId: string }) {
 
   return (
     <button onClick={activar} disabled={estado === "cargando"} style={{
-      background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)",
+      background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)",
       color: "#fff", fontSize: 12, cursor: "pointer", padding: "8px 16px",
       borderRadius: 6, fontFamily: "Inter, sans-serif", fontWeight: 500,
       display: "flex", alignItems: "center", gap: 8,

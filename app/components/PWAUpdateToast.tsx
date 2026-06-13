@@ -67,8 +67,8 @@ export default function PWAUpdateToast() {
       <button
         onClick={actualizar}
         style={{
-          background: "rgba(200,0,0,0.15)", color: "#990000",
-          border: "1px solid rgba(200,0,0,0.3)", borderRadius: 6,
+          background: "rgba(153,0,0,0.15)", color: "#990000",
+          border: "1px solid rgba(153,0,0,0.3)", borderRadius: 6,
           padding: "6px 12px", fontSize: 11, fontWeight: 700,
           fontFamily: "Montserrat, sans-serif", cursor: "pointer", flexShrink: 0,
         }}

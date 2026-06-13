@@ -335,7 +335,7 @@ export default function ListaDetallePage() {
     cardTitulo: { fontFamily: 'Montserrat,sans-serif', fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
     chip: { display: 'inline-block', padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', marginRight: 5, marginBottom: 5 },
     cardAcciones: { display: 'flex', flexDirection: 'column' as const, gap: 6, padding: '14px 14px 14px 0', flexShrink: 0, justifyContent: 'center' },
-    btnEliminar: { background: 'none', border: 'none', color: 'rgba(200,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '4px 10px', borderRadius: 5 },
+    btnEliminar: { background: 'none', border: 'none', color: 'rgba(153,0,0,0.5)', fontSize: 12, cursor: 'pointer', padding: '4px 10px', borderRadius: 5 },
     btnAgregar: { display: 'flex', alignItems: 'center', gap: 8, background: '#990000', border: 'none', color: '#fff', padding: '9px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat,sans-serif', cursor: 'pointer', maxWidth: 900, marginBottom: 16 },
     importBox: { maxWidth: 900, background: 'var(--gfi-bg-card)', border: '1px solid var(--gfi-border)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 },
     urlInput: { flex: 1, background: 'var(--gfi-border-subtle)', border: '1px solid var(--gfi-border)', borderRadius: 6, padding: '9px 12px', color: '#fff', fontSize: 13, outline: 'none', fontFamily: 'Inter,sans-serif' },

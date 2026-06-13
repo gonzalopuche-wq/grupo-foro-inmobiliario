@@ -167,12 +167,12 @@ export default function RedGFIPage() {
         .rgfi-chips { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px; }
         .rgfi-chip { font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(255,255,255,0.06); color:var(--gfi-text-muted); font-family:var(--font-display); font-weight:700; letter-spacing:0.04em; }
         .rgfi-corredor { display:flex; align-items:center; gap:8px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); }
-        .rgfi-corredor-ava { width:28px; height:28px; border-radius:6px; background:rgba(200,0,0,0.12); border:1px solid rgba(200,0,0,0.2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:10px; font-weight:800; color:#990000; flex-shrink:0; overflow:hidden; }
+        .rgfi-corredor-ava { width:28px; height:28px; border-radius:6px; background:rgba(153,0,0,0.12); border:1px solid rgba(153,0,0,0.2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:10px; font-weight:800; color:#990000; flex-shrink:0; overflow:hidden; }
         .rgfi-corredor-ava img { width:100%; height:100%; object-fit:cover; }
         .rgfi-corredor-nombre { font-size:12px; font-weight:600; color:var(--gfi-text-primary); font-family:var(--font-body); }
         .rgfi-corredor-mat { font-size:10px; color:var(--gfi-text-dim); }
         .rgfi-corredor-tel { font-size:10px; color:rgba(74,184,216,0.8); }
-        .rgfi-my-badge { position:absolute; top:8px; right:8px; background:rgba(200,0,0,0.85); color:#fff; font-size:8px; font-family:var(--font-display); font-weight:800; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; }
+        .rgfi-my-badge { position:absolute; top:8px; right:8px; background:rgba(153,0,0,0.85); color:#fff; font-size:8px; font-family:var(--font-display); font-weight:800; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; }
         /* Detail modal */
         .rgfi-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; }
         .rgfi-detail { background:var(--gfi-bg-secondary); border:1px solid var(--gfi-border); border-radius:14px; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; }
@@ -188,7 +188,7 @@ export default function RedGFIPage() {
         .rgfi-detail-item { background:var(--gfi-bg-card); border-radius:6px; padding:8px 10px; }
         .rgfi-detail-item-label { font-size:9px; color:var(--gfi-text-dim); font-family:var(--font-display); letter-spacing:0.06em; text-transform:uppercase; }
         .rgfi-detail-item-value { font-size:13px; color:#fff; font-family:var(--font-body); font-weight:500; margin-top:2px; }
-        .rgfi-contact-card { background:rgba(200,0,0,0.06); border:1px solid rgba(200,0,0,0.15); border-radius:8px; padding:14px; }
+        .rgfi-contact-card { background:rgba(153,0,0,0.06); border:1px solid rgba(153,0,0,0.15); border-radius:8px; padding:14px; }
         .rgfi-contact-name { font-family:var(--font-display); font-size:15px; font-weight:800; color:#fff; }
         .rgfi-contact-mat { font-size:11px; color:var(--gfi-text-muted); margin-bottom:10px; }
         .rgfi-contact-btns { display:flex; gap:8px; flex-wrap:wrap; }
@@ -261,7 +261,7 @@ export default function RedGFIPage() {
           {(busqueda || filtroOp || filtroTipo || filtroCiudad || filtroDorm) && (
             <button
               onClick={() => { setBusqueda(""); setFiltroOp(""); setFiltroTipo(""); setFiltroCiudad(""); setFiltroDorm(""); }}
-              style={{ padding:"8px 12px", background:"rgba(200,0,0,0.1)", border:"1px solid rgba(200,0,0,0.2)", borderRadius:6, color:"#990000", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, cursor:"pointer" }}
+              style={{ padding:"8px 12px", background:"rgba(153,0,0,0.1)", border:"1px solid rgba(153,0,0,0.2)", borderRadius:6, color:"#990000", fontFamily:"Montserrat,sans-serif", fontSize:11, fontWeight:700, cursor:"pointer" }}
             >
               Limpiar
             </button>
@@ -276,7 +276,7 @@ export default function RedGFIPage() {
 
         {loading ? (
           <div style={{ textAlign:"center", padding:"60px 0", color:"var(--gfi-text-dim)" }}>
-            <div style={{ width:32, height:32, border:"2px solid rgba(200,0,0,0.2)", borderTopColor:"#990000", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
+            <div style={{ width:32, height:32, border:"2px solid rgba(153,0,0,0.2)", borderTopColor:"#990000", borderRadius:"50%", animation:"spin 0.7s linear infinite", margin:"0 auto 12px" }} />
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             Cargando Red GFI...
           </div>

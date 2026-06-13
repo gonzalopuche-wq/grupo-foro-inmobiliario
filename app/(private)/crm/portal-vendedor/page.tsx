@@ -290,7 +290,7 @@ export default function PortalVendedorPage() {
                         {p.activo ? "Desactivar" : "Activar"}
                       </button>
                       <button className="pv-btn" onClick={() => abrirPortal(p.id)}
-                        style={{ background: abierto ? "rgba(200,0,0,0.15)" : "var(--gfi-border-subtle)", color: abierto ? "#990000" : "var(--gfi-text-secondary)", border: `1px solid ${abierto ? "rgba(200,0,0,0.3)" : "var(--gfi-border)"}` }}>
+                        style={{ background: abierto ? "rgba(153,0,0,0.15)" : "var(--gfi-border-subtle)", color: abierto ? "#990000" : "var(--gfi-text-secondary)", border: `1px solid ${abierto ? "rgba(153,0,0,0.3)" : "var(--gfi-border)"}` }}>
                         {abierto ? "▲ Cerrar" : "▼ Gestionar"}
                       </button>
                     </div>

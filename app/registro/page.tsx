@@ -220,7 +220,7 @@ export default function RegistroPage() {
           content: '';
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(180,0,0,0.15) 0%, transparent 70%);
+          background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(153,0,0,0.15) 0%, transparent 70%);
           pointer-events: none;
         }
         .reg-card {
@@ -229,7 +229,7 @@ export default function RegistroPage() {
           width: 100%;
           max-width: 480px;
           background: rgba(14,14,14,0.95);
-          border: 1px solid rgba(180,0,0,0.22);
+          border: 1px solid rgba(153,0,0,0.22);
           border-radius: 4px;
           padding: 44px 40px 40px;
           box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 60px rgba(160,0,0,0.1);
@@ -243,7 +243,7 @@ export default function RegistroPage() {
           content: '';
           position: absolute;
           top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, #990000, #e60000, #990000, transparent);
+          background: linear-gradient(90deg, transparent, #990000, #b80000, #990000, transparent);
           border-radius: 4px 4px 0 0;
         }
         .reg-logo { display: flex; justify-content: center; margin-bottom: 28px; }
@@ -263,8 +263,8 @@ export default function RegistroPage() {
           transition: all 0.2s; text-align: center;
           display: flex; flex-direction: column; gap: 6px; align-items: center;
         }
-        .reg-tipo-btn:hover { border-color: rgba(200,0,0,0.4); background: rgba(200,0,0,0.05); }
-        .reg-tipo-btn.activo { border-color: #990000; background: rgba(200,0,0,0.1); }
+        .reg-tipo-btn:hover { border-color: rgba(153,0,0,0.4); background: rgba(153,0,0,0.05); }
+        .reg-tipo-btn.activo { border-color: #990000; background: rgba(153,0,0,0.1); }
         .reg-tipo-icon { font-size: 24px; }
         .reg-tipo-label {
           font-family: 'Montserrat', sans-serif;
@@ -292,14 +292,14 @@ export default function RegistroPage() {
         }
         .reg-input::placeholder { color: rgba(255,255,255,0.18); }
         .reg-input:focus {
-          border-color: rgba(200,0,0,0.6);
-          box-shadow: 0 0 0 3px rgba(200,0,0,0.1);
+          border-color: rgba(153,0,0,0.6);
+          box-shadow: 0 0 0 3px rgba(153,0,0,0.1);
         }
         .reg-input.ok {
           border-color: rgba(0,200,100,0.5);
           background: rgba(0,200,100,0.04);
         }
-        .reg-input.err { border-color: rgba(200,0,0,0.5); }
+        .reg-input.err { border-color: rgba(153,0,0,0.5); }
         .reg-input.warn {
           border-color: rgba(234,179,8,0.5);
           background: rgba(234,179,8,0.04);
@@ -316,8 +316,8 @@ export default function RegistroPage() {
         .mat-row .reg-input { flex: 1; }
         .mat-verificar {
           padding: 12px 16px;
-          background: rgba(200,0,0,0.15);
-          border: 1px solid rgba(200,0,0,0.35);
+          background: rgba(153,0,0,0.15);
+          border: 1px solid rgba(153,0,0,0.35);
           border-radius: 3px;
           color: #fff;
           font-family: 'Montserrat', sans-serif;
@@ -326,7 +326,7 @@ export default function RegistroPage() {
           cursor: pointer; white-space: nowrap;
           transition: all 0.2s; flex-shrink: 0;
         }
-        .mat-verificar:hover:not(:disabled) { background: rgba(200,0,0,0.3); border-color: rgba(200,0,0,0.6); }
+        .mat-verificar:hover:not(:disabled) { background: rgba(153,0,0,0.3); border-color: rgba(153,0,0,0.6); }
         .mat-verificar:disabled { opacity: 0.5; cursor: not-allowed; }
         .mat-verificar.ok { background: rgba(0,200,100,0.12); border-color: rgba(0,200,100,0.4); color: #4ade80; }
         .mat-verificar.bypass { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.4); color: #d4960c; }
@@ -336,7 +336,7 @@ export default function RegistroPage() {
         }
         .mat-msg.ok { color: #4ade80; background: rgba(0,200,100,0.07); border: 1px solid rgba(0,200,100,0.2); }
         .mat-msg.bypass { color: #d4960c; background: rgba(234,179,8,0.07); border: 1px solid rgba(234,179,8,0.2); }
-        .mat-msg.err { color: #ff6b6b; background: rgba(200,0,0,0.07); border: 1px solid rgba(200,0,0,0.2); }
+        .mat-msg.err { color: #ff6b6b; background: rgba(153,0,0,0.07); border: 1px solid rgba(153,0,0,0.2); }
         .mat-msg.loading { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
 
         .reg-prellenado {
@@ -353,8 +353,8 @@ export default function RegistroPage() {
           border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer;
           transition: all 0.2s; display: flex; align-items: center; gap: 10px;
         }
-        .reg-esp-btn:hover { border-color: rgba(200,0,0,0.35); background: rgba(200,0,0,0.05); }
-        .reg-esp-btn.activo { border-color: #990000; background: rgba(200,0,0,0.12); }
+        .reg-esp-btn:hover { border-color: rgba(153,0,0,0.35); background: rgba(153,0,0,0.05); }
+        .reg-esp-btn.activo { border-color: #990000; background: rgba(153,0,0,0.12); }
         .reg-esp-icon { font-size: 18px; }
         .reg-esp-label {
           font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
@@ -371,8 +371,8 @@ export default function RegistroPage() {
 
         .reg-error {
           font-size: 12px; color: #ff4444;
-          background: rgba(200,0,0,0.08);
-          border: 1px solid rgba(200,0,0,0.2);
+          background: rgba(153,0,0,0.08);
+          border: 1px solid rgba(153,0,0,0.2);
           border-radius: 3px; padding: 10px 14px; margin-bottom: 14px;
         }
         .reg-btn {
@@ -383,7 +383,7 @@ export default function RegistroPage() {
           text-transform: uppercase; cursor: pointer;
           transition: background 0.2s, transform 0.15s;
         }
-        .reg-btn:hover:not(:disabled) { background: #e60000; transform: translateY(-1px); }
+        .reg-btn:hover:not(:disabled) { background: #b80000; transform: translateY(-1px); }
         .reg-btn:disabled { opacity: 0.65; cursor: not-allowed; }
         .reg-spinner {
           display: inline-block; width: 13px; height: 13px;
@@ -394,7 +394,7 @@ export default function RegistroPage() {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .reg-footer { margin-top: 20px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); }
-        .reg-footer a { color: rgba(200,0,0,0.7); text-decoration: none; font-weight: 500; }
+        .reg-footer a { color: rgba(153,0,0,0.7); text-decoration: none; font-weight: 500; }
         .reg-footer a:hover { color: #990000; }
         .reg-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 16px; }
         .reg-brand {
@@ -417,7 +417,7 @@ export default function RegistroPage() {
         .reg-enviado h2 { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
         .reg-enviado h2 span { color: #990000; }
         .reg-enviado p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 320px; }
-        .reg-enviado-volver { margin-top: 8px; font-size: 12px; color: rgba(200,0,0,0.7); text-decoration: none; font-weight: 500; }
+        .reg-enviado-volver { margin-top: 8px; font-size: 12px; color: rgba(153,0,0,0.7); text-decoration: none; font-weight: 500; }
         .reg-enviado-volver:hover { color: #990000; }
 
         .reg-terminos {
@@ -450,8 +450,8 @@ export default function RegistroPage() {
         .reg-terminos-clausulas {
           margin-top: 10px;
           padding: 10px 12px;
-          background: rgba(200,0,0,0.05);
-          border: 1px solid rgba(200,0,0,0.12);
+          background: rgba(153,0,0,0.05);
+          border: 1px solid rgba(153,0,0,0.12);
           border-radius: 3px;
           font-size: 10px;
           color: rgba(255,255,255,0.35);
@@ -587,7 +587,7 @@ export default function RegistroPage() {
                               fontFamily: "'Montserrat',sans-serif", fontSize: 10, fontWeight: 700,
                               letterSpacing: "0.12em", textTransform: "uppercase",
                               border: celularMostrar === op ? "1px solid #990000" : "1px solid rgba(255,255,255,0.12)",
-                              background: celularMostrar === op ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.03)",
+                              background: celularMostrar === op ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.03)",
                               color: celularMostrar === op ? "#fff" : "rgba(255,255,255,0.4)",
                             }}>
                             {op === "oficina" ? "📋 Oficina" : "📱 Personal"}

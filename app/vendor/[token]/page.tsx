@@ -169,7 +169,7 @@ export default async function VendorPortalPage({ params }: { params: Promise<{ t
                 Su corredor inmobiliario
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(200,0,0,0.15)", border: "1px solid rgba(200,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#990000", overflow: "hidden", flexShrink: 0 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 10, background: "rgba(153,0,0,0.15)", border: "1px solid rgba(153,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800, fontFamily: "Montserrat,sans-serif", color: "#990000", overflow: "hidden", flexShrink: 0 }}>
                   {corredor.foto_url
                     ? <img src={corredor.foto_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     : `${corredor.nombre?.charAt(0) ?? ""}${corredor.apellido?.charAt(0) ?? ""}`}

@@ -29,9 +29,9 @@ const ESTADO_CONFIG: Record<string, { label: string; color: string; bg: string; 
   activa:     { label: "Activa",              color: "#3abab6", bg: "rgba(34,197,94,0.1)",    icon: "✓" },
   pendiente:  { label: "Pago en verificación",color: "#d4960c", bg: "rgba(234,179,8,0.1)",   icon: "⏳" },
   gracia:     { label: "Período de gracia",   color: "#d4960c", bg: "rgba(234,179,8,0.1)",   icon: "⚠️" },
-  vencida:    { label: "Vencida",             color: "#ff4444", bg: "rgba(200,0,0,0.1)",     icon: "✕" },
-  suspendida: { label: "Suspendida",          color: "#ff4444", bg: "rgba(200,0,0,0.1)",     icon: "🔒" },
-  bloqueado:  { label: "Bloqueada",           color: "#ff4444", bg: "rgba(200,0,0,0.1)",     icon: "🔒" },
+  vencida:    { label: "Vencida",             color: "#ff4444", bg: "rgba(153,0,0,0.1)",     icon: "✕" },
+  suspendida: { label: "Suspendida",          color: "#ff4444", bg: "rgba(153,0,0,0.1)",     icon: "🔒" },
+  bloqueado:  { label: "Bloqueada",           color: "#ff4444", bg: "rgba(153,0,0,0.1)",     icon: "🔒" },
 };
 
 export default function SuscripcionPage() {
@@ -220,7 +220,7 @@ export default function SuscripcionPage() {
         ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Colaboradores</td><td style="color:#fff;">${colaboradoresCount} × USD ${precioColabUsd} = USD ${colaboradoresCount * precioColabUsd}</td></tr>`
         : "";
       const ivaLine = `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">IVA ${ivaPct}%</td><td style="color:#fff;">$ ${ivaArs?.toLocaleString("es-AR") ?? "—"}</td></tr>`;
-      await enviarEmail("foroinmobiliariomatriculados@gmail.com", `💰 Pago declarado — ${perfil.apellido}, ${perfil.nombre}`, `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(200,0,0,0.2);"><h2 style="color:#990000;margin-bottom:20px;font-family:sans-serif;">GFI® — Nuevo pago declarado</h2><table style="width:100%;border-collapse:collapse;font-size:14px;"><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Corredor</td><td style="color:#fff;font-weight:600;">${perfil.apellido}, ${perfil.nombre}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Matrícula</td><td style="color:#fff;">${perfil.matricula ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Base USD</td><td style="color:#fff;">USD ${precioUsd}</td></tr>${colabLine}${ivaLine}<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Total ARS (c/ IVA)</td><td style="color:#3abab6;font-weight:700;">$ ${totalArs?.toLocaleString("es-AR") ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto declarado</td><td style="color:#fff;font-weight:700;">$ ${montoNum.toLocaleString("es-AR")}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Comprobante</td><td style="color:#fff;">${comprobante}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Fecha</td><td style="color:#fff;">${new Date(fechaPago).toLocaleDateString("es-AR")}</td></tr>${cbuOrigen ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">CBU origen</td><td style="color:#fff;">${cbuOrigen}</td></tr>` : ""}</table><div style="margin-top:24px;"><a href="https://www.foroinmobiliario.com.ar/admin/suscripciones" style="display:inline-block;background:#990000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;font-family:sans-serif;">✓ Confirmar en el panel admin</a></div></div>`);
+      await enviarEmail("foroinmobiliariomatriculados@gmail.com", `💰 Pago declarado — ${perfil.apellido}, ${perfil.nombre}`, `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#0f0f0f;color:#fff;padding:32px;border-radius:8px;border:1px solid rgba(153,0,0,0.2);"><h2 style="color:#990000;margin-bottom:20px;font-family:sans-serif;">GFI® — Nuevo pago declarado</h2><table style="width:100%;border-collapse:collapse;font-size:14px;"><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);width:140px;">Corredor</td><td style="color:#fff;font-weight:600;">${perfil.apellido}, ${perfil.nombre}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Matrícula</td><td style="color:#fff;">${perfil.matricula ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Base USD</td><td style="color:#fff;">USD ${precioUsd}</td></tr>${colabLine}${ivaLine}<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Total ARS (c/ IVA)</td><td style="color:#3abab6;font-weight:700;">$ ${totalArs?.toLocaleString("es-AR") ?? "—"}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Monto declarado</td><td style="color:#fff;font-weight:700;">$ ${montoNum.toLocaleString("es-AR")}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Comprobante</td><td style="color:#fff;">${comprobante}</td></tr><tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">Fecha</td><td style="color:#fff;">${new Date(fechaPago).toLocaleDateString("es-AR")}</td></tr>${cbuOrigen ? `<tr><td style="padding:8px 0;color:rgba(255,255,255,0.5);">CBU origen</td><td style="color:#fff;">${cbuOrigen}</td></tr>` : ""}</table><div style="margin-top:24px;"><a href="https://www.foroinmobiliario.com.ar/admin/suscripciones" style="display:inline-block;background:#990000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;font-weight:700;font-family:sans-serif;">✓ Confirmar en el panel admin</a></div></div>`);
     } catch {}
 
     setEnviando(false);
@@ -246,7 +246,7 @@ export default function SuscripcionPage() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { min-height: 100%; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
         .sus-root { min-height: 100vh; display: flex; flex-direction: column; }
-        .sus-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 60px; background: rgba(14,14,14,0.98); border-bottom: 1px solid rgba(180,0,0,0.2); position: sticky; top: 0; z-index: 100; }
+        .sus-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 60px; background: rgba(14,14,14,0.98); border-bottom: 1px solid rgba(153,0,0,0.2); position: sticky; top: 0; z-index: 100; }
         .sus-topbar-logo { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 800; }
         .sus-topbar-logo span { color: #990000; }
         .sus-btn-back { padding: 7px 16px; background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; color: rgba(255,255,255,0.4); font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; }
@@ -289,15 +289,15 @@ export default function SuscripcionPage() {
 
         /* Formulario */
         .sus-btn-declarar { width: 100%; padding: 13px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
-        .sus-btn-declarar:hover:not(:disabled) { background: #e60000; }
+        .sus-btn-declarar:hover:not(:disabled) { background: #b80000; }
         .sus-btn-declarar:disabled { opacity: 0.6; cursor: not-allowed; }
         .sus-field { margin-bottom: 14px; }
         .sus-label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 7px; font-family: 'Montserrat', sans-serif; }
         .sus-label span { color: #990000; margin-left: 2px; }
         .sus-input { width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-size: 14px; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
-        .sus-input:focus { border-color: rgba(200,0,0,0.5); }
+        .sus-input:focus { border-color: rgba(153,0,0,0.5); }
         .sus-input::placeholder { color: rgba(255,255,255,0.2); }
-        .sus-error { font-size: 12px; color: #ff4444; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 14px; }
+        .sus-error { font-size: 12px; color: #ff4444; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.2); border-radius: 3px; padding: 10px 14px; margin-bottom: 14px; }
         .sus-ok { text-align: center; padding: 20px; font-size: 13px; color: #3abab6; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 6px; }
 
         /* Historial */
@@ -346,7 +346,7 @@ export default function SuscripcionPage() {
                       href={`/recibo/${suscripcionActual.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: "inline-block", marginTop: 10, fontSize: 11, color: "#990000", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", padding: "6px 14px", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 3 }}
+                      style={{ display: "inline-block", marginTop: 10, fontSize: 11, color: "#990000", textDecoration: "none", fontFamily: "Montserrat,sans-serif", fontWeight: 700, letterSpacing: "0.06em", padding: "6px 14px", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 3 }}
                     >
                       ↓ Descargar comprobante
                     </a>

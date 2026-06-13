@@ -33,7 +33,7 @@ const fmtUSD = (v: number) =>
   new Intl.NumberFormat("es-AR", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v);
 
 function HBar({
-  label, value, max, color = "rgba(200,0,0,0.7)", sub,
+  label, value, max, color = "rgba(153,0,0,0.7)", sub,
 }: {
   label: string; value: number; max: number; color?: string; sub?: string;
 }) {
@@ -258,7 +258,7 @@ export default function ObservatorioPage() {
                   padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
                   border: "1px solid",
                   borderColor: periodo === p ? "#990000" : "var(--gfi-border)",
-                  background: periodo === p ? "rgba(200,0,0,0.15)" : "transparent",
+                  background: periodo === p ? "rgba(153,0,0,0.15)" : "transparent",
                   color: periodo === p ? "#fff" : "rgba(255,255,255,0.45)",
                   fontFamily: "var(--font-display)",
                   transition: "all 0.15s",
@@ -334,7 +334,7 @@ export default function ObservatorioPage() {
                 {barrioStats.length === 0 ? (
                   <p style={{ color: "var(--gfi-text-muted)", fontSize: 13 }}>Sin datos suficientes en el período</p>
                 ) : barrioStats.map(b => (
-                  <HBar key={b.barrio} label={b.barrio} value={b.cant} max={maxBarrioCant} color="rgba(200,0,0,0.7)" sub={`${b.cant} op.`} />
+                  <HBar key={b.barrio} label={b.barrio} value={b.cant} max={maxBarrioCant} color="rgba(153,0,0,0.7)" sub={`${b.cant} op.`} />
                 ))}
               </div>
 

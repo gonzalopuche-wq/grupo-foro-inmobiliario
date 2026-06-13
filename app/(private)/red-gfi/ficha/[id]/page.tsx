@@ -79,12 +79,12 @@ export default function FichaPage() {
         .ficha-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
         .ficha-logo { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0.04em; }
         .ficha-logo span { color: #990000; }
-        .ficha-badge-red { font-size: 9px; font-family: var(--font-display); font-weight: 700; background: rgba(200,0,0,0.12); border: 1px solid rgba(200,0,0,0.25); color: rgba(255,100,100,0.8); padding: 3px 8px; border-radius: 4px; letter-spacing: 0.08em; }
+        .ficha-badge-red { font-size: 9px; font-family: var(--font-display); font-weight: 700; background: rgba(153,0,0,0.12); border: 1px solid rgba(153,0,0,0.25); color: rgba(255,100,100,0.8); padding: 3px 8px; border-radius: 4px; letter-spacing: 0.08em; }
         .ficha-actions { display: flex; gap: 8px; }
         .ficha-btn { padding: 8px 16px; border-radius: 6px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; border: none; transition: opacity 0.15s; }
         .ficha-btn:hover { opacity: 0.85; }
         .ficha-btn-share { background: rgba(255,255,255,0.06); border: 1px solid var(--gfi-border) !important; color: var(--gfi-text-primary); }
-        .ficha-btn-pdf { background: rgba(200,0,0,0.15); border: 1px solid rgba(200,0,0,0.3) !important; color: #b80000; }
+        .ficha-btn-pdf { background: rgba(153,0,0,0.15); border: 1px solid rgba(153,0,0,0.3) !important; color: #b80000; }
 
         /* Foto carousel */
         .ficha-gallery { border-radius: 12px; overflow: hidden; margin-bottom: 24px; position: relative; }
@@ -121,7 +121,7 @@ export default function FichaPage() {
         .ficha-anonimo-txt strong { color: var(--gfi-text-secondary); display: block; font-size: 13px; margin-bottom: 2px; }
         .ficha-footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; }
         .ficha-footer-logo { font-family: var(--font-display); font-size: 12px; font-weight: 800; color: var(--gfi-text-muted); }
-        .ficha-footer-logo span { color: rgba(200,0,0,0.6); }
+        .ficha-footer-logo span { color: rgba(153,0,0,0.6); }
         .ficha-footer-date { font-size: 11px; color: var(--gfi-text-dim); }
 
         @media (max-width: 600px) {
@@ -160,7 +160,7 @@ export default function FichaPage() {
       <div className="ficha-page">
         {loading ? (
           <div style={{ textAlign: "center", padding: "80px 0", color: "var(--gfi-text-dim)" }}>
-            <div style={{ width: 32, height: 32, border: "2px solid rgba(200,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 12px" }} />
+            <div style={{ width: 32, height: 32, border: "2px solid rgba(153,0,0,0.2)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 12px" }} />
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             Cargando ficha...
           </div>
@@ -181,7 +181,7 @@ export default function FichaPage() {
                 <button className="ficha-btn ficha-btn-share" onClick={copiarLink} style={{ border: "1px solid var(--gfi-border)" }}>
                   {copiado ? "✓ Enlace copiado" : "🔗 Copiar enlace"}
                 </button>
-                <button className="ficha-btn ficha-btn-pdf" onClick={() => window.print()} style={{ border: "1px solid rgba(200,0,0,0.3)" }}>
+                <button className="ficha-btn ficha-btn-pdf" onClick={() => window.print()} style={{ border: "1px solid rgba(153,0,0,0.3)" }}>
                   ↓ Descargar PDF
                 </button>
               </div>

@@ -211,7 +211,7 @@ export default function ComunidadPage() {
       onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
       onMouseOut={e => (e.currentTarget.style.background = "transparent")}
     >
-      <div style={{ width: 44, height: 44, borderRadius: 10, background: g.va_al_mir ? "rgba(200,0,0,0.12)" : "rgba(255,255,255,0.06)", border: g.va_al_mir ? "1px solid rgba(200,0,0,0.25)" : "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, background: g.va_al_mir ? "rgba(153,0,0,0.12)" : "rgba(255,255,255,0.06)", border: g.va_al_mir ? "1px solid rgba(153,0,0,0.25)" : "1px solid var(--gfi-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
         {g.icono}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -221,7 +221,7 @@ export default function ComunidadPage() {
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
             {g.va_al_mir && (
-              <span style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#990000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "2px 5px", borderRadius: 3 }}>MIR</span>
+              <span style={{ fontSize: 8, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#990000", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", padding: "2px 5px", borderRadius: 3 }}>MIR</span>
             )}
             {g.ultimo_at && (
               <span style={{ fontSize: 10, color: "var(--gfi-text-dim)", fontFamily: "Inter,sans-serif" }}>{tiempoRelativo(g.ultimo_at)}</span>
@@ -247,7 +247,7 @@ export default function ComunidadPage() {
         onMouseOver={e => (e.currentTarget.style.background = "var(--gfi-bg-card)")}
         onMouseOut={e => (e.currentTarget.style.background = "transparent")}
       >
-        <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden", position: "relative" }}>
+        <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontFamily: "var(--font-display)", fontWeight: 800, color: "#990000", flexShrink: 0, overflow: "hidden", position: "relative" }}>
           {otro?.foto_url
             ? <img src={otro.foto_url} alt={nombre} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : initials(otro?.nombre ?? "", otro?.apellido ?? "")}
@@ -303,7 +303,7 @@ export default function ComunidadPage() {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-      <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -336,7 +336,7 @@ export default function ComunidadPage() {
             key={t.key}
             onClick={() => setTab(t.key)}
             style={{
-              flex: 1, padding: "12px 8px", background: tab === t.key ? "rgba(200,0,0,0.1)" : "transparent",
+              flex: 1, padding: "12px 8px", background: tab === t.key ? "rgba(153,0,0,0.1)" : "transparent",
               border: "none", borderBottom: tab === t.key ? "2px solid #990000" : "2px solid transparent",
               color: tab === t.key ? "#fff" : "var(--gfi-text-muted)",
               fontFamily: "var(--font-display)", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
@@ -364,7 +364,7 @@ export default function ComunidadPage() {
             <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
               <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 10, fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--gfi-text-muted)" }}>Operaciones</span>
-                <span style={{ fontSize: 9, color: "#990000", background: "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.2)", padding: "1px 6px", borderRadius: 3, fontFamily: "var(--font-display)", fontWeight: 700 }}>→ MIR automático</span>
+                <span style={{ fontSize: 9, color: "#990000", background: "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.2)", padding: "1px 6px", borderRadius: 3, fontFamily: "var(--font-display)", fontWeight: 700 }}>→ MIR automático</span>
               </div>
               {gruposOperaciones.map(g => <GrupoItem key={g.id} g={g} />)}
             </div>
@@ -396,7 +396,7 @@ export default function ComunidadPage() {
           </div>
           {loadingDms ? (
             <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
-              <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+              <div style={{ width: 24, height: 24, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
             </div>
           ) : dms.length === 0 ? (
             <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>
@@ -434,7 +434,7 @@ export default function ComunidadPage() {
           </div>
           {loadingListas ? (
             <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
-              <div style={{ width: 24, height: 24, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+              <div style={{ width: 24, height: 24, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
             </div>
           ) : listas.length === 0 ? (
             <div style={{ background: "var(--gfi-bg-secondary)", border: "1px solid var(--gfi-border-subtle)", borderRadius: 10, padding: "40px 20px", textAlign: "center" }}>

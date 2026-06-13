@@ -148,7 +148,7 @@ export default function Campanita({ userId }: { userId: string }) {
         <div style={{
           position: "absolute", right: 0, top: "calc(100% + 8px)",
           width: 340, background: "#141414",
-          border: "1px solid rgba(200,0,0,0.2)", borderRadius: "8px",
+          border: "1px solid rgba(153,0,0,0.2)", borderRadius: "8px",
           boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 500, overflow: "hidden",
         }}>
           {/* Header */}
@@ -163,7 +163,7 @@ export default function Campanita({ userId }: { userId: string }) {
               Notificaciones
               {noLeidas > 0 && (
                 <span style={{
-                  marginLeft: 8, background: "rgba(200,0,0,0.15)", color: "#990000",
+                  marginLeft: 8, background: "rgba(153,0,0,0.15)", color: "#990000",
                   fontSize: 9, padding: "2px 6px", borderRadius: 3,
                 }}>
                   {noLeidas} nuevas
@@ -199,7 +199,7 @@ export default function Campanita({ userId }: { userId: string }) {
                     display: "flex", gap: 10, padding: "12px 16px",
                     borderBottom: "1px solid rgba(255,255,255,0.04)",
                     cursor: n.url ? "pointer" : "default",
-                    background: n.leida ? "transparent" : "rgba(200,0,0,0.05)",
+                    background: n.leida ? "transparent" : "rgba(153,0,0,0.05)",
                   }}
                 >
                   <div style={{

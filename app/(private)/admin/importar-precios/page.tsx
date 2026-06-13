@@ -142,7 +142,7 @@ export default function ImportarPreciosPage() {
       <style>{`
         
         .ip-btn { padding: 10px 22px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: Montserrat,sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
-        .ip-btn:hover { background: #e60000; }
+        .ip-btn:hover { background: #b80000; }
         .ip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .ip-btn-sec { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--gfi-text-secondary); }
         .ip-btn-sec:hover { border-color: var(--gfi-text-muted); color: #fff; background: transparent; }
@@ -198,14 +198,14 @@ export default function ImportarPreciosPage() {
         <div>
           <label style={{
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 12, padding: "48px 32px", border: "2px dashed rgba(200,0,0,0.3)", borderRadius: 6,
+            gap: 12, padding: "48px 32px", border: "2px dashed rgba(153,0,0,0.3)", borderRadius: 6,
             cursor: "pointer", transition: "border-color 0.2s", maxWidth: 480,
           }}
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(200,0,0,0.7)"; }}
-            onDragLeave={(e) => { e.currentTarget.style.borderColor = "rgba(200,0,0,0.3)"; }}
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(153,0,0,0.7)"; }}
+            onDragLeave={(e) => { e.currentTarget.style.borderColor = "rgba(153,0,0,0.3)"; }}
             onDrop={(e) => {
               e.preventDefault();
-              e.currentTarget.style.borderColor = "rgba(200,0,0,0.3)";
+              e.currentTarget.style.borderColor = "rgba(153,0,0,0.3)";
               const archivo = e.dataTransfer.files?.[0];
               if (archivo) {
                 const dt = new DataTransfer();
@@ -231,7 +231,7 @@ export default function ImportarPreciosPage() {
             </div>
             <div style={{ fontSize: 12, color: "var(--gfi-text-muted)", lineHeight: 1.7 }}>
               El archivo debe tener al menos una columna de <strong style={{ color: "var(--gfi-text-secondary)" }}>unidad o código</strong> y una de <strong style={{ color: "var(--gfi-text-secondary)" }}>precio</strong>.<br />
-              Columnas reconocidas automáticamente: <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Código</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Piso</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Unidad / Depto</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Torre</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Precio / Valor</code>, <code style={{ fontSize: 11, color: "rgba(200,0,0,0.9)" }}>Moneda</code>.
+              Columnas reconocidas automáticamente: <code style={{ fontSize: 11, color: "rgba(153,0,0,0.9)" }}>Código</code>, <code style={{ fontSize: 11, color: "rgba(153,0,0,0.9)" }}>Piso</code>, <code style={{ fontSize: 11, color: "rgba(153,0,0,0.9)" }}>Unidad / Depto</code>, <code style={{ fontSize: 11, color: "rgba(153,0,0,0.9)" }}>Torre</code>, <code style={{ fontSize: 11, color: "rgba(153,0,0,0.9)" }}>Precio / Valor</code>, <code style={{ fontSize: 11, color: "rgba(153,0,0,0.9)" }}>Moneda</code>.
             </div>
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function ImportarPreciosPage() {
       {/* Error */}
       {estado === "error" && (
         <div style={{ maxWidth: 560 }}>
-          <div style={{ padding: "16px 20px", background: "rgba(200,0,0,0.08)", border: "1px solid rgba(200,0,0,0.2)", borderRadius: 4, fontSize: 13, color: "#ff6666", marginBottom: 16 }}>
+          <div style={{ padding: "16px 20px", background: "rgba(153,0,0,0.08)", border: "1px solid rgba(153,0,0,0.2)", borderRadius: 4, fontSize: 13, color: "#ff6666", marginBottom: 16 }}>
             ✗ {errorMsg}
           </div>
           <button className="ip-btn ip-btn-sec" onClick={reiniciar}>← Volver</button>
@@ -363,7 +363,7 @@ export default function ImportarPreciosPage() {
             </div>
           ) : (
             <div>
-              <div style={{ padding: "14px 18px", background: "rgba(200,0,0,0.07)", border: "1px solid rgba(200,0,0,0.15)", borderRadius: 4, fontSize: 13, color: "#ff6666", marginBottom: 14 }}>
+              <div style={{ padding: "14px 18px", background: "rgba(153,0,0,0.07)", border: "1px solid rgba(153,0,0,0.15)", borderRadius: 4, fontSize: 13, color: "#ff6666", marginBottom: 14 }}>
                 No se encontraron coincidencias. Las propiedades deben estar cargadas en la cartera con los mismos códigos o piso/unidad.
               </div>
               <button className="ip-btn ip-btn-sec" onClick={reiniciar}>← Volver</button>

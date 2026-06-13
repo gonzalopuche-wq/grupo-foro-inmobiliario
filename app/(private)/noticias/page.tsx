@@ -374,16 +374,16 @@ export default function NoticiasPage() {
         .not-tab { flex: 1; padding: 7px; background: none; border: 1px solid var(--gfi-border); color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; position: relative; }
         .not-tab:first-child { border-radius: 3px 0 0 3px; }
         .not-tab:last-child { border-radius: 0 3px 3px 0; border-left: none; }
-        .not-tab.activo { background: rgba(200,0,0,0.1); border-color: #990000; color: #fff; }
+        .not-tab.activo { background: rgba(153,0,0,0.1); border-color: #990000; color: #fff; }
         .not-tab-badge { position: absolute; top: -5px; right: -5px; background: #990000; color: #fff; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 8px; min-width: 14px; text-align: center; }
         .not-lista { flex: 1; overflow-y: auto; }
         .not-lista::-webkit-scrollbar { width: 3px; }
         .not-lista::-webkit-scrollbar-thumb { background: var(--gfi-border); }
         .not-item { padding: 14px 18px; border-bottom: 1px solid var(--gfi-border-subtle); cursor: pointer; transition: background 0.15s; display: flex; gap: 10px; }
         .not-item:hover { background: var(--gfi-bg-card); }
-        .not-item.activo { background: rgba(200,0,0,0.07); border-left: 2px solid #990000; }
+        .not-item.activo { background: rgba(153,0,0,0.07); border-left: 2px solid #990000; }
         .not-item-img { width: 52px; height: 52px; border-radius: 5px; object-fit: cover; flex-shrink: 0; background: var(--gfi-border-subtle); }
-        .not-item-img-placeholder { width: 52px; height: 52px; border-radius: 5px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .not-item-img-placeholder { width: 52px; height: 52px; border-radius: 5px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .not-item-info { flex: 1; min-width: 0; }
         .not-item-titulo { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .not-item-meta { font-size: 10px; color: var(--gfi-text-muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
@@ -391,7 +391,7 @@ export default function NoticiasPage() {
         .not-badge-dest { font-size: 8px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); color: #d4960c; padding: 1px 5px; border-radius: 3px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
         .not-badge-pend { font-size: 8px; background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.25); color: #fb923c; padding: 1px 5px; border-radius: 3px; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
         .not-btn-nueva { padding: 7px 14px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
-        .not-btn-nueva:hover { background: #e60000; }
+        .not-btn-nueva:hover { background: #b80000; }
 
         /* Detalle */
         .not-detalle { flex: 1; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border-subtle); border-radius: 8px; overflow-y: auto; display: flex; flex-direction: column; }
@@ -404,15 +404,15 @@ export default function NoticiasPage() {
         .not-detalle-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 10px; }
         .not-detalle-meta { font-size: 11px; color: var(--gfi-text-muted); margin-bottom: 18px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
         .not-detalle-cuerpo { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.8; font-family: var(--font-body); white-space: pre-wrap; word-break: break-word; }
-        .not-detalle-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(200,0,0,0.08); border: 1px solid rgba(200,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
-        .not-detalle-link:hover { background: rgba(200,0,0,0.15); color: #fff; }
+        .not-detalle-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; padding: 9px 16px; background: rgba(153,0,0,0.08); border: 1px solid rgba(153,0,0,0.2); border-radius: 4px; color: #990000; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: all 0.15s; }
+        .not-detalle-link:hover { background: rgba(153,0,0,0.15); color: #fff; }
         .not-detalle-actions { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gfi-border-subtle); flex-wrap: wrap; }
         .not-btn-aprobar { padding: 8px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 3px; color: #3abab6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
         .not-btn-aprobar:hover { background: rgba(34,197,94,0.2); }
         .not-btn-rechazar { padding: 8px 16px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-rechazar:hover { border-color: rgba(200,0,0,0.3); color: #990000; }
-        .not-btn-eliminar { padding: 8px 16px; background: transparent; border: 1px solid rgba(200,0,0,0.2); border-radius: 3px; color: rgba(200,0,0,0.6); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-eliminar:hover { background: rgba(200,0,0,0.1); color: #ff4444; }
+        .not-btn-rechazar:hover { border-color: rgba(153,0,0,0.3); color: #990000; }
+        .not-btn-eliminar { padding: 8px 16px; background: transparent; border: 1px solid rgba(153,0,0,0.2); border-radius: 3px; color: rgba(153,0,0,0.6); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .not-btn-eliminar:hover { background: rgba(153,0,0,0.1); color: #ff4444; }
         .not-btn-dest { padding: 8px 16px; background: transparent; border: 1px solid rgba(234,179,8,0.2); border-radius: 3px; color: rgba(234,179,8,0.7); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .not-btn-dest:hover { background: rgba(234,179,8,0.1); color: #d4960c; }
         .not-btn-redes { padding: 8px 16px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 3px; color: #3b82f6; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
@@ -423,21 +423,21 @@ export default function NoticiasPage() {
 
         /* Modal form */
         .not-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: flex-start; justify-content: center; z-index: 200; padding: 24px; overflow-y: auto; }
-        .not-modal { background: #0f0f0f; border: 1px solid rgba(180,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 600px; position: relative; margin: auto; }
+        .not-modal { background: #0f0f0f; border: 1px solid rgba(153,0,0,0.25); border-radius: 6px; padding: 28px 32px; width: 100%; max-width: 600px; position: relative; margin: auto; }
         .not-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #990000, transparent); border-radius: 6px 6px 0 0; }
         .not-modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 20px; }
         .not-modal-title span { color: #990000; }
         .not-field { margin-bottom: 14px; }
         .not-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gfi-text-muted); margin-bottom: 5px; font-family: var(--font-display); }
         .not-input { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; font-family: var(--font-body); transition: border-color 0.2s; }
-        .not-input:focus { border-color: rgba(200,0,0,0.5); }
+        .not-input:focus { border-color: rgba(153,0,0,0.5); }
         .not-input::placeholder { color: var(--gfi-text-dim); }
         .not-textarea { width: 100%; padding: 9px 12px; background: var(--gfi-border-subtle); border: 1px solid var(--gfi-border); border-radius: 3px; color: #fff; font-size: 13px; outline: none; resize: vertical; min-height: 120px; font-family: var(--font-body); line-height: 1.6; }
-        .not-textarea:focus { border-color: rgba(200,0,0,0.5); }
+        .not-textarea:focus { border-color: rgba(153,0,0,0.5); }
         .not-modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
         .not-btn-cancelar { padding: 10px 20px; background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; color: var(--gfi-text-secondary); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
         .not-btn-guardar { padding: 10px 24px; background: #990000; border: none; border-radius: 3px; color: #fff; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-guardar:hover { background: #e60000; }
+        .not-btn-guardar:hover { background: #b80000; }
         .not-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         .not-spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--gfi-text-muted); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -470,7 +470,7 @@ export default function NoticiasPage() {
         .not-btn-publicar-ai:hover { background: rgba(34,197,94,0.2); }
         .not-btn-publicar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
         .not-btn-descartar-ai { padding: 8px 16px; background: transparent; border: 1px solid var(--gfi-border); border-radius: 3px; color: var(--gfi-text-muted); font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .not-btn-descartar-ai:hover { border-color: rgba(200,0,0,0.3); color: #990000; }
+        .not-btn-descartar-ai:hover { border-color: rgba(153,0,0,0.3); color: #990000; }
         .not-btn-descartar-ai:disabled { opacity: 0.5; cursor: not-allowed; }
 
         @media (max-width: 768px) {
@@ -547,7 +547,7 @@ export default function NoticiasPage() {
 
       {loading ? (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
-          <div style={{ width: 28, height: 28, border: "2px solid rgba(200,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+          <div style={{ width: 28, height: 28, border: "2px solid rgba(153,0,0,0.3)", borderTopColor: "#990000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         </div>
       ) : errorCarga ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12 }}>
@@ -822,7 +822,7 @@ export default function NoticiasPage() {
                   style={{paddingRight: fetchandoLink ? 36 : undefined}}
                 />
                 {fetchandoLink && (
-                  <div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",width:14,height:14,border:"2px solid rgba(200,0,0,0.3)",borderTopColor:"#990000",borderRadius:"50%",animation:"not-spin 0.7s linear infinite"}}/>
+                  <div style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",width:14,height:14,border:"2px solid rgba(153,0,0,0.3)",borderTopColor:"#990000",borderRadius:"50%",animation:"not-spin 0.7s linear infinite"}}/>
                 )}
               </div>
             </div>
@@ -841,7 +841,7 @@ export default function NoticiasPage() {
               </div>
             )}
             {!esAdmin && (
-              <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", background: "rgba(200,0,0,0.04)", border: "1px solid rgba(200,0,0,0.1)", borderRadius: 4, padding: "8px 12px", marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: "var(--gfi-text-dim)", background: "rgba(153,0,0,0.04)", border: "1px solid rgba(153,0,0,0.1)", borderRadius: 4, padding: "8px 12px", marginBottom: 14 }}>
                 Tu noticia quedará pendiente de aprobación por un administrador.
               </div>
             )}

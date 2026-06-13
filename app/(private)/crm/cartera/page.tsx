@@ -171,7 +171,7 @@ const HONORARIOS_COMPARTIR = ["No comparte", "50%", "40%", "30%"];
 const MAX_FOTOS = 40;
 
 const PORTALES_EXT = [
-  { id: "gfi_red",       label: "Red GFI",      color: "#990000", bg: "rgba(200,0,0,0.15)" },
+  { id: "gfi_red",       label: "Red GFI",      color: "#990000", bg: "rgba(153,0,0,0.15)" },
   { id: "gfi_portal",    label: "Portal GFI",   color: "#ff4444", bg: "rgba(255,68,68,0.12)" },
   { id: "propia_red",    label: "Red Propia",   color: "#3abab6", bg: "rgba(58,186,182,0.13)" },
   { id: "propia_portal", label: "Propia.com.ar",color: "#059669", bg: "rgba(5,150,105,0.12)" },
@@ -1932,7 +1932,7 @@ export default function CarteraPage() {
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14, alignItems: "center" }}>
               <button
                 onClick={() => { setPortalesActivosExt([]); cargarExternas([], 1, filtroOpExt, filtroTipoExt, busquedaExt); }}
-                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(200,0,0,0.5)" : "var(--gfi-border)"}`, background: portalesActivosExt.length === 0 ? "rgba(200,0,0,0.12)" : "var(--gfi-border-subtle)", color: portalesActivosExt.length === 0 ? "#990000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}
+                style={{ padding: "5px 14px", borderRadius: 20, border: `1px solid ${portalesActivosExt.length === 0 ? "rgba(153,0,0,0.5)" : "var(--gfi-border)"}`, background: portalesActivosExt.length === 0 ? "rgba(153,0,0,0.12)" : "var(--gfi-border-subtle)", color: portalesActivosExt.length === 0 ? "#990000" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}
               >
                 Todos ({Object.values(porPortalExt).reduce((a, b) => a + b, 0).toLocaleString("es-AR")})
               </button>
@@ -1980,7 +1980,7 @@ export default function CarteraPage() {
                     setSincronizandoExt(false);
                   }}
                   disabled={sincronizandoExt}
-                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(200,0,0,0.06)" : "rgba(200,0,0,0.12)", border: "1px solid rgba(200,0,0,0.3)", color: "#990000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}
+                  style={{ marginLeft: "auto", padding: "6px 16px", borderRadius: 4, background: sincronizandoExt ? "rgba(153,0,0,0.06)" : "rgba(153,0,0,0.12)", border: "1px solid rgba(153,0,0,0.3)", color: "#990000", cursor: sincronizandoExt ? "wait" : "pointer", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700 }}
                 >
                   {sincronizandoExt ? "⏳ Sincronizando..." : "↻ Sincronizar"}
                 </button>
@@ -2334,7 +2334,7 @@ export default function CarteraPage() {
                         <div style={{display:"flex",gap:6}}>
                           {OPERACIONES.map(o => (
                             <button key={o} type="button"
-                              style={{padding:"6px 12px",borderRadius:3,border:`1px solid ${form.operacion===o?"#990000":"var(--gfi-border)"}`,background:form.operacion===o?"rgba(200,0,0,0.1)":"transparent",color:form.operacion===o?"#fff":"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
+                              style={{padding:"6px 12px",borderRadius:3,border:`1px solid ${form.operacion===o?"#990000":"var(--gfi-border)"}`,background:form.operacion===o?"rgba(153,0,0,0.1)":"transparent",color:form.operacion===o?"#fff":"var(--gfi-text-muted)",fontFamily:"Montserrat,sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}
                               onClick={() => setF("operacion", o)}>{o}</button>
                           ))}
                         </div>
@@ -2453,7 +2453,7 @@ export default function CarteraPage() {
                       type="button"
                       onClick={geocodificar}
                       disabled={geocodificando || (!form.direccion && !form.ciudad)}
-                      style={{ padding: "8px 16px", background: geocodificando ? "var(--gfi-border-subtle)" : "rgba(200,0,0,0.1)", border: "1px solid rgba(200,0,0,0.3)", borderRadius: 4, color: geocodificando ? "var(--gfi-text-muted)" : "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
+                      style={{ padding: "8px 16px", background: geocodificando ? "var(--gfi-border-subtle)" : "rgba(153,0,0,0.1)", border: "1px solid rgba(153,0,0,0.3)", borderRadius: 4, color: geocodificando ? "var(--gfi-text-muted)" : "#990000", fontSize: 11, fontFamily: "var(--font-display)", fontWeight: 700, cursor: geocodificando ? "not-allowed" : "pointer", letterSpacing: "0.1em", textTransform: "uppercase" }}
                     >
                       {geocodificando ? "Buscando..." : "📍 Geocodificar desde dirección"}
                     </button>
@@ -2693,7 +2693,7 @@ export default function CarteraPage() {
                         </div>
                       )}
                       {form.video_url && !getYouTubeId(form.video_url) && (
-                        <div style={{marginTop:5,fontSize:10,color:"rgba(200,0,0,0.6)"}}>⚠️ URL de YouTube no reconocida</div>
+                        <div style={{marginTop:5,fontSize:10,color:"rgba(153,0,0,0.6)"}}>⚠️ URL de YouTube no reconocida</div>
                       )}
                     </div>
                   </div>
@@ -3079,7 +3079,7 @@ export default function CarteraPage() {
       {/* ── SMART PROSPECTING MODAL ── */}
       {mostrarSmartMatch && smartMatches.length > 0 && (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={() => setMostrarSmartMatch(false)}>
-          <div style={{background:"var(--gfi-bg-secondary)",border:"1px solid rgba(200,0,0,0.3)",borderRadius:12,padding:28,maxWidth:520,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
+          <div style={{background:"var(--gfi-bg-secondary)",border:"1px solid rgba(153,0,0,0.3)",borderRadius:12,padding:28,maxWidth:520,width:"100%",position:"relative"}} onClick={e => e.stopPropagation()}>
             <button onClick={() => setMostrarSmartMatch(false)} style={{position:"absolute",top:12,right:12,background:"none",border:"none",color:"var(--gfi-text-muted)",fontSize:20,cursor:"pointer"}}>×</button>
             <div style={{fontFamily:"Montserrat,sans-serif",fontWeight:800,fontSize:15,color:"#fff",marginBottom:4}}>🎯 Smart Prospecting</div>
             <div style={{fontSize:12,color:"var(--gfi-text-muted)",marginBottom:20}}>
@@ -3091,7 +3091,7 @@ export default function CarteraPage() {
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                       <span style={{fontFamily:"Montserrat,sans-serif",fontWeight:700,fontSize:13,color:"#fff"}}>{m.nombre}</span>
-                      <span style={{background:"rgba(200,0,0,0.12)",border:"1px solid rgba(200,0,0,0.25)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#990000",fontFamily:"Montserrat,sans-serif"}}>{m.compatibilidad}%</span>
+                      <span style={{background:"rgba(153,0,0,0.12)",border:"1px solid rgba(153,0,0,0.25)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700,color:"#990000",fontFamily:"Montserrat,sans-serif"}}>{m.compatibilidad}%</span>
                     </div>
                     <div style={{fontSize:11,color:"var(--gfi-text-muted)",lineHeight:1.4}}>{m.razon}</div>
                   </div>
