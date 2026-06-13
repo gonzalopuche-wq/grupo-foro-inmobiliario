@@ -23,7 +23,7 @@ apunta al backend Next.js donde vive `/api/mide/descripcion`.
 
 ## 2. Migración de base de datos
 
-Corré en Supabase la migración **`supabase/migrations/134_mide_relevamientos.sql`**
+Corré en Supabase la migración **`supabase/migrations/138_mide_relevamientos.sql`**
 (del repo raíz). Crea la tabla `mide_relevamientos` con RLS por corredor.
 
 ## 3. Instalar y correr en desarrollo

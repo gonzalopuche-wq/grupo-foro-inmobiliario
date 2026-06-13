@@ -1,4 +1,4 @@
--- Migración 134: Relevamientos de la app GFI MIDE (medición de ambientes / plano / 3D)
+-- Migración 138: Relevamientos de la app GFI MIDE (medición de ambientes / plano / 3D)
 -- ─────────────────────────────────────────────────────────────────────────────
 -- La app móvil "GFI MIDE" (proyecto Expo independiente, package com.gfi.mide)
 -- permite al corredor relevar una propiedad: medir ambientes con la cámara,
