@@ -36,6 +36,9 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
   const [guardandoCRM, setGuardandoCRM] = useState(false);
   const [enCRM, setEnCRM] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [listas, setListas] = useState<{ id: string; nombre: string; color: string }[]>([]);
+  const [miembroListaIds, setMiembroListaIds] = useState<Set<string>>(new Set());
+  const [mostrarListas, setMostrarListas] = useState(false);
 
   useEffect(() => {
     const cargar = async () => {
@@ -47,19 +50,33 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
       if (data) setPerfil(data as PerfilPublico);
       setLoading(false);
 
-      // Verificar si ya está en el CRM
-      if (miUserId) {
-        const { data: crm } = await supabase
-          .from("crm_contactos")
-          .select("id")
-          .eq("perfil_id", miUserId)
-          .eq("corredor_ref_id", perfilId)
-          .maybeSingle();
+      // Verificar si ya está en el CRM + cargar listas (no para el propio perfil)
+      if (miUserId && miUserId !== perfilId) {
+        const [{ data: crm }, { data: ls }, { data: its }] = await Promise.all([
+          supabase.from("crm_contactos").select("id").eq("perfil_id", miUserId).eq("corredor_ref_id", perfilId).maybeSingle(),
+          supabase.from("crm_listas").select("id,nombre,color").eq("perfil_id", miUserId).order("orden"),
+          supabase.from("crm_listas_items").select("lista_id").eq("perfil_id", miUserId).eq("miembro_id", perfilId),
+        ]);
         if (crm) setEnCRM(true);
+        setListas((ls ?? []) as { id: string; nombre: string; color: string }[]);
+        setMiembroListaIds(new Set((its ?? []).map((i: any) => i.lista_id)));
       }
     };
     cargar();
   }, [perfilId, miUserId]);
+
+  const toggleMiembroEnLista = async (listaId: string) => {
+    if (!miUserId) return;
+    const ya = miembroListaIds.has(listaId);
+    setMiembroListaIds(prev => { const n = new Set(prev); if (ya) n.delete(listaId); else n.add(listaId); return n; });
+    if (ya) {
+      const { error } = await supabase.from("crm_listas_items").delete().eq("lista_id", listaId).eq("miembro_id", perfilId).eq("perfil_id", miUserId);
+      if (error) { setMiembroListaIds(prev => { const n = new Set(prev); n.add(listaId); return n; }); mostrarToast("No se pudo quitar"); }
+    } else {
+      const { error } = await supabase.from("crm_listas_items").insert({ lista_id: listaId, perfil_id: miUserId, miembro_id: perfilId });
+      if (error) { setMiembroListaIds(prev => { const n = new Set(prev); n.delete(listaId); return n; }); mostrarToast("No se pudo agregar"); }
+    }
+  };
 
   const mostrarToast = (msg: string) => {
     setToast(msg);
@@ -234,6 +251,32 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
                 </div>
               </div>
 
+              {/* Agregar a una lista (mismas listas de colores del CRM) */}
+              {miUserId && miUserId !== perfilId && mostrarListas && (
+                <div style={{ padding: "12px 22px", borderTop: "1px solid rgba(255,255,255,0.06)", background: "var(--gfi-bg-card)" }}>
+                  <div className="prm-row-label" style={{ marginBottom: 8 }}>Agregar a lista</div>
+                  {listas.length === 0 ? (
+                    <div style={{ fontSize: 12, color: "var(--gfi-text-muted)" }}>
+                      No tenés listas todavía. Creá una en <a href="/crm/contactos" style={{ color: "#990000" }}>el CRM</a>.
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {listas.map(l => {
+                        const on = miembroListaIds.has(l.id);
+                        return (
+                          <div key={l.id} onClick={() => toggleMiembroEnLista(l.id)}
+                            style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 8px", borderRadius: 6, cursor: "pointer", background: on ? `${l.color}1a` : "transparent" }}>
+                            <span style={{ width: 10, height: 10, borderRadius: "50%", background: l.color, flexShrink: 0 }} />
+                            <span style={{ flex: 1, fontSize: 13, color: "var(--gfi-text-primary)" }}>{l.nombre}</span>
+                            <span style={{ width: 18, height: 18, borderRadius: 5, border: `1.5px solid ${on ? l.color : "var(--gfi-border)"}`, background: on ? l.color : "transparent", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11 }}>{on ? "✓" : ""}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="prm-acciones">
                 {perfil.telefono && (
                   <a
@@ -252,6 +295,15 @@ export default function PerfilRapidoModal({ perfilId, onClose, miUserId }: Props
                     disabled={guardandoCRM || enCRM}
                   >
                     {enCRM ? "✓ En tu CRM" : guardandoCRM ? "Guardando..." : "💾 Guardar en CRM"}
+                  </button>
+                )}
+                {miUserId && miUserId !== perfilId && (
+                  <button
+                    className={`prm-btn prm-btn-perfil${mostrarListas ? " activo" : ""}`}
+                    onClick={() => setMostrarListas(v => !v)}
+                    style={mostrarListas ? { borderColor: "rgba(200,0,0,0.4)", color: "#fff" } : undefined}
+                  >
+                    🏷 Listas{miembroListaIds.size > 0 ? ` (${miembroListaIds.size})` : ""}
                   </button>
                 )}
                 <a className="prm-btn prm-btn-perfil" href="/padron-gfi">

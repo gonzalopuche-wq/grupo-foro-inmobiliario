@@ -5,8 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../../lib/supabase";
 
 interface Perfil { id: string; nombre: string; apellido: string; matricula: string | null; foto_url: string | null; }
-interface Lista { id: string; nombre: string; descripcion: string | null; activa: boolean; creador_id: string; created_at: string; }
+interface Lista { id: string; nombre: string; descripcion: string | null; activa: boolean; creador_id: string; created_at: string; color?: string | null; }
 interface Colega { id: string; nombre: string; apellido: string; matricula: string | null; foto_url: string | null; }
+
+const COLORES_LISTA = [
+  "#a0846b", "#8b5cf6", "#c084fc", "#a3e635", "#f97316",
+  "#d946ef", "#c0b94d", "#3b82f6", "#14b8a6", "#ef4444",
+];
 
 export default function ListaPage() {
   const { listaId } = useParams() as { listaId: string };
@@ -126,6 +131,17 @@ export default function ListaPage() {
     showToast(nuevoEstado ? "Lista activada" : "Lista pausada");
   };
 
+  const cambiarColor = async (color: string) => {
+    if (!lista) return;
+    const colorAnterior = lista.color;
+    setLista({ ...lista, color });
+    const { error } = await supabase.from("listas_distribucion").update({ color }).eq("id", lista.id);
+    if (error) {
+      setLista(prev => prev ? { ...prev, color: colorAnterior } : null);
+      showToast("No se pudo cambiar el color");
+    }
+  };
+
   const colegasNoAgregados = busquedaAgregar.trim()
     ? todosLosColegas.filter(c => `${c.nombre} ${c.apellido} ${c.matricula ?? ""}`.toLowerCase().includes(busquedaAgregar.toLowerCase()))
     : todosLosColegas;
@@ -154,6 +170,13 @@ export default function ListaPage() {
             {miembros.length} {miembros.length === 1 ? "destinatario" : "destinatarios"}
             {lista?.descripcion ? ` · ${lista.descripcion}` : ""}
           </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 9, color: "var(--gfi-text-dim)", fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 2 }}>Color</span>
+            {COLORES_LISTA.map(c => (
+              <button key={c} type="button" onClick={() => cambiarColor(c)} aria-label={`Color ${c}`}
+                style={{ width: 18, height: 18, borderRadius: "50%", background: c, border: "none", cursor: "pointer", outline: (lista?.color ?? "#3b82f6") === c ? "2px solid #fff" : "none", outlineOffset: 1 }} />
+            ))}
+          </div>
         </div>
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
           <button
