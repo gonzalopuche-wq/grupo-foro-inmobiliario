@@ -22,6 +22,19 @@ interface Contacto {
   updated_at: string;
 }
 
+interface Lista {
+  id: string;
+  nombre: string;
+  color: string;
+  orden: number;
+}
+
+// Paleta tipo "Listas" de WhatsApp Business.
+const COLORES_LISTA = [
+  "#a0846b", "#8b5cf6", "#c084fc", "#a3e635", "#f97316",
+  "#d946ef", "#c0b94d", "#3b82f6", "#14b8a6", "#ef4444",
+];
+
 const TIPO_BADGE: Record<string, string> = {
   cliente:    "gfi-badge--blue",
   propietario:"gfi-badge--green",
@@ -81,12 +94,22 @@ function ContactosContent() {
   const [form, setForm] = useState(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [editandoId, setEditandoId] = useState<string | null>(null);
+  // Listas de colores (estilo WhatsApp Business)
+  const [listas, setListas] = useState<Lista[]>([]);
+  const [itemsPorContacto, setItemsPorContacto] = useState<Record<string, string[]>>({});
+  const [filtroLista, setFiltroLista] = useState("");
+  const [popoverContacto, setPopoverContacto] = useState<string | null>(null);
+  const [gestionarListas, setGestionarListas] = useState(false);
+  const [nuevaListaNombre, setNuevaListaNombre] = useState("");
+  const [nuevaListaColor, setNuevaListaColor] = useState(COLORES_LISTA[1]);
+  const [guardandoLista, setGuardandoLista] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { router.push("/"); return; }
       setUserId(data.user.id);
       cargar(data.user.id);
+      cargarListas(data.user.id);
     });
   }, []);
 
@@ -101,6 +124,64 @@ function ContactosContent() {
     setLoading(false);
   }
 
+  async function cargarListas(uid: string) {
+    const [{ data: ls }, { data: items }] = await Promise.all([
+      supabase.from("crm_listas").select("id,nombre,color,orden").eq("perfil_id", uid).order("orden").order("created_at"),
+      supabase.from("crm_listas_items").select("lista_id,contacto_id").eq("perfil_id", uid).not("contacto_id", "is", null),
+    ]);
+    setListas((ls ?? []) as Lista[]);
+    const mapa: Record<string, string[]> = {};
+    (items ?? []).forEach((it: any) => {
+      if (!it.contacto_id) return;
+      (mapa[it.contacto_id] ??= []).push(it.lista_id);
+    });
+    setItemsPorContacto(mapa);
+  }
+
+  async function crearLista() {
+    if (!userId || !nuevaListaNombre.trim()) return;
+    setGuardandoLista(true);
+    const { data, error } = await supabase.from("crm_listas")
+      .insert({ perfil_id: userId, nombre: nuevaListaNombre.trim(), color: nuevaListaColor, orden: listas.length })
+      .select("id,nombre,color,orden").single();
+    setGuardandoLista(false);
+    if (error || !data) { alert("No se pudo crear la lista: " + (error?.message ?? "error desconocido")); return; }
+    setListas(prev => [...prev, data as Lista]);
+    setNuevaListaNombre("");
+  }
+
+  async function eliminarLista(id: string) {
+    if (!confirm("¿Eliminar esta lista? Se quita de todos los contactos (no los borra).")) return;
+    const { error } = await supabase.from("crm_listas").delete().eq("id", id);
+    if (error) { alert("No se pudo eliminar la lista: " + error.message); return; }
+    setListas(prev => prev.filter(l => l.id !== id));
+    setItemsPorContacto(prev => {
+      const next: Record<string, string[]> = {};
+      for (const k of Object.keys(prev)) next[k] = prev[k].filter(lid => lid !== id);
+      return next;
+    });
+    if (filtroLista === id) setFiltroLista("");
+  }
+
+  async function toggleContactoEnLista(contactoId: string, listaId: string) {
+    if (!userId) return;
+    const yaEsta = (itemsPorContacto[contactoId] ?? []).includes(listaId);
+    // Optimista
+    setItemsPorContacto(prev => {
+      const actuales = prev[contactoId] ?? [];
+      return { ...prev, [contactoId]: yaEsta ? actuales.filter(l => l !== listaId) : [...actuales, listaId] };
+    });
+    if (yaEsta) {
+      const { error } = await supabase.from("crm_listas_items").delete()
+        .eq("lista_id", listaId).eq("contacto_id", contactoId);
+      if (error) cargarListas(userId);
+    } else {
+      const { error } = await supabase.from("crm_listas_items")
+        .insert({ lista_id: listaId, perfil_id: userId, contacto_id: contactoId });
+      if (error) cargarListas(userId);
+    }
+  }
+
   const filtrados = useMemo(() => {
     let list = contactos;
     if (busqueda.trim()) {
@@ -113,8 +194,9 @@ function ContactosContent() {
       );
     }
     if (filtroTipo) list = list.filter(c => c.tipo === filtroTipo);
+    if (filtroLista) list = list.filter(c => (itemsPorContacto[c.id] ?? []).includes(filtroLista));
     return list;
-  }, [contactos, busqueda, filtroTipo]);
+  }, [contactos, busqueda, filtroTipo, filtroLista, itemsPorContacto]);
 
   async function guardar() {
     if (!userId || !form.nombre.trim()) return;
@@ -336,6 +418,60 @@ function ContactosContent() {
           padding-top: 16px; border-top: 1px solid var(--gfi-border-subtle);
         }
 
+        /* ── Listas de colores ── */
+        .con-listas-bar {
+          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+          margin: -6px 0 16px; padding: 0 2px;
+        }
+        .con-listas-label {
+          font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+          color: var(--gfi-text-muted); font-family: var(--font-display); margin-right: 2px;
+        }
+        .con-lista-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-right: 5px; }
+        .con-listas-gestionar {
+          padding: 5px 12px; border-radius: 999px; border: 1px dashed var(--gfi-border);
+          background: transparent; color: var(--gfi-text-secondary); font-size: 11px; cursor: pointer;
+          font-family: var(--font-display); font-weight: 600; transition: var(--gfi-transition);
+        }
+        .con-listas-gestionar:hover { border-color: var(--gfi-red-border); color: var(--gfi-red); }
+        .con-lista-badge {
+          display: inline-flex; align-items: center; font-size: 10px; font-weight: 700;
+          padding: 2px 8px; border-radius: 999px; font-family: var(--font-display);
+        }
+        /* Popover "Agregar a lista" */
+        .con-pop-overlay { position: fixed; inset: 0; z-index: 90; }
+        .con-pop {
+          position: absolute; top: calc(100% + 6px); right: 0; z-index: 91;
+          width: 230px; background: var(--gfi-bg-card); border: 1px solid var(--gfi-border);
+          border-radius: var(--gfi-radius-lg); box-shadow: var(--gfi-shadow-lg); padding: 8px;
+        }
+        .con-pop-titulo {
+          font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+          color: var(--gfi-text-muted); font-family: var(--font-display); padding: 4px 6px 8px;
+        }
+        .con-pop-vacio { font-size: 12px; color: var(--gfi-text-muted); padding: 4px 6px 8px; font-family: var(--font-body); }
+        .con-pop-item {
+          display: flex; align-items: center; gap: 4px; padding: 8px 6px; border-radius: var(--gfi-radius-md);
+          cursor: pointer; transition: background 0.12s;
+        }
+        .con-pop-item:hover { background: var(--gfi-bg-hover); }
+        .con-pop-nombre { flex: 1; font-size: 13px; color: var(--gfi-text-primary); font-family: var(--font-body); }
+        .con-pop-check {
+          width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;
+        }
+        .con-pop-nueva {
+          width: 100%; margin-top: 4px; padding: 8px; border-radius: var(--gfi-radius-md);
+          border: none; background: transparent; color: var(--gfi-red); font-size: 12px; font-weight: 700;
+          cursor: pointer; font-family: var(--font-display); text-align: left;
+        }
+        .con-pop-nueva:hover { background: var(--gfi-red-soft); }
+        /* Gestionar listas */
+        .con-colores { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .con-color-swatch { width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0; }
+        .con-gest-item { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--gfi-border-subtle); }
+        .con-gest-nombre { flex: 1; font-size: 13px; color: var(--gfi-text-primary); font-family: var(--font-body); }
+
         @media(max-width:500px){
           .con-acciones .con-btn-ver,
           .con-acciones .con-btn-edit { display: none; }
@@ -376,6 +512,19 @@ function ContactosContent() {
         ))}
       </div>
 
+      {/* Filtro por Listas (estilo WhatsApp) */}
+      <div className="con-listas-bar">
+        <span className="con-listas-label">Listas</span>
+        <button className={`gfi-filter-chip${filtroLista === "" ? " active" : ""}`} onClick={() => setFiltroLista("")}>Todas</button>
+        {listas.map(l => (
+          <button key={l.id} className={`gfi-filter-chip${filtroLista === l.id ? " active" : ""}`} onClick={() => setFiltroLista(filtroLista === l.id ? "" : l.id)}>
+            <span className="con-lista-dot" style={{ background: l.color }} />
+            {l.nombre}
+          </button>
+        ))}
+        <button className="con-listas-gestionar" onClick={() => setGestionarListas(true)}>＋ Gestionar listas</button>
+      </div>
+
       {loading ? (
         <div className="con-empty">
           <div className="gfi-skeleton" style={{ width: "100%", height: 60, borderRadius: "var(--gfi-radius-lg)", marginBottom: 6 }} />
@@ -393,6 +542,8 @@ function ContactosContent() {
             const estadoLbl = ESTADO_LABEL[c.estado ?? ""] ?? c.estado;
             const estadoBadge = ESTADO_BADGE[c.estado ?? ""] ?? "gfi-badge--gray";
             const tipoBadge = TIPO_BADGE[c.tipo ?? ""] ?? "gfi-badge--gray";
+            const misListaIds = itemsPorContacto[c.id] ?? [];
+            const misListas = listas.filter(l => misListaIds.includes(l.id));
             return (
               <div key={c.id} className="con-item">
                 <div
@@ -430,12 +581,40 @@ function ContactosContent() {
                         💬
                       </a>
                     )}
+                    {misListas.map(l => (
+                      <span key={l.id} className="con-lista-badge" style={{ background: `${l.color}22`, color: l.color, border: `1px solid ${l.color}55` }}>
+                        <span className="con-lista-dot" style={{ background: l.color }} />{l.nombre}
+                      </span>
+                    ))}
                   </div>
                 </div>
-                <div className="con-acciones">
+                <div className="con-acciones" style={{ position: "relative" }}>
+                  <button className="con-btn-sm con-btn-edit" onClick={() => setPopoverContacto(popoverContacto === c.id ? null : c.id)} title="Listas">🏷</button>
                   <Link href={`/crm/contactos/${c.id}`} className="con-btn-sm con-btn-ver">Ver</Link>
                   <button className="con-btn-sm con-btn-edit" onClick={() => editar(c)} title="Editar">✏</button>
                   <button className="con-btn-sm con-btn-del" onClick={() => eliminar(c.id)} title="Eliminar">×</button>
+
+                  {popoverContacto === c.id && (
+                    <>
+                      <div className="con-pop-overlay" onClick={() => setPopoverContacto(null)} />
+                      <div className="con-pop">
+                        <div className="con-pop-titulo">Agregar a lista</div>
+                        {listas.length === 0 ? (
+                          <div className="con-pop-vacio">No tenés listas todavía.</div>
+                        ) : listas.map(l => {
+                          const on = misListaIds.includes(l.id);
+                          return (
+                            <div key={l.id} className="con-pop-item" onClick={() => toggleContactoEnLista(c.id, l.id)}>
+                              <span className="con-lista-dot" style={{ background: l.color }} />
+                              <span className="con-pop-nombre">{l.nombre}</span>
+                              <span className="con-pop-check" style={{ borderColor: on ? l.color : "var(--gfi-border)", background: on ? l.color : "transparent" }}>{on ? "✓" : ""}</span>
+                            </div>
+                          );
+                        })}
+                        <button className="con-pop-nueva" onClick={() => { setPopoverContacto(null); setGestionarListas(true); }}>＋ Nueva lista</button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -529,6 +708,50 @@ function ContactosContent() {
               <button className="gfi-btn gfi-btn--primary" onClick={guardar} disabled={guardando || !form.nombre.trim()}>
                 {guardando ? "Guardando..." : editandoId ? "Guardar cambios" : "Crear contacto"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: gestionar listas */}
+      {gestionarListas && (
+        <div className="con-modal-bg" onClick={e => { if (e.target === e.currentTarget) setGestionarListas(false); }}>
+          <div className="con-modal" style={{ maxWidth: 460 }}>
+            <h2>Tus <span>listas</span></h2>
+
+            {/* Crear nueva */}
+            <div className="con-field">
+              <label className="con-label">Nueva lista</label>
+              <input className="con-input" value={nuevaListaNombre} onChange={e => setNuevaListaNombre(e.target.value)}
+                placeholder="Ej: Venta en curso, Propietarios…" maxLength={40}
+                onKeyDown={e => { if (e.key === "Enter") crearLista(); }} />
+              <div className="con-colores">
+                {COLORES_LISTA.map(c => (
+                  <button key={c} type="button" onClick={() => setNuevaListaColor(c)}
+                    className="con-color-swatch" style={{ background: c, outline: nuevaListaColor === c ? "2px solid #fff" : "none", outlineOffset: 2 }} />
+                ))}
+              </div>
+              <button className="gfi-btn gfi-btn--primary" style={{ marginTop: 12, width: "100%" }}
+                onClick={crearLista} disabled={guardandoLista || !nuevaListaNombre.trim()}>
+                {guardandoLista ? "Creando..." : "＋ Crear lista"}
+              </button>
+            </div>
+
+            {/* Listas existentes */}
+            {listas.length > 0 && (
+              <div style={{ marginTop: 18, borderTop: "1px solid var(--gfi-border-subtle)", paddingTop: 14 }}>
+                {listas.map(l => (
+                  <div key={l.id} className="con-gest-item">
+                    <span className="con-lista-dot" style={{ background: l.color, width: 12, height: 12 }} />
+                    <span className="con-gest-nombre">{l.nombre}</span>
+                    <button className="con-btn-sm con-btn-del" onClick={() => eliminarLista(l.id)} title="Eliminar lista">×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="con-modal-footer">
+              <button className="gfi-btn gfi-btn--secondary" onClick={() => setGestionarListas(false)}>Cerrar</button>
             </div>
           </div>
         </div>
