@@ -85,6 +85,7 @@ interface Ofrecido {
   ci_responsable?: { nombre: string; apellido: string; matricula: string | null; } | null;
   perfiles?: { nombre: string; apellido: string; matricula: string | null; telefono: string | null; email: string | null; };
   cartera_id?: string | null;
+  direccion?: string | null;
 }
 
 interface Busqueda {
@@ -312,8 +313,16 @@ export default function MirPage() {
       const { data: profs } = await supabase.from("perfiles").select("id,nombre,apellido,matricula,telefono,email").in("id", ids);
       (profs ?? []).forEach((p: any) => { perfilesMap[p.id] = p; });
     }
+    // Dirección real desde la cartera vinculada. La RLS de cartera_propiedades es
+    // por dueño, así que esto trae solo las direcciones de TUS propios ofrecidos.
+    const carteraIds = [...new Set((of ?? []).map((r: any) => r.cartera_id).filter(Boolean))];
+    const direccionMap: Record<string, string> = {};
+    if (carteraIds.length > 0) {
+      const { data: carts } = await supabase.from("cartera_propiedades").select("id,direccion").in("id", carteraIds);
+      (carts ?? []).forEach((c: any) => { if (c.direccion) direccionMap[c.id] = c.direccion; });
+    }
     const stitchPerfiles = (rows: any[]) => rows.map(r => ({ ...r, perfiles: perfilesMap[r.perfil_id] ?? null }));
-    setOfrecidos(stitchPerfiles(of ?? []) as unknown as Ofrecido[]);
+    setOfrecidos((of ?? []).map((r: any) => ({ ...r, perfiles: perfilesMap[r.perfil_id] ?? null, direccion: r.cartera_id ? (direccionMap[r.cartera_id] ?? null) : null })) as unknown as Ofrecido[]);
     setBusquedas(stitchPerfiles(bu ?? []) as unknown as Busqueda[]);
     setMatches((ma as unknown as Match[]) ?? []);
     setLoading(false);
@@ -902,7 +911,7 @@ export default function MirPage() {
                   <span className="mir-op-badge" style={{background:`${color}20`,border:`1px solid ${color}50`,color}}>{OP_LABEL[o.operacion]}</span>
                 </div>
                 {o.precio && <div className="mir-precio">{formatPeso(o.precio, o.moneda)}</div>}
-                <div className="mir-zona">📍 {[o.zona, o.ciudad].filter(Boolean).join(" · ")}</div>
+                <div className="mir-zona">📍 {o.direccion ? [o.direccion, o.zona, o.ciudad].filter(Boolean).join(" · ") : [o.zona, o.ciudad].filter(Boolean).join(" · ")}</div>
                 <div className="mir-detalles">
                   {o.dormitorios ? <span className="mir-det">🛏 {o.dormitorios} dorm.</span> : null}
                   {o.banos ? <span className="mir-det">🚿 {o.banos} baños</span> : null}
